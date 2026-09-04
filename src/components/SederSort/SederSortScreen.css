@@ -1,0 +1,124 @@
+.stage {
+  position: relative;
+  width: 100%;
+}
+
+.sort-count {
+  text-align: center;
+  font-size: 11.5px;
+  color: var(--ink-soft);
+  font-weight: 600;
+  margin: 0 0 10px;
+}
+
+.sort-bins {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.sort-bin {
+  border: 1.5px dashed var(--border);
+  border-radius: 12px;
+  padding: 8px 8px 6px;
+  height: 92px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  background: #fffbf0;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.sort-bin--hover {
+  border-color: var(--brand);
+  background: #eaf0f8;
+}
+
+.sort-bin--reject {
+  animation: panel-wobble 0.3s ease;
+  border-color: var(--bad);
+  background: #fbeded;
+}
+
+.sort-bin__title {
+  font-family: var(--font-heading);
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+.sort-bin__items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  justify-content: center;
+}
+
+.sort-bin__tag {
+  font-size: 9px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--brand);
+  border-radius: 999px;
+  padding: 2px 7px;
+}
+
+.sort-pool {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  height: 130px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  padding: 4px 2px;
+  border-top: 1px solid var(--border-light, var(--border));
+  padding-top: 10px;
+  align-content: flex-start;
+}
+
+.sort-chip {
+  height: 30px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--brand);
+  color: #fff;
+  font-weight: 700;
+  font-size: 11px;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+  box-shadow: 0 3px 8px rgba(27, 51, 88, 0.25);
+  padding: 0 10px;
+  font-family: var(--font-body);
+}
+
+.sort-chip--dragging {
+  opacity: 0.35;
+}
+
+.sort-chip-ghost {
+  position: fixed;
+  z-index: 999;
+  pointer-events: none;
+  opacity: 0.95;
+  height: 30px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--brand);
+  color: #fff;
+  font-weight: 700;
+  font-size: 11px;
+  padding: 0 10px;
+  text-align: center;
+  box-shadow: 0 8px 18px rgba(27, 51, 88, 0.3);
+  font-family: var(--font-body);
+}

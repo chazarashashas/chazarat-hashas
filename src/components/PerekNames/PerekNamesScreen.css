@@ -1,0 +1,141 @@
+.stage {
+  position: relative;
+  width: 100%;
+}
+
+.perek-body {
+  display: flex;
+  gap: 0;
+}
+
+/* Fixed height, sized for the longest real case (Keilim, 30 perakim) so
+   neither column ever resizes when you switch masechet, seder, or mode. */
+.perek-tabs {
+  width: 108px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  height: 510px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  padding-right: 6px;
+}
+
+/* Styled like binder/notebook index tabs: rounded on the outer edge only,
+   flush against the spine on the left, layered with a small shadow. */
+.perek-tab {
+  display: block;
+  width: 100%;
+  flex-shrink: 0;
+  text-align: left;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-right: none;
+  border-radius: 0 999px 999px 0;
+  padding: 6px 10px 6px 8px;
+  margin-bottom: 3px;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  font-family: var(--font-body);
+  box-shadow: 2px 2px 3px rgba(27, 51, 88, 0.1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition:
+    transform 0.12s ease,
+    background 0.12s ease,
+    color 0.12s ease;
+}
+
+.perek-tab:hover {
+  transform: translateX(2px);
+}
+
+.perek-tab--active {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+  transform: translateX(5px);
+  box-shadow: 2px 2px 4px rgba(27, 51, 88, 0.2);
+}
+
+/* Notebook-page feel: a margin rule on the left; each row draws its own
+   ruled line via border-bottom, so the lines always match real rows. */
+.perek-detail {
+  flex: 1;
+  min-width: 0;
+  height: 510px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  background: #fffdf6;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px 10px 30px;
+  box-shadow: inset 0 1px 4px rgba(27, 51, 88, 0.08);
+  border-left: 3px solid #d99a9a;
+}
+
+.perek-detail__label {
+  margin: 4px 0 12px;
+  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.perek-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 19px;
+  flex-shrink: 0;
+  border-bottom: 1px solid #ece0c0;
+}
+
+.perek-row__num {
+  width: 20px;
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gold);
+  text-align: center;
+  font-family: var(--font-hebrew);
+}
+
+.perek-row__label {
+  width: 92px;
+  flex-shrink: 0;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--ink);
+  font-family: var(--font-body);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.perek-row--sentence {
+  height: auto;
+  min-height: 26px;
+}
+
+.perek-row input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: none;
+  background: transparent;
+  padding: 0 4px;
+  font-size: 10.5px;
+  font-family: var(--font-body);
+  color: var(--ink);
+}
+
+.perek-row input:focus {
+  outline: none;
+}

@@ -1,0 +1,194 @@
+/* Shared "card" chrome used by every game screen: the parchment panel,
+   its top-right restart icon, the small gold app-title line, the page
+   title beneath it, pill buttons, note banners, and the completion
+   scrim/popup. Screen-specific layout lives in each screen's own CSS. */
+
+.panel {
+  position: relative;
+  background: var(--surface);
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  box-shadow: 0 12px 30px rgba(27, 51, 88, 0.15);
+  padding: 24px 26px 22px;
+}
+
+.restart-icon {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: #fffbf0;
+  color: var(--ink-soft);
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.restart-icon:hover {
+  color: var(--brand);
+  border-color: var(--brand);
+}
+
+.app-title {
+  margin: 0 0 8px;
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gold);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  flex-shrink: 0;
+}
+
+.panel__title {
+  margin: 0 0 14px;
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink);
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.panel__subtitle {
+  margin: 0 0 14px;
+  font-size: 12px;
+  color: var(--ink-soft);
+  text-align: center;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.pill {
+  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 7px 13px;
+  border-radius: 999px;
+  border: 1.5px solid var(--border);
+  background: #fffbf0;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.pill--active {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+
+.note-banner {
+  background: #efe3c4;
+  border: 1px dashed var(--gold);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 11px;
+  color: #8a6b1e;
+  text-align: center;
+  margin-bottom: 14px;
+  font-weight: 600;
+}
+
+.note-banner--good {
+  background: #e4eee3;
+  border-color: var(--good);
+  color: var(--good);
+}
+
+.scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(27, 51, 88, 0.35);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: panel-fade-in 0.2s ease;
+}
+
+.popup {
+  width: 260px;
+  max-width: calc(100% - 32px);
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 26px 22px 22px;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(27, 51, 88, 0.3);
+  animation: panel-pop 0.25s ease;
+}
+
+.popup__mark {
+  font-size: 28px;
+  color: var(--gold);
+}
+
+.popup__text {
+  font-size: 14.5px;
+  color: var(--ink);
+  margin-top: 8px;
+  font-weight: 600;
+  font-family: var(--font-heading);
+}
+
+.popup__restart,
+.restart {
+  margin-top: 4px;
+  width: 100%;
+  padding: 11px;
+  background: var(--brand);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 13.5px;
+  cursor: pointer;
+}
+
+@keyframes panel-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes panel-pop {
+  0% {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes panel-wobble {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}

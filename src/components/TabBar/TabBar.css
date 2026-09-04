@@ -1,0 +1,31 @@
+.tab-bar {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 4px;
+  justify-content: center;
+}
+
+.tab-bar__tab {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-heading);
+  font-size: 8.5px;
+  font-weight: 600;
+  padding: 8px 1px;
+  border-radius: 999px;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+.tab-bar__tab--active {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}

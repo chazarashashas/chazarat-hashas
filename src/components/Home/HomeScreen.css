@@ -1,0 +1,77 @@
+.stage {
+  position: relative;
+  width: 100%;
+}
+
+.home-title {
+  margin: 0 0 4px;
+  font-family: var(--font-hebrew);
+  font-size: 34px;
+  font-weight: 700;
+  color: var(--ink);
+  text-align: center;
+}
+
+.home-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.home-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  text-align: left;
+  background: #fffbf0;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 12px 10px;
+  cursor: pointer;
+  position: relative;
+  font-family: var(--font-body);
+}
+
+.home-card:hover {
+  border-color: var(--brand);
+}
+
+.home-card--disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.home-card--disabled:hover {
+  border-color: var(--border);
+}
+
+.home-card__icon {
+  font-size: 18px;
+  color: var(--gold);
+}
+
+.home-card__title {
+  font-family: var(--font-heading);
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.home-card__desc {
+  font-size: 10.5px;
+  line-height: 1.4;
+  color: var(--ink-soft);
+}
+
+.home-card__soon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}

@@ -1,0 +1,45 @@
+.sidebar {
+  width: var(--sidebar-width);
+  flex-shrink: 0;
+  height: 100vh;
+  background: var(--brand);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding-top: 22px;
+  overflow-y: auto;
+}
+
+.nav-item {
+  width: 76px;
+  padding: 10px 4px 9px;
+  border-radius: 14px;
+  background: transparent;
+  border: none;
+  color: #a9b7d1;
+  text-align: center;
+  cursor: pointer;
+  font-family: var(--font-heading);
+  font-size: 10px;
+  font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  line-height: 1.15;
+}
+
+.nav-item__icon {
+  font-size: 18px;
+}
+
+.nav-item--active {
+  background: var(--gold);
+  color: var(--brand);
+}
+
+.nav-item--disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
