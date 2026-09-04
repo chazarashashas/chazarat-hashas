@@ -75,9 +75,10 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
 
         <blockquote className="home-quote" dir="rtl">
           <p className="home-quote__text">
-            "שֶׁתַּלְמוּדוֹ קָשֶׁה עָלָיו כַּבַּרְזֶל — בִּשְׁבִיל מִשְׁנָתוֹ שֶׁאֵינָהּ סְדוּרָה עָלָיו"
+            "רֵישׁ לָקִישׁ אָמַר: אִם רָאִיתָ תַּלְמִיד שֶׁתַּלְמוּדוֹ קָשֶׁה עָלָיו כַּבַּרְזֶל — בִּשְׁבִיל מִשְׁנָתוֹ
+            שֶׁאֵינָהּ סְדוּרָה עָלָיו"
           </p>
-          <cite className="home-quote__source">— ריש לקיש, תענית ח׳ א׳</cite>
+          <cite className="home-quote__source">— תענית ז׳ ב׳–ח׳ א׳</cite>
         </blockquote>
 
         <div className="home-grid">
