@@ -39,9 +39,11 @@
 }
 
 .recall-progress {
-  font-size: 12px;
-  font-weight: 700;
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 800;
   color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
 }
 
 .recall-board-wrap {

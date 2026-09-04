@@ -139,3 +139,51 @@
 .perek-row input:focus {
   outline: none;
 }
+
+/* Below phone width the side-by-side notebook-tab layout leaves almost no
+   room for the detail column — inputs were shrinking to a few characters
+   wide. Stack instead: tabs become a horizontal scroll row up top (styled
+   as plain pills, since the "index tab poking out from a spine" look only
+   reads correctly in a vertical list), detail column takes the full width. */
+@media (max-width: 600px) {
+  .perek-body {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .perek-tabs {
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-right: 0;
+    padding-bottom: 4px;
+    gap: 6px;
+  }
+
+  .perek-tab {
+    flex-shrink: 0;
+    width: auto;
+    margin-bottom: 0;
+    border-right: 1.5px solid var(--border);
+    border-radius: 999px;
+    box-shadow: none;
+    padding: 7px 14px;
+  }
+
+  .perek-tab:hover,
+  .perek-tab--active {
+    transform: none;
+  }
+
+  .perek-detail {
+    width: 100%;
+    border-left: 1.5px solid var(--border);
+    padding: 10px 12px 10px 16px;
+  }
+
+  .perek-row__label {
+    width: 38%;
+  }
+}

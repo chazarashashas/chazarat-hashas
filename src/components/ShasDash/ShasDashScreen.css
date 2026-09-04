@@ -7,6 +7,34 @@
   width: 100%;
 }
 
+.dash-panel-icons {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: flex;
+  gap: 6px;
+  z-index: 2;
+}
+
+.icon-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: #fffbf0;
+  color: var(--ink-soft);
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.icon-btn:hover {
+  color: var(--brand);
+  border-color: var(--brand);
+}
+
 .dash-panel--shake {
   animation: dash-shake 0.35s ease;
 }
@@ -290,6 +318,22 @@
 
 .dash-steer__btn:disabled:active {
   background: #fffbf0;
+  color: var(--ink);
+}
+
+.dash-steer__btn--lock {
+  border-color: var(--gold);
+  color: var(--gold);
+  font-weight: 700;
+}
+
+.dash-steer__btn--lock:active {
+  background: var(--gold);
+  color: #fff;
+}
+
+.dash-steer__btn--lock:disabled {
+  border-color: var(--border);
   color: var(--ink);
 }
 

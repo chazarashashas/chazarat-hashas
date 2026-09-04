@@ -6,12 +6,17 @@ import { TabBar } from "../TabBar/TabBar";
 import "./MishnaIdScreen.css";
 
 type ScopeType = "masechta" | "seder" | "all";
-type Difficulty = "easy" | "medium" | "hard";
 type Mode = "streak" | "quiz";
+/** How many levels this round asks for. Seder+Masechet is always the core
+    "you located it" goal; Perek is only ever offered as a bonus round on
+    top of that, never a requirement. */
+type Depth = "seder" | "masechet" | "perek";
 
 const QUIZ_LENGTH = 15;
 const MAX_TEXT_FONT_SIZE = 17;
 const MIN_TEXT_FONT_SIZE = 10;
+const CARD_SECONDS = 60;
+const TIME_BONUS_SECONDS = 10;
 
 function letterGrade(percent: number): string {
   if (percent >= 90) return "A";
@@ -20,12 +25,6 @@ function letterGrade(percent: number): string {
   if (percent >= 60) return "D";
   return "F";
 }
-
-const DIFFICULTY: Record<Difficulty, { label: string; seconds: number; bonus: number }> = {
-  easy: { label: "Easy", seconds: 90, bonus: 15 },
-  medium: { label: "Medium", seconds: 60, bonus: 10 },
-  hard: { label: "Hard", seconds: 30, bonus: 5 },
-};
 
 interface FlatMasechet {
   seder: Seder;
@@ -46,11 +45,11 @@ interface Card {
   guessedMasechet: string | null;
   guessedPerek: number | null;
   timedOut: boolean;
-  /** Quiz mode only: one wrong guess ends the card, no retries. */
+  /** Quiz mode only: one wrong core guess ends the card, no retries. */
   failed: boolean;
   /** Scope already tells the student the seder — skip that step in the guess flow. */
   sederSkipped: boolean;
-  /** Scope already tells the student the masechet — skip that step in the guess flow. */
+  /** Scope already tells the student the masechet, or this round doesn't ask for it. */
   masechetSkipped: boolean;
 }
 
@@ -60,7 +59,7 @@ function poolFor(scopeType: ScopeType, scopeValue: string): FlatMasechet[] {
   return ALL_MASECHTOT;
 }
 
-function newCard(scopeType: ScopeType, scopeValue: string): Card {
+function newCard(scopeType: ScopeType, scopeValue: string, depth: Depth): Card {
   const pool = poolFor(scopeType, scopeValue);
   const pick = pool[Math.floor(Math.random() * pool.length)];
   const perek = 1 + Math.floor(Math.random() * pick.masechet.perakim);
@@ -74,7 +73,7 @@ function newCard(scopeType: ScopeType, scopeValue: string): Card {
     timedOut: false,
     failed: false,
     sederSkipped: scopeType === "seder" || scopeType === "masechta",
-    masechetSkipped: scopeType === "masechta",
+    masechetSkipped: scopeType === "masechta" || depth === "seder",
   };
 }
 
@@ -126,20 +125,21 @@ export function MishnaIdScreen() {
   // the whole seder). Otherwise: a seder id (when sederTab is "all") or a
   // masechet name (when sederTab is a specific seder).
   const [narrowTo, setNarrowTo] = useState<string>("");
-  const [difficulty, setDifficulty] = useState<Difficulty>("medium");
+  const [depth, setDepth] = useState<Depth>("masechet");
 
   const scopeType: ScopeType =
     sederTab === "all" ? (narrowTo ? "seder" : "all") : narrowTo ? "masechta" : "seder";
   const scopeValue = sederTab === "all" ? narrowTo : narrowTo || sederTab;
   const activeSeder = SEDARIM.find((s) => s.id === sederTab);
-  const [card, setCard] = useState<Card>(() => newCard("seder", ALL_MASECHTOT[0].seder.id));
+  const [card, setCard] = useState<Card>(() => newCard("seder", ALL_MASECHTOT[0].seder.id, "masechet"));
   const [content, setContent] = useState<MishnaContentState>({ status: "loading" });
-  const [secondsLeft, setSecondsLeft] = useState(DIFFICULTY.medium.seconds);
+  const [secondsLeft, setSecondsLeft] = useState(CARD_SECONDS);
   const [started, setStarted] = useState(false);
   const [paused, setPaused] = useState(false);
   const [streak, setStreak] = useState(0);
   const [quizCardIndex, setQuizCardIndex] = useState(0);
   const [quizScore, setQuizScore] = useState(0);
+  const [quizBonus, setQuizBonus] = useState(0);
   const [quizFinished, setQuizFinished] = useState(false);
   const [wrongFlash, setWrongFlash] = useState<string | null>(null);
   const [textFontSize, setTextFontSize] = useState(MAX_TEXT_FONT_SIZE);
@@ -149,8 +149,11 @@ export function MishnaIdScreen() {
 
   const sederDone = Boolean(card.guessedSeder) || card.sederSkipped;
   const masechetDone = Boolean(card.guessedMasechet) || card.masechetSkipped;
-  const solved = sederDone && masechetDone && Boolean(card.guessedPerek);
-  const inPlay = started && !solved && !card.timedOut && !card.failed && !quizFinished;
+  // The core goal — you've located the mishnah's seder and masechet. Perek
+  // is never required to reach this; it's an optional bonus round on top.
+  const coreSolved = sederDone && masechetDone;
+  const bonusAvailable = depth === "perek" && coreSolved;
+  const inPlay = started && !coreSolved && !card.timedOut && !card.failed && !quizFinished;
 
   useEffect(() => {
     let cancelled = false;
@@ -221,28 +224,21 @@ export function MishnaIdScreen() {
   }, [inPlay, paused]);
 
   /** Loads a fresh card without touching whether the session has been started. */
-  function prepareCard(
-    nextScopeType = scopeType,
-    nextScopeValue = scopeValue,
-    nextDifficulty = difficulty,
-  ) {
-    setCard(newCard(nextScopeType, nextScopeValue));
+  function prepareCard(nextScopeType = scopeType, nextScopeValue = scopeValue, nextDepth = depth) {
+    setCard(newCard(nextScopeType, nextScopeValue, nextDepth));
     setContent({ status: "loading" });
-    setSecondsLeft(DIFFICULTY[nextDifficulty].seconds);
+    setSecondsLeft(CARD_SECONDS);
     setPaused(false);
   }
 
   /** Resets the whole session: back to the Start button, streak/quiz progress cleared. */
-  function prepareSession(
-    nextScopeType = scopeType,
-    nextScopeValue = scopeValue,
-    nextDifficulty = difficulty,
-  ) {
-    prepareCard(nextScopeType, nextScopeValue, nextDifficulty);
+  function prepareSession(nextScopeType = scopeType, nextScopeValue = scopeValue, nextDepth = depth) {
+    prepareCard(nextScopeType, nextScopeValue, nextDepth);
     setStarted(false);
     setStreak(0);
     setQuizCardIndex(0);
     setQuizScore(0);
+    setQuizBonus(0);
     setQuizFinished(false);
   }
 
@@ -265,8 +261,8 @@ export function MishnaIdScreen() {
     prepareSession(nextScopeType, value);
   }
 
-  function handleDifficultyChange(next: Difficulty) {
-    setDifficulty(next);
+  function handleDepthChange(next: Depth) {
+    setDepth(next);
     prepareSession(scopeType, scopeValue, next);
   }
 
@@ -277,12 +273,12 @@ export function MishnaIdScreen() {
     if (mode === "quiz") {
       setCard((c) => ({ ...c, failed: true }));
     } else {
-      setSecondsLeft((s) => Math.max(0, s - DIFFICULTY[difficulty].bonus));
+      setSecondsLeft((s) => Math.max(0, s - TIME_BONUS_SECONDS));
     }
   }
 
   function bumpTime() {
-    setSecondsLeft((s) => s + DIFFICULTY[difficulty].bonus);
+    setSecondsLeft((s) => s + TIME_BONUS_SECONDS);
   }
 
   function guessSeder(id: string) {
@@ -301,21 +297,24 @@ export function MishnaIdScreen() {
       handleWrongGuess("masechet:" + en);
     }
   }
+  /** Bonus round only — a miss here never costs a streak, time, or the card. */
   function guessPerek(n: number) {
+    const key = "perek:" + n;
     if (n === card.perek) {
       setCard((c) => ({ ...c, guessedPerek: n }));
-      bumpTime();
       setStreak((s) => s + 1);
     } else {
-      handleWrongGuess("perek:" + n);
+      setWrongFlash(key);
+      window.setTimeout(() => setWrongFlash((prev) => (prev === key ? null : prev)), 300);
     }
   }
 
   function handleAdvance() {
     if (mode === "quiz") {
-      const scoreDelta = solved ? 1 : 0;
+      const scoreDelta = coreSolved ? 1 : 0;
       const nextIndex = quizCardIndex + 1;
       setQuizScore((s) => s + scoreDelta);
+      if (card.guessedPerek) setQuizBonus((b) => b + 1);
       setQuizCardIndex(nextIndex);
       if (nextIndex >= QUIZ_LENGTH) {
         setQuizFinished(true);
@@ -346,7 +345,9 @@ export function MishnaIdScreen() {
         </div>
         <p className="app-title">Chazarat Hashas</p>
         <h1 className="panel__title">Mishna Quiz</h1>
-        <p className="panel__subtitle">To get started, read the mishna and guess its seder, masechet, and perek.</p>
+        <p className="panel__subtitle">
+          Read the mishnah and locate it. Seder and masechet are the goal — perek is bonus.
+        </p>
 
         <div className="mishna-controls-row">
           <div className="mishna-control">
@@ -361,17 +362,28 @@ export function MishnaIdScreen() {
               onChange={handleModeChange}
             />
           </div>
+          <div className="mishna-control">
+            <p className="mishna-control__label">Practice</p>
+            <Switch
+              size="sm"
+              options={[
+                { value: "seder", label: "Seder" },
+                { value: "masechet", label: "Masechet" },
+                { value: "perek", label: "Perek" },
+              ]}
+              value={depth}
+              onChange={handleDepthChange}
+            />
+          </div>
           {sederTab === "all" ? (
             <div className="mishna-control">
-              <p className="mishna-control__label">Seder</p>
+              <p className="mishna-control__label">Pool</p>
               <select
                 className="mishna-narrow-select"
                 value={narrowTo}
                 onChange={(e) => handleNarrowChange(e.target.value)}
               >
-                <option value="" disabled>
-                  Choose a seder
-                </option>
+                <option value="">All of Shas</option>
                 {SEDARIM.map((s) => (
                   <option key={s.id} value={s.id}>
                     {s.en}
@@ -382,15 +394,13 @@ export function MishnaIdScreen() {
           ) : (
             activeSeder && (
               <div className="mishna-control">
-                <p className="mishna-control__label">Masechet</p>
+                <p className="mishna-control__label">Pool</p>
                 <select
                   className="mishna-narrow-select"
                   value={narrowTo}
                   onChange={(e) => handleNarrowChange(e.target.value)}
                 >
-                  <option value="" disabled>
-                    Choose a masechet
-                  </option>
+                  <option value="">{activeSeder.en}</option>
                   {activeSeder.masechtot.map((m) => (
                     <option key={m.en} value={m.en}>
                       {m.en}
@@ -400,26 +410,15 @@ export function MishnaIdScreen() {
               </div>
             )
           )}
-          <div className="mishna-control">
-            <p className="mishna-control__label">Difficulty</p>
-            <Switch
-              size="sm"
-              options={[
-                { value: "easy", label: "Easy" },
-                { value: "medium", label: "Medium" },
-                { value: "hard", label: "Hard" },
-              ]}
-              value={difficulty}
-              onChange={handleDifficultyChange}
-            />
-          </div>
         </div>
 
         {mode === "streak" ? (
           <p className="mishna-streak">Streak: {streak}</p>
         ) : (
           <p className="mishna-streak">
-            {started ? `Card ${questionNumber} of ${QUIZ_LENGTH} · Score ${quizScore}` : `${QUIZ_LENGTH} questions`}
+            {started
+              ? `Card ${questionNumber} of ${QUIZ_LENGTH} · Score ${quizScore}${quizBonus ? ` · +${quizBonus} bonus` : ""}`
+              : `${QUIZ_LENGTH} questions`}
           </p>
         )}
 
@@ -435,6 +434,7 @@ export function MishnaIdScreen() {
             <p className="mishna-summary__score">
               {quizScore} / {QUIZ_LENGTH}
             </p>
+            {quizBonus > 0 && <p className="mishna-summary__bonus">★ {quizBonus} perek bonus</p>}
             <p className="mishna-summary__grade">{letterGrade((quizScore / QUIZ_LENGTH) * 100)}</p>
             <p className="mishna-summary__label">Quiz complete</p>
             <button className="restart" onClick={() => prepareSession()}>
@@ -475,13 +475,13 @@ export function MishnaIdScreen() {
               )}
             </div>
 
-            {!started || paused ? null : card.timedOut && !solved ? (
+            {!started || paused ? null : card.timedOut && !coreSolved ? (
               <div className="note-banner">
-                Time's up — it was {card.seder.en} › {card.masechet.en} › Perek {card.perek}.
+                Time's up — it was {card.seder.en} › {card.masechet.en}.
               </div>
-            ) : card.failed && !solved ? (
+            ) : card.failed && !coreSolved ? (
               <div className="note-banner">
-                Not quite — it was {card.seder.en} › {card.masechet.en} › Perek {card.perek}.
+                Not quite — it was {card.seder.en} › {card.masechet.en}.
               </div>
             ) : !sederDone ? (
               <div className="mishna-step">
@@ -513,28 +513,38 @@ export function MishnaIdScreen() {
                   ))}
                 </div>
               </div>
-            ) : !card.guessedPerek ? (
-              <div className="mishna-step">
-                <div className="mishna-step-label">Which perek?</div>
-                <div className="pill-row">
-                  {Array.from({ length: card.masechet.perakim }, (_, i) => i + 1).map((n) => (
-                    <button
-                      key={n}
-                      className={"pill" + (wrongFlash === "perek:" + n ? " pill--reject" : "")}
-                      onClick={() => guessPerek(n)}
-                    >
-                      {n}
-                    </button>
-                  ))}
-                </div>
-              </div>
             ) : (
-              <div className="note-banner note-banner--good">
-                Correct — {card.seder.en} › {card.masechet.en} › Perek {card.perek}.
-              </div>
+              <>
+                <div className="note-banner note-banner--good">
+                  Located — {card.seder.en} › {card.masechet.en}.
+                </div>
+                {bonusAvailable &&
+                  (card.guessedPerek ? (
+                    <div className="note-banner note-banner--bonus">
+                      ★ Perek {card.guessedPerek} — bonus earned!
+                    </div>
+                  ) : (
+                    <div className="mishna-step">
+                      <div className="mishna-step-label">
+                        Bonus: which perek? <span className="bonus-tag">extra credit</span>
+                      </div>
+                      <div className="pill-row">
+                        {Array.from({ length: card.masechet.perakim }, (_, i) => i + 1).map((n) => (
+                          <button
+                            key={n}
+                            className={"pill" + (wrongFlash === "perek:" + n ? " pill--reject" : "")}
+                            onClick={() => guessPerek(n)}
+                          >
+                            {n}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+              </>
             )}
 
-            {(solved || card.timedOut || card.failed) && (
+            {(coreSolved || card.timedOut || card.failed) && (
               <button className="restart" onClick={handleAdvance}>
                 {mode === "quiz" && quizCardIndex + 1 >= QUIZ_LENGTH ? "Finish quiz" : "Next card"}
               </button>
@@ -548,7 +558,16 @@ export function MishnaIdScreen() {
             <div className={"mishna-checks__c" + (card.guessedMasechet ? " mishna-checks__c--done" : "")}>
               ✓
             </div>
-            <div className={"mishna-checks__c" + (card.guessedPerek ? " mishna-checks__c--done" : "")}>✓</div>
+            {depth === "perek" && (
+              <div
+                className={
+                  "mishna-checks__c mishna-checks__c--bonus" +
+                  (card.guessedPerek ? " mishna-checks__c--done" : "")
+                }
+              >
+                ★
+              </div>
+            )}
           </div>
         )}
       </div>

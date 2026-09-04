@@ -242,6 +242,26 @@
   font-family: var(--font-heading);
 }
 
+.bonus-tag {
+  display: inline-block;
+  margin-left: 4px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: #fbf1d6;
+  color: var(--gold);
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0.2px;
+  vertical-align: middle;
+}
+
+.note-banner--bonus {
+  background: #fbf1d6;
+  border-color: var(--gold);
+  color: #8a6b1e;
+}
+
 .mishna-checks {
   display: flex;
   justify-content: center;
@@ -269,6 +289,19 @@
   color: #fff;
 }
 
+.mishna-checks__c--bonus {
+  border-style: dashed;
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.mishna-checks__c--bonus.mishna-checks__c--done {
+  border-style: solid;
+  border-color: var(--gold);
+  background: var(--gold);
+  color: #fff;
+}
+
 .mishna-summary {
   text-align: center;
   padding: 12px 0 4px;
@@ -280,6 +313,13 @@
   font-weight: 700;
   color: var(--ink);
   margin: 8px 0 0;
+}
+
+.mishna-summary__bonus {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gold);
+  margin: 4px 0 0;
 }
 
 .mishna-summary__grade {

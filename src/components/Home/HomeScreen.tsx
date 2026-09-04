@@ -1,3 +1,4 @@
+import { useState } from "react";
 import "./HomeScreen.css";
 
 interface Feature {
@@ -20,7 +21,7 @@ const FEATURES: Feature[] = [
     id: "mishna",
     icon: "◆",
     title: "Mishna Quiz",
-    desc: "Read a real mishnah and guess its seder, masechet, and perek.",
+    desc: "Read a real mishnah and locate it: seder and masechet, with perek as bonus.",
     built: true,
   },
   {
@@ -39,16 +40,16 @@ const FEATURES: Feature[] = [
   },
   {
     id: "dash",
-    icon: "⚡",
+    icon: "↯",
     title: "Shas Dash",
     desc: "Steer each masechet into its seder before it reaches the end of the road.",
     built: true,
   },
   {
     id: "perek",
-    icon: "🔖",
+    icon: "❖",
     title: "My Mishna",
-    desc: "A notebook — describe each masechet, or nickname every perek, in your own words.",
+    desc: "Make Shas yours — your own names, notes, and memory cues for every perek.",
     built: true,
   },
 ];
@@ -58,6 +59,8 @@ interface HomeScreenProps {
 }
 
 export function HomeScreen({ onNavigate }: HomeScreenProps) {
+  const [showIntro, setShowIntro] = useState(false);
+
   return (
     <div className="stage">
       <div className="panel home-panel">
@@ -65,7 +68,17 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
         <h1 className="home-title" dir="rtl">
           חזרת ש״ס
         </h1>
-        <p className="panel__subtitle">Know all of Shas by heart.</p>
+        <p className="panel__subtitle">let's learn shas, together</p>
+        <button className="home-how" onClick={() => setShowIntro(true)}>
+          How this app works
+        </button>
+
+        <blockquote className="home-quote" dir="rtl">
+          <p className="home-quote__text">
+            "שֶׁתַּלְמוּדוֹ קָשֶׁה עָלָיו כַּבַּרְזֶל — בִּשְׁבִיל מִשְׁנָתוֹ שֶׁאֵינָהּ סְדוּרָה עָלָיו"
+          </p>
+          <cite className="home-quote__source">— ריש לקיש, תענית ח׳ א׳</cite>
+        </blockquote>
 
         <div className="home-grid">
           {FEATURES.map((f) => (
@@ -83,6 +96,30 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
           ))}
         </div>
       </div>
+
+      {showIntro && (
+        <div className="scrim intro-scrim" onClick={() => setShowIntro(false)}>
+          <div className="popup intro-popup" onClick={(e) => e.stopPropagation()}>
+            <button className="intro-popup__close" onClick={() => setShowIntro(false)} title="Close">
+              ✕
+            </button>
+            <p className="popup__mark">🗺️</p>
+            <h2 className="intro-popup__title">How Chazaras HaShas Works</h2>
+            <p className="intro-popup__text">
+              You're building a mental map of Shas, one layer at a time: the six Sedarim, then the
+              Masechtot in each Seder, then the Perakim in each Masechet, then the Mishnayot in each
+              Perek.
+            </p>
+            <p className="intro-popup__text">
+              Just starting out? Start at the top and work down. Already know a lot of Shas? Use Mishna
+              Quiz and the other games to see where you need more chazara.
+            </p>
+            <button className="restart" onClick={() => setShowIntro(false)}>
+              Got it
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

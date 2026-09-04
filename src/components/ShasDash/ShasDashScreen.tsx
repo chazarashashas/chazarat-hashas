@@ -83,14 +83,18 @@ export function ShasDashScreen() {
 
   // Shuffle-bag draw, not independent Math.random() picks each time — that
   // was letting the same masechet (Rosh Hashanah, repeatedly) come up far
-  // more than it should. A fresh bag is only reshuffled once exhausted, and
-  // we swap the top card if it would repeat the very last one drawn.
+  // more than it should. A fresh bag excludes whatever's already been
+  // caught this run, so once you've been through everything once, the bag
+  // recycles down to just the ones you missed instead of re-showing ones
+  // you already have. We swap the top card if it would repeat the very
+  // last one drawn.
   const nextCard = useCallback((): FlatMasechet => {
     if (shuffleBagRef.current.length === 0) {
-      shuffleBagRef.current = shuffle(ALL_MASECHTOT);
+      const remaining = ALL_MASECHTOT.filter((m) => !caughtRef.current.has(m.name));
+      shuffleBagRef.current = shuffle(remaining);
       if (
         lastCardNameRef.current &&
-        shuffleBagRef.current[0].name === lastCardNameRef.current &&
+        shuffleBagRef.current[0]?.name === lastCardNameRef.current &&
         shuffleBagRef.current.length > 1
       ) {
         const tmp = shuffleBagRef.current[0];
@@ -324,14 +328,26 @@ export function ShasDashScreen() {
   return (
     <div className="stage dash-stage">
       <div className={"panel dash-panel" + (shaking ? " dash-panel--shake" : "")}>
-        <button
-          className="restart-icon"
-          title="Restart"
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={handleRestartIcon}
-        >
-          ↺
-        </button>
+        <div className="dash-panel-icons">
+          {phase === "playing" && (
+            <button
+              className="icon-btn"
+              title={paused ? "Resume" : "Pause"}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={togglePause}
+            >
+              {paused ? "▶" : "⏸"}
+            </button>
+          )}
+          <button
+            className="icon-btn"
+            title="Restart"
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={handleRestartIcon}
+          >
+            ↺
+          </button>
+        </div>
         <p className="app-title">Chazarat Hashas</p>
         <h1 className="panel__title">Shas Dash</h1>
         <p className="dash-story">The road to the Beit Hamikdash — steer each masechet into its seder</p>
@@ -451,6 +467,15 @@ export function ShasDashScreen() {
                       onClick={() => moveLane(1)}
                     >
                       ▼
+                    </button>
+                    <button
+                      className="dash-steer__btn dash-steer__btn--lock"
+                      disabled={phase !== "playing"}
+                      title="Lock in this lane now"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={resolveNow}
+                    >
+                      ✓
                     </button>
                   </div>
                 </div>
