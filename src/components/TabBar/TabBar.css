@@ -29,3 +29,12 @@
   border-color: var(--brand);
   color: #fff;
 }
+
+.tab-bar--wrap {
+  flex-wrap: wrap;
+}
+
+.tab-bar--wrap .tab-bar__tab {
+  flex: 0 1 auto;
+  padding: 8px 12px;
+}

@@ -13,6 +13,18 @@ export interface MatchView {
   items: string[];
 }
 
+/** A round spanning two adjacent sedarim — masechtot in true Shas order
+    across the seder boundary, not just within one seder. */
+function combinedView(id: string, sederIds: [string, string]): MatchView {
+  const seders = sederIds.map((sid) => SEDARIM.find((s) => s.id === sid)!);
+  return {
+    id,
+    title: seders.map((s) => s.en).join(" + "),
+    label: seders.map((s) => s.en).join(" + "),
+    items: seders.flatMap((s) => s.masechtot.map((m) => m.en)),
+  };
+}
+
 export const MATCH_VIEWS: MatchView[] = [
   {
     id: "sedarim",
@@ -26,4 +38,7 @@ export const MATCH_VIEWS: MatchView[] = [
     label: seder.en,
     items: seder.masechtot.map((m) => m.en),
   })),
+  combinedView("zeraim-moed", ["zeraim", "moed"]),
+  combinedView("nashim-nezikin", ["nashim", "nezikin"]),
+  combinedView("kodashim-taharot", ["kodashim", "taharot"]),
 ];

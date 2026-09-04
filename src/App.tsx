@@ -47,6 +47,7 @@ function SedarimSection() {
         tabs={MATCH_VIEWS.map((v) => ({ id: v.id, label: v.label }))}
         activeId={activeId}
         onSelect={setActiveId}
+        wrap
       />
     </>
   );
