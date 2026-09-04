@@ -19,6 +19,12 @@
   margin-top: 18px;
 }
 
+@media (max-width: 480px) {
+  .home-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .home-card {
   display: flex;
   flex-direction: column;

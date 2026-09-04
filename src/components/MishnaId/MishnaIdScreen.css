@@ -33,9 +33,10 @@
 
 .mishna-controls-row {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-end;
   justify-content: center;
-  gap: 28px;
+  gap: 14px 20px;
   margin-bottom: 12px;
 }
 

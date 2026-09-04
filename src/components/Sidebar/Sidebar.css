@@ -43,3 +43,38 @@
   opacity: 0.35;
   cursor: not-allowed;
 }
+
+/* Below phone width the left rail becomes a fixed bottom tab bar instead —
+   a permanent ~90px-wide side column left almost no room for content on a
+   narrow screen. */
+@media (max-width: 600px) {
+  .sidebar {
+    position: fixed;
+    inset: auto 0 0 0;
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: space-around;
+    gap: 2px;
+    padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+    overflow-x: auto;
+    overflow-y: visible;
+    z-index: 20;
+    box-shadow: 0 -4px 14px rgba(27, 51, 88, 0.2);
+  }
+
+  .nav-item {
+    width: auto;
+    flex: 1 1 0;
+    min-width: 44px;
+    padding: 5px 2px 4px;
+    gap: 2px;
+    font-size: 8.5px;
+    line-height: 1.05;
+  }
+
+  .nav-item__icon {
+    font-size: 16px;
+  }
+}
