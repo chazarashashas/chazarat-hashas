@@ -3,14 +3,18 @@ import { SEDARIM, type Masechet } from "../../data/shas";
 import { SEDER_TABS } from "../../data/sederTabs";
 import { TabBar } from "../TabBar/TabBar";
 import { hebrewNumeral } from "../../utils/hebrewNumeral";
+import { useLocalStorageState } from "../../utils/useLocalStorageState";
 import "./PerekNamesScreen.css";
 
 export function PerekNamesScreen() {
   const [sederTab, setSederTab] = useState("all");
   const [selectedSederId, setSelectedSederId] = useState<string>(SEDARIM[0].id);
   const [selectedMasechetEn, setSelectedMasechetEn] = useState<string>(SEDARIM[0].masechtot[0].en);
-  const [perekNotes, setPerekNotes] = useState<Record<string, string[]>>({});
-  const [masechetSentences, setMasechetSentences] = useState<Record<string, string>>({});
+  const [perekNotes, setPerekNotes] = useLocalStorageState<Record<string, string[]>>("perekNotes", {});
+  const [masechetSentences, setMasechetSentences] = useLocalStorageState<Record<string, string>>(
+    "masechetSentences",
+    {},
+  );
 
   const activeSeder = SEDARIM.find((s) => s.id === sederTab);
   const sentenceSeder = SEDARIM.find((s) => s.id === selectedSederId)!;

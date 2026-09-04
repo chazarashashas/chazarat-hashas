@@ -24,9 +24,9 @@ function shuffle<T>(arr: T[]): T[] {
 
 // Exponential ramp: starts slow, eases toward the floor without ever hitting
 // a hard cap early — a linear ramp stops feeling like it's still speeding up.
-const START_MS = 7500;
-const FLOOR_MS = 2600;
-const DECAY = 0.93;
+const START_MS = 9000;
+const FLOOR_MS = 3400;
+const DECAY = 0.94;
 function durationFor(score: number): number {
   return FLOOR_MS + (START_MS - FLOOR_MS) * Math.pow(DECAY, score);
 }

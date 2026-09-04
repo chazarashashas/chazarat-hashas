@@ -7,10 +7,14 @@ import "./MishnaIdScreen.css";
 
 type ScopeType = "masechta" | "seder" | "all";
 type Mode = "streak" | "quiz";
-/** How many levels this round asks for. Seder+Masechet is always the core
-    "you located it" goal; Perek is only ever offered as a bonus round on
-    top of that, never a requirement. */
-type Depth = "seder" | "masechet" | "perek";
+/** How many levels this round asks for, on top of the pool's own scope.
+    Seder+Masechet is always the core "you located it" goal — there's no
+    seder-only mode, since testing seder alone undercuts that. Perek is
+    only ever offered as a bonus round on top, never a requirement. When
+    the pool is already narrowed to one masechet, seder+masechet are given
+    away by that choice, so this setting is moot — perek is the only thing
+    left to test, and the UI doesn't ask. */
+type Depth = "masechet" | "perek";
 
 const QUIZ_LENGTH = 15;
 const MAX_TEXT_FONT_SIZE = 17;
@@ -59,7 +63,7 @@ function poolFor(scopeType: ScopeType, scopeValue: string): FlatMasechet[] {
   return ALL_MASECHTOT;
 }
 
-function newCard(scopeType: ScopeType, scopeValue: string, depth: Depth): Card {
+function newCard(scopeType: ScopeType, scopeValue: string): Card {
   const pool = poolFor(scopeType, scopeValue);
   const pick = pool[Math.floor(Math.random() * pool.length)];
   const perek = 1 + Math.floor(Math.random() * pick.masechet.perakim);
@@ -73,7 +77,7 @@ function newCard(scopeType: ScopeType, scopeValue: string, depth: Depth): Card {
     timedOut: false,
     failed: false,
     sederSkipped: scopeType === "seder" || scopeType === "masechta",
-    masechetSkipped: scopeType === "masechta" || depth === "seder",
+    masechetSkipped: scopeType === "masechta",
   };
 }
 
@@ -131,7 +135,7 @@ export function MishnaIdScreen() {
     sederTab === "all" ? (narrowTo ? "seder" : "all") : narrowTo ? "masechta" : "seder";
   const scopeValue = sederTab === "all" ? narrowTo : narrowTo || sederTab;
   const activeSeder = SEDARIM.find((s) => s.id === sederTab);
-  const [card, setCard] = useState<Card>(() => newCard("seder", ALL_MASECHTOT[0].seder.id, "masechet"));
+  const [card, setCard] = useState<Card>(() => newCard("seder", ALL_MASECHTOT[0].seder.id));
   const [content, setContent] = useState<MishnaContentState>({ status: "loading" });
   const [secondsLeft, setSecondsLeft] = useState(CARD_SECONDS);
   const [started, setStarted] = useState(false);
@@ -152,7 +156,12 @@ export function MishnaIdScreen() {
   // The core goal — you've located the mishnah's seder and masechet. Perek
   // is never required to reach this; it's an optional bonus round on top.
   const coreSolved = sederDone && masechetDone;
-  const bonusAvailable = depth === "perek" && coreSolved;
+  // Once the pool is narrowed to one masechet, seder+masechet are given
+  // away by that choice — perek is the only thing left to test, so treat
+  // it as the effective depth regardless of the Practice control (which
+  // is hidden in that case anyway).
+  const effectiveDepth: Depth = scopeType === "masechta" ? "perek" : depth;
+  const bonusAvailable = effectiveDepth === "perek" && coreSolved;
   const inPlay = started && !coreSolved && !card.timedOut && !card.failed && !quizFinished;
 
   useEffect(() => {
@@ -224,16 +233,16 @@ export function MishnaIdScreen() {
   }, [inPlay, paused]);
 
   /** Loads a fresh card without touching whether the session has been started. */
-  function prepareCard(nextScopeType = scopeType, nextScopeValue = scopeValue, nextDepth = depth) {
-    setCard(newCard(nextScopeType, nextScopeValue, nextDepth));
+  function prepareCard(nextScopeType = scopeType, nextScopeValue = scopeValue) {
+    setCard(newCard(nextScopeType, nextScopeValue));
     setContent({ status: "loading" });
     setSecondsLeft(CARD_SECONDS);
     setPaused(false);
   }
 
   /** Resets the whole session: back to the Start button, streak/quiz progress cleared. */
-  function prepareSession(nextScopeType = scopeType, nextScopeValue = scopeValue, nextDepth = depth) {
-    prepareCard(nextScopeType, nextScopeValue, nextDepth);
+  function prepareSession(nextScopeType = scopeType, nextScopeValue = scopeValue) {
+    prepareCard(nextScopeType, nextScopeValue);
     setStarted(false);
     setStreak(0);
     setQuizCardIndex(0);
@@ -263,7 +272,7 @@ export function MishnaIdScreen() {
 
   function handleDepthChange(next: Depth) {
     setDepth(next);
-    prepareSession(scopeType, scopeValue, next);
+    prepareSession();
   }
 
   function handleWrongGuess(key: string) {
@@ -346,7 +355,9 @@ export function MishnaIdScreen() {
         <p className="app-title">Chazarat Hashas</p>
         <h1 className="panel__title">Mishna Quiz</h1>
         <p className="panel__subtitle">
-          Read the mishnah and locate it. Seder and masechet are the goal — perek is bonus.
+          {scopeType === "masechta"
+            ? "Seder and masechet are given — name the perek."
+            : "Read the mishnah and locate it. Seder and masechet are the goal — perek is bonus."}
         </p>
 
         <div className="mishna-controls-row">
@@ -362,19 +373,20 @@ export function MishnaIdScreen() {
               onChange={handleModeChange}
             />
           </div>
-          <div className="mishna-control">
-            <p className="mishna-control__label">Practice</p>
-            <Switch
-              size="sm"
-              options={[
-                { value: "seder", label: "Seder" },
-                { value: "masechet", label: "Masechet" },
-                { value: "perek", label: "Perek" },
-              ]}
-              value={depth}
-              onChange={handleDepthChange}
-            />
-          </div>
+          {scopeType !== "masechta" && (
+            <div className="mishna-control">
+              <p className="mishna-control__label">Practice</p>
+              <Switch
+                size="sm"
+                options={[
+                  { value: "masechet", label: "Masechet" },
+                  { value: "perek", label: "Perek" },
+                ]}
+                value={depth}
+                onChange={handleDepthChange}
+              />
+            </div>
+          )}
           {sederTab === "all" ? (
             <div className="mishna-control">
               <p className="mishna-control__label">Pool</p>
@@ -544,7 +556,7 @@ export function MishnaIdScreen() {
               </>
             )}
 
-            {(coreSolved || card.timedOut || card.failed) && (
+            {started && !paused && (coreSolved || card.timedOut || card.failed) && (
               <button className="restart" onClick={handleAdvance}>
                 {mode === "quiz" && quizCardIndex + 1 >= QUIZ_LENGTH ? "Finish quiz" : "Next card"}
               </button>
@@ -552,13 +564,13 @@ export function MishnaIdScreen() {
           </>
         )}
 
-        {!quizFinished && (
+        {!quizFinished && started && (
           <div className="mishna-checks">
             <div className={"mishna-checks__c" + (card.guessedSeder ? " mishna-checks__c--done" : "")}>✓</div>
             <div className={"mishna-checks__c" + (card.guessedMasechet ? " mishna-checks__c--done" : "")}>
               ✓
             </div>
-            {depth === "perek" && (
+            {effectiveDepth === "perek" && (
               <div
                 className={
                   "mishna-checks__c mishna-checks__c--bonus" +
