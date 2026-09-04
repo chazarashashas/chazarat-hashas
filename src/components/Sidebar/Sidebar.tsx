@@ -15,6 +15,7 @@ const NAV_ITEMS: NavItem[] = [
   { id: "recall", icon: "✎", label: "Mishna Chazara", built: true },
   { id: "dash", icon: "↯", label: "Shas Dash", built: true },
   { id: "perek", icon: "❖", label: "My Mishna", built: true },
+  { id: "resources", icon: "⎙", label: "Resources", built: true },
 ];
 
 interface SidebarProps {

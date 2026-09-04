@@ -9,6 +9,7 @@ import { HomeScreen } from "./components/Home/HomeScreen";
 import { SederSortScreen } from "./components/SederSort/SederSortScreen";
 import { ShasDashScreen } from "./components/ShasDash/ShasDashScreen";
 import { RecallScreen } from "./components/Recall/RecallScreen";
+import { ResourcesScreen } from "./components/Resources/ResourcesScreen";
 import { shuffle } from "./utils/shuffle";
 import type { ViewState } from "./types/viewState";
 import "./App.css";
@@ -73,6 +74,8 @@ function App() {
             <SederSortScreen />
           ) : section === "dash" ? (
             <ShasDashScreen />
+          ) : section === "resources" ? (
+            <ResourcesScreen />
           ) : (
             <RecallScreen />
           )}

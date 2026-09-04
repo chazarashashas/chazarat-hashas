@@ -1,0 +1,3 @@
+
+# Binary assets — never touch line endings
+*.pdf -text -diff binary
