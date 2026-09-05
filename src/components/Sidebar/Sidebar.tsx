@@ -17,9 +17,9 @@ const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
     label: "My Mishna",
     items: [
       { id: "limmud", label: "Daily Limmud", built: true },
-      { id: "map", label: "Map of Shas", built: true },
+      { id: "map", label: "Explore Shas", built: true },
       { id: "perek", label: "Mishna Notes", built: true },
-      { id: "progress", label: "Progress", built: true },
+      { id: "progress", label: "Siyumim", built: true },
       { id: "chevrusa", label: "Chevrusa", built: true },
       { id: "login", label: "Log In", built: true },
     ],
@@ -45,7 +45,12 @@ interface SidebarProps {
 function NavButton({ item, active, onSelect }: { item: NavItem; active: boolean; onSelect: (id: string) => void }) {
   return (
     <button
-      className={"nav-item" + (active ? " nav-item--active" : "") + (item.built ? "" : " nav-item--disabled")}
+      className={
+        "nav-item" +
+        (active ? " nav-item--active" : "") +
+        (item.built ? "" : " nav-item--disabled") +
+        ` nav-item--${item.id}`
+      }
       disabled={!item.built}
       title={item.built ? undefined : "Coming soon"}
       onClick={() => onSelect(item.id)}
@@ -61,6 +66,9 @@ function NavButton({ item, active, onSelect }: { item: NavItem; active: boolean;
 export function Sidebar({ activeId, onSelect }: SidebarProps) {
   return (
     <nav className="sidebar">
+      <span className="sidebar__brand" aria-hidden="true">
+        ש
+      </span>
       <NavButton item={HOME_ITEM} active={activeId === HOME_ITEM.id} onSelect={onSelect} />
       {NAV_GROUPS.map((group) => (
         <div className="nav-group" key={group.label}>

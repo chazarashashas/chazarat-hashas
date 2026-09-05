@@ -26,7 +26,7 @@ const MY_MISHNA: Feature[] = [
   },
   {
     id: "map",
-    title: "Map of Shas",
+    title: "Explore Shas",
     desc: "Explore every seder, masechet, perek, and mishnah, with your progress along the way.",
     built: true,
   },
@@ -38,7 +38,7 @@ const MY_MISHNA: Feature[] = [
   },
   {
     id: "progress",
-    title: "Progress",
+    title: "Siyumim",
     desc: "Track your streak and how much of Shas you've learned so far.",
     built: true,
   },

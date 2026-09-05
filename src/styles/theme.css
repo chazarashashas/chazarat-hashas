@@ -1,19 +1,65 @@
 :root {
-  --bg: #dce6f2;
-  --surface: #f7ecc9;
-  --ink: #1b3358;
-  --ink-soft: #8a93a6;
-  --border: #e7e2d5;
+  /* Base palette */
+  --ink: #16233f;
+  --ink-2: #2f4470;
+  --paper: #f5f0e4;
+  --surface: #fbf8f1;
+  --surface-hi: #ffffff;
+  --track: #eee7d5;
+  --line: #e2dbc9;
+  --muted: #6b6350;
+  --faint: #a0987f;
+  --gold: #b8862b;
+  --good: #4f7a3f;
+  --bad: #8f3b2e;
+  --bad-bg: #f6e3df;
+  --bad-dot: #b8543f;
 
-  --brand: #1b3358;
-  --gold: #c99a2e;
-  --bad: #c0554e;
-  --good: #3c6e47;
+  /* Aliases kept so existing components (written against the old token
+     names) pick up the new palette without a file-by-file rewrite. */
+  --bg: var(--paper);
+  --border: var(--line);
+  --ink-soft: var(--muted);
+  --brand: var(--ink);
 
-  --font-heading: "Space Grotesk", sans-serif;
-  --font-body: "Manrope", sans-serif;
+  /* The six sedarim — color always means "which part of Shas". */
+  --seder-zeraim: #4f7a3f;
+  --seder-moed: #b8862b;
+  --seder-nashim: #8a4f6d;
+  --seder-nezikin: #b8543f;
+  --seder-kodashim: #2f4470;
+  --seder-taharot: #2f7a72;
+
+  /* Each screen owns one hue for its active nav item, accent rule, and
+     its own progress/answer accents. */
+  --hue-home: #2f4470;
+  --hue-limmud: #4f7a3f;
+  --hue-explore: #2f7a72;
+  --hue-notes: #8a4f6d;
+  --hue-siyumim: #b8862b;
+  --hue-chevrusa: #b8543f;
+  --hue-login: #2f4470;
+  --hue-sedarim: #4f7a3f;
+  --hue-quiz: #b8862b;
+  --hue-sort: #b8543f;
+  --hue-chazara: #8a4f6d;
+  --hue-dash: #2f4470;
+  --hue-resources: #2f7a72;
+
+  /* Radii vary by weight of content. */
+  --radius-hero: 22px;
+  --radius-card: 17px;
+  --radius-control: 12px;
+  --radius-pill: 999px;
+  --radius-page: 18px;
+
+  --shadow-hero: 0 12px 28px rgba(22, 35, 63, 0.18);
+  --shadow-hover: 0 8px 18px rgba(22, 35, 63, 0.1);
+
+  --font-heading: "Gabarito", sans-serif;
+  --font-body: "Assistant", sans-serif;
   --font-hebrew: "Frank Ruhl Libre", serif;
 
   --stage-width: 480px;
-  --sidebar-width: 92px;
+  --sidebar-width: 108px;
 }

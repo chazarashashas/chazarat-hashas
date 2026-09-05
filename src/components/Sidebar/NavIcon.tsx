@@ -1,32 +1,35 @@
+/** One set, one style: 24x24 viewBox, stroke-only monoline icons — no
+    fills, no emoji, no platform-dependent glyphs (see HANDOFF30 4b). */
 const PATHS: Record<string, string> = {
-  home: "M3 10L10 3l7 7M5 9v7h4v-4h2v4h4V9",
-  limmud: "M10 3.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM10 6.5v3.5l2.5 1.5",
-  map: "M3 3h6v6H3zM11 3h6v6h-6zM3 11h6v6H3zM11 11h6v6h-6z",
-  perek: "M5 3h10v14l-5-3-5 3V3z",
-  progress: "M10 3.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13z",
-  chevrusa: "M7.5 10a3.5 3.5 0 11-7 0 3.5 3.5 0 017 0zM16.5 10a3.5 3.5 0 11-7 0 3.5 3.5 0 017 0z",
-  login: "M7 7a3 3 0 116 0 3 3 0 01-6 0zM9.5 9.5L16 16M13 13l2-2M15 15l2-2",
-  sedarim: "M10 1.5l2.35 6 6.15.5-4.7 3.9 1.6 6.1L10 14.5l-5.4 3.5 1.6-6.1-4.7-3.9 6.15-.5z",
-  mishna: "M10 18s6-6.5 6-10.5A6 6 0 104 7.5C4 11.5 10 18 10 18z",
-  sort: "M4 6h12M7 10h6M9 14h2",
-  recall: "M4 16l1-4 9-9 3 3-9 9-4 1z",
-  dash: "M11 2L4 12h5l-1 6 8-11h-5z",
-  resources: "M6 7V3h8v4M4 7h12v6.5a1 1 0 01-1 1H5a1 1 0 01-1-1V7zM6 14v3h8v-3",
+  home: "M4 11.5L12 4l8 7.5M6 10.5V19h4.5v-5.5h3V19H18v-8.5",
+  limmud: "M12 4.5a7.5 7.5 0 100 15 7.5 7.5 0 000-15zM12 8v4.2l3 2",
+  map: "M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z",
+  perek: "M6 3h12v18l-6-4-6 4V3z",
+  progress:
+    "M8 4h8v4a4 4 0 01-4 4 4 4 0 01-4-4V4zM8 5H5a3 3 0 003 3M16 5h3a3 3 0 01-3 3M12 12v3M9 19h6M10 16h4v3h-4z",
+  chevrusa:
+    "M8 11a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM3.5 19c0-2.8 2-4.5 4.5-4.5s4.5 1.7 4.5 4.5M16 11a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM12.5 19c.3-2.2 1.8-3.8 3.9-3.8 2.1 0 3.6 1.6 3.9 3.8",
+  login: "M9 15a4 4 0 100-8 4 4 0 000 8zM12.5 12.5L20 20M16 16l2-2M18.5 18.5l2-2",
+  sedarim:
+    "M12 2l2.9 7.2 7.4.6-5.7 4.7 1.9 7.3L12 17.8l-6.5 4 1.9-7.3-5.7-4.7 7.4-.6z",
+  mishna:
+    "M12 21s7-7.8 7-12.5A7 7 0 105 8.5C5 13.2 12 21 12 21zM12 6.3a2.2 2.2 0 100 4.4 2.2 2.2 0 000-4.4z",
+  sort: "M4 7h3M13 7h7M9 5a2 2 0 100 4 2 2 0 000-4zM4 12h9M19 12h1M15 10a2 2 0 100 4 2 2 0 000-4zM4 17h5M15 17h5M11 15a2 2 0 100 4 2 2 0 000-4z",
+  recall: "M4.5 19.5l1.2-4.8L16.5 3.9l3.6 3.6L9.3 18.3l-4.8 1.2z",
+  dash: "M13 2L5 14h6l-1.5 8L19 10h-6z",
+  resources: "M7 8V4h10v4M5 8h14v7a1 1 0 01-1 1H6a1 1 0 01-1-1V8zM7 16v4h10v-4",
 };
-
-const FILLED = new Set(["perek", "progress", "sedarim", "mishna", "recall", "dash"]);
 
 export function NavIcon({ id }: { id: string }) {
   const d = PATHS[id];
   if (!d) return null;
-  const filled = FILLED.has(id);
   return (
-    <svg viewBox="0 0 20 20" width="19" height="19" aria-hidden="true">
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
       <path
         d={d}
-        fill={filled ? "currentColor" : "none"}
+        fill="none"
         stroke="currentColor"
-        strokeWidth={filled ? 1 : 1.6}
+        strokeWidth={1.6}
         strokeLinecap="round"
         strokeLinejoin="round"
       />

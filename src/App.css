@@ -21,11 +21,11 @@
 }
 
 .main__content--wide {
-  max-width: 720px;
+  max-width: 760px;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 760px) {
   .main {
-    padding: 20px 12px calc(84px + env(safe-area-inset-bottom));
+    padding: 18px 15px calc(92px + env(safe-area-inset-bottom));
   }
 }

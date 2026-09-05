@@ -2,13 +2,29 @@
   width: var(--sidebar-width);
   flex-shrink: 0;
   height: 100vh;
-  background: var(--brand);
+  background: var(--ink);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  padding-top: 22px;
+  padding-top: 18px;
   overflow-y: auto;
+}
+
+.sidebar__brand {
+  width: 34px;
+  height: 34px;
+  margin-bottom: 14px;
+  border-radius: 10px;
+  background: var(--gold);
+  color: var(--ink);
+  font-family: var(--font-hebrew);
+  font-size: 18px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 /* Fixed total height, not just a fixed icon box — some platforms give
@@ -18,8 +34,8 @@
    constrained. A hard height + overflow:hidden guarantees the same
    compact size everywhere. */
 .nav-item {
-  width: 84px;
-  height: 50px;
+  width: 96px;
+  height: 52px;
   padding: 6px 2px;
   border-radius: 14px;
   background: transparent;
@@ -38,6 +54,9 @@
   line-height: 1;
   overflow: hidden;
   flex-shrink: 0;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
 }
 
 .nav-item__icon {
@@ -65,9 +84,43 @@
   max-width: 100%;
 }
 
+/* Active fill takes that screen's own section hue (HANDOFF30 §3/§6) —
+   navy items get a lighter navy so they still read against the rail. */
 .nav-item--active {
-  background: var(--gold);
-  color: var(--brand);
+  background: var(--hue-home);
+  color: #fff;
+}
+
+.nav-item--home.nav-item--active,
+.nav-item--login.nav-item--active,
+.nav-item--dash.nav-item--active {
+  background: var(--ink-2);
+}
+
+.nav-item--limmud.nav-item--active,
+.nav-item--sedarim.nav-item--active {
+  background: var(--hue-limmud);
+}
+
+.nav-item--map.nav-item--active,
+.nav-item--resources.nav-item--active {
+  background: var(--hue-explore);
+}
+
+.nav-item--perek.nav-item--active,
+.nav-item--recall.nav-item--active {
+  background: var(--hue-notes);
+}
+
+.nav-item--progress.nav-item--active,
+.nav-item--mishna.nav-item--active {
+  background: var(--hue-siyumim);
+  color: var(--ink);
+}
+
+.nav-item--chevrusa.nav-item--active,
+.nav-item--sort.nav-item--active {
+  background: var(--hue-chevrusa);
 }
 
 .nav-item:not(.nav-item--active):not(.nav-item--disabled):hover {
@@ -97,18 +150,16 @@
 
 .nav-group__label {
   font-family: var(--font-heading);
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
   line-height: 1;
-  color: rgba(255, 255, 255, 0.4);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  color: rgba(255, 255, 255, 0.45);
 }
 
 /* Below phone width the left rail becomes a fixed bottom tab bar instead —
    a permanent ~90px-wide side column left almost no room for content on a
    narrow screen. */
-@media (max-width: 600px) {
+@media (max-width: 760px) {
   .sidebar {
     position: fixed;
     inset: auto 0 0 0;
@@ -116,22 +167,27 @@
     height: auto;
     flex-direction: row;
     align-items: stretch;
-    justify-content: space-around;
+    justify-content: flex-start;
     gap: 2px;
     padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
     overflow-x: auto;
     overflow-y: visible;
     z-index: 20;
-    box-shadow: 0 -4px 14px rgba(27, 51, 88, 0.2);
+    box-shadow: 0 -4px 14px rgba(22, 35, 63, 0.2);
+  }
+
+  .sidebar__brand {
+    display: none;
   }
 
   .nav-item {
     width: auto;
-    flex: 1 1 0;
-    min-width: 44px;
+    flex: 0 0 auto;
+    min-width: 78px;
+    min-height: 44px;
     padding: 5px 2px 4px;
     gap: 2px;
-    font-size: 8.5px;
+    font-size: 9.5px;
     line-height: 1.05;
   }
 

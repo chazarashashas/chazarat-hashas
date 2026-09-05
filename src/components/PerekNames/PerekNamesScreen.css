@@ -230,7 +230,7 @@
    reads correctly in a vertical list), detail column takes the full width.
    Wrap rather than horizontal-scroll — a strip you have to scroll to see
    the rest of is worse than a couple of short extra rows. */
-@media (max-width: 600px) {
+@media (max-width: 760px) {
   .perek-body {
     flex-direction: column;
     gap: 10px;
