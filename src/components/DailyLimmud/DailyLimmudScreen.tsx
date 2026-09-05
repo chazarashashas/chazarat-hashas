@@ -5,6 +5,7 @@ import { fetchMishna } from "../../utils/sefaria";
 import { usePerekNotes } from "../../utils/usePerekNotes";
 import { useLearningProgress, type Pace } from "../../utils/useLearningProgress";
 import { useAuth } from "../../utils/useAuth";
+import { recordGroupActivityForMasechet } from "../../utils/useChevrusa";
 import { PerekNoteModal } from "../PerekNoteModal/PerekNoteModal";
 import { hebrewNumeral } from "../../utils/hebrewNumeral";
 import "./DailyLimmudScreen.css";
@@ -29,7 +30,7 @@ interface DailyLimmudScreenProps {
 }
 
 export function DailyLimmudScreen({ onOpenNotes }: DailyLimmudScreenProps) {
-  const { firstName, username } = useAuth();
+  const { firstName, username, session } = useAuth();
   const progress = useLearningProgress();
   const { todaysItems, finishedShas, pace, setPace, markTodayLearned, addConcept, streak } = progress;
   const { getPerekNote, setPerekNote } = usePerekNotes();
@@ -83,6 +84,10 @@ export function DailyLimmudScreen({ onOpenNotes }: DailyLimmudScreenProps) {
     markTodayLearned();
     setJustMarked(true);
     window.setTimeout(() => setJustMarked(false), 2200);
+    const masechetEn = todaysItems[0]?.masechetEn;
+    if (session && masechetEn) {
+      recordGroupActivityForMasechet(session.user.id, masechetEn);
+    }
   }
 
   function handlePaceChange(next: Pace) {

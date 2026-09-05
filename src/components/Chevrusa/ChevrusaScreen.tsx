@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { SEDARIM } from "../../data/shas";
+import { useAuth } from "../../utils/useAuth";
+import { useChevrusa, type Group, type PendingInvite } from "../../utils/useChevrusa";
 import "./ChevrusaScreen.css";
 
 type Mode = "chevrusa" | "chabura";
@@ -27,27 +29,56 @@ function MasechetSelect({
   );
 }
 
+function memberLabel(m: { firstName: string | null; username: string | null }): string {
+  return m.firstName ?? m.username ?? "Someone";
+}
+
+function todayStr(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function GroupCard({ group, meId }: { group: Group; meId: string }) {
+  const today = todayStr();
+  return (
+    <div className="group-card">
+      <div className="group-card__head">
+        <span className="group-card__title">{group.name || group.masechetEn}</span>
+        {group.name && <span className="group-card__masechet">{group.masechetEn}</span>}
+      </div>
+      <div className="group-card__members">
+        {group.members.map((m) => (
+          <span key={m.userId} className="group-member">
+            <span className={"group-member__dot" + (m.lastLearnedDate === today ? " group-member__dot--done" : "")} />
+            {m.userId === meId ? "You" : memberLabel(m)}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /**
- * Chevrusa/chabura both need one person's data to reach several others'
- * — an invite sent, accepted, and a "they learned today" signal delivered
- * — which is impossible on localStorage alone (it never leaves the one
- * browser it's in). This screen is the real, designed UI for both, built
- * ahead of the backend the same way Log In was: visible and inert rather
- * than hidden, with the blocker stated plainly.
- *
- * Each pairing/group carries its own masechet — scoped to one masechet at
- * a time, so the same person can be in several chevrusot or chaburot at
- * once, each on something different.
+ * Real chevrusa/chabura pairing, backed by Supabase (groups,
+ * group_members, group_invites, group_activity — see useChevrusa). An
+ * invite is stored by email and shows up under "Pending invites" once
+ * that person logs in with a matching email. "Learned today" is a
+ * green dot only — no streaks compared, no shared notes, per the
+ * original design.
  */
 export function ChevrusaScreen() {
-  const [mode, setMode] = useState<Mode>("chevrusa");
+  const { session } = useAuth();
+  const { groups, pendingInvites, createGroup, acceptInvite, declineInvite } = useChevrusa();
 
+  const [mode, setMode] = useState<Mode>("chevrusa");
   const [inviteValue, setInviteValue] = useState("");
   const [masechetValue, setMasechetValue] = useState("");
 
   const [chaburaName, setChaburaName] = useState("");
   const [chaburaMasechet, setChaburaMasechet] = useState("");
   const [memberEmails, setMemberEmails] = useState<string[]>([""]);
+
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   function updateMember(index: number, value: string) {
     setMemberEmails((prev) => prev.map((v, i) => (i === index ? value : v)));
@@ -61,6 +92,66 @@ export function ChevrusaScreen() {
     setMemberEmails((prev) => (prev.length > 1 ? prev.filter((_, i) => i !== index) : prev));
   }
 
+  async function handleSendInvite() {
+    setError(null);
+    setBusy(true);
+    const result = await createGroup(masechetValue, false, null, [inviteValue]);
+    setBusy(false);
+    if (result) {
+      setError(result);
+    } else {
+      setInviteValue("");
+      setMasechetValue("");
+    }
+  }
+
+  async function handleStartChabura() {
+    setError(null);
+    setBusy(true);
+    const result = await createGroup(chaburaMasechet, true, chaburaName, memberEmails);
+    setBusy(false);
+    if (result) {
+      setError(result);
+    } else {
+      setChaburaName("");
+      setChaburaMasechet("");
+      setMemberEmails([""]);
+    }
+  }
+
+  async function handleAccept(invite: PendingInvite) {
+    setError(null);
+    const result = await acceptInvite(invite);
+    if (result) setError(result);
+  }
+
+  async function handleDecline(invite: PendingInvite) {
+    setError(null);
+    const result = await declineInvite(invite);
+    if (result) setError(result);
+  }
+
+  if (!session) {
+    return (
+      <div className="stage">
+        <div className="panel">
+          <p className="app-title">Chazarat Hashas</p>
+          <h1 className="panel__title">Chevrusa</h1>
+          <p className="panel__subtitle">
+            Pair one-on-one, or start a chabura with a whole group — one masechet at a time.
+          </p>
+          <div className="note-banner login-notice">
+            Log in first — chevrusa pairing is tied to your account, so an invite can reach someone
+            else's.
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const chevrusot = groups.filter((g) => !g.isChabura);
+  const chaburot = groups.filter((g) => g.isChabura);
+
   return (
     <div className="stage">
       <div className="panel">
@@ -72,10 +163,11 @@ export function ChevrusaScreen() {
           streaks compared, no ranking, just "they showed up."
         </p>
 
-        <div className="note-banner login-notice">
-          Both need real accounts first — an invite has to reach someone else's account, which
-          localStorage can't do. Under construction, same as Log In.
-        </div>
+        {error && (
+          <p className="login-error" dir="ltr">
+            {error}
+          </p>
+        )}
 
         <div className="pill-row">
           <button
@@ -109,21 +201,23 @@ export function ChevrusaScreen() {
               <MasechetSelect value={masechetValue} onChange={setMasechetValue} />
             </label>
 
-            <button className="restart" disabled title="Accounts aren't connected yet">
-              Send invite
+            <button
+              className="restart"
+              disabled={busy || !inviteValue || !masechetValue}
+              onClick={handleSendInvite}
+            >
+              {busy ? "Sending…" : "Send invite"}
             </button>
 
             <div className="chevrusa-section">
-              <p className="chevrusa-section__label">Pending invites</p>
-              <p className="chevrusa-empty">No pending invites.</p>
-            </div>
-
-            <div className="chevrusa-section">
               <p className="chevrusa-section__label">Your chevrusot</p>
-              <p className="chevrusa-empty">
-                Not paired with anyone yet. Each pairing you make will show its own masechet here —
-                you can be in several at once, each on something different.
-              </p>
+              {chevrusot.length === 0 ? (
+                <p className="chevrusa-empty">
+                  Not paired with anyone yet. Each pairing you make will show its own masechet here.
+                </p>
+              ) : (
+                chevrusot.map((g) => <GroupCard key={g.id} group={g} meId={session.user.id} />)
+              )}
             </div>
           </>
         ) : (
@@ -169,24 +263,48 @@ export function ChevrusaScreen() {
               </button>
             </div>
 
-            <button className="restart" disabled title="Accounts aren't connected yet">
-              Start chabura
+            <button
+              className="restart"
+              disabled={busy || !chaburaName || !chaburaMasechet}
+              onClick={handleStartChabura}
+            >
+              {busy ? "Creating…" : "Start chabura"}
             </button>
 
             <div className="chevrusa-section">
-              <p className="chevrusa-section__label">Pending chabura invites</p>
-              <p className="chevrusa-empty">No pending invites.</p>
-            </div>
-
-            <div className="chevrusa-section">
               <p className="chevrusa-section__label">Your chaburot</p>
-              <p className="chevrusa-empty">
-                Not in any chabura yet. Each group you start or join will show here, with its own
-                masechet and member list.
-              </p>
+              {chaburot.length === 0 ? (
+                <p className="chevrusa-empty">
+                  Not in any chabura yet. Each group you start or join will show here, with its own
+                  masechet and member list.
+                </p>
+              ) : (
+                chaburot.map((g) => <GroupCard key={g.id} group={g} meId={session.user.id} />)
+              )}
             </div>
           </>
         )}
+
+        <div className="chevrusa-section">
+          <p className="chevrusa-section__label">Pending invites</p>
+          {pendingInvites.length === 0 ? (
+            <p className="chevrusa-empty">No pending invites.</p>
+          ) : (
+            pendingInvites.map((inv) => (
+              <div key={inv.id} className="invite-row">
+                <span className="invite-row__text">
+                  {inv.isChabura ? `Chabura "${inv.groupName}"` : "Chevrusa"} — {inv.masechetEn}
+                </span>
+                <button className="invite-row__accept" onClick={() => handleAccept(inv)}>
+                  Accept
+                </button>
+                <button className="invite-row__decline" onClick={() => handleDecline(inv)}>
+                  Decline
+                </button>
+              </div>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );
