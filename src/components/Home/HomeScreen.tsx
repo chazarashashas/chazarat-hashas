@@ -101,7 +101,7 @@ function FeatureGrid({ features, onNavigate }: { features: Feature[]; onNavigate
       {features.map((f) => (
         <button
           key={f.id}
-          className={"home-card" + (f.built ? "" : " home-card--disabled")}
+          className={`home-card home-card--${f.id}` + (f.built ? "" : " home-card--disabled")}
           disabled={!f.built}
           onClick={() => onNavigate(f.id)}
         >
@@ -179,7 +179,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
         <h2 className="home-section-title">My Mishna</h2>
         <FeatureGrid features={myMishnaWithStatus} onNavigate={onNavigate} />
 
-        <h2 className="home-section-title">Learning Tools</h2>
+        <h2 className="home-section-title">Practice</h2>
         <FeatureGrid features={LEARNING_TOOLS} onNavigate={onNavigate} />
       </div>
 

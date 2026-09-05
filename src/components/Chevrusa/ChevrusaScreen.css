@@ -54,11 +54,9 @@
 
 .chevrusa-section__label {
   font-family: var(--font-heading);
-  font-size: 10.5px;
+  font-size: 15px;
   font-weight: 700;
-  color: var(--ink-soft);
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
+  color: var(--ink);
   margin: 0 0 8px;
 }
 
@@ -153,13 +151,11 @@
 .group-card__class-badge {
   margin-left: auto;
   background: var(--gold);
-  color: var(--brand);
+  color: var(--ink);
   font-family: var(--font-heading);
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   padding: 2px 8px;
 }
 

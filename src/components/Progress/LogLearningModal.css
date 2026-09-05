@@ -35,13 +35,11 @@
 
 .log-modal__field span {
   display: block;
-  font-family: var(--font-heading);
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--ink-soft);
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  margin-bottom: 4px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  margin-bottom: 5px;
 }
 
 .log-modal__field select,

@@ -3,6 +3,16 @@
   width: 100%;
 }
 
+.home-panel .app-title {
+  display: block;
+  margin: 0 0 6px;
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--faint);
+  text-align: center;
+}
+
 .home-title {
   margin: 0 0 4px;
   font-family: var(--font-hebrew);
@@ -97,30 +107,28 @@
 }
 
 .home-section-title {
-  margin: 22px 0 4px;
+  margin: 26px 0 4px;
   font-family: var(--font-heading);
-  font-size: 12px;
+  font-size: 19px;
   font-weight: 700;
-  color: var(--ink-soft);
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
+  color: var(--ink);
   text-align: left;
 }
 
 .home-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
   margin-top: 10px;
 }
 
 .home-grid:first-of-type {
-  margin-top: 18px;
+  margin-top: 12px;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 640px) {
   .home-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -130,17 +138,59 @@
   align-items: flex-start;
   gap: 4px;
   text-align: left;
-  background: #fffbf0;
-  border: 1.5px solid var(--border);
-  border-radius: 12px;
-  padding: 12px 12px 10px;
+  background: var(--surface);
+  border: none;
+  border-top: 3px solid var(--card-hue, var(--line));
+  border-radius: var(--radius-card);
+  padding: 14px 13px 12px;
   cursor: pointer;
   position: relative;
   font-family: var(--font-body);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .home-card:hover {
-  border-color: var(--brand);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.home-card--limmud {
+  --card-hue: var(--hue-limmud);
+}
+.home-card--map {
+  --card-hue: var(--hue-explore);
+}
+.home-card--perek {
+  --card-hue: var(--hue-notes);
+}
+.home-card--progress {
+  --card-hue: var(--hue-siyumim);
+}
+.home-card--chevrusa {
+  --card-hue: var(--hue-chevrusa);
+}
+.home-card--login {
+  --card-hue: var(--hue-login);
+}
+.home-card--sedarim {
+  --card-hue: var(--hue-sedarim);
+}
+.home-card--mishna {
+  --card-hue: var(--hue-quiz);
+}
+.home-card--sort {
+  --card-hue: var(--hue-sort);
+}
+.home-card--recall {
+  --card-hue: var(--hue-chazara);
+}
+.home-card--dash {
+  --card-hue: var(--hue-dash);
+}
+.home-card--resources {
+  --card-hue: var(--hue-resources);
 }
 
 .home-card--disabled {
@@ -149,13 +199,14 @@
 }
 
 .home-card--disabled:hover {
-  border-color: var(--border);
+  transform: none;
+  box-shadow: none;
 }
 
 .home-card__icon {
   display: flex;
   height: 22px;
-  color: var(--gold);
+  color: var(--card-hue, var(--gold));
 }
 
 .home-card__icon svg {
@@ -193,9 +244,7 @@
   position: absolute;
   top: 10px;
   right: 10px;
-  font-size: 9px;
+  font-size: 9.5px;
   font-weight: 700;
   color: var(--gold);
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
 }

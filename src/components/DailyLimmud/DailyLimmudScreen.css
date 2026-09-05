@@ -162,11 +162,10 @@
 }
 
 .limmud-notes__label {
-  font-size: 10.5px;
+  font-family: var(--font-heading);
+  font-size: 15px;
   font-weight: 700;
-  color: var(--ink-soft);
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
+  color: var(--ink);
   margin: 0 0 8px;
 }
 

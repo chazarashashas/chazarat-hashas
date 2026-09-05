@@ -164,11 +164,9 @@
 .perek-detail__label {
   margin: 4px 0 12px;
   font-family: var(--font-heading);
-  font-size: 11px;
+  font-size: 15px;
   font-weight: 700;
-  color: var(--ink-soft);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  color: var(--ink);
 }
 
 .perek-row {
