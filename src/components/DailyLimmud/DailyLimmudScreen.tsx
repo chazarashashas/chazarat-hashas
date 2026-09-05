@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { SEDARIM } from "../../data/shas";
-import { getPerekName } from "../../data/perekInfo";
+import { getPerekName, getMishnayotCount } from "../../data/perekInfo";
 import { fetchMishna } from "../../utils/sefaria";
 import { usePerekNotes } from "../../utils/usePerekNotes";
 import { useLearningProgress, type Pace } from "../../utils/useLearningProgress";
@@ -38,6 +38,33 @@ function findPerakim(masechetEn: string): number {
   return ALL_MASECHTOT.find((m) => m.en === masechetEn)?.perakim ?? 1;
 }
 
+/** Builds the mishnah range for a masechet context at a given pace,
+    starting from `start` — same idea as the global sequential range,
+    but scoped to one masechet and using that group's own agreed pace
+    (chosen once when the chevrusa/chabura was created) rather than a
+    hardcoded single mishnah, so switching context in Daily Limmud
+    "automatically" reflects however that group decided to pace itself. */
+function buildMasechetRange(masechetEn: string, start: MishnaItem, pace: Pace, totalPerakim: number): MishnaItem[] {
+  if (start.perek > totalPerakim) return [];
+  const items: MishnaItem[] = [{ masechetEn, perek: start.perek, mishnah: start.mishnah }];
+  if (pace === "1") return items;
+
+  if (pace === "2") {
+    const count = getMishnayotCount(masechetEn, start.perek);
+    const next =
+      start.mishnah < count
+        ? { perek: start.perek, mishnah: start.mishnah + 1 }
+        : { perek: start.perek + 1, mishnah: 1 };
+    if (next.perek <= totalPerakim) items.push({ masechetEn, ...next });
+    return items;
+  }
+
+  // pace === "perek": the rest of this perek
+  const count = getMishnayotCount(masechetEn, start.perek);
+  for (let mi = start.mishnah + 1; mi <= count; mi++) items.push({ masechetEn, perek: start.perek, mishnah: mi });
+  return items;
+}
+
 interface DailyLimmudScreenProps {
   onOpenNotes?: () => void;
 }
@@ -53,17 +80,28 @@ export function DailyLimmudScreen({ onOpenNotes }: DailyLimmudScreenProps) {
   // grouped by masechet (not by group), since your real progress
   // through a masechet is one fact even if two groups happen to share
   // it. Only offered once logged in, since groups require an account.
-  const groupContexts: { masechetEn: string; label: string }[] = [];
+  // Named by who you're learning it with, so it reads like "Chevrusa
+  // with Dovid" rather than an anonymous masechet name.
+  const groupContexts: { masechetEn: string; label: string; pace: Pace }[] = [];
   {
-    const byMasechet = new Map<string, string[]>();
+    const byMasechet = new Map<string, { descriptor: string; pace: Pace }[]>();
     for (const g of groups) {
-      const label = g.name?.trim() || (g.isChabura ? "Chabura" : "Chevrusa");
-      byMasechet.set(g.masechetEn, [...(byMasechet.get(g.masechetEn) ?? []), label]);
+      let descriptor: string;
+      if (!g.isChabura) {
+        const partner = g.members.find((m) => m.userId !== session?.user.id);
+        const partnerName = partner ? (partner.firstName ?? partner.username ?? null) : null;
+        descriptor = partnerName ? `Chevrusa with ${partnerName}` : "Chevrusa";
+      } else {
+        descriptor = g.name?.trim() || (g.isClass ? "Class" : "Chabura");
+      }
+      byMasechet.set(g.masechetEn, [...(byMasechet.get(g.masechetEn) ?? []), { descriptor, pace: g.pace }]);
     }
-    for (const [masechetEn, labels] of byMasechet) {
+    for (const [masechetEn, entries] of byMasechet) {
       groupContexts.push({
         masechetEn,
-        label: labels.length > 1 ? `${masechetEn} (${labels.length} groups)` : `${masechetEn} — ${labels[0]}`,
+        label:
+          entries.length > 1 ? `${masechetEn} (${entries.length} groups)` : `${entries[0].descriptor} — ${masechetEn}`,
+        pace: entries[0].pace,
       });
     }
   }
@@ -80,12 +118,18 @@ export function DailyLimmudScreen({ onOpenNotes }: DailyLimmudScreenProps) {
 
   const isSelf = activeContext === "self";
   const groupFinished = !isSelf && progress.getMasechetPosition(activeContext).perek > findPerakim(activeContext);
+  const groupPace = groupContexts.find((g) => g.masechetEn === activeContext)?.pace ?? "1";
 
   const items: MishnaItem[] = isSelf
     ? progress.todaysItems
     : groupFinished
       ? []
-      : [{ masechetEn: activeContext, ...progress.getMasechetPosition(activeContext) }];
+      : buildMasechetRange(
+          activeContext,
+          { masechetEn: activeContext, ...progress.getMasechetPosition(activeContext) },
+          groupPace,
+          findPerakim(activeContext),
+        );
 
   const finished = isSelf ? progress.finishedShas : groupFinished;
 
@@ -133,11 +177,11 @@ export function DailyLimmudScreen({ onOpenNotes }: DailyLimmudScreenProps) {
       const masechetEn = items[0]?.masechetEn;
       if (session && masechetEn) recordGroupActivityForMasechet(session.user.id, masechetEn);
     } else {
-      const item = items[0];
-      if (item) {
+      for (const item of items) {
         progress.markMasechetMishnaLearned(item.masechetEn, item.perek, item.mishnah);
-        if (session) recordGroupActivityForMasechet(session.user.id, item.masechetEn);
       }
+      const masechetEn = items[0]?.masechetEn;
+      if (session && masechetEn) recordGroupActivityForMasechet(session.user.id, masechetEn);
     }
     setJustMarked(true);
     window.setTimeout(() => setJustMarked(false), 2200);
@@ -230,7 +274,7 @@ export function DailyLimmudScreen({ onOpenNotes }: DailyLimmudScreenProps) {
           <div className="note-banner note-banner--good limmud-finished">
             {isSelf
               ? "You've reached the end of Shas in Daily Limmud! Restart from the beginning any time, or switch pace above."
-              : `You've finished ${activeContext}! Nothing left to learn for this chevrusa/chabura.`}
+              : `You've finished ${activeContext}! Nothing left to learn for ${activeLabel ?? "this chevrusa/chabura"}.`}
           </div>
         ) : (
           <div className="limmud-body">

@@ -1,12 +1,16 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "./supabase";
 import { useAuth } from "./useAuth";
+import type { Pace } from "./useLearningProgress";
+
+export type GroupRole = "member" | "teacher";
 
 export interface GroupMember {
   userId: string;
   username: string | null;
   firstName: string | null;
   lastLearnedDate: string | null;
+  role: GroupRole;
 }
 
 export interface Group {
@@ -14,6 +18,15 @@ export interface Group {
   name: string | null;
   masechetEn: string;
   isChabura: boolean;
+  /** A teacher-led chabura: visibility is restricted (see GroupCard) so
+      students see only themselves and the teacher, never each other —
+      everything else about a class works exactly like a regular
+      chabura. Always false for a chevrusa. */
+  isClass: boolean;
+  /** The agreed pace this group learns its masechet at — set once when
+      the group is created, so everyone in it (and Daily Limmud's group
+      context) stays consistent without re-choosing it each time. */
+  pace: Pace;
   members: GroupMember[];
 }
 
@@ -98,8 +111,8 @@ export function useChevrusa() {
 
     if (groupIds.length > 0) {
       const [{ data: groupsData }, { data: membersData }, { data: activityData }] = await Promise.all([
-        supabase.from("groups").select("id, name, masechet_en, is_chabura").in("id", groupIds),
-        supabase.from("group_members").select("group_id, user_id").in("group_id", groupIds),
+        supabase.from("groups").select("id, name, masechet_en, is_chabura, is_class, pace").in("id", groupIds),
+        supabase.from("group_members").select("group_id, user_id, role").in("group_id", groupIds),
         supabase.from("group_activity").select("group_id, user_id, last_learned_date").in("group_id", groupIds),
       ]);
 
@@ -118,6 +131,8 @@ export function useChevrusa() {
         name: g.name,
         masechetEn: g.masechet_en,
         isChabura: g.is_chabura,
+        isClass: g.is_class,
+        pace: (g.pace as Pace) ?? "1",
         members: (membersData ?? [])
           .filter((m) => m.group_id === g.id)
           .map((m) => {
@@ -127,6 +142,7 @@ export function useChevrusa() {
               username: profile?.username ?? null,
               firstName: profile?.first_name ?? null,
               lastLearnedDate: activityByKey.get(`${g.id}:${m.user_id}`) ?? null,
+              role: (m.role as GroupRole) ?? "member",
             };
           }),
       }));
@@ -204,6 +220,8 @@ export function useChevrusa() {
     isChabura: boolean,
     name: string | null,
     inviteEmails: string[],
+    pace: Pace = "1",
+    isClass = false,
   ): Promise<string | null> {
     if (!supabase || !session) return "Accounts aren't connected yet.";
 
@@ -215,14 +233,21 @@ export function useChevrusa() {
 
     const { data: group, error: groupError } = await supabase
       .from("groups")
-      .insert({ masechet_en: masechetEn, is_chabura: isChabura, name, created_by: session.user.id })
+      .insert({
+        masechet_en: masechetEn,
+        is_chabura: isChabura,
+        is_class: isClass,
+        pace,
+        name,
+        created_by: session.user.id,
+      })
       .select("id")
       .single();
     if (groupError || !group) return groupError ? friendlyError(groupError.message) : "Couldn't create the group.";
 
     const { error: memberError } = await supabase
       .from("group_members")
-      .insert({ group_id: group.id, user_id: session.user.id });
+      .insert({ group_id: group.id, user_id: session.user.id, role: isClass ? "teacher" : "member" });
     if (memberError) return friendlyError(memberError.message);
 
     const myEmail = session.user.email?.toLowerCase();

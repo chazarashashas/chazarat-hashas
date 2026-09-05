@@ -2,9 +2,34 @@ import { useState } from "react";
 import { SEDARIM } from "../../data/shas";
 import { useAuth } from "../../utils/useAuth";
 import { useChevrusa, type Group, type PendingInvite, type SentInvite } from "../../utils/useChevrusa";
+import type { Pace } from "../../utils/useLearningProgress";
 import "./ChevrusaScreen.css";
 
 type Mode = "chevrusa" | "chabura";
+type ChaburaKind = "friends" | "class";
+
+const PACE_OPTIONS: { value: Pace; label: string }[] = [
+  { value: "1", label: "1 Mishnah/day" },
+  { value: "2", label: "2 Mishnayot/day" },
+  { value: "perek", label: "1 Perek/day" },
+];
+
+function PaceSelect({ value, onChange }: { value: Pace; onChange: (value: Pace) => void }) {
+  return (
+    <div className="pill-row">
+      {PACE_OPTIONS.map((opt) => (
+        <button
+          key={opt.value}
+          type="button"
+          className={"pill" + (value === opt.value ? " pill--active" : "")}
+          onClick={() => onChange(opt.value)}
+        >
+          {opt.label}
+        </button>
+      ))}
+    </div>
+  );
+}
 
 function MasechetSelect({
   value,
@@ -72,18 +97,24 @@ function GroupCard({
       <div className="group-card__head">
         <span className="group-card__title">{group.name || group.masechetEn}</span>
         {group.name && <span className="group-card__masechet">{group.masechetEn}</span>}
+        {group.isClass && <span className="group-card__class-badge">Class</span>}
       </div>
       <div className="group-card__members">
         {group.members.map((m) => (
           <span key={m.userId} className="group-member">
             <span className={"group-member__dot" + (m.lastLearnedDate === today ? " group-member__dot--done" : "")} />
             {m.userId === meId ? "You" : memberLabel(m)}
+            {m.role === "teacher" && <span className="group-member__role"> (Rebbe)</span>}
           </span>
         ))}
       </div>
+      {group.isClass && group.members.some((m) => m.userId === meId && m.role === "member") && (
+        <p className="group-card__class-note">Only you and the Rebbe can see your progress here.</p>
+      )}
 
       <div className="group-card__actions">
         {group.isChabura &&
+          (!group.isClass || group.members.some((m) => m.userId === meId && m.role === "teacher")) &&
           (addOpen ? (
             <div className="group-card__add-row">
               <input
@@ -146,10 +177,13 @@ export function ChevrusaScreen({ onOpenLogin }: ChevrusaScreenProps) {
   const [mode, setMode] = useState<Mode>("chevrusa");
   const [inviteValue, setInviteValue] = useState("");
   const [masechetValue, setMasechetValue] = useState("");
+  const [invitePace, setInvitePace] = useState<Pace>("1");
 
+  const [chaburaKind, setChaburaKind] = useState<ChaburaKind>("friends");
   const [chaburaName, setChaburaName] = useState("");
   const [chaburaMasechet, setChaburaMasechet] = useState("");
   const [memberEmails, setMemberEmails] = useState<string[]>([""]);
+  const [chaburaPace, setChaburaPace] = useState<Pace>("1");
 
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -169,20 +203,28 @@ export function ChevrusaScreen({ onOpenLogin }: ChevrusaScreenProps) {
   async function handleSendInvite() {
     setError(null);
     setBusy(true);
-    const result = await createGroup(masechetValue, false, null, [inviteValue]);
+    const result = await createGroup(masechetValue, false, null, [inviteValue], invitePace);
     setBusy(false);
     if (result) {
       setError(result);
     } else {
       setInviteValue("");
       setMasechetValue("");
+      setInvitePace("1");
     }
   }
 
   async function handleStartChabura() {
     setError(null);
     setBusy(true);
-    const result = await createGroup(chaburaMasechet, true, chaburaName, memberEmails);
+    const result = await createGroup(
+      chaburaMasechet,
+      true,
+      chaburaName,
+      memberEmails,
+      chaburaPace,
+      chaburaKind === "class",
+    );
     setBusy(false);
     if (result) {
       setError(result);
@@ -190,6 +232,8 @@ export function ChevrusaScreen({ onOpenLogin }: ChevrusaScreenProps) {
       setChaburaName("");
       setChaburaMasechet("");
       setMemberEmails([""]);
+      setChaburaPace("1");
+      setChaburaKind("friends");
     }
   }
 
@@ -296,6 +340,11 @@ export function ChevrusaScreen({ onOpenLogin }: ChevrusaScreenProps) {
               <MasechetSelect value={masechetValue} onChange={setMasechetValue} />
             </label>
 
+            <label className="login-field">
+              <span className="login-field__label">Pace</span>
+              <PaceSelect value={invitePace} onChange={setInvitePace} />
+            </label>
+
             <button
               className="restart"
               disabled={busy || !inviteValue || !masechetValue}
@@ -317,13 +366,35 @@ export function ChevrusaScreen({ onOpenLogin }: ChevrusaScreenProps) {
           </>
         ) : (
           <>
+            <div className="pill-row">
+              <button
+                className={"pill" + (chaburaKind === "friends" ? " pill--active" : "")}
+                onClick={() => setChaburaKind("friends")}
+              >
+                Friends
+              </button>
+              <button
+                className={"pill" + (chaburaKind === "class" ? " pill--active" : "")}
+                onClick={() => setChaburaKind("class")}
+              >
+                Rebbe & Class
+              </button>
+            </div>
+
+            {chaburaKind === "class" && (
+              <div className="note-banner login-notice">
+                As the Rebbe, you'll see each student's learned-today status. Students only see their
+                own — not their classmates'.
+              </div>
+            )}
+
             <label className="login-field">
-              <span className="login-field__label">Chabura name</span>
+              <span className="login-field__label">{chaburaKind === "class" ? "Class name" : "Chabura name"}</span>
               <input
                 type="text"
                 value={chaburaName}
                 onChange={(e) => setChaburaName(e.target.value)}
-                placeholder="e.g. Tuesday Night Seder Nezikin"
+                placeholder={chaburaKind === "class" ? "e.g. 9th Grade Gemara" : "e.g. Tuesday Night Seder Nezikin"}
               />
             </label>
 
@@ -332,15 +403,22 @@ export function ChevrusaScreen({ onOpenLogin }: ChevrusaScreenProps) {
               <MasechetSelect value={chaburaMasechet} onChange={setChaburaMasechet} />
             </label>
 
+            <label className="login-field">
+              <span className="login-field__label">Pace</span>
+              <PaceSelect value={chaburaPace} onChange={setChaburaPace} />
+            </label>
+
             <div className="login-field">
-              <span className="login-field__label">Invite members by email</span>
+              <span className="login-field__label">
+                {chaburaKind === "class" ? "Invite students by email" : "Invite members by email"}
+              </span>
               {memberEmails.map((email, i) => (
                 <div className="chabura-member-row" key={i}>
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => updateMember(i, e.target.value)}
-                    placeholder="member@example.com"
+                    placeholder={chaburaKind === "class" ? "student@example.com" : "member@example.com"}
                   />
                   <button
                     type="button"
@@ -363,7 +441,7 @@ export function ChevrusaScreen({ onOpenLogin }: ChevrusaScreenProps) {
               disabled={busy || !chaburaName || !chaburaMasechet}
               onClick={handleStartChabura}
             >
-              {busy ? "Creating…" : "Start chabura"}
+              {busy ? "Creating…" : chaburaKind === "class" ? "Start class" : "Start chabura"}
             </button>
 
             <div className="chevrusa-section">
