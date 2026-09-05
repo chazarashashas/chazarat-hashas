@@ -38,6 +38,15 @@ function findPerakim(masechetEn: string): number {
   return ALL_MASECHTOT.find((m) => m.en === masechetEn)?.perakim ?? 1;
 }
 
+/** The next masechet in Shas order after this one — Berachot through
+    Uktzin, same order Daily Limmud's own sequential reading follows.
+    Null once you're at the very end (Uktzin). */
+function nextMasechet(masechetEn: string): string | null {
+  const index = ALL_MASECHTOT.findIndex((m) => m.en === masechetEn);
+  if (index === -1 || index + 1 >= ALL_MASECHTOT.length) return null;
+  return ALL_MASECHTOT[index + 1].en;
+}
+
 /** Builds the mishnah range for a masechet context at a given pace,
     starting from `start` — same idea as the global sequential range,
     but scoped to one masechet and using that group's own agreed pace
@@ -74,7 +83,9 @@ export function DailyLimmudScreen({ onOpenNotes }: DailyLimmudScreenProps) {
   const progress = useLearningProgress();
   const { pace, setPace, streak } = progress;
   const { getPerekNote, setPerekNote } = usePerekNotes();
-  const { groups } = useChevrusa();
+  const { groups, updateGroupMasechet } = useChevrusa();
+  const [switchMasechet, setSwitchMasechet] = useState("");
+  const [switchBusy, setSwitchBusy] = useState(false);
 
   // Every distinct masechet you have an active chevrusa/chabura on —
   // grouped by masechet (not by group), since your real progress
@@ -191,6 +202,18 @@ export function DailyLimmudScreen({ onOpenNotes }: DailyLimmudScreenProps) {
     setPace(next);
   }
 
+  /** Moves every group currently pinned to the just-finished masechet
+      on to a new one — the shared fact everyone in that chevrusa/chabura
+      is learning, not just this device's view of it. */
+  async function handleContinueTo(newMasechetEn: string) {
+    setSwitchBusy(true);
+    const affectedGroups = groups.filter((g) => g.masechetEn === activeContext);
+    await Promise.all(affectedGroups.map((g) => updateGroupMasechet(g.id, newMasechetEn)));
+    setSwitchBusy(false);
+    setSwitchMasechet("");
+    setContext(newMasechetEn);
+  }
+
   function handleSaveConcept() {
     if (!conceptTitle.trim() || firstItem == null) return;
     progress.addConcept(conceptTitle.trim(), conceptNote.trim(), firstItem.masechetEn, firstItem.perek, firstItem.mishnah);
@@ -204,6 +227,7 @@ export function DailyLimmudScreen({ onOpenNotes }: DailyLimmudScreenProps) {
   const seder = firstItem ? SEDARIM.find((s) => s.id === (isSelf ? (firstItem as { sederId?: string }).sederId : findSederId(firstItem.masechetEn))) : undefined;
   const perekName = firstItem ? getPerekName(firstItem.masechetEn, firstItem.perek) : null;
   const activeLabel = groupContexts.find((g) => g.masechetEn === activeContext)?.label;
+  const nextMasechetName = !isSelf && groupFinished ? nextMasechet(activeContext) : null;
 
   // Group contents by perek for display — almost always one group, except
   // right at a perek boundary under the 1- or 2-mishnah paces.
@@ -272,9 +296,46 @@ export function DailyLimmudScreen({ onOpenNotes }: DailyLimmudScreenProps) {
 
         {finished ? (
           <div className="note-banner note-banner--good limmud-finished">
-            {isSelf
-              ? "You've reached the end of Shas in Daily Limmud! Restart from the beginning any time, or switch pace above."
-              : `You've finished ${activeContext}! Nothing left to learn for ${activeLabel ?? "this chevrusa/chabura"}.`}
+            {isSelf ? (
+              "You've reached the end of Shas in Daily Limmud! Restart from the beginning any time, or switch pace above."
+            ) : (
+              <>
+                <p className="limmud-finished__text">
+                  You've finished {activeContext}! Nothing left to learn for {activeLabel ?? "this chevrusa/chabura"}.
+                </p>
+                {nextMasechetName && (
+                  <button
+                    className="restart limmud-finished__continue"
+                    disabled={switchBusy}
+                    onClick={() => handleContinueTo(nextMasechetName)}
+                  >
+                    {switchBusy ? "…" : `Continue to ${nextMasechetName}`}
+                  </button>
+                )}
+                <label className="limmud-finished__pick">
+                  <span>or pick a different masechet:</span>
+                  <select
+                    value={switchMasechet}
+                    onChange={(e) => {
+                      setSwitchMasechet(e.target.value);
+                      if (e.target.value) handleContinueTo(e.target.value);
+                    }}
+                    disabled={switchBusy}
+                  >
+                    <option value="">Choose…</option>
+                    {SEDARIM.map((seder) => (
+                      <optgroup key={seder.id} label={seder.en}>
+                        {seder.masechtot.map((m) => (
+                          <option key={m.en} value={m.en}>
+                            {m.en}
+                          </option>
+                        ))}
+                      </optgroup>
+                    ))}
+                  </select>
+                </label>
+              </>
+            )}
           </div>
         ) : (
           <div className="limmud-body">

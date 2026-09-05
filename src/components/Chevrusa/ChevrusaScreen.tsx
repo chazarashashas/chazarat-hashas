@@ -366,20 +366,23 @@ export function ChevrusaScreen({ onOpenLogin }: ChevrusaScreenProps) {
           </>
         ) : (
           <>
-            <div className="pill-row">
-              <button
-                className={"pill" + (chaburaKind === "friends" ? " pill--active" : "")}
-                onClick={() => setChaburaKind("friends")}
-              >
-                Friends
-              </button>
-              <button
-                className={"pill" + (chaburaKind === "class" ? " pill--active" : "")}
-                onClick={() => setChaburaKind("class")}
-              >
-                Rebbe & Class
-              </button>
-            </div>
+            <label className="login-field">
+              <span className="login-field__label">Learning with</span>
+              <div className="pill-row">
+                <button
+                  className={"pill" + (chaburaKind === "friends" ? " pill--active" : "")}
+                  onClick={() => setChaburaKind("friends")}
+                >
+                  Friends and Family
+                </button>
+                <button
+                  className={"pill" + (chaburaKind === "class" ? " pill--active" : "")}
+                  onClick={() => setChaburaKind("class")}
+                >
+                  Rebbe & Class
+                </button>
+              </div>
+            </label>
 
             {chaburaKind === "class" && (
               <div className="note-banner login-notice">

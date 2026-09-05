@@ -281,11 +281,32 @@ export function useChevrusa() {
     );
     if (validEmails.length === 0) return "Enter at least one email that isn't your own.";
 
+    const { data: existing } = await supabase
+      .from("group_invites")
+      .select("invited_email")
+      .eq("group_id", groupId)
+      .eq("status", "pending");
+    const alreadyInvited = new Set((existing ?? []).map((e) => e.invited_email as string));
+    const newEmails = validEmails.filter((e) => !alreadyInvited.has(e));
+    if (newEmails.length === 0) return "That person's already been invited.";
+
     const { error } = await supabase
       .from("group_invites")
-      .insert(validEmails.map((email) => ({ group_id: groupId, invited_email: email, invited_by: session.user.id })));
+      .insert(newEmails.map((email) => ({ group_id: groupId, invited_email: email, invited_by: session.user.id })));
     if (error) return friendlyError(error.message);
 
+    await refresh();
+    return null;
+  }
+
+  /** Moves a chevrusa/chabura on to a different masechet — the shared
+      group-level fact everyone in it is learning, so this updates the
+      group itself (not just one member's view). Used when a group
+      finishes its current masechet and moves on together. */
+  async function updateGroupMasechet(groupId: string, newMasechetEn: string): Promise<string | null> {
+    if (!supabase) return "Accounts aren't connected yet.";
+    const { error } = await supabase.from("groups").update({ masechet_en: newMasechetEn }).eq("id", groupId);
+    if (error) return friendlyError(error.message);
     await refresh();
     return null;
   }
@@ -352,6 +373,7 @@ export function useChevrusa() {
     declineInvite,
     cancelInvite,
     leaveGroup,
+    updateGroupMasechet,
     refresh,
   };
 }
