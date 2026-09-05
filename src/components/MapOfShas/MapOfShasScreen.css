@@ -1,0 +1,164 @@
+.stage {
+  position: relative;
+  width: 100%;
+}
+
+.map-panel {
+  text-align: center;
+}
+
+.map-breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.map-crumb {
+  background: none;
+  border: none;
+  color: var(--brand);
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 2px 2px;
+}
+
+.map-crumb--current {
+  color: var(--ink-soft);
+  font-weight: 600;
+  cursor: default;
+}
+
+.map-crumb-sep {
+  color: var(--ink-soft);
+  font-size: 10px;
+}
+
+.map-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.map-grid--perakim {
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+}
+
+.map-grid--mishnayot {
+  grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
+  margin-bottom: 14px;
+}
+
+.map-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  background: #fffbf0;
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 8px;
+  cursor: pointer;
+  font-family: var(--font-body);
+  text-align: center;
+}
+
+.map-tile:hover {
+  border-color: var(--brand);
+}
+
+.map-tile__he {
+  font-family: var(--font-hebrew);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.map-tile__en {
+  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.map-tile__sub {
+  font-size: 10px;
+  color: var(--ink-soft);
+}
+
+.map-tile--perek {
+  padding: 10px 6px;
+}
+
+.map-tile__perek-num {
+  font-family: var(--font-hebrew);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--brand);
+}
+
+.map-tile--mishnah {
+  padding: 8px 4px;
+  font-family: var(--font-hebrew);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.map-tile--done {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: #fff;
+}
+
+.map-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: var(--gold);
+  color: var(--brand);
+  font-size: 9px;
+  font-weight: 700;
+  font-family: var(--font-heading);
+  border-radius: 999px;
+  padding: 1px 5px;
+}
+
+.map-badge--done {
+  background: var(--good);
+  color: #fff;
+}
+
+.map-note-link {
+  background: none;
+  border: none;
+  color: var(--brand);
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.map-text-block {
+  text-align: left;
+}
+
+.map-text-status {
+  font-size: 12px;
+  color: var(--ink-soft);
+  text-align: center;
+}
+
+.map-text {
+  font-family: var(--font-hebrew);
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--ink);
+  text-align: right;
+}

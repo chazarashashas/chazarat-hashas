@@ -10,6 +10,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { id: "home", icon: "⌂", label: "Home", built: true },
   { id: "limmud", icon: "◷", label: "Daily Limmud", built: true },
+  { id: "map", icon: "⊞", label: "Map of Shas", built: true },
   { id: "sedarim", icon: "★", label: "Sidrei Hamishna", built: true },
   { id: "mishna", icon: "◆", label: "Mishna Quiz", built: true },
   { id: "sort", icon: "▧", label: "Seder Sort", built: true },

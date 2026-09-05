@@ -124,7 +124,11 @@ function Switch<T extends string>({
   );
 }
 
-export function MishnaIdScreen() {
+interface MishnaIdScreenProps {
+  onOpenNotes?: () => void;
+}
+
+export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
   const [mode, setMode] = useState<Mode>("streak");
   const [sederTab, setSederTab] = useState<string>(ALL_MASECHTOT[0].seder.id);
   // Empty string = no narrowing yet, scope is the whole tab (all of Shas, or
@@ -611,6 +615,7 @@ export function MishnaIdScreen() {
           initialValue={getPerekNote(card.masechet.en, card.perek)}
           onSave={(value) => setPerekNote(card.masechet.en, card.perek, value)}
           onClose={() => setNoteOpen(false)}
+          onOpenNotes={onOpenNotes}
         />
       )}
     </div>

@@ -200,6 +200,21 @@
   cursor: pointer;
 }
 
+.limmud-concept__open-all {
+  display: block;
+  width: 100%;
+  text-align: center;
+  background: none;
+  border: none;
+  color: var(--brand);
+  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 6px;
+  padding: 4px 0;
+}
+
 @media (max-width: 600px) {
   .limmud-body {
     flex-direction: column;

@@ -4,15 +4,21 @@ import { SEDER_TABS } from "../../data/sederTabs";
 import { TabBar } from "../TabBar/TabBar";
 import { hebrewNumeral } from "../../utils/hebrewNumeral";
 import { usePerekNotes } from "../../utils/usePerekNotes";
+import { useLearningProgress } from "../../utils/useLearningProgress";
 import { PrintNotesView } from "../PrintNotes/PrintNotesView";
 import "./PerekNamesScreen.css";
 
+type DocView = "notes" | "concepts";
+
 export function PerekNamesScreen() {
+  const [docView, setDocView] = useState<DocView>("notes");
   const [sederTab, setSederTab] = useState("all");
   const [selectedSederId, setSelectedSederId] = useState<string>(SEDARIM[0].id);
   const [selectedMasechetEn, setSelectedMasechetEn] = useState<string>(SEDARIM[0].masechtot[0].en);
   const [printOpen, setPrintOpen] = useState(false);
   const { perekNotes, setPerekNotes, masechetSentences, setMasechetSentences } = usePerekNotes();
+  const { concepts } = useLearningProgress();
+  const sortedConcepts = [...concepts].sort((a, b) => b.date.localeCompare(a.date));
 
   const activeSeder = SEDARIM.find((s) => s.id === sederTab);
   const sentenceSeder = SEDARIM.find((s) => s.id === selectedSederId)!;
@@ -77,6 +83,45 @@ export function PerekNamesScreen() {
           Zimmun," "who is considered ne'eman."
         </p>
 
+        <div className="pill-row">
+          <button
+            className={"pill" + (docView === "notes" ? " pill--active" : "")}
+            onClick={() => setDocView("notes")}
+          >
+            Perek Notes
+          </button>
+          <button
+            className={"pill" + (docView === "concepts" ? " pill--active" : "")}
+            onClick={() => setDocView("concepts")}
+          >
+            Concepts to Review
+          </button>
+        </div>
+
+        {docView === "concepts" ? (
+          <div className="concepts-doc">
+            {sortedConcepts.length === 0 ? (
+              <p className="concepts-doc__empty">
+                No concepts saved yet — add one from Daily Limmud while you're learning, and it'll
+                show up here with the mishnah it came from.
+              </p>
+            ) : (
+              sortedConcepts.map((c) => (
+                <div key={c.id} className="concept-card">
+                  <div className="concept-card__head">
+                    <span className="concept-card__title">{c.title}</span>
+                    <span className="concept-card__source" dir="ltr">
+                      {c.masechetEn} · Perek <span dir="rtl">{hebrewNumeral(c.perek)}</span>, Mishnah{" "}
+                      <span dir="rtl">{hebrewNumeral(c.mishnah)}</span>
+                    </span>
+                  </div>
+                  {c.note && <p className="concept-card__note">{c.note}</p>}
+                  <span className="concept-card__date">{c.date}</span>
+                </div>
+              ))
+            )}
+          </div>
+        ) : (
         <div className="perek-body">
           <div className="perek-tabs">
             {sederTab === "all"
@@ -136,8 +181,11 @@ export function PerekNamesScreen() {
             ) : null}
           </div>
         </div>
+        )}
       </div>
-      <TabBar tabs={SEDER_TABS} activeId={sederTab} onSelect={handleSederTabChange} />
+      {docView === "notes" && (
+        <TabBar tabs={SEDER_TABS} activeId={sederTab} onSelect={handleSederTabChange} />
+      )}
       {printOpen && (
         <PrintNotesView
           initialMasechetEn={sederTab !== "all" ? selectedMasechetEn : undefined}

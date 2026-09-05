@@ -8,6 +8,10 @@ interface PerekNoteModalProps {
   initialValue: string;
   onSave: (value: string) => void;
   onClose: () => void;
+  /** Jumps to the My Mishna Notes screen, where every note (from wherever
+      it was made) lives together. Optional so this modal still works on
+      its own if a screen doesn't have navigation to offer. */
+  onOpenNotes?: () => void;
 }
 
 /**
@@ -22,12 +26,25 @@ interface PerekNoteModalProps {
  * same tick would otherwise race the localStorage-persisting effect right
  * out from under it.
  */
-export function PerekNoteModal({ masechetEn, perek, initialValue, onSave, onClose }: PerekNoteModalProps) {
+export function PerekNoteModal({
+  masechetEn,
+  perek,
+  initialValue,
+  onSave,
+  onClose,
+  onOpenNotes,
+}: PerekNoteModalProps) {
   const [draft, setDraft] = useState(initialValue);
 
   function handleSave() {
     onSave(draft);
     onClose();
+  }
+
+  function handleOpenNotes() {
+    onSave(draft);
+    onClose();
+    onOpenNotes?.();
   }
 
   return (
@@ -49,6 +66,11 @@ export function PerekNoteModal({ masechetEn, perek, initialValue, onSave, onClos
         <button className="restart" onClick={handleSave}>
           Save note
         </button>
+        {onOpenNotes && (
+          <button className="note-modal__open-notes" onClick={handleOpenNotes}>
+            → Open in My Mishna Notes
+          </button>
+        )}
       </div>
     </div>
   );

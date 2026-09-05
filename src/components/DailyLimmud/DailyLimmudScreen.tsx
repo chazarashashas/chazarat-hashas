@@ -23,7 +23,11 @@ const PACE_OPTIONS: { value: Pace; label: string }[] = [
   { value: "perek", label: "1 Perek/day" },
 ];
 
-export function DailyLimmudScreen() {
+interface DailyLimmudScreenProps {
+  onOpenNotes?: () => void;
+}
+
+export function DailyLimmudScreen({ onOpenNotes }: DailyLimmudScreenProps) {
   const progress = useLearningProgress();
   const { todaysItems, finishedShas, pace, setPace, markTodayLearned, addConcept, streak } = progress;
   const { getPerekNote, setPerekNote } = usePerekNotes();
@@ -85,7 +89,13 @@ export function DailyLimmudScreen() {
 
   function handleSaveConcept() {
     if (!conceptTitle.trim() || firstItem == null) return;
-    addConcept(conceptTitle.trim(), conceptNote.trim(), firstItem.masechetEn, firstItem.perek);
+    addConcept(
+      conceptTitle.trim(),
+      conceptNote.trim(),
+      firstItem.masechetEn,
+      firstItem.perek,
+      firstItem.mishnah,
+    );
     setConceptTitle("");
     setConceptNote("");
     setConceptSaved(true);
@@ -204,6 +214,11 @@ export function DailyLimmudScreen() {
               <button className="limmud-concept__save" onClick={handleSaveConcept}>
                 {conceptSaved ? "✓ Saved" : "Save concept"}
               </button>
+              {onOpenNotes && (
+                <button className="limmud-concept__open-all" onClick={onOpenNotes}>
+                  → View all concepts in My Mishna Notes
+                </button>
+              )}
             </div>
           </div>
         )}
@@ -216,6 +231,7 @@ export function DailyLimmudScreen() {
           initialValue={getPerekNote(firstItem.masechetEn, firstItem.perek)}
           onSave={(value) => setPerekNote(firstItem.masechetEn, firstItem.perek, value)}
           onClose={() => setNoteOpen(false)}
+          onOpenNotes={onOpenNotes}
         />
       )}
     </div>

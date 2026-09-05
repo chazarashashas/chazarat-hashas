@@ -31,6 +31,7 @@ export interface ConceptNote {
   note: string;
   masechetEn: string;
   perek: number;
+  mishnah: number;
   date: string;
 }
 
@@ -97,13 +98,14 @@ export function useLearningProgress() {
     if (fresh.length > 0) setCompletions((prev) => [...prev, ...fresh]);
   }
 
-  function addConcept(title: string, note: string, masechetEn: string, perek: number) {
+  function addConcept(title: string, note: string, masechetEn: string, perek: number, mishnah: number) {
     const entry: ConceptNote = {
       id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
       title,
       note,
       masechetEn,
       perek,
+      mishnah,
       date: todayStr(),
     };
     setConcepts((prev) => [...prev, entry]);

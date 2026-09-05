@@ -54,3 +54,18 @@
   outline: none;
   border-color: var(--brand);
 }
+
+.note-modal__open-notes {
+  display: block;
+  width: 100%;
+  text-align: center;
+  background: none;
+  border: none;
+  color: var(--brand);
+  font-family: var(--font-heading);
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 8px;
+  padding: 4px 0;
+}

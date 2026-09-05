@@ -14,6 +14,7 @@ import { DailyLimmudScreen } from "./components/DailyLimmud/DailyLimmudScreen";
 import { ProgressScreen } from "./components/Progress/ProgressScreen";
 import { LoginScreen } from "./components/Login/LoginScreen";
 import { ChevrusaScreen } from "./components/Chevrusa/ChevrusaScreen";
+import { MapOfShasScreen } from "./components/MapOfShas/MapOfShasScreen";
 import { shuffle } from "./utils/shuffle";
 import type { ViewState } from "./types/viewState";
 import "./App.css";
@@ -67,15 +68,18 @@ function App() {
       <main className="main">
         <div
           className={
-            "main__content" + (section === "dash" || section === "limmud" ? " main__content--wide" : "")
+            "main__content" +
+            (section === "dash" || section === "limmud" || section === "map" ? " main__content--wide" : "")
           }
         >
           {section === "home" ? (
             <HomeScreen onNavigate={setSection} />
+          ) : section === "map" ? (
+            <MapOfShasScreen onOpenNotes={() => setSection("perek")} />
           ) : section === "sedarim" ? (
             <SedarimSection />
           ) : section === "mishna" ? (
-            <MishnaIdScreen />
+            <MishnaIdScreen onOpenNotes={() => setSection("perek")} />
           ) : section === "perek" ? (
             <PerekNamesScreen />
           ) : section === "sort" ? (
@@ -85,7 +89,7 @@ function App() {
           ) : section === "resources" ? (
             <ResourcesScreen />
           ) : section === "limmud" ? (
-            <DailyLimmudScreen />
+            <DailyLimmudScreen onOpenNotes={() => setSection("perek")} />
           ) : section === "progress" ? (
             <ProgressScreen />
           ) : section === "login" ? (
