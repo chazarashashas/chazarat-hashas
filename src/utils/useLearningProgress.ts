@@ -22,6 +22,20 @@ export interface CompletionRecord {
 
 export type Pace = "1" | "2" | "perek";
 
+/** Where you personally are within one masechet — used when learning
+    for a chevrusa/chabura, which is scoped to a masechet that could be
+    anywhere in Shas relative to where your own sequential Daily Limmud
+    reading has reached. Deliberately *not* separately-tracked state:
+    it's computed from `completions` (the first not-yet-learned mishnah
+    in that masechet) so it can never drift out of sync with what
+    Progress/Map of Shas already show as done — including mishnayot
+    covered via sequential Daily Limmud or offline logging, not just
+    ones learned "for" a specific group. */
+export interface MasechetPosition {
+  perek: number;
+  mishnah: number;
+}
+
 /** A concept to revisit, tied to where it came from — not a searchable
     library yet (that's future scope), just capture with the source
     location attached so that library won't need a migration later. */
@@ -96,6 +110,33 @@ export function useLearningProgress() {
       if (!isCompleted(item)) fresh.push({ ...item, date, source: "logged" as const });
     }
     if (fresh.length > 0) setCompletions((prev) => [...prev, ...fresh]);
+  }
+
+  /** The first not-yet-learned mishnah in this masechet, scanning from
+      perek 1 — see the MasechetPosition doc comment for why this is
+      computed rather than separately tracked. Returns one perek past
+      the end once every mishnah in the masechet is done. */
+  function getMasechetPosition(masechetEn: string): MasechetPosition {
+    const masechet = SEDARIM.flatMap((s) => s.masechtot).find((m) => m.en === masechetEn);
+    const totalPerakim = masechet?.perakim ?? 1;
+    for (let p = 1; p <= totalPerakim; p++) {
+      const count = getMishnayotCount(masechetEn, p);
+      for (let mi = 1; mi <= count; mi++) {
+        if (!isCompleted({ masechetEn, perek: p, mishnah: mi })) return { perek: p, mishnah: mi };
+      }
+    }
+    return { perek: totalPerakim + 1, mishnah: 1 };
+  }
+
+  /** Marks one specific mishnah learned within a masechet context (a
+      chevrusa/chabura's masechet, not the global sequential Daily
+      Limmud) — getMasechetPosition naturally advances on the next call
+      since it's computed from completions, not a separate counter. */
+  function markMasechetMishnaLearned(masechetEn: string, perek: number, mishnah: number) {
+    const item = { masechetEn, perek, mishnah };
+    if (!isCompleted(item)) {
+      setCompletions((prev) => [...prev, { ...item, date: todayStr(), source: "app" as const }]);
+    }
   }
 
   function addConcept(title: string, note: string, masechetEn: string, perek: number, mishnah: number) {
@@ -195,6 +236,8 @@ export function useLearningProgress() {
     markTodayLearned,
     logLearning,
     addConcept,
+    getMasechetPosition,
+    markMasechetMishnaLearned,
     streak: { current, longest },
     shasPercent,
     sederPercent,

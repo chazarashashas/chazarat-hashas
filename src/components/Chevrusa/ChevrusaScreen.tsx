@@ -37,8 +37,36 @@ function todayStr(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
-function GroupCard({ group, meId }: { group: Group; meId: string }) {
+function GroupCard({
+  group,
+  meId,
+  onLeave,
+  onAddMembers,
+}: {
+  group: Group;
+  meId: string;
+  onLeave: (groupId: string) => void;
+  onAddMembers: (groupId: string, email: string) => Promise<string | null>;
+}) {
   const today = todayStr();
+  const [addOpen, setAddOpen] = useState(false);
+  const [addEmail, setAddEmail] = useState("");
+  const [addBusy, setAddBusy] = useState(false);
+  const [addError, setAddError] = useState<string | null>(null);
+
+  async function handleAdd() {
+    setAddBusy(true);
+    setAddError(null);
+    const result = await onAddMembers(group.id, addEmail);
+    setAddBusy(false);
+    if (result) {
+      setAddError(result);
+    } else {
+      setAddEmail("");
+      setAddOpen(false);
+    }
+  }
+
   return (
     <div className="group-card">
       <div className="group-card__head">
@@ -53,6 +81,38 @@ function GroupCard({ group, meId }: { group: Group; meId: string }) {
           </span>
         ))}
       </div>
+
+      <div className="group-card__actions">
+        {group.isChabura &&
+          (addOpen ? (
+            <div className="group-card__add-row">
+              <input
+                type="email"
+                value={addEmail}
+                onChange={(e) => setAddEmail(e.target.value)}
+                placeholder="new.member@example.com"
+              />
+              <button className="group-card__add-confirm" disabled={addBusy || !addEmail} onClick={handleAdd}>
+                {addBusy ? "…" : "Invite"}
+              </button>
+              <button className="group-card__link" onClick={() => setAddOpen(false)}>
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <button className="group-card__link" onClick={() => setAddOpen(true)}>
+              + Invite more
+            </button>
+          ))}
+        <button className="group-card__link group-card__link--leave" onClick={() => onLeave(group.id)}>
+          Leave
+        </button>
+      </div>
+      {addError && (
+        <p className="login-error" dir="ltr">
+          {addError}
+        </p>
+      )}
     </div>
   );
 }
@@ -71,8 +131,17 @@ interface ChevrusaScreenProps {
 
 export function ChevrusaScreen({ onOpenLogin }: ChevrusaScreenProps) {
   const { session } = useAuth();
-  const { groups, pendingInvites, sentInvites, createGroup, acceptInvite, declineInvite, cancelInvite } =
-    useChevrusa();
+  const {
+    groups,
+    pendingInvites,
+    sentInvites,
+    createGroup,
+    addMembers,
+    acceptInvite,
+    declineInvite,
+    cancelInvite,
+    leaveGroup,
+  } = useChevrusa();
 
   const [mode, setMode] = useState<Mode>("chevrusa");
   const [inviteValue, setInviteValue] = useState("");
@@ -140,6 +209,16 @@ export function ChevrusaScreen({ onOpenLogin }: ChevrusaScreenProps) {
     setError(null);
     const result = await cancelInvite(invite);
     if (result) setError(result);
+  }
+
+  async function handleLeave(groupId: string) {
+    setError(null);
+    const result = await leaveGroup(groupId);
+    if (result) setError(result);
+  }
+
+  async function handleAddMembers(groupId: string, email: string) {
+    return addMembers(groupId, [email]);
   }
 
   if (!session) {
@@ -232,7 +311,7 @@ export function ChevrusaScreen({ onOpenLogin }: ChevrusaScreenProps) {
                   Not paired with anyone yet. Each pairing you make will show its own masechet here.
                 </p>
               ) : (
-                chevrusot.map((g) => <GroupCard key={g.id} group={g} meId={session.user.id} />)
+                chevrusot.map((g) => <GroupCard key={g.id} group={g} meId={session.user.id} onLeave={handleLeave} onAddMembers={handleAddMembers} />)
               )}
             </div>
           </>
@@ -295,7 +374,7 @@ export function ChevrusaScreen({ onOpenLogin }: ChevrusaScreenProps) {
                   masechet and member list.
                 </p>
               ) : (
-                chaburot.map((g) => <GroupCard key={g.id} group={g} meId={session.user.id} />)
+                chaburot.map((g) => <GroupCard key={g.id} group={g} meId={session.user.id} onLeave={handleLeave} onAddMembers={handleAddMembers} />)
               )}
             </div>
           </>

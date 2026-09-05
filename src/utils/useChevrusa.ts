@@ -40,6 +40,26 @@ function todayStr(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
+/** Translates raw Postgres/Supabase error text into something a student
+    can actually act on — nobody should see "duplicate key value
+    violates unique constraint" in this app. */
+function friendlyError(message: string): string {
+  const lower = message.toLowerCase();
+  if (lower.includes("duplicate key") && lower.includes("group_members")) {
+    return "You're already in this group.";
+  }
+  if (lower.includes("duplicate key")) {
+    return "That's already been done.";
+  }
+  if (lower.includes("row-level security") || lower.includes("permission denied")) {
+    return "You don't have permission to do that.";
+  }
+  if (lower.includes("failed to fetch") || lower.includes("network")) {
+    return "Couldn't reach the server — check your connection and try again.";
+  }
+  return "Something went wrong. Please try again.";
+}
+
 /** Real chevrusa/chabura data, backed by four tables (groups,
     group_members, group_invites, group_activity — see the SQL handed
     alongside this). Invites are stored by email (Supabase gives no way
@@ -198,12 +218,12 @@ export function useChevrusa() {
       .insert({ masechet_en: masechetEn, is_chabura: isChabura, name, created_by: session.user.id })
       .select("id")
       .single();
-    if (groupError || !group) return groupError?.message ?? "Couldn't create the group.";
+    if (groupError || !group) return groupError ? friendlyError(groupError.message) : "Couldn't create the group.";
 
     const { error: memberError } = await supabase
       .from("group_members")
       .insert({ group_id: group.id, user_id: session.user.id });
-    if (memberError) return memberError.message;
+    if (memberError) return friendlyError(memberError.message);
 
     const myEmail = session.user.email?.toLowerCase();
     const validEmails = Array.from(
@@ -217,8 +237,29 @@ export function useChevrusa() {
       const { error: inviteError } = await supabase
         .from("group_invites")
         .insert(validEmails.map((email) => ({ group_id: group.id, invited_email: email, invited_by: session.user.id })));
-      if (inviteError) return inviteError.message;
+      if (inviteError) return friendlyError(inviteError.message);
     }
+
+    await refresh();
+    return null;
+  }
+
+  /** Invites more people (by email) to a group that already exists —
+      only meant for chabura groups; a chevrusa stays a fixed pair by
+      design, so this isn't offered there in the UI. */
+  async function addMembers(groupId: string, emails: string[]): Promise<string | null> {
+    if (!supabase || !session) return "Accounts aren't connected yet.";
+
+    const myEmail = session.user.email?.toLowerCase();
+    const validEmails = Array.from(
+      new Set(emails.map((e) => e.trim().toLowerCase()).filter((e) => Boolean(e) && e !== myEmail)),
+    );
+    if (validEmails.length === 0) return "Enter at least one email that isn't your own.";
+
+    const { error } = await supabase
+      .from("group_invites")
+      .insert(validEmails.map((email) => ({ group_id: groupId, invited_email: email, invited_by: session.user.id })));
+    if (error) return friendlyError(error.message);
 
     await refresh();
     return null;
@@ -229,13 +270,13 @@ export function useChevrusa() {
     const { error: memberError } = await supabase
       .from("group_members")
       .insert({ group_id: invite.groupId, user_id: session.user.id });
-    if (memberError) return memberError.message;
+    if (memberError) return friendlyError(memberError.message);
 
     const { error: updateError } = await supabase
       .from("group_invites")
       .update({ status: "accepted" })
       .eq("id", invite.id);
-    if (updateError) return updateError.message;
+    if (updateError) return friendlyError(updateError.message);
 
     await refresh();
     return null;
@@ -244,7 +285,7 @@ export function useChevrusa() {
   async function declineInvite(invite: PendingInvite): Promise<string | null> {
     if (!supabase) return "Accounts aren't connected yet.";
     const { error } = await supabase.from("group_invites").update({ status: "declined" }).eq("id", invite.id);
-    if (error) return error.message;
+    if (error) return friendlyError(error.message);
     await refresh();
     return null;
   }
@@ -255,7 +296,23 @@ export function useChevrusa() {
   async function cancelInvite(invite: SentInvite): Promise<string | null> {
     if (!supabase) return "Accounts aren't connected yet.";
     const { error } = await supabase.from("group_invites").delete().eq("id", invite.id);
-    if (error) return error.message;
+    if (error) return friendlyError(error.message);
+    await refresh();
+    return null;
+  }
+
+  /** Leaves a group — removes just your own membership row. If you were
+      the last member, the group itself is left orphaned (harmless: with
+      nobody left in group_members, nobody's RLS policy can see it
+      anymore, so it simply stops appearing anywhere). */
+  async function leaveGroup(groupId: string): Promise<string | null> {
+    if (!supabase || !session) return "Accounts aren't connected yet.";
+    const { error } = await supabase
+      .from("group_members")
+      .delete()
+      .eq("group_id", groupId)
+      .eq("user_id", session.user.id);
+    if (error) return friendlyError(error.message);
     await refresh();
     return null;
   }
@@ -265,9 +322,11 @@ export function useChevrusa() {
     pendingInvites,
     sentInvites,
     createGroup,
+    addMembers,
     acceptInvite,
     declineInvite,
     cancelInvite,
+    leaveGroup,
     refresh,
   };
 }

@@ -12,10 +12,6 @@ interface Feature {
   desc: string;
   built: boolean;
   status?: string;
-  /** What this specifically builds, per the app's own four-level
-      philosophy — shown as a static tag so that mapping is visible in
-      the UI itself, not just known to whoever built it. */
-  skill?: string;
 }
 
 /** My Mishna: personal, tracked things — tied to your notes, progress, or
@@ -66,42 +62,36 @@ const LEARNING_TOOLS: Feature[] = [
     title: "Sidrei Hamishna",
     desc: "Drag the six sedarim — or one seder's masechtot — into their correct order.",
     built: true,
-    skill: "Builds: seder & masechet order",
   },
   {
     id: "mishna",
     title: "Mishna Quiz",
     desc: "Read a real mishnah and locate it: seder and masechet, with perek as bonus.",
     built: true,
-    skill: "Builds: mishnah → location recall",
   },
   {
     id: "sort",
     title: "Seder Sort",
     desc: "Sort all 63 masechtot into the seder each one belongs to.",
     built: true,
-    skill: "Builds: masechet → seder mapping",
   },
   {
     id: "recall",
     title: "Mishna Chazara",
     desc: "Type every masechet you can remember, by seder or by all of Shas.",
     built: true,
-    skill: "Builds: masechet recall, no hints",
   },
   {
     id: "dash",
     title: "Shas Dash",
     desc: "Steer each masechet into its seder before it reaches the end of the road.",
     built: true,
-    skill: "Builds: masechet → seder, under pressure",
   },
   {
     id: "resources",
     title: "Resources",
     desc: "Printable worksheets for practicing Shas structure away from the screen.",
     built: true,
-    skill: "Builds: offline, handwritten practice",
   },
 ];
 
@@ -120,7 +110,6 @@ function FeatureGrid({ features, onNavigate }: { features: Feature[]; onNavigate
           </span>
           <span className="home-card__title">{f.title}</span>
           <span className="home-card__desc">{f.desc}</span>
-          {f.skill && <span className="home-card__skill">{f.skill}</span>}
           {f.status && <span className="home-card__status">{f.status}</span>}
           {!f.built && <span className="home-card__soon">Coming soon</span>}
         </button>
