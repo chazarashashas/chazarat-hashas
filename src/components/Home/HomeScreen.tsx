@@ -3,11 +3,11 @@ import { useLearningProgress } from "../../utils/useLearningProgress";
 import { usePerekNotes } from "../../utils/usePerekNotes";
 import { useAuth } from "../../utils/useAuth";
 import { useChevrusa } from "../../utils/useChevrusa";
+import { NavIcon } from "../Sidebar/NavIcon";
 import "./HomeScreen.css";
 
 interface Feature {
   id: string;
-  icon: string;
   title: string;
   desc: string;
   built: boolean;
@@ -24,42 +24,36 @@ interface Feature {
 const MY_MISHNA: Feature[] = [
   {
     id: "limmud",
-    icon: "◷",
     title: "Daily Limmud",
     desc: "Your next portion of Mishnayot, straight through Shas in order.",
     built: true,
   },
   {
     id: "map",
-    icon: "⊞",
     title: "Map of Shas",
     desc: "Explore every seder, masechet, perek, and mishnah, with your progress along the way.",
     built: true,
   },
   {
     id: "perek",
-    icon: "❖",
     title: "Mishna Notes",
     desc: "Make Shas yours — your own names, notes, and memory cues for every perek.",
     built: true,
   },
   {
     id: "progress",
-    icon: "◐",
     title: "Progress",
     desc: "Track your streak and how much of Shas you've learned so far.",
     built: true,
   },
   {
     id: "chevrusa",
-    icon: "⚯",
     title: "Chevrusa",
     desc: "Pair up with a study partner or start a chabura to learn together.",
     built: true,
   },
   {
     id: "login",
-    icon: "⚿",
     title: "Log In",
     desc: "Sign in to save your notes, progress, and streak to your account.",
     built: true,
@@ -69,7 +63,6 @@ const MY_MISHNA: Feature[] = [
 const LEARNING_TOOLS: Feature[] = [
   {
     id: "sedarim",
-    icon: "★",
     title: "Sidrei Hamishna",
     desc: "Drag the six sedarim — or one seder's masechtot — into their correct order.",
     built: true,
@@ -77,7 +70,6 @@ const LEARNING_TOOLS: Feature[] = [
   },
   {
     id: "mishna",
-    icon: "◆",
     title: "Mishna Quiz",
     desc: "Read a real mishnah and locate it: seder and masechet, with perek as bonus.",
     built: true,
@@ -85,7 +77,6 @@ const LEARNING_TOOLS: Feature[] = [
   },
   {
     id: "sort",
-    icon: "▧",
     title: "Seder Sort",
     desc: "Sort all 63 masechtot into the seder each one belongs to.",
     built: true,
@@ -93,7 +84,6 @@ const LEARNING_TOOLS: Feature[] = [
   },
   {
     id: "recall",
-    icon: "✎",
     title: "Mishna Chazara",
     desc: "Type every masechet you can remember, by seder or by all of Shas.",
     built: true,
@@ -101,7 +91,6 @@ const LEARNING_TOOLS: Feature[] = [
   },
   {
     id: "dash",
-    icon: "↯",
     title: "Shas Dash",
     desc: "Steer each masechet into its seder before it reaches the end of the road.",
     built: true,
@@ -109,7 +98,6 @@ const LEARNING_TOOLS: Feature[] = [
   },
   {
     id: "resources",
-    icon: "⎙",
     title: "Resources",
     desc: "Printable worksheets for practicing Shas structure away from the screen.",
     built: true,
@@ -127,7 +115,9 @@ function FeatureGrid({ features, onNavigate }: { features: Feature[]; onNavigate
           disabled={!f.built}
           onClick={() => onNavigate(f.id)}
         >
-          <span className="home-card__icon">{f.icon}</span>
+          <span className="home-card__icon">
+            <NavIcon id={f.id} />
+          </span>
           <span className="home-card__title">{f.title}</span>
           <span className="home-card__desc">{f.desc}</span>
           {f.skill && <span className="home-card__skill">{f.skill}</span>}

@@ -41,14 +41,15 @@
 }
 
 .nav-item__icon {
-  font-size: 18px;
-  line-height: 1;
   height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
   flex-shrink: 0;
+}
+
+.nav-item__icon svg {
+  display: block;
 }
 
 .nav-item__label {
@@ -125,8 +126,9 @@
     line-height: 1.05;
   }
 
-  .nav-item__icon {
-    font-size: 16px;
+  .nav-item__icon svg {
+    width: 17px;
+    height: 17px;
   }
 
   .nav-group {

@@ -1,13 +1,13 @@
+import { NavIcon } from "./NavIcon";
 import "./Sidebar.css";
 
 interface NavItem {
   id: string;
-  icon: string;
   label: string;
   built: boolean;
 }
 
-const HOME_ITEM: NavItem = { id: "home", icon: "⌂", label: "Home", built: true };
+const HOME_ITEM: NavItem = { id: "home", label: "Home", built: true };
 
 /** Mirrors Home's own "My Mishna" / "Learning Tools" split exactly — a
     student who's already parsed Home's two sections shouldn't have to
@@ -16,23 +16,23 @@ const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
   {
     label: "My Mishna",
     items: [
-      { id: "limmud", icon: "◷", label: "Daily Limmud", built: true },
-      { id: "map", icon: "⊞", label: "Map of Shas", built: true },
-      { id: "perek", icon: "❖", label: "Mishna Notes", built: true },
-      { id: "progress", icon: "◐", label: "Progress", built: true },
-      { id: "chevrusa", icon: "⚯", label: "Chevrusa", built: true },
-      { id: "login", icon: "⚿", label: "Log In", built: true },
+      { id: "limmud", label: "Daily Limmud", built: true },
+      { id: "map", label: "Map of Shas", built: true },
+      { id: "perek", label: "Mishna Notes", built: true },
+      { id: "progress", label: "Progress", built: true },
+      { id: "chevrusa", label: "Chevrusa", built: true },
+      { id: "login", label: "Log In", built: true },
     ],
   },
   {
     label: "Learning Tools",
     items: [
-      { id: "sedarim", icon: "★", label: "Sidrei Hamishna", built: true },
-      { id: "mishna", icon: "◆", label: "Mishna Quiz", built: true },
-      { id: "sort", icon: "▧", label: "Seder Sort", built: true },
-      { id: "recall", icon: "✎", label: "Mishna Chazara", built: true },
-      { id: "dash", icon: "↯", label: "Shas Dash", built: true },
-      { id: "resources", icon: "⎙", label: "Resources", built: true },
+      { id: "sedarim", label: "Sidrei Hamishna", built: true },
+      { id: "mishna", label: "Mishna Quiz", built: true },
+      { id: "sort", label: "Seder Sort", built: true },
+      { id: "recall", label: "Mishna Chazara", built: true },
+      { id: "dash", label: "Shas Dash", built: true },
+      { id: "resources", label: "Resources", built: true },
     ],
   },
 ];
@@ -50,7 +50,9 @@ function NavButton({ item, active, onSelect }: { item: NavItem; active: boolean;
       title={item.built ? undefined : "Coming soon"}
       onClick={() => onSelect(item.id)}
     >
-      <span className="nav-item__icon">{item.icon}</span>
+      <span className="nav-item__icon">
+        <NavIcon id={item.id} />
+      </span>
       <span className="nav-item__label">{item.label}</span>
     </button>
   );
