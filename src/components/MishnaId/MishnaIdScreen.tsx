@@ -2,6 +2,8 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { SEDARIM, type Seder, type Masechet } from "../../data/shas";
 import { SEDER_TABS } from "../../data/sederTabs";
 import { fetchRandomMishna } from "../../utils/sefaria";
+import { usePerekNotes } from "../../utils/usePerekNotes";
+import { PerekNoteModal } from "../PerekNoteModal/PerekNoteModal";
 import { TabBar } from "../TabBar/TabBar";
 import "./MishnaIdScreen.css";
 
@@ -147,6 +149,8 @@ export function MishnaIdScreen() {
   const [quizFinished, setQuizFinished] = useState(false);
   const [wrongFlash, setWrongFlash] = useState<string | null>(null);
   const [textFontSize, setTextFontSize] = useState(MAX_TEXT_FONT_SIZE);
+  const [noteOpen, setNoteOpen] = useState(false);
+  const { getPerekNote, setPerekNote } = usePerekNotes();
   const timerRef = useRef<number | null>(null);
   const cardBoxRef = useRef<HTMLDivElement>(null);
   const cardTextRef = useRef<HTMLSpanElement>(null);
@@ -162,6 +166,9 @@ export function MishnaIdScreen() {
   // is hidden in that case anyway).
   const effectiveDepth: Depth = scopeType === "masechta" ? "perek" : depth;
   const bonusAvailable = effectiveDepth === "perek" && coreSolved;
+  // Don't give away the perek before the bonus round is attempted — once
+  // it's not being tested (or has been), it's fine to reveal.
+  const perekRevealed = !bonusAvailable || Boolean(card.guessedPerek);
   const inPlay = started && !coreSolved && !card.timedOut && !card.failed && !quizFinished;
 
   useEffect(() => {
@@ -238,6 +245,7 @@ export function MishnaIdScreen() {
     setContent({ status: "loading" });
     setSecondsLeft(CARD_SECONDS);
     setPaused(false);
+    setNoteOpen(false);
   }
 
   /** Resets the whole session: back to the Start button, streak/quiz progress cleared. */
@@ -489,11 +497,17 @@ export function MishnaIdScreen() {
 
             {!started || paused ? null : card.timedOut && !coreSolved ? (
               <div className="note-banner">
-                Time's up — it was {card.seder.en} › {card.masechet.en}.
+                Time's up — it was {card.seder.en} › {card.masechet.en} › Perek {card.perek}.
+                <button className="mishna-note-link" onClick={() => setNoteOpen(true)}>
+                  {getPerekNote(card.masechet.en, card.perek) ? "📝 View note" : "📝 Add note"}
+                </button>
               </div>
             ) : card.failed && !coreSolved ? (
               <div className="note-banner">
-                Not quite — it was {card.seder.en} › {card.masechet.en}.
+                Not quite — it was {card.seder.en} › {card.masechet.en} › Perek {card.perek}.
+                <button className="mishna-note-link" onClick={() => setNoteOpen(true)}>
+                  {getPerekNote(card.masechet.en, card.perek) ? "📝 View note" : "📝 Add note"}
+                </button>
               </div>
             ) : !sederDone ? (
               <div className="mishna-step">
@@ -528,7 +542,13 @@ export function MishnaIdScreen() {
             ) : (
               <>
                 <div className="note-banner note-banner--good">
-                  Located — {card.seder.en} › {card.masechet.en}.
+                  Located — {card.seder.en} › {card.masechet.en}
+                  {perekRevealed ? ` › Perek ${card.perek}.` : "."}
+                  {perekRevealed && (
+                    <button className="mishna-note-link" onClick={() => setNoteOpen(true)}>
+                      {getPerekNote(card.masechet.en, card.perek) ? "📝 View note" : "📝 Add note"}
+                    </button>
+                  )}
                 </div>
                 {bonusAvailable &&
                   (card.guessedPerek ? (
@@ -584,6 +604,15 @@ export function MishnaIdScreen() {
         )}
       </div>
       <TabBar tabs={SEDER_TABS} activeId={sederTab} onSelect={handleSederTabChange} />
+      {noteOpen && (
+        <PerekNoteModal
+          masechetEn={card.masechet.en}
+          perek={card.perek}
+          initialValue={getPerekNote(card.masechet.en, card.perek)}
+          onSave={(value) => setPerekNote(card.masechet.en, card.perek, value)}
+          onClose={() => setNoteOpen(false)}
+        />
+      )}
     </div>
   );
 }

@@ -1,0 +1,56 @@
+.note-modal-scrim {
+  position: fixed;
+  inset: 0;
+  border-radius: 0;
+  z-index: 50;
+}
+
+.note-modal {
+  width: 320px;
+  max-width: calc(100% - 32px);
+  padding: 22px 20px 20px;
+  position: relative;
+  text-align: left;
+}
+
+.note-modal__close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: #fffbf0;
+  color: var(--ink-soft);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.note-modal__label {
+  margin: 4px 26px 10px 0;
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.note-modal__textarea {
+  width: 100%;
+  box-sizing: border-box;
+  height: 90px;
+  resize: none;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: #fffbf0;
+  padding: 10px 12px;
+  font-size: 12.5px;
+  font-family: var(--font-body);
+  color: var(--ink);
+  margin-bottom: 14px;
+}
+
+.note-modal__textarea:focus {
+  outline: none;
+  border-color: var(--brand);
+}
