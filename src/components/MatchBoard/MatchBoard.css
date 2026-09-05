@@ -109,7 +109,7 @@
   align-items: center;
   justify-content: center;
   background: var(--gold);
-  color: #fff;
+  color: var(--brand);
 }
 
 .slot__label {

@@ -169,6 +169,7 @@
 .popup__restart:hover:not(:disabled),
 .restart:hover:not(:disabled) {
   background: var(--gold);
+  color: var(--brand);
 }
 
 @keyframes panel-fade-in {

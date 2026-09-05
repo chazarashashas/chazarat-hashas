@@ -59,6 +59,7 @@
 
 .resource-card__download:hover {
   background: var(--gold);
+  color: var(--brand);
 }
 
 @media (max-width: 480px) {

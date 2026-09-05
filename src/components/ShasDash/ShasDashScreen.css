@@ -329,7 +329,7 @@
 
 .dash-steer__btn--lock:active {
   background: var(--gold);
-  color: #fff;
+  color: var(--brand);
 }
 
 .dash-steer__btn--lock:disabled {

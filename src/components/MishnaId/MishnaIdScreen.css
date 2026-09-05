@@ -314,7 +314,7 @@
   border-style: solid;
   border-color: var(--gold);
   background: var(--gold);
-  color: #fff;
+  color: var(--brand);
 }
 
 .mishna-summary {
