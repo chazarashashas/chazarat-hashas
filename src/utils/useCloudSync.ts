@@ -68,6 +68,11 @@ function mergeUniqueBy(local: unknown, cloud: unknown, keyOf: (item: unknown) =>
       out.push(item);
     }
   }
+  // Sorted by key so the result is deterministic regardless of which
+  // side (local vs. cloud) happened to see an item first historically —
+  // without this, the exact same logical data could serialize
+  // differently on every merge and look like a spurious "change".
+  out.sort((a, b) => keyOf(a).localeCompare(keyOf(b)));
   return out;
 }
 
@@ -115,6 +120,8 @@ function mergeBlobs(local: SyncBlob, cloud: SyncBlob): SyncBlob {
  * that aren't time-critical. Pulling live updates from *other* devices
  * while this tab stays open isn't handled — out of scope for now.
  */
+const RELOAD_GUARD_KEY = "chazarat-hashas:cloudSyncReloaded";
+
 export function useCloudSync(session: Session | null) {
   const hasMergedRef = useRef(false);
   const lastPushedRef = useRef<string | null>(null);
@@ -148,7 +155,14 @@ export function useCloudSync(session: Session | null) {
         .from("user_data")
         .upsert({ user_id: session.user.id, data: merged, updated_at: new Date().toISOString() });
 
-      if (mergedSerialized !== localSerialized) {
+      // Guard against ever reloading more than once per browser tab —
+      // belt-and-suspenders on top of the equality check above, so a
+      // merge that (for whatever reason) never quite converges can't
+      // turn into a reload loop that traps the user on a blank reload
+      // instead of the page they wanted.
+      const alreadyReloaded = sessionStorage.getItem(RELOAD_GUARD_KEY) === "1";
+      if (mergedSerialized !== localSerialized && !alreadyReloaded) {
+        sessionStorage.setItem(RELOAD_GUARD_KEY, "1");
         window.location.reload();
       }
     })();

@@ -65,7 +65,11 @@ function GroupCard({ group, meId }: { group: Group; meId: string }) {
  * green dot only — no streaks compared, no shared notes, per the
  * original design.
  */
-export function ChevrusaScreen() {
+interface ChevrusaScreenProps {
+  onOpenLogin?: () => void;
+}
+
+export function ChevrusaScreen({ onOpenLogin }: ChevrusaScreenProps) {
   const { session } = useAuth();
   const { groups, pendingInvites, createGroup, acceptInvite, declineInvite } = useChevrusa();
 
@@ -144,6 +148,11 @@ export function ChevrusaScreen() {
             Log in first — chevrusa pairing is tied to your account, so an invite can reach someone
             else's.
           </div>
+          {onOpenLogin && (
+            <button className="restart" onClick={onOpenLogin}>
+              Go to Log In
+            </button>
+          )}
         </div>
       </div>
     );

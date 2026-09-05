@@ -99,7 +99,7 @@ function App() {
           ) : section === "login" ? (
             <LoginScreen />
           ) : section === "chevrusa" ? (
-            <ChevrusaScreen />
+            <ChevrusaScreen onOpenLogin={() => setSection("login")} />
           ) : (
             <RecallScreen />
           )}

@@ -19,7 +19,7 @@ const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
       { id: "limmud", icon: "◷", label: "Daily Limmud", built: true },
       { id: "map", icon: "⊞", label: "Map of Shas", built: true },
       { id: "perek", icon: "❖", label: "Mishna Notes", built: true },
-      { id: "progress", icon: "◈", label: "Progress", built: true },
+      { id: "progress", icon: "◐", label: "Progress", built: true },
       { id: "chevrusa", icon: "⚯", label: "Chevrusa", built: true },
       { id: "login", icon: "⚿", label: "Log In", built: true },
     ],

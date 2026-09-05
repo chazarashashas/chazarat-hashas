@@ -6,14 +6,14 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
   padding-top: 22px;
   overflow-y: auto;
 }
 
 .nav-item {
   width: 76px;
-  padding: 10px 4px 9px;
+  padding: 7px 4px;
   border-radius: 14px;
   background: transparent;
   border: none;
@@ -30,8 +30,17 @@
   line-height: 1.15;
 }
 
+/* A fixed box, not just a font-size — some platforms substitute a much
+   larger glyph for these Unicode symbols than others render, which was
+   inflating every button's height inconsistently across systems. */
 .nav-item__icon {
   font-size: 18px;
+  line-height: 1;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
 
 .nav-item--active {
@@ -53,7 +62,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   width: 100%;
 }
 
@@ -61,17 +70,17 @@
   width: 44px;
   height: 1px;
   background: rgba(255, 255, 255, 0.15);
-  margin-top: 6px;
+  margin-top: 2px;
 }
 
 .nav-group__label {
   font-family: var(--font-heading);
   font-size: 9px;
   font-weight: 700;
+  line-height: 1;
   color: rgba(255, 255, 255, 0.4);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-bottom: -2px;
 }
 
 /* Below phone width the left rail becomes a fixed bottom tab bar instead —

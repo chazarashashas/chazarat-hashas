@@ -45,7 +45,7 @@ const MY_MISHNA: Feature[] = [
   },
   {
     id: "progress",
-    icon: "◈",
+    icon: "◐",
     title: "Progress",
     desc: "Track your streak and how much of Shas you've learned so far.",
     built: true,
