@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLearningProgress } from "../../utils/useLearningProgress";
 import "./HomeScreen.css";
 
 interface Feature {
@@ -7,6 +8,7 @@ interface Feature {
   title: string;
   desc: string;
   built: boolean;
+  status?: string;
 }
 
 /** My Mishna: personal, tracked things — tied to your notes, progress, or
@@ -115,6 +117,7 @@ function FeatureGrid({ features, onNavigate }: { features: Feature[]; onNavigate
           <span className="home-card__icon">{f.icon}</span>
           <span className="home-card__title">{f.title}</span>
           <span className="home-card__desc">{f.desc}</span>
+          {f.status && <span className="home-card__status">{f.status}</span>}
           {!f.built && <span className="home-card__soon">Coming soon</span>}
         </button>
       ))}
@@ -128,6 +131,22 @@ interface HomeScreenProps {
 
 export function HomeScreen({ onNavigate }: HomeScreenProps) {
   const [showIntro, setShowIntro] = useState(false);
+  const progress = useLearningProgress();
+
+  const myMishnaWithStatus = MY_MISHNA.map((f) => {
+    if (f.id === "limmud") {
+      return {
+        ...f,
+        status: progress.finishedShas
+          ? "Finished Shas!"
+          : `🔥 ${progress.streak.current}-day streak`,
+      };
+    }
+    if (f.id === "progress") {
+      return { ...f, status: `${progress.shasPercent()}% of Shas learned` };
+    }
+    return f;
+  });
 
   return (
     <div className="stage">
@@ -151,7 +170,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
         </button>
 
         <h2 className="home-section-title">My Mishna</h2>
-        <FeatureGrid features={MY_MISHNA} onNavigate={onNavigate} />
+        <FeatureGrid features={myMishnaWithStatus} onNavigate={onNavigate} />
 
         <h2 className="home-section-title">Learning Tools</h2>
         <FeatureGrid features={LEARNING_TOOLS} onNavigate={onNavigate} />

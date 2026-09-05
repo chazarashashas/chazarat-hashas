@@ -170,6 +170,18 @@
   color: var(--ink-soft);
 }
 
+.home-card__status {
+  display: inline-block;
+  margin-top: 6px;
+  font-family: var(--font-heading);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--brand);
+  background: #eaf0f8;
+  border-radius: 999px;
+  padding: 3px 9px;
+}
+
 .home-card__soon {
   position: absolute;
   top: 10px;
