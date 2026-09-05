@@ -49,6 +49,31 @@
   cursor: not-allowed;
 }
 
+.nav-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.nav-group__divider {
+  width: 44px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.15);
+  margin-top: 6px;
+}
+
+.nav-group__label {
+  font-family: var(--font-heading);
+  font-size: 9px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: -2px;
+}
+
 /* Below phone width the left rail becomes a fixed bottom tab bar instead —
    a permanent ~90px-wide side column left almost no room for content on a
    narrow screen. */
@@ -81,5 +106,23 @@
 
   .nav-item__icon {
     font-size: 16px;
+  }
+
+  .nav-group {
+    flex-direction: row;
+    align-items: stretch;
+    width: auto;
+    gap: 2px;
+  }
+
+  .nav-group__divider {
+    width: 1px;
+    height: auto;
+    align-self: stretch;
+    margin: 4px 4px 4px 2px;
+  }
+
+  .nav-group__label {
+    display: none;
   }
 }

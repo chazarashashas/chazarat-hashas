@@ -170,6 +170,14 @@
   color: var(--ink-soft);
 }
 
+.home-card__skill {
+  display: block;
+  margin-top: 5px;
+  font-size: 9.5px;
+  font-style: italic;
+  color: var(--ink-soft);
+}
+
 .home-card__status {
   display: inline-block;
   margin-top: 6px;
