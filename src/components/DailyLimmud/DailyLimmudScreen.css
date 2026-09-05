@@ -84,21 +84,28 @@
 }
 
 .limmud-mishna {
-  font-size: 14px;
-  line-height: 1.75;
-  color: var(--ink);
-  text-align: right;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
 .limmud-mishna:last-child {
   margin-bottom: 0;
 }
 
-.limmud-mishna__num {
-  color: var(--gold);
+.limmud-mishna__title {
+  margin: 0 0 4px;
+  font-family: var(--font-hebrew);
+  font-size: 12px;
   font-weight: 700;
-  margin-inline-end: 4px;
+  color: var(--gold);
+  text-align: right;
+}
+
+.limmud-mishna__text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--ink);
+  text-align: right;
 }
 
 .limmud-mishna__loading,

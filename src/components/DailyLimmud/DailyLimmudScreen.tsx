@@ -154,7 +154,10 @@ export function DailyLimmudScreen() {
               {groups.map((g) => (
                 <div key={`${g.masechetEn}-${g.perek}`} className="limmud-perek-block">
                   {g.items.map((item) => (
-                    <div key={item.mishnah} className="limmud-mishna" dir="rtl">
+                    <div key={item.mishnah} className="limmud-mishna">
+                      <p className="limmud-mishna__title" dir="rtl">
+                        משנה {hebrewNumeral(item.mishnah)}
+                      </p>
                       {item.status === "loading" ? (
                         <span className="limmud-mishna__loading">Loading…</span>
                       ) : item.status === "error" ? (
@@ -162,12 +165,9 @@ export function DailyLimmudScreen() {
                           {item.error}
                         </span>
                       ) : (
-                        <>
-                          <span className="limmud-mishna__num" dir="ltr">
-                            {item.mishnah}.
-                          </span>
+                        <p className="limmud-mishna__text" dir="rtl">
                           {item.textHe}
-                        </>
+                        </p>
                       )}
                     </div>
                   ))}

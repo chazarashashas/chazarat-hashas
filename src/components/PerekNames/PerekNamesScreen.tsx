@@ -4,12 +4,14 @@ import { SEDER_TABS } from "../../data/sederTabs";
 import { TabBar } from "../TabBar/TabBar";
 import { hebrewNumeral } from "../../utils/hebrewNumeral";
 import { usePerekNotes } from "../../utils/usePerekNotes";
+import { PrintNotesView } from "../PrintNotes/PrintNotesView";
 import "./PerekNamesScreen.css";
 
 export function PerekNamesScreen() {
   const [sederTab, setSederTab] = useState("all");
   const [selectedSederId, setSelectedSederId] = useState<string>(SEDARIM[0].id);
   const [selectedMasechetEn, setSelectedMasechetEn] = useState<string>(SEDARIM[0].masechtot[0].en);
+  const [printOpen, setPrintOpen] = useState(false);
   const { perekNotes, setPerekNotes, masechetSentences, setMasechetSentences } = usePerekNotes();
 
   const activeSeder = SEDARIM.find((s) => s.id === sederTab);
@@ -64,6 +66,9 @@ export function PerekNamesScreen() {
       <div className="panel">
         <button className="restart-icon" title="Clear these notes" onClick={handleClear}>
           ↺
+        </button>
+        <button className="print-notes-trigger" onClick={() => setPrintOpen(true)}>
+          ⎙ Print notes
         </button>
         <p className="app-title">Chazarat Hashas</p>
         <h1 className="panel__title">My Mishna Notes</h1>
@@ -133,6 +138,12 @@ export function PerekNamesScreen() {
         </div>
       </div>
       <TabBar tabs={SEDER_TABS} activeId={sederTab} onSelect={handleSederTabChange} />
+      {printOpen && (
+        <PrintNotesView
+          initialMasechetEn={sederTab !== "all" ? selectedMasechetEn : undefined}
+          onClose={() => setPrintOpen(false)}
+        />
+      )}
     </div>
   );
 }

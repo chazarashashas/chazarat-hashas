@@ -13,6 +13,7 @@ import { ResourcesScreen } from "./components/Resources/ResourcesScreen";
 import { DailyLimmudScreen } from "./components/DailyLimmud/DailyLimmudScreen";
 import { ProgressScreen } from "./components/Progress/ProgressScreen";
 import { LoginScreen } from "./components/Login/LoginScreen";
+import { ChevrusaScreen } from "./components/Chevrusa/ChevrusaScreen";
 import { shuffle } from "./utils/shuffle";
 import type { ViewState } from "./types/viewState";
 import "./App.css";
@@ -89,6 +90,8 @@ function App() {
             <ProgressScreen />
           ) : section === "login" ? (
             <LoginScreen />
+          ) : section === "chevrusa" ? (
+            <ChevrusaScreen />
           ) : (
             <RecallScreen />
           )}

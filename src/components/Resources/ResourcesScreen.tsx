@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { PrintNotesView } from "../PrintNotes/PrintNotesView";
 import "./ResourcesScreen.css";
 
 interface Resource {
@@ -29,6 +31,8 @@ const RESOURCES: Resource[] = [
 ];
 
 export function ResourcesScreen() {
+  const [printOpen, setPrintOpen] = useState(false);
+
   return (
     <div className="stage">
       <div className="panel">
@@ -51,8 +55,22 @@ export function ResourcesScreen() {
               </a>
             </div>
           ))}
+
+          <div className="resource-card">
+            <div className="resource-card__body">
+              <p className="resource-card__title">My Mishna Notes (printable)</p>
+              <p className="resource-card__desc">
+                Print your own notes and concepts — pick one masechet, one seder, or all of Shas.
+              </p>
+            </div>
+            <button className="resource-card__download" onClick={() => setPrintOpen(true)}>
+              Print
+            </button>
+          </div>
         </div>
       </div>
+
+      {printOpen && <PrintNotesView onClose={() => setPrintOpen(false)} />}
     </div>
   );
 }

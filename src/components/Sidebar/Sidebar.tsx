@@ -8,8 +8,8 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { id: "limmud", icon: "◷", label: "Daily Limmud", built: true },
   { id: "home", icon: "⌂", label: "Home", built: true },
+  { id: "limmud", icon: "◷", label: "Daily Limmud", built: true },
   { id: "sedarim", icon: "★", label: "Sidrei Hamishna", built: true },
   { id: "mishna", icon: "◆", label: "Mishna Quiz", built: true },
   { id: "sort", icon: "▧", label: "Seder Sort", built: true },
@@ -18,6 +18,7 @@ const NAV_ITEMS: NavItem[] = [
   { id: "perek", icon: "❖", label: "My Mishna Notes", built: true },
   { id: "resources", icon: "⎙", label: "Resources", built: true },
   { id: "progress", icon: "◈", label: "Progress", built: true },
+  { id: "chevrusa", icon: "⚯", label: "Chevrusa", built: true },
   { id: "login", icon: "⚿", label: "Log In", built: true },
 ];
 

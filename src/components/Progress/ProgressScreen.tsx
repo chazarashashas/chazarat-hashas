@@ -3,6 +3,7 @@ import { SEDARIM } from "../../data/shas";
 import { getPerekName } from "../../data/perekInfo";
 import { useLearningProgress } from "../../utils/useLearningProgress";
 import { LogLearningModal } from "./LogLearningModal";
+import { PrintNotesView } from "../PrintNotes/PrintNotesView";
 import "./ProgressScreen.css";
 
 function ProgressBar({ pct }: { pct: number }) {
@@ -22,6 +23,7 @@ export function ProgressScreen() {
   const progress = useLearningProgress();
   const [expanded, setExpanded] = useState<string | null>(null);
   const [logOpen, setLogOpen] = useState(false);
+  const [printOpen, setPrintOpen] = useState(false);
 
   return (
     <div className="stage">
@@ -48,9 +50,14 @@ export function ProgressScreen() {
           </div>
         </div>
 
-        <button className="restart progress-log-btn" onClick={() => setLogOpen(true)}>
-          + Log learning
-        </button>
+        <div className="progress-actions">
+          <button className="restart progress-log-btn" onClick={() => setLogOpen(true)}>
+            + Log learning
+          </button>
+          <button className="progress-print-btn" onClick={() => setPrintOpen(true)}>
+            ⎙ Print notes
+          </button>
+        </div>
 
         <div className="progress-list">
           {SEDARIM.map((seder) => {
@@ -123,6 +130,7 @@ export function ProgressScreen() {
           onClose={() => setLogOpen(false)}
         />
       )}
+      {printOpen && <PrintNotesView onClose={() => setPrintOpen(false)} />}
     </div>
   );
 }
