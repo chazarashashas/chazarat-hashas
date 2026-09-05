@@ -18,9 +18,9 @@
    constrained. A hard height + overflow:hidden guarantees the same
    compact size everywhere. */
 .nav-item {
-  width: 76px;
+  width: 84px;
   height: 50px;
-  padding: 6px 4px;
+  padding: 6px 2px;
   border-radius: 14px;
   background: transparent;
   border: none;
@@ -28,7 +28,7 @@
   text-align: center;
   cursor: pointer;
   font-family: var(--font-heading);
-  font-size: 10px;
+  font-size: 9.5px;
   font-weight: 600;
   display: flex;
   flex-direction: column;
@@ -52,8 +52,17 @@
   display: block;
 }
 
+/* Never wrap, regardless of which font actually renders — a fallback
+   font (if "Space Grotesk" fails to load for any reason) can be wide
+   enough that a label like "Sidrei Hamishna" no longer fits on one
+   line at this width, wrapping to two lines and defeating the fixed
+   button height above no matter how that height is enforced. */
 .nav-item__label {
   line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .nav-item--active {
