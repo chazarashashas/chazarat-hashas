@@ -3,57 +3,52 @@
   width: 100%;
 }
 
-.progress-shas {
-  text-align: center;
-  margin: 6px 0 14px;
-}
-
-.progress-shas__pct {
-  font-family: var(--font-heading);
-  font-size: 40px;
-  font-weight: 800;
-  color: var(--ink);
-  line-height: 1;
-}
-
-.progress-shas__label {
-  font-size: 11px;
-  color: var(--ink-soft);
-  font-weight: 600;
-  margin-top: 4px;
-}
-
-.progress-streaks {
+.siyumim-stats {
   display: flex;
-  justify-content: center;
-  gap: 28px;
-  margin-bottom: 14px;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 4px 0 20px;
 }
 
-.progress-streak {
+.siyumim-stat {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
+  text-align: center;
+  background: var(--surface);
+  border-radius: var(--radius-control);
+  padding: 12px 6px;
 }
 
-.progress-streak__num {
+.siyumim-stat__num {
   font-family: var(--font-heading);
-  font-size: 15px;
+  font-size: 24px;
   font-weight: 800;
   color: var(--ink);
+  line-height: 1.2;
 }
 
-.progress-streak__label {
-  font-size: 9.5px;
-  font-weight: 600;
-  color: var(--ink-soft);
+.siyumim-stat__label {
+  font-size: 10.5px;
+  color: var(--muted);
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+.siyumim-next-label {
+  margin: 0 0 8px;
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
 }
 
 .progress-actions {
   display: flex;
   justify-content: center;
   gap: 10px;
-  margin-bottom: 16px;
+  margin: 18px 0 16px;
 }
 
 .progress-log-btn {
@@ -104,8 +99,8 @@
 .progress-row--seder .progress-row__label {
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: 12.5px;
-  color: var(--ink);
+  font-size: 13px;
+  color: var(--row-hue, var(--ink));
 }
 
 .progress-row--masechet {
@@ -151,9 +146,14 @@
 
 .progress-bar__fill {
   height: 100%;
-  background: var(--brand);
+  background: var(--row-hue, var(--ink));
   border-radius: 999px;
   transition: width 0.2s ease;
+}
+
+.progress-row--seder .progress-row__pct,
+.progress-row--masechet .progress-row__pct {
+  color: var(--row-hue, var(--muted));
 }
 
 .progress-masechtot {

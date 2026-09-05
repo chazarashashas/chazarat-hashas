@@ -1,0 +1,177 @@
+.flip-counter {
+  --flip-hue: var(--gold);
+  background: var(--surface);
+  border-radius: var(--radius-card);
+  border-top: 3px solid var(--flip-hue);
+  padding: 15px 16px 16px;
+}
+
+.flip-counter__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.flip-counter__step {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  min-width: 44px;
+  min-height: 30px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line);
+  background: var(--surface-hi);
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.flip-counter__step:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.flip-counter__titles {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+}
+
+.flip-counter__title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.flip-counter__context {
+  margin: 2px 0 0;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@keyframes flip-counter-pop {
+  from {
+    transform: scale(0.86);
+    opacity: 0.4;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.flip-counter__pct {
+  margin: 10px 0 6px;
+  text-align: center;
+  font-family: var(--font-heading);
+  font-size: 34px;
+  font-weight: 800;
+  color: var(--flip-hue);
+  animation: flip-counter-pop 0.3s ease;
+}
+
+.flip-counter__bar {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--track);
+  overflow: hidden;
+}
+
+.flip-counter__bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--flip-hue);
+  transition: width 0.4s ease;
+}
+
+.flip-counter__count {
+  margin: 8px 0 0;
+  text-align: center;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--faint);
+}
+
+.flip-counter__chips {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.flip-counter__chip {
+  min-height: 28px;
+  padding: 5px 12px;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--line);
+  background: var(--surface-hi);
+  color: var(--muted);
+  font-family: var(--font-heading);
+  font-size: 10.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.flip-counter__chip--active {
+  background: var(--flip-hue);
+  border-color: var(--flip-hue);
+  color: #fff;
+}
+
+/* Large variant: the Siyumim hero, on navy. */
+.flip-counter--large {
+  background: var(--ink);
+  border-top: none;
+  border-radius: var(--radius-hero);
+  padding: 22px 22px 24px;
+  box-shadow: var(--shadow-hero);
+}
+
+.flip-counter--large .flip-counter__title {
+  color: #fff;
+  font-size: 17px;
+}
+
+.flip-counter--large .flip-counter__context {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.flip-counter--large .flip-counter__step {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #fff;
+}
+
+.flip-counter--large .flip-counter__pct {
+  font-size: 46px;
+}
+
+.flip-counter--large .flip-counter__bar {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.flip-counter--large .flip-counter__count {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.flip-counter--large .flip-counter__chip {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.flip-counter--large .flip-counter__chip--active {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--ink);
+}
