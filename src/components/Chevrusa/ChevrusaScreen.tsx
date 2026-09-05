@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { SEDARIM } from "../../data/shas";
 import { useAuth } from "../../utils/useAuth";
-import { useChevrusa, type Group, type PendingInvite } from "../../utils/useChevrusa";
+import { useChevrusa, type Group, type PendingInvite, type SentInvite } from "../../utils/useChevrusa";
 import "./ChevrusaScreen.css";
 
 type Mode = "chevrusa" | "chabura";
@@ -71,7 +71,8 @@ interface ChevrusaScreenProps {
 
 export function ChevrusaScreen({ onOpenLogin }: ChevrusaScreenProps) {
   const { session } = useAuth();
-  const { groups, pendingInvites, createGroup, acceptInvite, declineInvite } = useChevrusa();
+  const { groups, pendingInvites, sentInvites, createGroup, acceptInvite, declineInvite, cancelInvite } =
+    useChevrusa();
 
   const [mode, setMode] = useState<Mode>("chevrusa");
   const [inviteValue, setInviteValue] = useState("");
@@ -132,6 +133,12 @@ export function ChevrusaScreen({ onOpenLogin }: ChevrusaScreenProps) {
   async function handleDecline(invite: PendingInvite) {
     setError(null);
     const result = await declineInvite(invite);
+    if (result) setError(result);
+  }
+
+  async function handleCancel(invite: SentInvite) {
+    setError(null);
+    const result = await cancelInvite(invite);
     if (result) setError(result);
   }
 
@@ -303,12 +310,35 @@ export function ChevrusaScreen({ onOpenLogin }: ChevrusaScreenProps) {
               <div key={inv.id} className="invite-row">
                 <span className="invite-row__text">
                   {inv.isChabura ? `Chabura "${inv.groupName}"` : "Chevrusa"} — {inv.masechetEn}
+                  {inv.fromName && <span className="invite-row__from"> · from {inv.fromName}</span>}
                 </span>
                 <button className="invite-row__accept" onClick={() => handleAccept(inv)}>
                   Accept
                 </button>
                 <button className="invite-row__decline" onClick={() => handleDecline(inv)}>
                   Decline
+                </button>
+              </div>
+            ))
+          )}
+        </div>
+
+        <div className="chevrusa-section">
+          <p className="chevrusa-section__label">Invites you've sent</p>
+          {sentInvites.length === 0 ? (
+            <p className="chevrusa-empty">No outstanding invites.</p>
+          ) : (
+            sentInvites.map((inv) => (
+              <div key={inv.id} className="invite-row">
+                <span className="invite-row__text">
+                  {inv.invitedEmail} — {inv.masechetEn}
+                  <span className="invite-row__from">
+                    {" "}
+                    · {inv.status === "declined" ? "declined" : "waiting for them to accept"}
+                  </span>
+                </span>
+                <button className="invite-row__decline" onClick={() => handleCancel(inv)}>
+                  Cancel
                 </button>
               </div>
             ))

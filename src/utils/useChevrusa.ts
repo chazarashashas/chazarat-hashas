@@ -23,6 +23,17 @@ export interface PendingInvite {
   masechetEn: string;
   groupName: string | null;
   isChabura: boolean;
+  fromName: string | null;
+}
+
+export interface SentInvite {
+  id: string;
+  groupId: string;
+  masechetEn: string;
+  groupName: string | null;
+  isChabura: boolean;
+  invitedEmail: string;
+  status: string;
 }
 
 function todayStr(): string {
@@ -40,6 +51,7 @@ export function useChevrusa() {
   const { session } = useAuth();
   const [groups, setGroups] = useState<Group[]>([]);
   const [pendingInvites, setPendingInvites] = useState<PendingInvite[]>([]);
+  const [sentInvites, setSentInvites] = useState<SentInvite[]>([]);
 
   // Reset synchronously during render when the session goes away (log
   // out, or a different user logs in on this device) — adjusting state
@@ -52,6 +64,7 @@ export function useChevrusa() {
     if (!sessionId) {
       setGroups([]);
       setPendingInvites([]);
+      setSentInvites([]);
     }
   }
 
@@ -104,12 +117,41 @@ export function useChevrusa() {
 
     const { data: invitesData } = await supabase
       .from("group_invites")
-      .select("id, group_id, groups(name, masechet_en, is_chabura)")
+      .select("id, group_id, invited_by, groups(name, masechet_en, is_chabura)")
       .eq("invited_email", session.user.email)
       .eq("status", "pending");
 
+    const inviterIds = Array.from(new Set((invitesData ?? []).map((inv) => inv.invited_by as string)));
+    const { data: inviterProfiles } = inviterIds.length
+      ? await supabase.from("profiles").select("id, username, first_name").in("id", inviterIds)
+      : { data: [] as { id: string; username: string | null; first_name: string | null }[] };
+    const inviterById = new Map((inviterProfiles ?? []).map((p) => [p.id, p]));
+
     setPendingInvites(
       (invitesData ?? []).map((inv) => {
+        const g = inv.groups as unknown as
+          | { name: string | null; masechet_en: string; is_chabura: boolean }
+          | null;
+        const inviter = inviterById.get(inv.invited_by as string);
+        return {
+          id: inv.id,
+          groupId: inv.group_id,
+          masechetEn: g?.masechet_en ?? "",
+          groupName: g?.name ?? null,
+          isChabura: g?.is_chabura ?? false,
+          fromName: inviter?.first_name ?? inviter?.username ?? null,
+        };
+      }),
+    );
+
+    const { data: sentData } = await supabase
+      .from("group_invites")
+      .select("id, group_id, invited_email, status, groups(name, masechet_en, is_chabura)")
+      .eq("invited_by", session.user.id)
+      .in("status", ["pending", "declined"]);
+
+    setSentInvites(
+      (sentData ?? []).map((inv) => {
         const g = inv.groups as unknown as
           | { name: string | null; masechet_en: string; is_chabura: boolean }
           | null;
@@ -119,6 +161,8 @@ export function useChevrusa() {
           masechetEn: g?.masechet_en ?? "",
           groupName: g?.name ?? null,
           isChabura: g?.is_chabura ?? false,
+          invitedEmail: inv.invited_email,
+          status: inv.status,
         };
       }),
     );
@@ -143,6 +187,12 @@ export function useChevrusa() {
   ): Promise<string | null> {
     if (!supabase || !session) return "Accounts aren't connected yet.";
 
+    const myEmailEarly = session.user.email?.toLowerCase();
+    const typedSomething = inviteEmails.some((e) => e.trim());
+    const onlySelf =
+      typedSomething && inviteEmails.every((e) => !e.trim() || e.trim().toLowerCase() === myEmailEarly);
+    if (onlySelf) return "You can't invite yourself — enter someone else's email.";
+
     const { data: group, error: groupError } = await supabase
       .from("groups")
       .insert({ masechet_en: masechetEn, is_chabura: isChabura, name, created_by: session.user.id })
@@ -155,7 +205,14 @@ export function useChevrusa() {
       .insert({ group_id: group.id, user_id: session.user.id });
     if (memberError) return memberError.message;
 
-    const validEmails = Array.from(new Set(inviteEmails.map((e) => e.trim().toLowerCase()).filter(Boolean)));
+    const myEmail = session.user.email?.toLowerCase();
+    const validEmails = Array.from(
+      new Set(
+        inviteEmails
+          .map((e) => e.trim().toLowerCase())
+          .filter((e) => Boolean(e) && e !== myEmail),
+      ),
+    );
     if (validEmails.length > 0) {
       const { error: inviteError } = await supabase
         .from("group_invites")
@@ -192,7 +249,27 @@ export function useChevrusa() {
     return null;
   }
 
-  return { groups, pendingInvites, createGroup, acceptInvite, declineInvite, refresh };
+  /** Cancels an invite you sent, whether it's still pending or was
+      declined — the sender shouldn't have to keep seeing a dead invite
+      in their own list forever. */
+  async function cancelInvite(invite: SentInvite): Promise<string | null> {
+    if (!supabase) return "Accounts aren't connected yet.";
+    const { error } = await supabase.from("group_invites").delete().eq("id", invite.id);
+    if (error) return error.message;
+    await refresh();
+    return null;
+  }
+
+  return {
+    groups,
+    pendingInvites,
+    sentInvites,
+    createGroup,
+    acceptInvite,
+    declineInvite,
+    cancelInvite,
+    refresh,
+  };
 }
 
 /** Records "learned today" for every group the user is in on this

@@ -192,6 +192,11 @@
   color: var(--ink);
 }
 
+.invite-row__from {
+  color: var(--ink-soft);
+  font-style: italic;
+}
+
 .invite-row__accept,
 .invite-row__decline {
   border: none;
