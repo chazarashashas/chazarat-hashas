@@ -10,6 +10,9 @@ import { SederSortScreen } from "./components/SederSort/SederSortScreen";
 import { ShasDashScreen } from "./components/ShasDash/ShasDashScreen";
 import { RecallScreen } from "./components/Recall/RecallScreen";
 import { ResourcesScreen } from "./components/Resources/ResourcesScreen";
+import { DailyLimmudScreen } from "./components/DailyLimmud/DailyLimmudScreen";
+import { ProgressScreen } from "./components/Progress/ProgressScreen";
+import { LoginScreen } from "./components/Login/LoginScreen";
 import { shuffle } from "./utils/shuffle";
 import type { ViewState } from "./types/viewState";
 import "./App.css";
@@ -61,7 +64,11 @@ function App() {
     <div className="app">
       <Sidebar activeId={section} onSelect={setSection} />
       <main className="main">
-        <div className={"main__content" + (section === "dash" ? " main__content--wide" : "")}>
+        <div
+          className={
+            "main__content" + (section === "dash" || section === "limmud" ? " main__content--wide" : "")
+          }
+        >
           {section === "home" ? (
             <HomeScreen onNavigate={setSection} />
           ) : section === "sedarim" ? (
@@ -76,6 +83,12 @@ function App() {
             <ShasDashScreen />
           ) : section === "resources" ? (
             <ResourcesScreen />
+          ) : section === "limmud" ? (
+            <DailyLimmudScreen />
+          ) : section === "progress" ? (
+            <ProgressScreen />
+          ) : section === "login" ? (
+            <LoginScreen />
           ) : (
             <RecallScreen />
           )}

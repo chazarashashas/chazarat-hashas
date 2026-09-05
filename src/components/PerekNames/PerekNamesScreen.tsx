@@ -66,7 +66,7 @@ export function PerekNamesScreen() {
           ↺
         </button>
         <p className="app-title">Chazarat Hashas</p>
-        <h1 className="panel__title">My Mishna</h1>
+        <h1 className="panel__title">My Mishna Notes</h1>
         <p className="panel__subtitle">
           Pick a masechet, then give each perek a nickname to help it stick. For example: "the laws of
           Zimmun," "who is considered ne'eman."
@@ -114,7 +114,7 @@ export function PerekNamesScreen() {
               </>
             ) : selectedMasechet ? (
               <>
-                <p className="perek-detail__label">My Mishna — {selectedMasechet.en}</p>
+                <p className="perek-detail__label">My Mishna Notes — {selectedMasechet.en}</p>
                 {Array.from({ length: selectedMasechet.perakim }, (_, i) => i + 1).map((n) => (
                   <div key={n} className="perek-row">
                     <span className="perek-row__num" dir="rtl">

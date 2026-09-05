@@ -13,8 +13,8 @@ interface PerekNoteModalProps {
 /**
  * A quick way to add or edit one perek's personal note from wherever that
  * perek comes up (Mishna Quiz, eventually the Map) — without leaving the
- * screen for the full My Mishna notebook. Reads/writes the same storage as
- * My Mishna, so it's the same note either way.
+ * screen for the full My Mishna Notes notebook. Reads/writes the same
+ * storage as My Mishna Notes, so it's the same note either way.
  *
  * The note value and its persistence live in the parent screen (via
  * initialValue/onSave), not in a hook instance owned by this modal —

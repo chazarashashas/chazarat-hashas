@@ -1,0 +1,143 @@
+.stage {
+  position: relative;
+  width: 100%;
+}
+
+.progress-shas {
+  text-align: center;
+  margin: 6px 0 14px;
+}
+
+.progress-shas__pct {
+  font-family: var(--font-heading);
+  font-size: 40px;
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1;
+}
+
+.progress-shas__label {
+  font-size: 11px;
+  color: var(--ink-soft);
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.progress-streaks {
+  display: flex;
+  justify-content: center;
+  gap: 28px;
+  margin-bottom: 14px;
+}
+
+.progress-streak {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.progress-streak__num {
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.progress-streak__label {
+  font-size: 9.5px;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.progress-log-btn {
+  width: auto;
+  display: block;
+  margin: 0 auto 16px;
+  padding: 9px 20px;
+}
+
+.progress-list {
+  max-height: 420px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.progress-seder {
+  margin-bottom: 10px;
+}
+
+.progress-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: none;
+  border: none;
+  padding: 6px 2px;
+  cursor: pointer;
+  font-family: var(--font-body);
+  text-align: left;
+}
+
+.progress-row--seder .progress-row__label {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 12.5px;
+  color: var(--ink);
+}
+
+.progress-row--masechet {
+  padding-left: 14px;
+}
+
+.progress-row--masechet .progress-row__label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.progress-row--perek {
+  padding-left: 28px;
+  cursor: default;
+}
+
+.progress-row--perek .progress-row__label {
+  font-size: 10px;
+  color: var(--ink-soft);
+}
+
+.progress-row__pct {
+  flex-shrink: 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  margin-left: 8px;
+}
+
+.progress-bar {
+  height: 5px;
+  border-radius: 999px;
+  background: var(--border);
+  overflow: hidden;
+}
+
+.progress-masechtot .progress-bar,
+.progress-perakim .progress-bar {
+  margin-left: 14px;
+  width: calc(100% - 14px);
+}
+
+.progress-bar__fill {
+  height: 100%;
+  background: var(--brand);
+  border-radius: 999px;
+  transition: width 0.2s ease;
+}
+
+.progress-masechtot {
+  margin-top: 2px;
+}
+
+.progress-perakim {
+  margin: 2px 0 4px;
+}

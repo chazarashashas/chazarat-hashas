@@ -1,0 +1,53 @@
+.stage {
+  position: relative;
+  width: 100%;
+}
+
+.login-panel {
+  text-align: center;
+}
+
+.login-notice {
+  text-align: left;
+  margin-top: 4px;
+}
+
+.login-field {
+  display: block;
+  text-align: left;
+  margin: 18px 0 14px;
+}
+
+.login-field__label {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 5px;
+}
+
+.login-field input {
+  width: 100%;
+  box-sizing: border-box;
+  height: 40px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: #fffbf0;
+  padding: 0 14px;
+  font-size: 13px;
+  font-family: var(--font-body);
+  color: var(--ink);
+}
+
+.login-field input:focus {
+  outline: none;
+  border-color: var(--brand);
+}
+
+.login-panel .restart:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

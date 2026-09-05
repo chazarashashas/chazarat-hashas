@@ -48,7 +48,7 @@ const FEATURES: Feature[] = [
   {
     id: "perek",
     icon: "❖",
-    title: "My Mishna",
+    title: "My Mishna Notes",
     desc: "Make Shas yours — your own names, notes, and memory cues for every perek.",
     built: true,
   },

@@ -1,7 +1,7 @@
 import { useLocalStorageState } from "./useLocalStorageState";
 
 /**
- * Shared note storage for My Mishna — lifted out of PerekNamesScreen so any
+ * Shared note storage for My Mishna Notes — lifted out of PerekNamesScreen so any
  * screen can read or write the same notes (e.g. Mishna Quiz linking to the
  * perek it just revealed). Every consumer reads the same localStorage keys,
  * which is enough to stay in sync here since the app only ever has one
