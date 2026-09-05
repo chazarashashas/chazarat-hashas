@@ -26,7 +26,8 @@
   margin-bottom: 5px;
 }
 
-.login-field input {
+.login-field input,
+.login-field select {
   width: 100%;
   box-sizing: border-box;
   height: 40px;
@@ -39,7 +40,8 @@
   color: var(--ink);
 }
 
-.login-field input:focus {
+.login-field input:focus,
+.login-field select:focus {
   outline: none;
   border-color: var(--brand);
 }
@@ -65,4 +67,57 @@
   color: var(--ink-soft);
   font-style: italic;
   margin: 0;
+}
+
+.chabura-member-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.chabura-member-row input {
+  width: 100%;
+  box-sizing: border-box;
+  height: 40px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: #fffbf0;
+  padding: 0 14px;
+  font-size: 13px;
+  font-family: var(--font-body);
+  color: var(--ink);
+}
+
+.chabura-member-row input:focus {
+  outline: none;
+  border-color: var(--brand);
+}
+
+.chabura-member-remove {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: #fffbf0;
+  color: var(--ink-soft);
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.chabura-member-remove:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.chabura-add-member {
+  background: none;
+  border: none;
+  color: var(--brand);
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 0;
 }
