@@ -96,10 +96,25 @@
   text-align: left;
 }
 
+.home-section-title {
+  margin: 22px 0 4px;
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  text-align: left;
+}
+
 .home-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
+  margin-top: 10px;
+}
+
+.home-grid:first-of-type {
   margin-top: 18px;
 }
 

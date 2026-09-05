@@ -9,7 +9,55 @@ interface Feature {
   built: boolean;
 }
 
-const FEATURES: Feature[] = [
+/** My Mishna: personal, tracked things — tied to your notes, progress, or
+    account. Learning Tools: the games/drills that don't track anything
+    personal, just practice. */
+const MY_MISHNA: Feature[] = [
+  {
+    id: "limmud",
+    icon: "◷",
+    title: "Daily Limmud",
+    desc: "Your next portion of Mishnayot, straight through Shas in order.",
+    built: true,
+  },
+  {
+    id: "map",
+    icon: "⊞",
+    title: "Map of Shas",
+    desc: "Explore every seder, masechet, perek, and mishnah, with your progress along the way.",
+    built: true,
+  },
+  {
+    id: "perek",
+    icon: "❖",
+    title: "Mishna Notes",
+    desc: "Make Shas yours — your own names, notes, and memory cues for every perek.",
+    built: true,
+  },
+  {
+    id: "progress",
+    icon: "◈",
+    title: "Progress",
+    desc: "Track your streak and how much of Shas you've learned so far.",
+    built: true,
+  },
+  {
+    id: "chevrusa",
+    icon: "⚯",
+    title: "Chevrusa",
+    desc: "Pair up with a study partner or start a chabura to learn together.",
+    built: true,
+  },
+  {
+    id: "login",
+    icon: "⚿",
+    title: "Log In",
+    desc: "Sign in to save your notes, progress, and streak to your account.",
+    built: true,
+  },
+];
+
+const LEARNING_TOOLS: Feature[] = [
   {
     id: "sedarim",
     icon: "★",
@@ -46,13 +94,33 @@ const FEATURES: Feature[] = [
     built: true,
   },
   {
-    id: "perek",
-    icon: "❖",
-    title: "My Mishna Notes",
-    desc: "Make Shas yours — your own names, notes, and memory cues for every perek.",
+    id: "resources",
+    icon: "⎙",
+    title: "Resources",
+    desc: "Printable worksheets for practicing Shas structure away from the screen.",
     built: true,
   },
 ];
+
+function FeatureGrid({ features, onNavigate }: { features: Feature[]; onNavigate: (id: string) => void }) {
+  return (
+    <div className="home-grid">
+      {features.map((f) => (
+        <button
+          key={f.id}
+          className={"home-card" + (f.built ? "" : " home-card--disabled")}
+          disabled={!f.built}
+          onClick={() => onNavigate(f.id)}
+        >
+          <span className="home-card__icon">{f.icon}</span>
+          <span className="home-card__title">{f.title}</span>
+          <span className="home-card__desc">{f.desc}</span>
+          {!f.built && <span className="home-card__soon">Coming soon</span>}
+        </button>
+      ))}
+    </div>
+  );
+}
 
 interface HomeScreenProps {
   onNavigate: (id: string) => void;
@@ -81,21 +149,11 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
           <cite className="home-quote__source">— תענית ז׳ ב׳–ח׳ א׳</cite>
         </blockquote>
 
-        <div className="home-grid">
-          {FEATURES.map((f) => (
-            <button
-              key={f.id}
-              className={"home-card" + (f.built ? "" : " home-card--disabled")}
-              disabled={!f.built}
-              onClick={() => onNavigate(f.id)}
-            >
-              <span className="home-card__icon">{f.icon}</span>
-              <span className="home-card__title">{f.title}</span>
-              <span className="home-card__desc">{f.desc}</span>
-              {!f.built && <span className="home-card__soon">Coming soon</span>}
-            </button>
-          ))}
-        </div>
+        <h2 className="home-section-title">My Mishna</h2>
+        <FeatureGrid features={MY_MISHNA} onNavigate={onNavigate} />
+
+        <h2 className="home-section-title">Learning Tools</h2>
+        <FeatureGrid features={LEARNING_TOOLS} onNavigate={onNavigate} />
       </div>
 
       {showIntro && (

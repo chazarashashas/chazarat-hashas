@@ -97,7 +97,7 @@ export function PrintNotesView({ initialMasechetEn, onClose }: PrintNotesViewPro
       </div>
 
       <div className="print-content">
-        <h1 className="print-title">My Mishna Notes — {scopeLabel}</h1>
+        <h1 className="print-title">Mishna Notes — {scopeLabel}</h1>
         {groups.length === 0 ? (
           <p className="print-empty">No notes yet in {scopeLabel}.</p>
         ) : (

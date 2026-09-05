@@ -7,6 +7,14 @@
   width: 100%;
 }
 
+.limmud-welcome {
+  margin: 0 0 8px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--good);
+}
+
 .limmud-controls {
   display: flex;
   align-items: center;

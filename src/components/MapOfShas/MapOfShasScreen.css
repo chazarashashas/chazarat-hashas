@@ -51,6 +51,7 @@
 .map-grid--mishnayot {
   grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
   margin-bottom: 14px;
+  direction: rtl;
 }
 
 .map-tile {

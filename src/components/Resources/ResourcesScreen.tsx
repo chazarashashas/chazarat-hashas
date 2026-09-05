@@ -58,7 +58,7 @@ export function ResourcesScreen() {
 
           <div className="resource-card">
             <div className="resource-card__body">
-              <p className="resource-card__title">My Mishna Notes (printable)</p>
+              <p className="resource-card__title">Mishna Notes (printable)</p>
               <p className="resource-card__desc">
                 Print your own notes and concepts — pick one masechet, one seder, or all of Shas.
               </p>

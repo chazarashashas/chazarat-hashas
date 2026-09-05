@@ -65,3 +65,64 @@
   font-size: 12px;
   margin: 0 0 10px;
 }
+
+.delete-account {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1.5px solid var(--border);
+  text-align: left;
+}
+
+.delete-account__label {
+  margin: 0 0 6px;
+  font-family: var(--font-heading);
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #b3261e;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.delete-account__warning {
+  margin: 0 0 10px;
+  font-size: 11.5px;
+  color: var(--ink-soft);
+  line-height: 1.4;
+}
+
+.delete-account input {
+  width: 100%;
+  box-sizing: border-box;
+  height: 38px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border);
+  background: #fffbf0;
+  padding: 0 14px;
+  font-size: 13px;
+  font-family: var(--font-body);
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+
+.delete-account input:focus {
+  outline: none;
+  border-color: #b3261e;
+}
+
+.delete-account__button {
+  width: 100%;
+  padding: 11px;
+  background: #b3261e;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.delete-account__button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

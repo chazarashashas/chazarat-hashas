@@ -4,6 +4,7 @@ import { getPerekName } from "../../data/perekInfo";
 import { fetchMishna } from "../../utils/sefaria";
 import { usePerekNotes } from "../../utils/usePerekNotes";
 import { useLearningProgress, type Pace } from "../../utils/useLearningProgress";
+import { useAuth } from "../../utils/useAuth";
 import { PerekNoteModal } from "../PerekNoteModal/PerekNoteModal";
 import { hebrewNumeral } from "../../utils/hebrewNumeral";
 import "./DailyLimmudScreen.css";
@@ -28,6 +29,7 @@ interface DailyLimmudScreenProps {
 }
 
 export function DailyLimmudScreen({ onOpenNotes }: DailyLimmudScreenProps) {
+  const { firstName, username } = useAuth();
   const progress = useLearningProgress();
   const { todaysItems, finishedShas, pace, setPace, markTodayLearned, addConcept, streak } = progress;
   const { getPerekNote, setPerekNote } = usePerekNotes();
@@ -120,6 +122,9 @@ export function DailyLimmudScreen({ onOpenNotes }: DailyLimmudScreenProps) {
       <div className="panel limmud-panel">
         <p className="app-title">Chazarat Hashas</p>
         <h1 className="panel__title">Daily Limmud</h1>
+        {(firstName || username) && (
+          <p className="limmud-welcome">Welcome back, {firstName ?? username}!</p>
+        )}
         <p className="panel__subtitle">
           Your next portion of Mishnayot, straight through Shas in order — Berachot to Uktzin.
         </p>
@@ -216,7 +221,7 @@ export function DailyLimmudScreen({ onOpenNotes }: DailyLimmudScreenProps) {
               </button>
               {onOpenNotes && (
                 <button className="limmud-concept__open-all" onClick={onOpenNotes}>
-                  → View all concepts in My Mishna Notes
+                  → View all concepts in Mishna Notes
                 </button>
               )}
             </div>

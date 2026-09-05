@@ -15,6 +15,8 @@ import { ProgressScreen } from "./components/Progress/ProgressScreen";
 import { LoginScreen } from "./components/Login/LoginScreen";
 import { ChevrusaScreen } from "./components/Chevrusa/ChevrusaScreen";
 import { MapOfShasScreen } from "./components/MapOfShas/MapOfShasScreen";
+import { useAuth } from "./utils/useAuth";
+import { useCloudSync } from "./utils/useCloudSync";
 import { shuffle } from "./utils/shuffle";
 import type { ViewState } from "./types/viewState";
 import "./App.css";
@@ -61,6 +63,8 @@ function SedarimSection() {
 
 function App() {
   const [section, setSection] = useState("home");
+  const { session } = useAuth();
+  useCloudSync(session);
 
   return (
     <div className="app">

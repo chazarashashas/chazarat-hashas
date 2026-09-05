@@ -8,7 +8,7 @@ interface PerekNoteModalProps {
   initialValue: string;
   onSave: (value: string) => void;
   onClose: () => void;
-  /** Jumps to the My Mishna Notes screen, where every note (from wherever
+  /** Jumps to the Mishna Notes screen, where every note (from wherever
       it was made) lives together. Optional so this modal still works on
       its own if a screen doesn't have navigation to offer. */
   onOpenNotes?: () => void;
@@ -17,8 +17,8 @@ interface PerekNoteModalProps {
 /**
  * A quick way to add or edit one perek's personal note from wherever that
  * perek comes up (Mishna Quiz, eventually the Map) — without leaving the
- * screen for the full My Mishna Notes notebook. Reads/writes the same
- * storage as My Mishna Notes, so it's the same note either way.
+ * screen for the full Mishna Notes notebook. Reads/writes the same
+ * storage as Mishna Notes, so it's the same note either way.
  *
  * The note value and its persistence live in the parent screen (via
  * initialValue/onSave), not in a hook instance owned by this modal —
@@ -68,7 +68,7 @@ export function PerekNoteModal({
         </button>
         {onOpenNotes && (
           <button className="note-modal__open-notes" onClick={handleOpenNotes}>
-            → Open in My Mishna Notes
+            → Open in Mishna Notes
           </button>
         )}
       </div>

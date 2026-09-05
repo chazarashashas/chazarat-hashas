@@ -11,9 +11,22 @@ export function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState("");
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
+  async function handleDeleteAccount() {
+    setDeleteError(null);
+    setDeleting(true);
+    const result = await auth.deleteAccount();
+    setDeleting(false);
+    if (result) setDeleteError(result);
+  }
 
   async function handleSubmit() {
     setError(null);
@@ -21,7 +34,9 @@ export function LoginScreen() {
     setBusy(true);
 
     const result =
-      mode === "signUp" ? await auth.signUp(email, password, username) : await auth.signIn(email, password);
+      mode === "signUp"
+        ? await auth.signUp(email, password, username, firstName, lastName)
+        : await auth.signIn(email, password);
 
     setBusy(false);
     if (result) {
@@ -39,11 +54,43 @@ export function LoginScreen() {
           <p className="app-title">Chazarat Hashas</p>
           <h1 className="panel__title">Log In</h1>
           <p className="panel__subtitle">
-            Signed in as <strong>{auth.username ?? auth.session?.user.email}</strong>.
+            Signed in as{" "}
+            <strong>
+              {auth.firstName
+                ? `${auth.firstName}${auth.lastName ? ` ${auth.lastName}` : ""}`
+                : (auth.username ?? auth.session?.user.email)}
+            </strong>
+            .
           </p>
           <button className="restart" onClick={() => auth.signOut()}>
             Sign out
           </button>
+
+          <div className="delete-account">
+            <p className="delete-account__label">Delete account</p>
+            <p className="delete-account__warning">
+              Permanently deletes your account and everything synced to it — notes, progress, and
+              streak. This can't be undone. Type DELETE to confirm.
+            </p>
+            <input
+              type="text"
+              value={deleteConfirm}
+              onChange={(e) => setDeleteConfirm(e.target.value)}
+              placeholder="DELETE"
+            />
+            {deleteError && (
+              <p className="login-error" dir="ltr">
+                {deleteError}
+              </p>
+            )}
+            <button
+              className="delete-account__button"
+              disabled={deleteConfirm !== "DELETE" || deleting}
+              onClick={handleDeleteAccount}
+            >
+              {deleting ? "Deleting…" : "Permanently delete my account"}
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -82,15 +129,35 @@ export function LoginScreen() {
         </div>
 
         {mode === "signUp" && (
-          <label className="login-field">
-            <span className="login-field__label">Username</span>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="your_username"
-            />
-          </label>
+          <>
+            <label className="login-field">
+              <span className="login-field__label">First name</span>
+              <input
+                type="text"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                placeholder="Shown when you're signed in — e.g. Yonah"
+              />
+            </label>
+            <label className="login-field">
+              <span className="login-field__label">Last name</span>
+              <input
+                type="text"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                placeholder="e.g. Cohen"
+              />
+            </label>
+            <label className="login-field">
+              <span className="login-field__label">Username</span>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="your_username"
+              />
+            </label>
+          </>
         )}
 
         <label className="login-field">
@@ -126,7 +193,13 @@ export function LoginScreen() {
 
         <button
           className="restart"
-          disabled={!supabaseConfigured || busy || !email || !password || (mode === "signUp" && !username)}
+          disabled={
+            !supabaseConfigured ||
+            busy ||
+            !email ||
+            !password ||
+            (mode === "signUp" && (!username || !firstName || !lastName))
+          }
           title={supabaseConfigured ? undefined : "Accounts aren't connected yet"}
           onClick={handleSubmit}
         >
