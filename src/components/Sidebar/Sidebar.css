@@ -11,9 +11,16 @@
   overflow-y: auto;
 }
 
+/* Fixed total height, not just a fixed icon box — some platforms give
+   these Unicode symbols (and even the label text's fallback font) much
+   taller inherent line-height than others, which was inflating every
+   button unevenly across systems no matter how the icon alone was
+   constrained. A hard height + overflow:hidden guarantees the same
+   compact size everywhere. */
 .nav-item {
   width: 76px;
-  padding: 7px 4px;
+  height: 50px;
+  padding: 6px 4px;
   border-radius: 14px;
   background: transparent;
   border: none;
@@ -26,13 +33,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 4px;
-  line-height: 1.15;
+  line-height: 1;
+  overflow: hidden;
+  flex-shrink: 0;
 }
 
-/* A fixed box, not just a font-size — some platforms substitute a much
-   larger glyph for these Unicode symbols than others render, which was
-   inflating every button's height inconsistently across systems. */
 .nav-item__icon {
   font-size: 18px;
   line-height: 1;
@@ -41,6 +48,11 @@
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  flex-shrink: 0;
+}
+
+.nav-item__label {
+  line-height: 1;
 }
 
 .nav-item--active {
