@@ -42,6 +42,11 @@
   background: #fbeded;
 }
 
+.sort-bin--selectable {
+  border-color: var(--gold);
+  cursor: pointer;
+}
+
 .sort-bin__title {
   font-family: var(--font-heading);
   font-size: 10.5px;
@@ -101,6 +106,11 @@
 
 .sort-chip--dragging {
   opacity: 0.35;
+}
+
+.sort-chip--selected {
+  outline: 2px solid var(--gold);
+  outline-offset: 1px;
 }
 
 .sort-chip-ghost {

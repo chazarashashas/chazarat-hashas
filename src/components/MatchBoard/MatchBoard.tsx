@@ -25,16 +25,39 @@ interface DragState {
   width: number;
 }
 
+/** Below this much movement, a pointerdown→up is treated as a tap rather
+    than a drag — so tap-to-select works as an alternative to dragging on
+    touch devices where a precise drag can be awkward. */
+const TAP_MOVE_THRESHOLD = 6;
+
 export function MatchBoard({ view, state, onPlace, onReset }: MatchBoardProps) {
   const { placed, pool } = state;
   const [drag, setDrag] = useState<DragState | null>(null);
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
   const [rejectIndex, setRejectIndex] = useState<number | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const completed = placed.every((p) => p !== null);
 
+  function attemptPlace(id: string, slotIndex: number) {
+    if (placed[slotIndex] || view.items[slotIndex] !== id) {
+      setRejectIndex(slotIndex);
+      window.setTimeout(() => setRejectIndex(null), 300);
+      return;
+    }
+    onPlace(id, slotIndex);
+  }
+
   function handlePointerDown(e: ReactPointerEvent<HTMLDivElement>, id: string) {
-    e.currentTarget.setPointerCapture(e.pointerId);
+    // Some environments (and rare real-world edge cases) can fail to
+    // register the pointer as active before this fires; don't let that
+    // abort the rest of the gesture.
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {
+      // ignore — the gesture still works without capture, it just won't
+      // keep tracking the pointer if it leaves this element's bounds.
+    }
     const rect = e.currentTarget.getBoundingClientRect();
     setDrag({
       id,
@@ -61,20 +84,31 @@ export function MatchBoard({ view, state, onPlace, onReset }: MatchBoardProps) {
   }
 
   function handlePointerUp(e: ReactPointerEvent<HTMLDivElement>, id: string) {
-    e.currentTarget?.releasePointerCapture(e.pointerId);
+    try {
+      e.currentTarget?.releasePointerCapture(e.pointerId);
+    } catch {
+      // no-op — see handlePointerDown
+    }
+    const wasTap =
+      drag && Math.abs(drag.x - drag.startX) < TAP_MOVE_THRESHOLD && Math.abs(drag.y - drag.startY) < TAP_MOVE_THRESHOLD;
     setDrag(null);
 
     const slotIndex = hoverIndex;
     setHoverIndex(null);
-    if (slotIndex == null) return;
 
-    if (placed[slotIndex] || view.items[slotIndex] !== id) {
-      setRejectIndex(slotIndex);
-      window.setTimeout(() => setRejectIndex(null), 300);
+    if (wasTap) {
+      setSelectedId((prev) => (prev === id ? null : id));
       return;
     }
 
-    onPlace(id, slotIndex);
+    if (slotIndex == null) return;
+    attemptPlace(id, slotIndex);
+  }
+
+  function handleSlotTap(slotIndex: number) {
+    if (!selectedId || placed[slotIndex]) return;
+    attemptPlace(selectedId, slotIndex);
+    setSelectedId(null);
   }
 
   return (
@@ -86,8 +120,8 @@ export function MatchBoard({ view, state, onPlace, onReset }: MatchBoardProps) {
         <p className="app-title">Chazarat Hashas</p>
         <h2 className="panel__title">{view.title}</h2>
         <p className="panel__subtitle">
-          To get started, drag each {view.id === "sedarim" ? "seder" : "masechet"} into its correct spot.
-          You can alternate between sedarim using the navigation bar below.
+          Drag each {view.id === "sedarim" ? "seder" : "masechet"} into its correct spot — or tap one,
+          then tap where it goes. You can alternate between sedarim using the navigation bar below.
         </p>
 
         <div className="board-progress">
@@ -116,9 +150,15 @@ export function MatchBoard({ view, state, onPlace, onReset }: MatchBoardProps) {
                   "slot" +
                   (isFilled ? " slot--filled" : "") +
                   (drag && !isFilled && hoverIndex === i ? " slot--dragover" : "") +
+                  (!drag && selectedId && !isFilled ? " slot--selectable" : "") +
                   (rejectIndex === i ? " slot--reject" : "");
                 return (
-                  <div key={i} data-slot-index={i} className={className}>
+                  <div
+                    key={i}
+                    data-slot-index={i}
+                    className={className}
+                    onClick={() => handleSlotTap(i)}
+                  >
                     <span className="slot__num">{i + 1}</span>
                     <span className="slot__label">{isFilled ? filledId : ""}</span>
                     {isFilled && <span className="slot__check">✓</span>}
@@ -137,7 +177,9 @@ export function MatchBoard({ view, state, onPlace, onReset }: MatchBoardProps) {
                   <div
                     key={id}
                     data-chip-id={id}
-                    className={"chip" + (isDragging ? " chip--dragging" : "")}
+                    className={
+                      "chip" + (isDragging ? " chip--dragging" : "") + (selectedId === id ? " chip--selected" : "")
+                    }
                     onPointerDown={(e) => handlePointerDown(e, id)}
                     onPointerMove={handlePointerMove}
                     onPointerUp={(e) => handlePointerUp(e, id)}

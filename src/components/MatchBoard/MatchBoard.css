@@ -132,6 +132,12 @@
   background: #fbeded;
 }
 
+.slot--selectable {
+  border-color: var(--gold);
+  border-style: dashed;
+  cursor: pointer;
+}
+
 .slot--filled {
   border-color: transparent;
   background: var(--brand);
@@ -205,6 +211,11 @@
 
 .chip--dragging {
   opacity: 0.35;
+}
+
+.chip--selected {
+  outline: 2px solid var(--gold);
+  outline-offset: 1px;
 }
 
 .chip-ghost {

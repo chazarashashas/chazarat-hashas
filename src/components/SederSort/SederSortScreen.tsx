@@ -35,11 +35,17 @@ function initState() {
   };
 }
 
+/** Below this much movement, a pointerdown→up is treated as a tap rather
+    than a drag — so tap-to-select works as an alternative to dragging on
+    touch devices where a precise drag can be awkward. */
+const TAP_MOVE_THRESHOLD = 6;
+
 export function SederSortScreen() {
   const [{ placed, pool }, setState] = useState(initState);
   const [drag, setDrag] = useState<DragState | null>(null);
   const [hoverBin, setHoverBin] = useState<string | null>(null);
   const [rejectBin, setRejectBin] = useState<string | null>(null);
+  const [selectedName, setSelectedName] = useState<string | null>(null);
 
   const placedCount = TOTAL - pool.length;
   const completed = placedCount === TOTAL;
@@ -50,10 +56,36 @@ export function SederSortScreen() {
     setDrag(null);
     setHoverBin(null);
     setRejectBin(null);
+    setSelectedName(null);
+  }
+
+  function attemptSort(name: string, sederId: string, targetBin: string) {
+    if (targetBin !== sederId) {
+      setRejectBin(targetBin);
+      window.setTimeout(() => setRejectBin(null), 300);
+      return;
+    }
+    setState((prev) => ({
+      placed: { ...prev.placed, [sederId]: [...prev.placed[sederId], name] },
+      pool: prev.pool.filter((n) => n !== name),
+    }));
+  }
+
+  function handleBinTap(sederId: string) {
+    if (!selectedName) return;
+    attemptSort(selectedName, bySederId[selectedName], sederId);
+    setSelectedName(null);
   }
 
   function handlePointerDown(e: ReactPointerEvent<HTMLDivElement>, name: string) {
-    e.currentTarget.setPointerCapture(e.pointerId);
+    // Some environments (and rare real-world edge cases) can fail to
+    // register the pointer as active before this fires; don't let that
+    // abort the rest of the gesture.
+    try {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    } catch {
+      // ignore — the gesture still works without capture
+    }
     const rect = e.currentTarget.getBoundingClientRect();
     setDrag({
       name,
@@ -81,23 +113,25 @@ export function SederSortScreen() {
   }
 
   function handlePointerUp(e: ReactPointerEvent<HTMLDivElement>, name: string, sederId: string) {
-    e.currentTarget?.releasePointerCapture(e.pointerId);
+    try {
+      e.currentTarget?.releasePointerCapture(e.pointerId);
+    } catch {
+      // no-op — see handlePointerDown
+    }
+    const wasTap =
+      drag && Math.abs(drag.x - drag.startX) < TAP_MOVE_THRESHOLD && Math.abs(drag.y - drag.startY) < TAP_MOVE_THRESHOLD;
     setDrag(null);
 
     const targetBin = hoverBin;
     setHoverBin(null);
-    if (!targetBin) return;
 
-    if (targetBin !== sederId) {
-      setRejectBin(targetBin);
-      window.setTimeout(() => setRejectBin(null), 300);
+    if (wasTap) {
+      setSelectedName((prev) => (prev === name ? null : name));
       return;
     }
 
-    setState((prev) => ({
-      placed: { ...prev.placed, [sederId]: [...prev.placed[sederId], name] },
-      pool: prev.pool.filter((n) => n !== name),
-    }));
+    if (!targetBin) return;
+    attemptSort(name, sederId, targetBin);
   }
 
   return (
@@ -109,7 +143,8 @@ export function SederSortScreen() {
         <p className="app-title">Chazarat Hashas</p>
         <h1 className="panel__title">Seder Sort</h1>
         <p className="panel__subtitle">
-          Drag each masechet into the seder it belongs to — order doesn't matter here, just the family.
+          Drag each masechet into the seder it belongs to, or tap one then tap the seder — order doesn't
+          matter here, just the family.
         </p>
 
         <p className="sort-count">
@@ -124,8 +159,10 @@ export function SederSortScreen() {
               className={
                 "sort-bin" +
                 (drag && hoverBin === seder.id ? " sort-bin--hover" : "") +
+                (!drag && selectedName ? " sort-bin--selectable" : "") +
                 (rejectBin === seder.id ? " sort-bin--reject" : "")
               }
+              onClick={() => handleBinTap(seder.id)}
             >
               <div className="sort-bin__title">{seder.en}</div>
               <div className="sort-bin__items">
@@ -146,7 +183,11 @@ export function SederSortScreen() {
               <div
                 key={name}
                 data-chip-name={name}
-                className={"sort-chip" + (isDragging ? " sort-chip--dragging" : "")}
+                className={
+                  "sort-chip" +
+                  (isDragging ? " sort-chip--dragging" : "") +
+                  (selectedName === name ? " sort-chip--selected" : "")
+                }
                 onPointerDown={(e) => handlePointerDown(e, name)}
                 onPointerMove={handlePointerMove}
                 onPointerUp={(e) => handlePointerUp(e, name, bySederId[name])}
