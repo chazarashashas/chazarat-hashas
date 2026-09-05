@@ -530,7 +530,7 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
               </div>
             ) : !masechetDone ? (
               <div className="mishna-step">
-                <div className="mishna-step-label">Which masechta?</div>
+                <div className="mishna-step-label">Which masechet?</div>
                 <div className="pill-row">
                   {card.seder.masechtot.map((m) => (
                     <button

@@ -137,9 +137,6 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
           חזרת הש״ס
         </h1>
         <p className="panel__subtitle">let's learn shas, together</p>
-        <button className="home-how" onClick={() => setShowIntro(true)}>
-          How this app works
-        </button>
 
         <blockquote className="home-quote" dir="rtl">
           <p className="home-quote__text">
@@ -148,6 +145,10 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
           </p>
           <cite className="home-quote__source">— תענית ז׳ ב׳–ח׳ א׳</cite>
         </blockquote>
+
+        <button className="home-how" onClick={() => setShowIntro(true)}>
+          How this app works
+        </button>
 
         <h2 className="home-section-title">My Mishna</h2>
         <FeatureGrid features={MY_MISHNA} onNavigate={onNavigate} />

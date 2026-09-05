@@ -67,59 +67,71 @@
 }
 
 .delete-account {
-  margin-top: 24px;
-  padding-top: 16px;
-  border-top: 1.5px solid var(--border);
+  margin-top: 18px;
+  text-align: center;
+}
+
+.delete-account__link {
+  background: none;
+  border: none;
+  color: var(--ink-soft);
+  font-size: 11px;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.delete-account__link:hover {
+  color: #b3261e;
+}
+
+.delete-account__confirm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   text-align: left;
 }
 
-.delete-account__label {
-  margin: 0 0 6px;
-  font-family: var(--font-heading);
+.delete-account__hint {
+  flex: 1 1 100%;
   font-size: 10.5px;
-  font-weight: 700;
-  color: #b3261e;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-}
-
-.delete-account__warning {
-  margin: 0 0 10px;
-  font-size: 11.5px;
   color: var(--ink-soft);
-  line-height: 1.4;
 }
 
-.delete-account input {
-  width: 100%;
+.delete-account__confirm input {
+  width: 90px;
   box-sizing: border-box;
-  height: 38px;
-  border-radius: 10px;
+  height: 30px;
+  border-radius: 8px;
   border: 1.5px solid var(--border);
   background: #fffbf0;
-  padding: 0 14px;
-  font-size: 13px;
+  padding: 0 10px;
+  font-size: 12px;
   font-family: var(--font-body);
   color: var(--ink);
-  margin-bottom: 10px;
 }
 
-.delete-account input:focus {
+.delete-account__confirm input:focus {
   outline: none;
   border-color: #b3261e;
 }
 
 .delete-account__button {
-  width: 100%;
-  padding: 11px;
+  padding: 7px 12px;
   background: #b3261e;
   color: #fff;
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   font-family: var(--font-heading);
   font-weight: 600;
-  font-size: 13px;
+  font-size: 11.5px;
   cursor: pointer;
+}
+
+.delete-account__button:hover:not(:disabled) {
+  background: #8f1e18;
 }
 
 .delete-account__button:disabled {

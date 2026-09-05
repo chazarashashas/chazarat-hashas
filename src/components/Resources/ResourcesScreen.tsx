@@ -25,8 +25,8 @@ const RESOURCES: Resource[] = [
   {
     id: "perakim",
     file: "/resources/masechta-perek-worksheet.pdf",
-    title: "Masechta & Perek Worksheet",
-    desc: "Fill in a seder and masechta, then number and name every perek in your own words.",
+    title: "Masechet & Perek Worksheet",
+    desc: "Fill in a seder and masechet, then number and name every perek in your own words.",
   },
 ];
 

@@ -39,6 +39,11 @@
   color: var(--brand);
 }
 
+.nav-item:not(.nav-item--active):not(.nav-item--disabled):hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
 .nav-item--disabled {
   opacity: 0.35;
   cursor: not-allowed;

@@ -149,7 +149,7 @@ export function PerekNamesScreen() {
             {sederTab === "all" ? (
               <>
                 <p className="perek-detail__label">
-                  Use this space to describe each masechta, briefly, in your own words
+                  Use this space to describe each masechet, briefly, in your own words
                 </p>
                 {sentenceSeder.masechtot.map((m) => (
                   <div key={m.en} className="perek-row perek-row--sentence">

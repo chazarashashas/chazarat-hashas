@@ -16,6 +16,7 @@ export function LoginScreen() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState("");
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -67,29 +68,33 @@ export function LoginScreen() {
           </button>
 
           <div className="delete-account">
-            <p className="delete-account__label">Delete account</p>
-            <p className="delete-account__warning">
-              Permanently deletes your account and everything synced to it — notes, progress, and
-              streak. This can't be undone. Type DELETE to confirm.
-            </p>
-            <input
-              type="text"
-              value={deleteConfirm}
-              onChange={(e) => setDeleteConfirm(e.target.value)}
-              placeholder="DELETE"
-            />
-            {deleteError && (
-              <p className="login-error" dir="ltr">
-                {deleteError}
-              </p>
+            {!deleteOpen ? (
+              <button className="delete-account__link" onClick={() => setDeleteOpen(true)}>
+                Delete account
+              </button>
+            ) : (
+              <div className="delete-account__confirm">
+                <span className="delete-account__hint">Type DELETE to permanently remove your account</span>
+                <input
+                  type="text"
+                  value={deleteConfirm}
+                  onChange={(e) => setDeleteConfirm(e.target.value)}
+                  placeholder="DELETE"
+                />
+                <button
+                  className="delete-account__button"
+                  disabled={deleteConfirm !== "DELETE" || deleting}
+                  onClick={handleDeleteAccount}
+                >
+                  {deleting ? "Deleting…" : "Confirm delete"}
+                </button>
+                {deleteError && (
+                  <p className="login-error" dir="ltr">
+                    {deleteError}
+                  </p>
+                )}
+              </div>
             )}
-            <button
-              className="delete-account__button"
-              disabled={deleteConfirm !== "DELETE" || deleting}
-              onClick={handleDeleteAccount}
-            >
-              {deleting ? "Deleting…" : "Permanently delete my account"}
-            </button>
           </div>
         </div>
       </div>

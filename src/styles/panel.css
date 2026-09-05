@@ -92,6 +92,11 @@
   color: #fff;
 }
 
+.pill:not(.pill--active):hover {
+  border-color: var(--brand);
+  color: var(--brand);
+}
+
 .note-banner {
   background: #efe3c4;
   border: 1px dashed var(--gold);
@@ -158,6 +163,12 @@
   font-weight: 600;
   font-size: 13.5px;
   cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.popup__restart:hover:not(:disabled),
+.restart:hover:not(:disabled) {
+  background: var(--gold);
 }
 
 @keyframes panel-fade-in {
