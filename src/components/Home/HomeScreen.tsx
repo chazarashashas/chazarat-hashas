@@ -66,7 +66,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
       <div className="panel home-panel">
         <p className="app-title">Chazarat Hashas</p>
         <h1 className="home-title" dir="rtl">
-          חזרת ש״ס
+          חזרת הש״ס
         </h1>
         <p className="panel__subtitle">let's learn shas, together</p>
         <button className="home-how" onClick={() => setShowIntro(true)}>
