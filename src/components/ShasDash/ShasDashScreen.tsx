@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { SEDARIM } from "../../data/shas";
+import { getSederHue } from "../../utils/sederHue";
 import "./ShasDashScreen.css";
 
 interface FlatMasechet {
@@ -409,6 +410,7 @@ export function ShasDashScreen() {
                           <div
                             key={seder.id}
                             className={"dash-lane" + (lane === i ? " dash-lane--current" : "")}
+                            style={{ ["--lane-hue" as string]: getSederHue(seder.id) }}
                           >
                             {card && lane === i && (
                               <span
