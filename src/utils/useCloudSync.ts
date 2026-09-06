@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "./supabase";
+import { STORAGE_SYNC_EVENT } from "./useLocalStorageState";
 
 const PREFIX = "chazarat-hashas:";
 const SYNC_KEYS = [
@@ -12,6 +13,9 @@ const SYNC_KEYS = [
   "conceptNotes",
   "nishmatMyClaims",
   "gameStats",
+  "streakFreezes",
+  "frozenDates",
+  "lastFreezeMilestone",
 ] as const;
 
 type SyncBlob = Partial<Record<(typeof SYNC_KEYS)[number], unknown>>;
@@ -127,6 +131,9 @@ function mergeBlobs(local: SyncBlob, cloud: SyncBlob): SyncBlob {
     dailyLimmudPace: local.dailyLimmudPace ?? cloud.dailyLimmudPace ?? "1",
     nishmatMyClaims: mergeUniqueBy(local.nishmatMyClaims, cloud.nishmatMyClaims, (item) => (item as { id: string }).id),
     gameStats: mergeGameStats(local.gameStats, cloud.gameStats),
+    streakFreezes: Math.max(Number(local.streakFreezes) || 0, Number(cloud.streakFreezes) || 0),
+    frozenDates: mergeUniqueBy(local.frozenDates, cloud.frozenDates, (item) => item as string),
+    lastFreezeMilestone: Math.max(Number(local.lastFreezeMilestone) || 0, Number(cloud.lastFreezeMilestone) || 0),
   };
 }
 
@@ -139,12 +146,12 @@ function mergeBlobs(local: SyncBlob, cloud: SyncBlob): SyncBlob {
  *
  * On login: merges this device's local data with whatever's already on
  * the account (see mergeBlobs), writes the merged result back to
- * localStorage, and reloads the page. The reload is necessary — every
- * existing hook already read its initial value from localStorage at
- * mount, before the merge landed, and won't notice a localStorage write
- * happening out from under it otherwise. If nothing actually changed
- * (steady state, or a brand-new account with nothing local yet either),
- * the merge is a no-op and no reload happens.
+ * localStorage, and dispatches STORAGE_SYNC_EVENT so every mounted
+ * useLocalStorageState re-reads its key and picks up the merge in place —
+ * no page reload, so signing in never bounces you to a different screen
+ * than the one you were on. If nothing actually changed (steady state, or
+ * a brand-new account with nothing local yet either), the merge is a
+ * no-op and no event fires.
  *
  * While signed in: polls localStorage every 10s and pushes up whatever
  * changed. A poll, not a hook into every individual setState call,
@@ -153,8 +160,6 @@ function mergeBlobs(local: SyncBlob, cloud: SyncBlob): SyncBlob {
  * that aren't time-critical. Pulling live updates from *other* devices
  * while this tab stays open isn't handled — out of scope for now.
  */
-const RELOAD_GUARD_KEY = "chazarat-hashas:cloudSyncReloaded";
-
 export function useCloudSync(session: Session | null) {
   const hasMergedRef = useRef(false);
   const lastPushedRef = useRef<string | null>(null);
@@ -188,15 +193,8 @@ export function useCloudSync(session: Session | null) {
         .from("user_data")
         .upsert({ user_id: session.user.id, data: merged, updated_at: new Date().toISOString() });
 
-      // Guard against ever reloading more than once per browser tab —
-      // belt-and-suspenders on top of the equality check above, so a
-      // merge that (for whatever reason) never quite converges can't
-      // turn into a reload loop that traps the user on a blank reload
-      // instead of the page they wanted.
-      const alreadyReloaded = sessionStorage.getItem(RELOAD_GUARD_KEY) === "1";
-      if (mergedSerialized !== localSerialized && !alreadyReloaded) {
-        sessionStorage.setItem(RELOAD_GUARD_KEY, "1");
-        window.location.reload();
+      if (mergedSerialized !== localSerialized) {
+        window.dispatchEvent(new Event(STORAGE_SYNC_EVENT));
       }
     })();
 
