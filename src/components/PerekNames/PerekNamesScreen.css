@@ -251,7 +251,7 @@
     width: auto;
     margin-bottom: 0;
     border-right: 1.5px solid var(--border);
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     box-shadow: none;
     padding: 5px 10px;
     font-size: 9.5px;

@@ -60,7 +60,7 @@
   display: inline-flex;
   background: var(--surface-hi);
   border: 1.5px solid var(--border);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   padding: 2px;
 }
 
@@ -70,7 +70,7 @@
   left: 2px;
   bottom: 2px;
   background: var(--brand);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   transition: transform 0.2s ease;
 }
 
@@ -83,7 +83,7 @@
   font-weight: 700;
   color: var(--ink-soft);
   cursor: pointer;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   white-space: nowrap;
   padding: 6px 10px;
   font-size: 10px;
@@ -254,7 +254,7 @@
   display: inline-block;
   margin-left: 4px;
   padding: 1px 7px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: #fbf1d6;
   color: var(--gold);
   font-size: 9px;

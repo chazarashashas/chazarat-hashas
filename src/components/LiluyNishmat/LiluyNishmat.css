@@ -175,7 +175,7 @@
 .siyum-card__bar {
   display: flex;
   height: 6px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--track);
   overflow: hidden;
   margin-bottom: 10px;

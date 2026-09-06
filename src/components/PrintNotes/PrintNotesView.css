@@ -53,7 +53,7 @@
 .print-close {
   background: none;
   border: 1.5px solid var(--border);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   padding: 9px 20px;
   font-family: var(--font-heading);
   font-size: 12px;

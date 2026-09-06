@@ -81,7 +81,7 @@
   color: var(--ink);
   background: var(--surface-hi);
   padding: 3px 10px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
 }
 
 .recall-board-overlay .restart {

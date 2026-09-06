@@ -82,14 +82,14 @@
 
 .flip-counter__bar {
   height: 8px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--track);
   overflow: hidden;
 }
 
 .flip-counter__bar-fill {
   height: 100%;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--flip-hue);
   transition: width 0.4s ease;
 }

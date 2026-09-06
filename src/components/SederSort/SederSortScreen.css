@@ -13,7 +13,7 @@
 
 .sort-progress {
   height: 5px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--track);
   overflow: hidden;
   margin-bottom: 14px;
@@ -21,7 +21,7 @@
 
 .sort-progress__fill {
   height: 100%;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--gold);
   transition: width 0.3s ease;
 }
