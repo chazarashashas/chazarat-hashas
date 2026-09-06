@@ -172,15 +172,16 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
           <cite className="home-quote__source">— תענית ז׳ ב׳–ח׳ א׳</cite>
         </blockquote>
 
-        <button className="home-how" onClick={() => setShowIntro(true)}>
-          How this app works
-        </button>
-
         <h2 className="home-section-title">My Mishna</h2>
         <FeatureGrid features={myMishnaWithStatus} onNavigate={onNavigate} />
 
         <h2 className="home-section-title">Practice</h2>
         <FeatureGrid features={LEARNING_TOOLS} onNavigate={onNavigate} />
+
+        <button className="home-new-here" onClick={() => setShowIntro(true)}>
+          <span className="home-new-here__title">New here?</span>
+          <span className="home-new-here__sub">See how Shas is put together, and how this app tracks it.</span>
+        </button>
       </div>
 
       {showIntro && (
@@ -189,17 +190,55 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
             <button className="intro-popup__close" onClick={() => setShowIntro(false)} title="Close">
               ✕
             </button>
-            <p className="popup__mark">🗺️</p>
-            <h2 className="intro-popup__title">How Chazaras HaShas Works</h2>
-            <p className="intro-popup__text">
-              You're building a mental map of Shas, one layer at a time: the six Sedarim, then the
-              Masechtot in each Seder, then the Perakim in each Masechet, then the Mishnayot in each
-              Perek.
+            <h2 className="intro-popup__title">How this app works</h2>
+            <p className="intro-popup__lead">
+              Shas has a shape. Once you know the shape, every mishnah you learn has somewhere to sit.
             </p>
-            <p className="intro-popup__text">
-              Just starting out? Start at the top and work down. Already know a lot of Shas? Use Mishna
-              Quiz and the other games to see where you need more chazara.
-            </p>
+
+            <div className="intro-levels">
+              <div className="intro-level intro-level--zeraim">
+                <span className="intro-level__he" dir="rtl">
+                  סדר
+                </span>
+                <span className="intro-level__text">Six sedarim divide the whole</span>
+              </div>
+              <div className="intro-level">
+                <span className="intro-level__he" dir="rtl">
+                  מסכת
+                </span>
+                <span className="intro-level__text">63 masechtot sit inside them</span>
+              </div>
+              <div className="intro-level">
+                <span className="intro-level__he" dir="rtl">
+                  פרק
+                </span>
+                <span className="intro-level__text">524 perakim, each with a name you can learn</span>
+              </div>
+              <div className="intro-level">
+                <span className="intro-level__he" dir="rtl">
+                  משנה
+                </span>
+                <span className="intro-level__text">One mishnah a day is the whole habit</span>
+              </div>
+            </div>
+
+            <h3 className="intro-popup__subtitle">Learning and remembering are two jobs</h3>
+            <div className="intro-job">
+              <p className="intro-job__title">Daily Limmud moves you forward</p>
+              <p className="intro-job__text">
+                Your next mishnah, in order, from Berachot to Uktzin. Marking it learned is the only
+                thing that moves your progress.
+              </p>
+            </div>
+            <div className="intro-job intro-job--gold">
+              <p className="intro-job__title">Practice keeps it from slipping</p>
+              <p className="intro-job__text">
+                Six drills for remembering the shape of Shas — the order of the sedarim, which masechet
+                belongs where, and recalling every masechet from nothing, whether you're doing chazara
+                on one seder or on all of Shas.
+              </p>
+            </div>
+
             <button className="restart" onClick={() => setShowIntro(false)}>
               Got it
             </button>

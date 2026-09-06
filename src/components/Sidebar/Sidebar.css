@@ -96,14 +96,23 @@
   width: 100%;
 }
 
+.nav-group--login {
+  margin-top: auto;
+  padding-top: 16px;
+}
+
 .nav-group__label {
-  margin: 14px 4px 6px;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 16px 0 6px;
+  padding: 0 6px;
   font-family: var(--font-heading);
-  font-size: 8.5px;
+  font-size: 10.5px;
   font-weight: 700;
-  line-height: 1.4;
-  letter-spacing: 0.13em;
-  color: rgba(245, 240, 228, 0.38);
+  line-height: 1.35;
+  text-align: center;
+  white-space: normal;
+  color: rgba(245, 240, 228, 0.5);
 }
 
 /* Below phone width the left rail becomes a fixed bottom tab bar instead —

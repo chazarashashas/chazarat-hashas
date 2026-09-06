@@ -40,9 +40,7 @@ const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
       { id: "map", label: "Explore Shas", built: true },
       { id: "perek", label: "Mishna Notes", built: true },
       { id: "progress", label: "My Siyumim", built: true },
-      { id: "liluy", label: "L'Iluy Nishmat", built: false },
       { id: "chevrusa", label: "Chevrusa", built: true },
-      { id: "login", label: "Log In", built: true },
     ],
   },
   {
@@ -53,10 +51,16 @@ const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
       { id: "sort", label: "Seder Sort", built: true },
       { id: "recall", label: "Mishna Chazara", built: true },
       { id: "dash", label: "Shas Dash", built: true },
+      { id: "liluy", label: "L'Iluy Nishmat", built: false },
       { id: "resources", label: "Resources", built: true },
     ],
   },
 ];
+
+/** Login sits alone at the very bottom of the rail, separate from both
+    groups — account access is conventionally placed apart from feature
+    navigation, not buried mid-list (user feedback). */
+const LOGIN_ITEM: NavItem = { id: "login", label: "Log In", built: true };
 
 interface SidebarProps {
   activeId: string;
@@ -94,6 +98,9 @@ export function Sidebar({ activeId, onSelect }: SidebarProps) {
           ))}
         </div>
       ))}
+      <div className="nav-group nav-group--login">
+        <NavButton item={LOGIN_ITEM} active={activeId === LOGIN_ITEM.id} onSelect={onSelect} />
+      </div>
     </nav>
   );
 }
