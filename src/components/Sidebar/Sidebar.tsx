@@ -51,7 +51,7 @@ const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
       { id: "sort", label: "Seder Sort", built: true },
       { id: "recall", label: "Mishna Chazara", built: true },
       { id: "dash", label: "Shas Dash", built: true },
-      { id: "liluy", label: "L'Iluy Nishmat", built: false },
+      { id: "liluy", label: "L'Iluy Nishmat", built: true },
       { id: "resources", label: "Resources", built: true },
     ],
   },

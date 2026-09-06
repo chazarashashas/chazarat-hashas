@@ -1,0 +1,735 @@
+.stage {
+  position: relative;
+  width: 100%;
+}
+
+/* ---------- Index view ---------- */
+
+.nishmat-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.nishmat-title {
+  text-align: left;
+  margin: 0 0 4px;
+}
+
+.nishmat-subtitle {
+  text-align: left;
+  margin: 0;
+}
+
+.nishmat-start-btn {
+  flex-shrink: 0;
+  min-height: 44px;
+  padding: 10px 18px;
+  background: var(--hue-chevrusa);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-heading);
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.nishmat-tab-pill.pill--active {
+  background: var(--ink);
+  border-color: var(--ink);
+}
+
+.nishmat-helping-note {
+  font-size: 12px;
+  color: var(--muted);
+  font-style: italic;
+  margin: 4px 0 16px;
+}
+
+.nishmat-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.siyum-card {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: var(--surface);
+  border: none;
+  border-radius: var(--radius-card);
+  padding: 15px 16px;
+  cursor: pointer;
+  font-family: var(--font-body);
+}
+
+.siyum-card:hover {
+  box-shadow: var(--shadow-hover);
+}
+
+.siyum-card__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.siyum-card__name {
+  font-family: var(--font-heading);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.siyum-card__badge {
+  margin-left: auto;
+  font-family: var(--font-heading);
+  font-size: 9.5px;
+  font-weight: 700;
+  padding: 2px 9px;
+  border-radius: var(--radius-pill);
+  background: var(--track);
+  color: var(--muted);
+}
+
+.siyum-card__badge--public {
+  background: var(--hue-chevrusa);
+  color: #fff;
+}
+
+.siyum-card__occasion {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.siyum-card__stats {
+  display: flex;
+  gap: 18px;
+  margin: 12px 0 6px;
+}
+
+.siyum-card__stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.siyum-card__stat-num {
+  font-family: var(--font-heading);
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.siyum-card__stat--learned .siyum-card__stat-num {
+  color: var(--hue-chevrusa);
+}
+
+.siyum-card__stat--taken .siyum-card__stat-num {
+  color: var(--ink);
+}
+
+.siyum-card__stat--open .siyum-card__stat-num {
+  color: var(--muted);
+}
+
+.siyum-card__stat-label {
+  font-size: 10px;
+  color: var(--faint);
+}
+
+.siyum-card__bar {
+  display: flex;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--track);
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.siyum-card__bar-seg--learned {
+  background: var(--hue-chevrusa);
+}
+
+.siyum-card__bar-seg--taken {
+  background: #d9a99a;
+}
+
+.siyum-card__cta {
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--hue-chevrusa);
+}
+
+/* ---------- Shared modal bits ---------- */
+
+.nishmat-modal {
+  width: 380px;
+  max-width: calc(100% - 32px);
+  max-height: calc(100vh - 64px);
+  overflow-y: auto;
+  text-align: left;
+}
+
+.nishmat-visibility-note {
+  margin: 6px 0 0;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.nishmat-modal-cancel {
+  display: block;
+  width: 100%;
+  text-align: center;
+  background: none;
+  border: none;
+  margin-top: 8px;
+  padding: 8px;
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.nishmat-anon-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 8px 0;
+  margin-bottom: 10px;
+  font-size: 12px;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.nishmat-anon-toggle__box {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  border: 1.5px solid var(--line);
+  background: var(--surface-hi);
+}
+
+.nishmat-anon-toggle--on .nishmat-anon-toggle__box {
+  background: var(--hue-chevrusa);
+  border-color: var(--hue-chevrusa);
+}
+
+/* ---------- Detail view ---------- */
+
+.nishmat-back {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 0;
+  margin-bottom: 12px;
+}
+
+.nishmat-plaque {
+  background: var(--ink);
+  border-top: 3px solid var(--gold);
+  border-radius: var(--radius-hero);
+  padding: 22px 24px;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.nishmat-plaque__label {
+  margin: 0 0 4px;
+  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gold);
+}
+
+.nishmat-plaque__name {
+  margin: 0;
+  font-family: var(--font-hebrew);
+  font-size: clamp(24px, 4.4vw, 32px);
+  line-height: 1.4;
+  color: #fff;
+}
+
+.nishmat-plaque__sub {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.nishmat-plaque__scope {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.nishmat-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.nishmat-stat {
+  background: var(--surface);
+  border-top: 3px solid var(--line);
+  border-radius: var(--radius-control);
+  padding: 12px 8px;
+  text-align: center;
+}
+
+.nishmat-stat--learned {
+  border-top-color: var(--hue-chevrusa);
+}
+
+.nishmat-stat--taken {
+  border-top-color: var(--ink);
+}
+
+.nishmat-stat__num {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.nishmat-stat__label {
+  display: block;
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 3px;
+}
+
+.nishmat-mosaic {
+  background: var(--surface-hi);
+  border-radius: var(--radius-page);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.nishmat-mosaic__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.nishmat-mosaic__row-label {
+  flex-shrink: 0;
+  width: 66px;
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+}
+
+.nishmat-mosaic__he {
+  font-family: var(--font-hebrew);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.nishmat-mosaic__count {
+  font-size: 9px;
+  color: var(--faint);
+}
+
+.nishmat-mosaic__squares {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+
+.nishmat-sq {
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  background: #f0e9d7;
+}
+
+.nishmat-sq--learned {
+  background: var(--hue-chevrusa);
+}
+
+.nishmat-sq--yours,
+.nishmat-sq--queued {
+  background: var(--ink);
+}
+
+.nishmat-sq--other,
+.nishmat-sq--anon {
+  background: #c98f7f;
+  cursor: default;
+}
+
+.nishmat-sq--open {
+  cursor: pointer;
+}
+
+.nishmat-sq--open:hover {
+  background: #e2d7bd;
+}
+
+.nishmat-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 12px;
+  font-size: 10.5px;
+  color: var(--muted);
+}
+
+.nishmat-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.nishmat-legend__sw {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.nishmat-legend__sw--learned {
+  background: var(--hue-chevrusa);
+}
+
+.nishmat-legend__sw--yours {
+  background: var(--ink);
+}
+
+.nishmat-legend__sw--taken {
+  background: #c98f7f;
+}
+
+.nishmat-legend__sw--open {
+  background: #f0e9d7;
+}
+
+.nishmat-next-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--surface);
+  border-radius: var(--radius-card);
+  padding: 14px 16px;
+  margin-bottom: 14px;
+}
+
+.nishmat-next-card__label {
+  margin: 0;
+  font-size: 10.5px;
+  color: var(--muted);
+}
+
+.nishmat-next-card__value {
+  margin: 2px 0 0;
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.nishmat-next-card__btn {
+  flex-shrink: 0;
+  min-height: 44px;
+  padding: 0 18px;
+  background: var(--hue-chevrusa);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.nishmat-share-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface);
+  border-radius: var(--radius-control);
+  padding: 10px 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.nishmat-share-row__label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.nishmat-share-row__url {
+  flex: 1;
+  min-width: 120px;
+  font-size: 11px;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nishmat-share-row__btn {
+  flex-shrink: 0;
+  min-height: 32px;
+  padding: 0 12px;
+  background: var(--ink);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.nishmat-accordion__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.nishmat-accordion__title {
+  margin: 0;
+}
+
+.nishmat-filter-row {
+  margin: 0;
+  justify-content: flex-start;
+}
+
+.nishmat-seder-row {
+  margin-bottom: 6px;
+}
+
+.nishmat-seder-row__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  background: var(--surface);
+  border: none;
+  border-left: 3px solid var(--row-hue, var(--line));
+  border-radius: var(--radius-control);
+  padding: 11px 14px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.nishmat-seder-row__he {
+  font-family: var(--font-hebrew);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--row-hue, var(--ink));
+}
+
+.nishmat-seder-row__en {
+  flex: 1;
+  font-family: var(--font-heading);
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.nishmat-seder-row__chevron {
+  color: var(--muted);
+}
+
+.nishmat-masechet-list {
+  padding: 6px 0 4px 10px;
+}
+
+.nishmat-masechet-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--line);
+  padding: 9px 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+}
+
+.nishmat-masechet-row__meta {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--faint);
+}
+
+.nishmat-perek-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  padding: 10px 4px 12px;
+}
+
+.nishmat-perek-tile {
+  min-height: 58px;
+  border-radius: 13px;
+  border: none;
+  border-left: 3px dashed var(--faint);
+  background: var(--surface-hi);
+  padding: 8px 10px;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.nishmat-perek-tile__letter {
+  font-family: var(--font-hebrew);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.nishmat-perek-tile__status {
+  font-size: 9px;
+  color: var(--muted);
+  line-height: 1.3;
+}
+
+.nishmat-perek-tile__name {
+  font-size: 8.5px;
+  color: var(--faint);
+}
+
+.nishmat-perek-tile--other {
+  border-left: 3px solid var(--line);
+  background: var(--paper);
+  cursor: default;
+}
+
+.nishmat-perek-tile--anon {
+  border-left: 3px solid var(--line);
+  background: var(--paper);
+  cursor: default;
+}
+
+.nishmat-perek-tile--yours {
+  border-left: 3px solid var(--ink);
+}
+
+.nishmat-perek-tile--queued {
+  border-left: 3px solid var(--ink);
+}
+
+.nishmat-perek-tile--learned {
+  border-left: 3px solid var(--hue-chevrusa);
+  background: var(--surface);
+  cursor: default;
+}
+
+.nishmat-perek-tile--learned .nishmat-perek-tile__letter {
+  color: var(--hue-chevrusa);
+}
+
+@keyframes nishmat-stamp {
+  0% {
+    transform: scale(0.6) rotate(-10deg);
+    opacity: 0;
+  }
+  55% {
+    transform: scale(1.1) rotate(3deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0);
+    opacity: 1;
+  }
+}
+
+.nishmat-manage-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nishmat-stamp {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--hue-chevrusa);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-hebrew);
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.3;
+  animation: nishmat-stamp 0.5s ease;
+}
+
+.nishmat-manage-title {
+  margin: 0;
+}
+
+.nishmat-manage-btn {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  border: none;
+  border-radius: var(--radius-control);
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 8px;
+}
+
+.nishmat-manage-btn--learn {
+  background: var(--hue-chevrusa);
+  color: #fff;
+}
+
+.nishmat-manage-btn--queue {
+  background: var(--ink);
+  color: #fff;
+}
+
+.nishmat-manage-btn--release {
+  background: none;
+  border: 1.5px solid var(--line);
+  color: var(--muted);
+}
+
+@media (max-width: 640px) {
+  .nishmat-perek-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

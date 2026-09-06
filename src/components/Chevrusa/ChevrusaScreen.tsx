@@ -167,9 +167,10 @@ function GroupCard({
  */
 interface ChevrusaScreenProps {
   onOpenLogin?: () => void;
+  onOpenNishmat?: () => void;
 }
 
-export function ChevrusaScreen({ onOpenLogin }: ChevrusaScreenProps) {
+export function ChevrusaScreen({ onOpenLogin, onOpenNishmat }: ChevrusaScreenProps) {
   const { session } = useAuth();
   const {
     groups,
@@ -310,6 +311,12 @@ export function ChevrusaScreen({ onOpenLogin }: ChevrusaScreenProps) {
           be in several, each on something different. Know when the group has learned today — no
           streaks compared, no ranking, just "they showed up."
         </p>
+
+        {onOpenNishmat && (
+          <button className="chevrusa-nishmat-link" onClick={onOpenNishmat}>
+            Looking for a bigger group commitment? Join a siyum in L'Iluy Nishmat →
+          </button>
+        )}
 
         <div className="pill-row">
           <button

@@ -9,6 +9,20 @@
   margin-bottom: 16px;
 }
 
+.chevrusa-nishmat-link {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: left;
+  background: none;
+  border: none;
+  color: var(--hue-chevrusa);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0 0 14px;
+}
+
 .chevrusa-form {
   background: var(--surface);
   border-left: 3px solid var(--hue-chevrusa);

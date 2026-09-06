@@ -45,14 +45,13 @@
   background: #fbf1d6;
   border-radius: 8px;
   text-align: center;
-  overflow-x: auto;
-  scrollbar-width: thin;
+  overflow: hidden;
 }
 
 .home-quote__text {
   margin: 0 0 4px;
   font-family: var(--font-hebrew);
-  font-size: 13.5px;
+  font-size: clamp(8px, 2.4vw, 13.5px);
   color: var(--ink);
   line-height: 1.6;
   white-space: nowrap;

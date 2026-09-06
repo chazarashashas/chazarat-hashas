@@ -6,10 +6,12 @@ import { usePerekNotes } from "../../utils/usePerekNotes";
 import { useLearningProgress, type Pace } from "../../utils/useLearningProgress";
 import { useAuth } from "../../utils/useAuth";
 import { useChevrusa, recordGroupActivityForMasechet } from "../../utils/useChevrusa";
+import { useSiyumim } from "../../utils/useSiyumim";
 import { PerekNoteModal } from "../PerekNoteModal/PerekNoteModal";
 import { hebrewNumeral } from "../../utils/hebrewNumeral";
 import { FlipCounter } from "../FlipCounter/FlipCounter";
 import { buildJourneyScopes } from "../../utils/shasJourney";
+import { QueuedSiyumPerek } from "./QueuedSiyumPerek";
 import "./DailyLimmudScreen.css";
 
 interface MishnaItem {
@@ -86,6 +88,7 @@ export function DailyLimmudScreen({ onOpenNotes }: DailyLimmudScreenProps) {
   const { pace, setPace, streak } = progress;
   const { getPerekNote, setPerekNote } = usePerekNotes();
   const { groups, updateGroupMasechet } = useChevrusa();
+  const siyumim = useSiyumim();
   const [switchMasechet, setSwitchMasechet] = useState("");
   const [switchBusy, setSwitchBusy] = useState(false);
 
@@ -371,6 +374,11 @@ export function DailyLimmudScreen({ onOpenNotes }: DailyLimmudScreenProps) {
                   </span>
                 </div>
               )}
+
+              {isSelf &&
+                siyumim.myQueuedPerakim.map((claim) => (
+                  <QueuedSiyumPerek key={claim.id} claim={claim} siyumim={siyumim} />
+                ))}
             </div>
 
             <div className="limmud-notes">

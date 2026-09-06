@@ -21,7 +21,11 @@ function ProgressBar({ pct }: { pct: number }) {
  * hierarchy — Shas, Seder, Masechet, Perek. Deliberately separate from
  * mastery/accuracy, which the games already measure on their own terms.
  */
-export function ProgressScreen() {
+interface ProgressScreenProps {
+  onOpenNishmat?: () => void;
+}
+
+export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
   const progress = useLearningProgress();
   const [expanded, setExpanded] = useState<string | null>(null);
   const [logOpen, setLogOpen] = useState(false);
@@ -167,6 +171,15 @@ export function ProgressScreen() {
             Print notes
           </button>
         </div>
+
+        {onOpenNishmat && (
+          <button className="progress-nishmat-link" onClick={onOpenNishmat}>
+            <span className="progress-nishmat-link__title">L'Iluy Nishmat</span>
+            <span className="progress-nishmat-link__sub">
+              Dedicate a full siyum on Shas to a neshama, or take a perek in someone else's →
+            </span>
+          </button>
+        )}
 
         <h2 className="home-section-title">Siyumim ahead</h2>
         <div className="progress-list">

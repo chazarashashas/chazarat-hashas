@@ -15,6 +15,7 @@ import { ProgressScreen } from "./components/Progress/ProgressScreen";
 import { LoginScreen } from "./components/Login/LoginScreen";
 import { ChevrusaScreen } from "./components/Chevrusa/ChevrusaScreen";
 import { MapOfShasScreen } from "./components/MapOfShas/MapOfShasScreen";
+import { LiluyNishmatScreen } from "./components/LiluyNishmat/LiluyNishmatScreen";
 import { useAuth } from "./utils/useAuth";
 import { useCloudSync } from "./utils/useCloudSync";
 import { shuffle } from "./utils/shuffle";
@@ -71,8 +72,17 @@ function SedarimSection() {
   );
 }
 
+/** A ?siyum=<slug> link is the only way to reach a private L'Iluy
+    Nishmat siyum, so it has to work as a straight deep link, not just
+    in-app navigation — this app has no router, so it's read once from
+    the URL at startup rather than through normal section state. */
+function initialNishmatSlug(): string | null {
+  return new URLSearchParams(window.location.search).get("siyum");
+}
+
 function App() {
-  const [section, setSection] = useState("home");
+  const deepLinkSlug = useState(initialNishmatSlug)[0];
+  const [section, setSection] = useState(() => (deepLinkSlug ? "liluy" : "home"));
   // Where to send the user back to once they log in — set by any screen
   // that gates an action behind an account (see requestLogin), so "Log
   // in first" never dead-ends: it returns you to what you were doing.
@@ -97,7 +107,9 @@ function App() {
         <div
           className={
             "main__content" +
-            (section === "dash" || section === "limmud" || section === "map" ? " main__content--wide" : "")
+            (section === "dash" || section === "limmud" || section === "map" || section === "liluy"
+              ? " main__content--wide"
+              : "")
           }
         >
           {section === "home" ? (
@@ -119,7 +131,7 @@ function App() {
           ) : section === "limmud" ? (
             <DailyLimmudScreen onOpenNotes={() => setSection("perek")} />
           ) : section === "progress" ? (
-            <ProgressScreen />
+            <ProgressScreen onOpenNishmat={() => handleSelect("liluy")} />
           ) : section === "login" ? (
             <LoginScreen
               onLoggedIn={() => {
@@ -128,7 +140,12 @@ function App() {
               }}
             />
           ) : section === "chevrusa" ? (
-            <ChevrusaScreen onOpenLogin={() => requestLogin("chevrusa")} />
+            <ChevrusaScreen
+              onOpenLogin={() => requestLogin("chevrusa")}
+              onOpenNishmat={() => handleSelect("liluy")}
+            />
+          ) : section === "liluy" ? (
+            <LiluyNishmatScreen onOpenLogin={() => requestLogin("liluy")} initialSlug={deepLinkSlug} />
           ) : (
             <RecallScreen />
           )}
