@@ -48,9 +48,9 @@
 
 .mishna-control__label {
   margin: 0;
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 500;
-  color: var(--ink-soft);
+  color: var(--muted);
   font-family: var(--font-body);
   text-align: center;
 }

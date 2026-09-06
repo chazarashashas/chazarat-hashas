@@ -15,13 +15,11 @@
   color: var(--good);
 }
 
-.limmud-controls {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 14px;
-  flex-wrap: wrap;
+.limmud-settings {
+  margin-top: 18px;
+  padding: 15px 16px;
+  background: var(--surface);
+  border-radius: var(--radius-card);
 }
 
 .limmud-control {
@@ -31,11 +29,56 @@
   margin-bottom: 12px;
 }
 
+.limmud-control .pill-row {
+  justify-content: flex-start;
+}
+
+.limmud-control .mishna-control__label {
+  text-align: left;
+}
+
+.limmud-chabura-members {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  padding: 10px 0;
+  margin-bottom: 12px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.limmud-chabura-member {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--ink);
+}
+
+.limmud-chabura-member__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--line);
+  flex-shrink: 0;
+}
+
+.limmud-chabura-member__dot--done {
+  background: var(--good);
+}
+
 .limmud-streak {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  text-align: right;
+  align-items: center;
+  gap: 7px;
+}
+
+.limmud-streak__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--gold);
+  flex-shrink: 0;
 }
 
 .limmud-streak__num {
@@ -46,9 +89,9 @@
 }
 
 .limmud-streak__label {
-  font-size: 9.5px;
-  font-weight: 600;
-  color: var(--ink-soft);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
 }
 
 .limmud-finished {
@@ -96,8 +139,12 @@
 .limmud-notes {
   flex: 1;
   min-width: 0;
-  border-left: 1.5px solid var(--border);
+  border-left: 1.5px solid var(--line);
   padding-left: 16px;
+}
+
+.limmud-notes .flip-counter {
+  margin-bottom: 18px;
 }
 
 .limmud-breadcrumb {

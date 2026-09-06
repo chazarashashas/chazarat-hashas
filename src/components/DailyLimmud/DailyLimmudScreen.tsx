@@ -8,6 +8,8 @@ import { useAuth } from "../../utils/useAuth";
 import { useChevrusa, recordGroupActivityForMasechet } from "../../utils/useChevrusa";
 import { PerekNoteModal } from "../PerekNoteModal/PerekNoteModal";
 import { hebrewNumeral } from "../../utils/hebrewNumeral";
+import { FlipCounter } from "../FlipCounter/FlipCounter";
+import { buildJourneyScopes } from "../../utils/shasJourney";
 import "./DailyLimmudScreen.css";
 
 interface MishnaItem {
@@ -229,6 +231,10 @@ export function DailyLimmudScreen({ onOpenNotes }: DailyLimmudScreenProps) {
   const activeLabel = groupContexts.find((g) => g.masechetEn === activeContext)?.label;
   const nextMasechetName = !isSelf && groupFinished ? nextMasechet(activeContext) : null;
 
+  const activeChabura = !isSelf ? groups.find((g) => g.masechetEn === activeContext && g.isChabura) : undefined;
+  const today = new Date().toISOString().slice(0, 10);
+  const journeyScopes = buildJourneyScopes(progress, isSelf ? undefined : activeContext);
+
   // Group contents by perek for display — almost always one group, except
   // right at a perek boundary under the 1- or 2-mishnah paces.
   const perekGroups: { masechetEn: string; perek: number; items: MishnaContent[] }[] = [];
@@ -247,52 +253,6 @@ export function DailyLimmudScreen({ onOpenNotes }: DailyLimmudScreenProps) {
         <p className="panel__subtitle">
           Your next portion of Mishnayot, straight through Shas in order — Berachot to Uktzin.
         </p>
-
-        {groupContexts.length > 0 && (
-          <div className="limmud-control">
-            <p className="mishna-control__label">Learning for</p>
-            <div className="pill-row">
-              <button
-                className={"pill" + (activeContext === "self" ? " pill--active" : "")}
-                onClick={() => setContext("self")}
-              >
-                My own learning
-              </button>
-              {groupContexts.map((g) => (
-                <button
-                  key={g.masechetEn}
-                  className={"pill" + (activeContext === g.masechetEn ? " pill--active" : "")}
-                  onClick={() => setContext(g.masechetEn)}
-                >
-                  {g.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        <div className="limmud-controls">
-          {isSelf && (
-            <div className="limmud-control">
-              <p className="mishna-control__label">Pace</p>
-              <div className="pill-row">
-                {PACE_OPTIONS.map((opt) => (
-                  <button
-                    key={opt.value}
-                    className={"pill" + (pace === opt.value ? " pill--active" : "")}
-                    onClick={() => handlePaceChange(opt.value)}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-          <div className="limmud-streak">
-            <span className="limmud-streak__num">🔥{streak.current}</span>
-            <span className="limmud-streak__label">day streak · best {streak.longest}</span>
-          </div>
-        </div>
 
         {finished ? (
           <div className="note-banner note-banner--good limmud-finished">
@@ -381,9 +341,11 @@ export function DailyLimmudScreen({ onOpenNotes }: DailyLimmudScreenProps) {
             </div>
 
             <div className="limmud-notes">
+              <FlipCounter scopes={journeyScopes} />
+
               <p className="limmud-notes__label">Notes for this perek</p>
               <button className="limmud-notes__open" onClick={() => setNoteOpen(true)}>
-                {firstItem && getPerekNote(firstItem.masechetEn, firstItem.perek) ? "📝 View note" : "📝 Add note"}
+                {firstItem && getPerekNote(firstItem.masechetEn, firstItem.perek) ? "View note" : "Add note"}
               </button>
 
               <p className="limmud-notes__label limmud-notes__label--concepts">Concepts to review</p>
@@ -407,6 +369,71 @@ export function DailyLimmudScreen({ onOpenNotes }: DailyLimmudScreenProps) {
                   → View all concepts in Mishna Notes
                 </button>
               )}
+            </div>
+          </div>
+        )}
+
+        {(groupContexts.length > 0 || isSelf) && (
+          <div className="limmud-settings">
+            {groupContexts.length > 0 && (
+              <div className="limmud-control">
+                <p className="mishna-control__label">Learning for</p>
+                <div className="pill-row">
+                  <button
+                    className={"pill" + (activeContext === "self" ? " pill--active" : "")}
+                    onClick={() => setContext("self")}
+                  >
+                    My own learning
+                  </button>
+                  {groupContexts.map((g) => (
+                    <button
+                      key={g.masechetEn}
+                      className={"pill" + (activeContext === g.masechetEn ? " pill--active" : "")}
+                      onClick={() => setContext(g.masechetEn)}
+                    >
+                      {g.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {activeChabura && (
+              <div className="limmud-chabura-members">
+                {activeChabura.members.map((m) => (
+                  <span key={m.userId} className="limmud-chabura-member">
+                    <span
+                      className={
+                        "limmud-chabura-member__dot" + (m.lastLearnedDate === today ? " limmud-chabura-member__dot--done" : "")
+                      }
+                    />
+                    {m.userId === session?.user.id ? "You" : (m.firstName ?? m.username ?? "Someone")}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {isSelf && (
+              <div className="limmud-control">
+                <p className="mishna-control__label">Pace</p>
+                <div className="pill-row">
+                  {PACE_OPTIONS.map((opt) => (
+                    <button
+                      key={opt.value}
+                      className={"pill" + (pace === opt.value ? " pill--active" : "")}
+                      onClick={() => handlePaceChange(opt.value)}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="limmud-streak">
+              <span className="limmud-streak__dot" aria-hidden="true" />
+              <span className="limmud-streak__num">{streak.current}</span>
+              <span className="limmud-streak__label">day streak · best {streak.longest}</span>
             </div>
           </div>
         )}
