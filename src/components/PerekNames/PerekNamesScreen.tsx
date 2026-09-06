@@ -74,7 +74,7 @@ export function PerekNamesScreen() {
           ↺
         </button>
         <button className="print-notes-trigger" onClick={() => setPrintOpen(true)}>
-          ⎙ Print notes
+          Print notes
         </button>
         <p className="app-title">Chazarat Hashas</p>
         <h1 className="panel__title">Mishna Notes</h1>
