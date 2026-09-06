@@ -19,11 +19,6 @@ interface TextState {
 
 const IDLE_TEXT: TextState = { status: "idle", text: "", error: "" };
 
-function PercentBadge({ percent }: { percent: number }) {
-  if (percent <= 0) return null;
-  return <span className={"map-badge" + (percent === 100 ? " map-badge--done" : "")}>{percent}%</span>;
-}
-
 interface MapOfShasScreenProps {
   onOpenNotes?: () => void;
 }
@@ -157,7 +152,6 @@ export function MapOfShasScreen({ onOpenNotes }: MapOfShasScreenProps) {
                 <div className="map-tile__bar">
                   <div className="map-tile__bar-fill" style={{ width: `${progress.sederPercent(s.id)}%` }} />
                 </div>
-                <span className="map-tile__pct">{progress.sederPercent(s.id)}%</span>
               </button>
             ))}
           </div>
@@ -178,7 +172,6 @@ export function MapOfShasScreen({ onOpenNotes }: MapOfShasScreenProps) {
                     style={{ width: `${progress.masechetPercent(m.en, m.perakim)}%` }}
                   />
                 </div>
-                <PercentBadge percent={progress.masechetPercent(m.en, m.perakim)} />
               </button>
             ))}
           </div>
@@ -206,7 +199,6 @@ export function MapOfShasScreen({ onOpenNotes }: MapOfShasScreenProps) {
                       {name}
                     </span>
                   )}
-                  <PercentBadge percent={progress.perekPercent(masechet.en, p)} />
                 </button>
               );
             })}

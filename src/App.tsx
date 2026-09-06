@@ -73,12 +73,26 @@ function SedarimSection() {
 
 function App() {
   const [section, setSection] = useState("home");
+  // Where to send the user back to once they log in — set by any screen
+  // that gates an action behind an account (see requestLogin), so "Log
+  // in first" never dead-ends: it returns you to what you were doing.
+  const [loginReturnTo, setLoginReturnTo] = useState<string | null>(null);
   const { session } = useAuth();
   useCloudSync(session);
 
+  function requestLogin(from: string) {
+    setLoginReturnTo(from);
+    setSection("login");
+  }
+
+  function handleSelect(next: string) {
+    if (next !== "login") setLoginReturnTo(null);
+    setSection(next);
+  }
+
   return (
     <div className="app">
-      <Sidebar activeId={section} onSelect={setSection} />
+      <Sidebar activeId={section} onSelect={handleSelect} />
       <main className="main">
         <div
           className={
@@ -107,9 +121,14 @@ function App() {
           ) : section === "progress" ? (
             <ProgressScreen />
           ) : section === "login" ? (
-            <LoginScreen />
+            <LoginScreen
+              onLoggedIn={() => {
+                setSection(loginReturnTo ?? "home");
+                setLoginReturnTo(null);
+              }}
+            />
           ) : section === "chevrusa" ? (
-            <ChevrusaScreen onOpenLogin={() => setSection("login")} />
+            <ChevrusaScreen onOpenLogin={() => requestLogin("chevrusa")} />
           ) : (
             <RecallScreen />
           )}

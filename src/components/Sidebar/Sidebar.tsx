@@ -7,19 +7,40 @@ interface NavItem {
   built: boolean;
 }
 
-const HOME_ITEM: NavItem = { id: "home", label: "Home", built: true };
+/** Each item's own section hue for its active fill — matches the design
+    reference's SECTION map exactly, including the shared terracotta
+    between Chevrusa and L'Iluy Nishmat (both group-commitment features). */
+const HUE: Record<string, string> = {
+  home: "var(--hue-home)",
+  limmud: "var(--hue-limmud)",
+  map: "var(--hue-explore)",
+  perek: "var(--hue-notes)",
+  progress: "var(--hue-siyumim)",
+  liluy: "var(--hue-chevrusa)",
+  chevrusa: "var(--hue-chevrusa)",
+  login: "var(--hue-login)",
+  sedarim: "var(--hue-sedarim)",
+  mishna: "var(--hue-quiz)",
+  sort: "var(--hue-sort)",
+  recall: "var(--hue-chazara)",
+  dash: "var(--hue-dash)",
+  resources: "var(--hue-resources)",
+};
 
-/** Mirrors Home's own "My Mishna" / "Learning Tools" split exactly — a
+/** Mirrors Home's own "My Mishna" / "Learning Tools" split, with Home
+    itself as the group's first item (matches the design reference — a
     student who's already parsed Home's two sections shouldn't have to
-    learn a second, different grouping here. */
+    learn a second, different grouping here). */
 const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
   {
     label: "My Mishna",
     items: [
+      { id: "home", label: "Home", built: true },
       { id: "limmud", label: "Daily Limmud", built: true },
       { id: "map", label: "Explore Shas", built: true },
       { id: "perek", label: "Mishna Notes", built: true },
       { id: "progress", label: "My Siyumim", built: true },
+      { id: "liluy", label: "L'Iluy Nishmat", built: false },
       { id: "chevrusa", label: "Chevrusa", built: true },
       { id: "login", label: "Log In", built: true },
     ],
@@ -45,12 +66,8 @@ interface SidebarProps {
 function NavButton({ item, active, onSelect }: { item: NavItem; active: boolean; onSelect: (id: string) => void }) {
   return (
     <button
-      className={
-        "nav-item" +
-        (active ? " nav-item--active" : "") +
-        (item.built ? "" : " nav-item--disabled") +
-        ` nav-item--${item.id}`
-      }
+      className={"nav-item" + (active ? " nav-item--active" : "") + (item.built ? "" : " nav-item--disabled")}
+      style={active ? { background: HUE[item.id] ?? "var(--gold)" } : undefined}
       disabled={!item.built}
       title={item.built ? undefined : "Coming soon"}
       onClick={() => onSelect(item.id)}
@@ -69,10 +86,8 @@ export function Sidebar({ activeId, onSelect }: SidebarProps) {
       <span className="sidebar__brand" aria-hidden="true">
         ש
       </span>
-      <NavButton item={HOME_ITEM} active={activeId === HOME_ITEM.id} onSelect={onSelect} />
       {NAV_GROUPS.map((group) => (
         <div className="nav-group" key={group.label}>
-          <span className="nav-group__divider" aria-hidden="true" />
           <span className="nav-group__label">{group.label}</span>
           {group.items.map((item) => (
             <NavButton key={item.id} item={item} active={activeId === item.id} onSelect={onSelect} />

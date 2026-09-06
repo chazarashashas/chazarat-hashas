@@ -16,8 +16,9 @@
 .home-title {
   margin: 0 0 4px;
   font-family: var(--font-hebrew);
-  font-size: 34px;
+  font-size: clamp(36px, 7vw, 52px);
   font-weight: 700;
+  line-height: 1.4;
   color: var(--ink);
   text-align: center;
 }

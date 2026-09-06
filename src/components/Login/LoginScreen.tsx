@@ -5,7 +5,15 @@ import "./LoginScreen.css";
 
 type Mode = "signIn" | "signUp";
 
-export function LoginScreen() {
+interface LoginScreenProps {
+  /** Fired after a successful sign-in only (not sign-up, which requires
+      email confirmation first and doesn't log the user in immediately)
+      — lets whoever gated an action behind login send the user back to
+      what they were doing instead of stranding them on this screen. */
+  onLoggedIn?: () => void;
+}
+
+export function LoginScreen({ onLoggedIn }: LoginScreenProps) {
   const auth = useAuth();
   const [mode, setMode] = useState<Mode>("signIn");
   const [email, setEmail] = useState("");
@@ -45,6 +53,8 @@ export function LoginScreen() {
     } else if (mode === "signUp") {
       setMessage("Account created — check your email to confirm it, then log in.");
       setMode("signIn");
+    } else {
+      onLoggedIn?.();
     }
   }
 
