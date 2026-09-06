@@ -34,6 +34,10 @@ function SedarimSection() {
   const activeView = MATCH_VIEWS.find((v) => v.id === activeId)!;
   const activeState = viewStates[activeId];
 
+  const clearedSederIds = new Set(
+    MATCH_VIEWS.filter((v) => viewStates[v.id]?.placed.every((p) => p !== null)).map((v) => v.id),
+  );
+
   function handlePlace(itemId: string, slotIndex: number) {
     setViewStates((prev) => {
       const s = prev[activeId];
@@ -50,7 +54,13 @@ function SedarimSection() {
 
   return (
     <>
-      <MatchBoard view={activeView} state={activeState} onPlace={handlePlace} onReset={handleReset} />
+      <MatchBoard
+        view={activeView}
+        state={activeState}
+        onPlace={handlePlace}
+        onReset={handleReset}
+        clearedSederIds={clearedSederIds}
+      />
       <TabBar
         tabs={MATCH_VIEWS.map((v) => ({ id: v.id, label: v.label }))}
         activeId={activeId}

@@ -1,17 +1,28 @@
 import { useState } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
-import { MATCH_VIEWS } from "../../data/matchViews";
+import { SEDARIM } from "../../data/shas";
 import type { MatchView } from "../../data/matchViews";
 import type { ViewState } from "../../types/viewState";
+import { getSederHue } from "../../utils/sederHue";
 import "./MatchBoard.css";
 
-const SEDER_VIEWS = MATCH_VIEWS.slice(1);
+/** Which seder a slot/chip belongs to, found from the item name itself
+    (the target value for that slot) — works uniformly for the sedarim
+    board, a single seder's board, and the combined two-seder boards. */
+function hueForItem(viewId: string, itemName: string): string {
+  const seder =
+    viewId === "sedarim"
+      ? SEDARIM.find((s) => s.en === itemName)
+      : SEDARIM.find((s) => s.masechtot.some((m) => m.en === itemName));
+  return getSederHue(seder?.id);
+}
 
 interface MatchBoardProps {
   view: MatchView;
   state: ViewState;
   onPlace: (itemId: string, slotIndex: number) => void;
   onReset: () => void;
+  clearedSederIds: Set<string>;
 }
 
 interface DragState {
@@ -30,7 +41,7 @@ interface DragState {
     touch devices where a precise drag can be awkward. */
 const TAP_MOVE_THRESHOLD = 6;
 
-export function MatchBoard({ view, state, onPlace, onReset }: MatchBoardProps) {
+export function MatchBoard({ view, state, onPlace, onReset, clearedSederIds }: MatchBoardProps) {
   const { placed, pool } = state;
   const [drag, setDrag] = useState<DragState | null>(null);
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
@@ -125,18 +136,13 @@ export function MatchBoard({ view, state, onPlace, onReset }: MatchBoardProps) {
         </p>
 
         <div className="board-progress">
-          <span
-            className={"board-progress__star" + (view.id === "sedarim" ? " board-progress__star--active" : "")}
-          >
-            ★
-          </span>
-          {SEDER_VIEWS.map((sv) => (
+          {SEDARIM.map((seder) => (
             <span
-              key={sv.id}
-              className={"board-progress__dot" + (view.id === sv.id ? " board-progress__dot--active" : "")}
-            >
-              ●
-            </span>
+              key={seder.id}
+              className={"board-progress__sq" + (clearedSederIds.has(seder.id) ? " board-progress__sq--done" : "")}
+              style={{ ["--sq-hue" as string]: getSederHue(seder.id) }}
+              title={seder.en}
+            />
           ))}
         </div>
 
@@ -157,6 +163,7 @@ export function MatchBoard({ view, state, onPlace, onReset }: MatchBoardProps) {
                     key={i}
                     data-slot-index={i}
                     className={className}
+                    style={{ ["--slot-hue" as string]: hueForItem(view.id, view.items[i]) }}
                     onClick={() => handleSlotTap(i)}
                   >
                     <span className="slot__num">{i + 1}</span>
