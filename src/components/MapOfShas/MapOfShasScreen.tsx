@@ -19,6 +19,8 @@ interface TextState {
 
 const IDLE_TEXT: TextState = { status: "idle", text: "", error: "" };
 
+const ALL_MASECHTOT_FLAT = SEDARIM.flatMap((s) => s.masechtot.map((m) => ({ ...m, sederId: s.id })));
+
 interface MapOfShasScreenProps {
   onOpenNotes?: () => void;
 }
@@ -39,8 +41,14 @@ export function MapOfShasScreen({ onOpenNotes }: MapOfShasScreenProps) {
   const [mishnah, setMishnah] = useState<number | null>(null);
   const [textState, setTextState] = useState<TextState>(IDLE_TEXT);
   const [noteOpen, setNoteOpen] = useState(false);
+  const [search, setSearch] = useState("");
 
   const seder = SEDARIM.find((s) => s.id === sederId) ?? null;
+
+  const searchMatches =
+    search.trim().length > 0
+      ? ALL_MASECHTOT_FLAT.filter((m) => m.en.toLowerCase().includes(search.trim().toLowerCase())).slice(0, 8)
+      : [];
 
   function openSeder(id: string) {
     setSederId(id);
@@ -50,6 +58,17 @@ export function MapOfShasScreen({ onOpenNotes }: MapOfShasScreenProps) {
   function openMasechet(m: Masechet) {
     setMasechet(m);
     setLevel("perakim");
+  }
+
+  /** Jumps straight from a search result to that masechet's perakim,
+      regardless of which seder it's in or what level you started on —
+      finds and sets the owning seder too, so the breadcrumb and "back"
+      trail stay correct. */
+  function jumpToMasechet(m: Masechet & { sederId: string }) {
+    setSederId(m.sederId);
+    setMasechet(m);
+    setLevel("perakim");
+    setSearch("");
   }
 
   function openPerek(p: number) {
@@ -98,6 +117,27 @@ export function MapOfShasScreen({ onOpenNotes }: MapOfShasScreenProps) {
           Explore Shas from the top down — every seder, masechet, perek, and mishnah, with your
           progress shown along the way.
         </p>
+
+        <div className="map-search">
+          <input
+            className="map-search__input"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Jump to a masechet…"
+          />
+          {searchMatches.length > 0 && (
+            <div className="map-search__results">
+              {searchMatches.map((m) => (
+                <button key={m.en} className="map-search__result" onClick={() => jumpToMasechet(m)}>
+                  <span>{m.en}</span>
+                  <span className="map-search__result-he" dir="rtl">
+                    {m.he}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
         <div className="map-breadcrumb" dir="ltr">
           {seder && (
