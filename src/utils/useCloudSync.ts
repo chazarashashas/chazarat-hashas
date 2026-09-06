@@ -10,6 +10,8 @@ const SYNC_KEYS = [
   "dailyLimmudPosition",
   "dailyLimmudPace",
   "conceptNotes",
+  "nishmatMyClaims",
+  "gameStats",
 ] as const;
 
 type SyncBlob = Partial<Record<(typeof SYNC_KEYS)[number], unknown>>;
@@ -76,6 +78,35 @@ function mergeUniqueBy(local: unknown, cloud: unknown, keyOf: (item: unknown) =>
   return out;
 }
 
+/** Per-game best-result merge — takes the higher score/count and the
+    higher play count from either side, so neither device's record of a
+    personal best (or how many times a game's been played) is discarded
+    just because the other side happened to sync last. */
+function mergeGameStat(
+  local: Record<string, number> | undefined,
+  cloud: Record<string, number> | undefined,
+): Record<string, number> {
+  const l = local ?? {};
+  const c = cloud ?? {};
+  const keys = new Set([...Object.keys(l), ...Object.keys(c)]);
+  const merged: Record<string, number> = {};
+  for (const key of keys) {
+    merged[key] = Math.max(Number(l[key]) || 0, Number(c[key]) || 0);
+  }
+  return merged;
+}
+
+function mergeGameStats(local: unknown, cloud: unknown): Record<string, unknown> {
+  const l = (local && typeof local === "object" ? local : {}) as Record<string, Record<string, number>>;
+  const c = (cloud && typeof cloud === "object" ? cloud : {}) as Record<string, Record<string, number>>;
+  const games = new Set([...Object.keys(l), ...Object.keys(c)]);
+  const merged: Record<string, unknown> = {};
+  for (const game of games) {
+    merged[game] = mergeGameStat(l[game], c[game]);
+  }
+  return merged;
+}
+
 /** Merges this device's local data with whatever's already saved to the
     account — local edits always win on a direct conflict, cloud fills in
     anything local is missing, nothing is silently discarded. */
@@ -94,6 +125,8 @@ function mergeBlobs(local: SyncBlob, cloud: SyncBlob): SyncBlob {
     conceptNotes: mergeUniqueBy(local.conceptNotes, cloud.conceptNotes, (item) => (item as { id: string }).id),
     dailyLimmudPosition: Math.max(Number(local.dailyLimmudPosition) || 0, Number(cloud.dailyLimmudPosition) || 0),
     dailyLimmudPace: local.dailyLimmudPace ?? cloud.dailyLimmudPace ?? "1",
+    nishmatMyClaims: mergeUniqueBy(local.nishmatMyClaims, cloud.nishmatMyClaims, (item) => (item as { id: string }).id),
+    gameStats: mergeGameStats(local.gameStats, cloud.gameStats),
   };
 }
 

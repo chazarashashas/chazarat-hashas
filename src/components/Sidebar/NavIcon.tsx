@@ -19,6 +19,7 @@ const PATHS: Record<string, string> = {
   dash: "M13 2L5 14h6l-1.5 8L19 10h-6z",
   resources: "M7 8V4h10v4M5 8h14v7a1 1 0 01-1 1H6a1 1 0 01-1-1V8zM7 16v4h10v-4",
   liluy: "M12 2c1.2 2 1.6 3.3 1.6 4.3a1.6 1.6 0 11-3.2 0C10.4 5.3 10.8 4 12 2zM9 21h6M12 8v8M9 16a3 3 0 006 0",
+  admin: "M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3zM9 12l2 2 4-4",
 };
 
 export function NavIcon({ id }: { id: string }) {

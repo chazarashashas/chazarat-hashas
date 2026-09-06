@@ -26,6 +26,7 @@ const HUE: Record<string, string> = {
   recall: "var(--hue-chazara)",
   dash: "var(--hue-dash)",
   resources: "var(--hue-resources)",
+  admin: "var(--hue-login)",
 };
 
 /** Mirrors Home's own "My Mishna" / "Learning Tools" split, with Home
@@ -62,10 +63,12 @@ const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
     groups — account access is conventionally placed apart from feature
     navigation, not buried mid-list (user feedback). */
 const LOGIN_ITEM: NavItem = { id: "login", label: "My Account", built: true };
+const ADMIN_ITEM: NavItem = { id: "admin", label: "Admin", built: true };
 
 interface SidebarProps {
   activeId: string;
   onSelect: (id: string) => void;
+  isAdmin?: boolean;
 }
 
 function NavButton({ item, active, onSelect }: { item: NavItem; active: boolean; onSelect: (id: string) => void }) {
@@ -85,7 +88,7 @@ function NavButton({ item, active, onSelect }: { item: NavItem; active: boolean;
   );
 }
 
-export function Sidebar({ activeId, onSelect }: SidebarProps) {
+export function Sidebar({ activeId, onSelect, isAdmin }: SidebarProps) {
   return (
     <nav className="sidebar">
       <BrandMark variant="reversed" className="sidebar__brand" />
@@ -97,6 +100,11 @@ export function Sidebar({ activeId, onSelect }: SidebarProps) {
           ))}
         </div>
       ))}
+      {isAdmin && (
+        <div className="nav-group nav-group--login">
+          <NavButton item={ADMIN_ITEM} active={activeId === ADMIN_ITEM.id} onSelect={onSelect} />
+        </div>
+      )}
       <div className="nav-group nav-group--login">
         <NavButton item={LOGIN_ITEM} active={activeId === LOGIN_ITEM.id} onSelect={onSelect} />
       </div>

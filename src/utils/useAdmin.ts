@@ -1,0 +1,82 @@
+import { useEffect, useState } from "react";
+import { supabase } from "./supabase";
+
+export interface AdminOverview {
+  totalUsers: number;
+  totalGroups: number;
+  totalChaburot: number;
+  totalChevrusot: number;
+  totalSiyumim: number;
+  totalClaims: number;
+  learnedClaims: number;
+  openPerakim: number;
+}
+
+export interface AdminUserRow {
+  id: string;
+  email: string;
+  username: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  isAdmin: boolean;
+  createdAt: string;
+  mishnayotLearned: number;
+}
+
+/** Reads the two admin-only SECURITY DEFINER functions (see
+    admin_setup.sql) — both check the caller's own is_admin flag
+    server-side before returning anything, so a non-admin calling
+    these just gets an error, not partial data. */
+export function useAdmin(isAdmin: boolean) {
+  const [overview, setOverview] = useState<AdminOverview | null>(null);
+  const [users, setUsers] = useState<AdminUserRow[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isAdmin || !supabase) return;
+    let cancelled = false;
+    setLoading(true);
+    (async () => {
+      const [overviewRes, usersRes] = await Promise.all([
+        supabase!.rpc("admin_overview").single(),
+        supabase!.rpc("admin_list_users"),
+      ]);
+      if (cancelled) return;
+      if (overviewRes.error || usersRes.error) {
+        setError((overviewRes.error ?? usersRes.error)?.message ?? "Failed to load admin data.");
+        setLoading(false);
+        return;
+      }
+      const o = overviewRes.data as Record<string, number>;
+      setOverview({
+        totalUsers: Number(o.total_users),
+        totalGroups: Number(o.total_groups),
+        totalChaburot: Number(o.total_chaburot),
+        totalChevrusot: Number(o.total_chevrusot),
+        totalSiyumim: Number(o.total_siyumim),
+        totalClaims: Number(o.total_claims),
+        learnedClaims: Number(o.learned_claims),
+        openPerakim: Number(o.open_perakim),
+      });
+      setUsers(
+        (usersRes.data as Record<string, unknown>[]).map((r) => ({
+          id: r.id as string,
+          email: r.email as string,
+          username: r.username as string | null,
+          firstName: r.first_name as string | null,
+          lastName: r.last_name as string | null,
+          isAdmin: Boolean(r.is_admin),
+          createdAt: r.created_at as string,
+          mishnayotLearned: Number(r.mishnayot_learned),
+        })),
+      );
+      setLoading(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [isAdmin]);
+
+  return { overview, users, loading, error };
+}

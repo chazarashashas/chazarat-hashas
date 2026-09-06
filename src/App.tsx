@@ -16,6 +16,7 @@ import { LoginScreen } from "./components/Login/LoginScreen";
 import { ChevrusaScreen } from "./components/Chevrusa/ChevrusaScreen";
 import { MapOfShasScreen } from "./components/MapOfShas/MapOfShasScreen";
 import { LiluyNishmatScreen } from "./components/LiluyNishmat/LiluyNishmatScreen";
+import { AdminScreen } from "./components/Admin/AdminScreen";
 import { useAuth } from "./utils/useAuth";
 import { useCloudSync } from "./utils/useCloudSync";
 import { shuffle } from "./utils/shuffle";
@@ -87,7 +88,7 @@ function App() {
   // that gates an action behind an account (see requestLogin), so "Log
   // in first" never dead-ends: it returns you to what you were doing.
   const [loginReturnTo, setLoginReturnTo] = useState<string | null>(null);
-  const { session } = useAuth();
+  const { session, isAdmin } = useAuth();
   useCloudSync(session);
 
   function requestLogin(from: string) {
@@ -102,7 +103,7 @@ function App() {
 
   return (
     <div className="app">
-      <Sidebar activeId={section} onSelect={handleSelect} />
+      <Sidebar activeId={section} onSelect={handleSelect} isAdmin={isAdmin} />
       <main className="main">
         <div
           className={
@@ -147,6 +148,8 @@ function App() {
             />
           ) : section === "liluy" ? (
             <LiluyNishmatScreen onOpenLogin={() => requestLogin("liluy")} initialSlug={deepLinkSlug} />
+          ) : section === "admin" ? (
+            isAdmin ? <AdminScreen /> : <HomeScreen onNavigate={setSection} />
           ) : (
             <RecallScreen />
           )}

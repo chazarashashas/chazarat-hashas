@@ -6,6 +6,7 @@ interface Profile {
   username: string | null;
   firstName: string | null;
   lastName: string | null;
+  isAdmin: boolean;
 }
 
 interface AuthState extends Profile {
@@ -13,17 +14,28 @@ interface AuthState extends Profile {
   loading: boolean;
 }
 
-const EMPTY_PROFILE: Profile = { username: null, firstName: null, lastName: null };
+const EMPTY_PROFILE: Profile = { username: null, firstName: null, lastName: null, isAdmin: false };
 
 async function fetchProfile(userId: string): Promise<Profile> {
   if (!supabase) return EMPTY_PROFILE;
-  const { data } = await supabase
+  let { data, error } = await supabase
     .from("profiles")
-    .select("username, first_name, last_name")
+    .select("username, first_name, last_name, is_admin")
     .eq("id", userId)
     .single();
+  // is_admin only exists once admin_setup.sql has been run — fall back to
+  // the columns that are always there so profile loading never breaks in
+  // the gap between deploying this code and running that script.
+  if (error) {
+    ({ data } = await supabase.from("profiles").select("username, first_name, last_name").eq("id", userId).single());
+  }
   if (!data) return EMPTY_PROFILE;
-  return { username: data.username, firstName: data.first_name, lastName: data.last_name };
+  return {
+    username: data.username,
+    firstName: data.first_name,
+    lastName: data.last_name,
+    isAdmin: Boolean((data as { is_admin?: boolean }).is_admin),
+  };
 }
 
 export function useAuth() {
@@ -127,6 +139,7 @@ export function useAuth() {
     username: state.username,
     firstName: state.firstName,
     lastName: state.lastName,
+    isAdmin: state.isAdmin,
     loading: state.loading,
     isLoggedIn: Boolean(state.session),
     checkUsernameAvailable,
