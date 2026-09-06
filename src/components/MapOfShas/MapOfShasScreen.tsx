@@ -7,6 +7,7 @@ import { useLearningProgress } from "../../utils/useLearningProgress";
 import { usePerekNotes } from "../../utils/usePerekNotes";
 import { getSederHue } from "../../utils/sederHue";
 import { PerekNoteModal } from "../PerekNoteModal/PerekNoteModal";
+import { TranslationReveal } from "../TranslationReveal/TranslationReveal";
 import "./MapOfShasScreen.css";
 
 type Level = "sedarim" | "masechtot" | "perakim" | "mishnayot" | "text";
@@ -268,9 +269,12 @@ export function MapOfShasScreen({ onOpenNotes }: MapOfShasScreenProps) {
               </p>
             )}
             {textState.status === "loaded" && (
-              <p className="map-text" dir="rtl">
-                {textState.text}
-              </p>
+              <>
+                <p className="map-text" dir="rtl">
+                  {textState.text}
+                </p>
+                <TranslationReveal key={`${masechet.en}.${perek}.${mishnah}`} masechetEn={masechet.en} perek={perek} mishnah={mishnah} />
+              </>
             )}
           </div>
         )}

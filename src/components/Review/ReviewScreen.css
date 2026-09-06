@@ -89,7 +89,7 @@
   margin: 0 0 3px;
   font-size: 10.5px;
   font-weight: 700;
-  color: #8a6a1d;
+  color: var(--brass-text);
 }
 
 .review-card__note-text {

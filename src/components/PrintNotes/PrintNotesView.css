@@ -158,7 +158,7 @@
 
 .print-concept__title {
   font-weight: 700;
-  color: #8a6a1d;
+  color: var(--brass-text);
 }
 
 @media print {

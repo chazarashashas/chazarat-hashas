@@ -1,0 +1,41 @@
+.translation-credit {
+  margin: 8px 0 0;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 10.5px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.translation-credit a {
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.translation-credit a:hover {
+  color: var(--ink);
+}
+
+.translation-credit--short {
+  margin: 0;
+  text-align: left;
+}
+
+.translation-notice {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+.translation-notice a {
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.translation-notice a:hover {
+  color: var(--ink);
+}

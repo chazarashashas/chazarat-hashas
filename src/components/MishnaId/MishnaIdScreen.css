@@ -267,7 +267,30 @@
 .note-banner--bonus {
   background: #fbf1d6;
   border-color: var(--gold);
-  color: #8a6a1d;
+  color: var(--brass-text);
+}
+
+.mishna-english-withheld {
+  margin: 10px 0 0;
+  font-size: 11.5px;
+  color: var(--muted);
+  background: var(--surface);
+  border-radius: 10px;
+  padding: 9px 12px;
+  text-align: center;
+}
+
+.mishna-located-english {
+  margin-top: 4px;
+}
+
+.mishna-located-english .translation-reveal-toggle,
+.mishna-located-english .translation-reveal-toggle--hide {
+  color: var(--good);
+}
+
+.mishna-located-english .translation-reveal-toggle:hover {
+  color: var(--ink);
 }
 
 .mishna-note-link {

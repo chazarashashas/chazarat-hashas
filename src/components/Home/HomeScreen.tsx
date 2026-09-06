@@ -12,6 +12,7 @@ import { useEscapeKey } from "../../utils/useEscapeKey";
 import { hebrewNumeral } from "../../utils/hebrewNumeral";
 import { NudgeStrip } from "../NudgeStrip/NudgeStrip";
 import { nudgeCopy, pluralize } from "../../utils/nudgeCopy";
+import { readVersionsSeen, licenseDeedUrl } from "../../utils/translation";
 import "./HomeScreen.css";
 
 interface Feature {
@@ -127,6 +128,10 @@ interface HomeScreenProps {
 export function HomeScreen({ onNavigate }: HomeScreenProps) {
   const [showIntro, setShowIntro] = useState(false);
   useEscapeKey(() => setShowIntro(false));
+  // Read fresh each time the popup opens rather than kept in state — this
+  // list only ever grows while the popup is closed (a translation fetched
+  // elsewhere in the app), so there's nothing to react to while it's shut.
+  const versionsInUse = showIntro ? readVersionsSeen() : [];
   const progress = useLearningProgress();
   const { perekNotes } = usePerekNotes();
   const { isLoggedIn } = useAuth();
@@ -304,6 +309,32 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
                 on one seder or on all of Shas.
               </p>
             </div>
+
+            {versionsInUse.length > 0 && (
+              <p className="translation-notice">
+                English translations, where shown, are pulled live from{" "}
+                <a href="https://www.sefaria.org" target="_blank" rel="noopener noreferrer">
+                  Sefaria
+                </a>{" "}
+                and belong to their own translators, each under their own license — English is
+                always optional and off by default. So far on this device:{" "}
+                {versionsInUse.map((v, i) => (
+                  <span key={v.versionTitle}>
+                    {i > 0 && ", "}
+                    {v.versionTitle} (
+                    {licenseDeedUrl(v.license) ? (
+                      <a href={licenseDeedUrl(v.license)!} target="_blank" rel="noopener noreferrer">
+                        {v.license}
+                      </a>
+                    ) : (
+                      v.license
+                    )}
+                    )
+                  </span>
+                ))}
+                .
+              </p>
+            )}
 
             <button className="restart" onClick={() => setShowIntro(false)}>
               Got it

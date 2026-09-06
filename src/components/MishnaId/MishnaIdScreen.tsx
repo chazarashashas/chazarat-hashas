@@ -6,6 +6,7 @@ import { usePerekNotes } from "../../utils/usePerekNotes";
 import { useGameStats } from "../../utils/useGameStats";
 import { getSederHue } from "../../utils/sederHue";
 import { PerekNoteModal } from "../PerekNoteModal/PerekNoteModal";
+import { TranslationReveal } from "../TranslationReveal/TranslationReveal";
 import { TabBar } from "../TabBar/TabBar";
 import "./MishnaIdScreen.css";
 
@@ -504,6 +505,10 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
               )}
             </div>
 
+            {started && !paused && !coreSolved && !card.timedOut && !card.failed && (
+              <p className="mishna-english-withheld">English becomes available once you have located it.</p>
+            )}
+
             {!started || paused ? null : card.timedOut && !coreSolved ? (
               <div className="note-banner">
                 Time's up — it was {card.seder.en} › {card.masechet.en} › Perek {card.perek}.
@@ -558,6 +563,16 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
                     <button className="mishna-note-link" onClick={() => setNoteOpen(true)}>
                       {getPerekNote(card.masechet.en, card.perek) ? "View note" : "Add note"}
                     </button>
+                  )}
+                  {content.status === "loaded" && (
+                    <div className="mishna-located-english">
+                      <TranslationReveal
+                        key={`${card.masechet.en}.${card.perek}.${content.mishnahNumber}`}
+                        masechetEn={card.masechet.en}
+                        perek={card.perek}
+                        mishnah={content.mishnahNumber}
+                      />
+                    </div>
                   )}
                 </div>
                 {bonusAvailable &&

@@ -20,7 +20,10 @@ interface PerekNamesScreenProps {
 
 export function PerekNamesScreen({ onOpenLogin }: PerekNamesScreenProps) {
   const [docView, setDocView] = useState<DocView>("notes");
-  const [sederTab, setSederTab] = useState("all");
+  // Opens straight to a seder's per-perek naming view (Zeraim/Berachot by
+  // default) rather than the "all sedarim" masechet-summary tab — naming
+  // perakim is the actual point of this screen, not the overview.
+  const [sederTab, setSederTab] = useState(SEDARIM[0].id);
   const [selectedSederId, setSelectedSederId] = useState<string>(SEDARIM[0].id);
   const [selectedMasechetEn, setSelectedMasechetEn] = useState<string>(SEDARIM[0].masechtot[0].en);
   const [printOpen, setPrintOpen] = useState(false);
@@ -188,7 +191,7 @@ export function PerekNamesScreen({ onOpenLogin }: PerekNamesScreenProps) {
                     <input
                       value={masechetSentences[m.en] ?? ""}
                       onChange={(e) => updateSentence(m.en, e.target.value)}
-                      placeholder="Write your notes here"
+                      placeholder="This masechet is about…"
                     />
                   </div>
                 ))}

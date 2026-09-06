@@ -18,6 +18,7 @@ const SYNC_KEYS = [
   "frozenDates",
   "lastFreezeMilestone",
   "reviewState",
+  "showEnglish",
 ] as const;
 
 type SyncBlob = Partial<Record<(typeof SYNC_KEYS)[number], unknown>>;
@@ -166,6 +167,12 @@ function mergeBlobs(local: SyncBlob, cloud: SyncBlob): SyncBlob {
     frozenDates: mergeUniqueBy(local.frozenDates, cloud.frozenDates, (item) => item as string),
     lastFreezeMilestone: Math.max(Number(local.lastFreezeMilestone) || 0, Number(cloud.lastFreezeMilestone) || 0),
     reviewState: mergeReviewState(local.reviewState, cloud.reviewState),
+    // Cloud wins when present, so "phone and laptop agree" (a device that
+    // never touched the switch shouldn't keep a stale local false once the
+    // account's real answer is known) — the brief's "local wins on first
+    // load" is about not flickering before this merge runs, not about
+    // this merge's own outcome.
+    showEnglish: typeof cloud.showEnglish === "boolean" ? cloud.showEnglish : (local.showEnglish ?? false),
   };
 }
 

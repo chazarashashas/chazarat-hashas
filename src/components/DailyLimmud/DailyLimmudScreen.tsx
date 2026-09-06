@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { SEDARIM } from "../../data/shas";
 import { getPerekName, getMishnayotCount } from "../../data/perekInfo";
 import { fetchMishna } from "../../utils/sefaria";
+import { fetchMishnaTranslation, type TranslationAttribution } from "../../utils/translation";
 import { usePerekNotes } from "../../utils/usePerekNotes";
 import { useLearningProgress, type Pace } from "../../utils/useLearningProgress";
+import { useLocalStorageState } from "../../utils/useLocalStorageState";
 import { useOfflinePrefetch } from "../../utils/useOfflinePrefetch";
 import { useAuth } from "../../utils/useAuth";
 import { useChevrusa, recordGroupActivityForMasechet } from "../../utils/useChevrusa";
@@ -14,8 +16,32 @@ import { FlipCounter } from "../FlipCounter/FlipCounter";
 import { buildJourneyScopes } from "../../utils/shasJourney";
 import { QueuedSiyumPerek } from "./QueuedSiyumPerek";
 import { NudgeStrip } from "../NudgeStrip/NudgeStrip";
+import { TranslationAttributionLine } from "../TranslationAttribution/TranslationAttribution";
 import { getSederHueText } from "../../utils/sederHue";
 import "./DailyLimmudScreen.css";
+
+type EnglishItemState =
+  | { status: "loading" }
+  | { status: "ok"; text: string; attribution: TranslationAttribution }
+  | { status: "error" }
+  | { status: "unavailable" };
+
+function englishKey(item: { masechetEn: string; perek: number; mishnah: number }): string {
+  return `${item.masechetEn}.${item.perek}.${item.mishnah}`;
+}
+
+/** The track-and-knob switch that turns Daily Limmud's stacked English on
+    or off — this is the only control in the app that writes the
+    `showEnglish` preference (Explore Shas's reveal is per view and never
+    touches it). Styled as a setting, not a link, since that's what it is. */
+function EnglishSwitch({ on, onToggle }: { on: boolean; onToggle: () => void }) {
+  return (
+    <button className={"english-switch" + (on ? " english-switch--on" : "")} onClick={onToggle} aria-pressed={on}>
+      <span className="english-switch__knob" />
+      <span className="english-switch__label">{on ? "English on" : "English"}</span>
+    </button>
+  );
+}
 
 interface MishnaItem {
   masechetEn: string;
@@ -96,6 +122,10 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
   const siyumim = useSiyumim();
   const [switchMasechet, setSwitchMasechet] = useState("");
   const [switchBusy, setSwitchBusy] = useState(false);
+  // The only place this flag is written — Explore Shas's reveal is per
+  // view and never touches it, so it never turns itself on elsewhere.
+  const [showEnglish, setShowEnglish] = useLocalStorageState<boolean>("showEnglish", false);
+  const [englishByKey, setEnglishByKey] = useState<Record<string, EnglishItemState>>({});
 
   // Every distinct masechet you have an active chevrusa/chabura on —
   // grouped by masechet (not by group), since your real progress
@@ -193,6 +223,52 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rangeKey]);
 
+  // Fetches English independently per item, only while the switch is on,
+  // and only for items not already fetched (or in flight) — a failed or
+  // slow translation for one mishnah never blocks another's, or the
+  // Hebrew above, which loads on its own regardless of this effect.
+  useEffect(() => {
+    if (!showEnglish || items.length === 0) return;
+    let cancelled = false;
+    for (const item of items) {
+      const key = englishKey(item);
+      if (englishByKey[key]) continue;
+      setEnglishByKey((prev) => ({ ...prev, [key]: { status: "loading" } }));
+      fetchMishnaTranslation(item.masechetEn, item.perek, item.mishnah).then((result) => {
+        if (cancelled) return;
+        setEnglishByKey((prev) => ({
+          ...prev,
+          [key]:
+            result.status === "ok"
+              ? { status: "ok", text: result.text, attribution: result.attribution }
+              : result.status === "unavailable"
+                ? { status: "unavailable" }
+                : { status: "error" },
+        }));
+      });
+    }
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showEnglish, rangeKey]);
+
+  function retryEnglish(item: MishnaItem) {
+    const key = englishKey(item);
+    setEnglishByKey((prev) => ({ ...prev, [key]: { status: "loading" } }));
+    fetchMishnaTranslation(item.masechetEn, item.perek, item.mishnah).then((result) => {
+      setEnglishByKey((prev) => ({
+        ...prev,
+        [key]:
+          result.status === "ok"
+            ? { status: "ok", text: result.text, attribution: result.attribution }
+            : result.status === "unavailable"
+              ? { status: "unavailable" }
+              : { status: "error" },
+      }));
+    });
+  }
+
   function handleMarkLearned() {
     if (!firstItem) return;
 
@@ -270,6 +346,12 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
     else perekGroups.push({ masechetEn: c.masechetEn, perek: c.perek, items: [c] });
   }
 
+  // One credit line next to the switch, not one per mishnah — in practice
+  // every item in view shares the same translation version.
+  const sharedEnglishAttribution = items
+    .map((i) => englishByKey[englishKey(i)])
+    .find((s): s is Extract<EnglishItemState, { status: "ok" }> => s?.status === "ok")?.attribution;
+
   return (
     <div className="stage limmud-stage">
       <div className="panel limmud-panel">
@@ -336,26 +418,62 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
 
               {perekGroups.map((g) => (
                 <div key={`${g.masechetEn}-${g.perek}`} className="limmud-perek-block">
-                  {g.items.map((item) => (
-                    <div key={item.mishnah} className="limmud-mishna">
-                      <p className="limmud-mishna__title" dir="rtl">
-                        משנה {hebrewNumeral(item.mishnah)}
-                      </p>
-                      {item.status === "loading" ? (
-                        <span className="limmud-mishna__loading">Loading…</span>
-                      ) : item.status === "error" ? (
-                        <span className="limmud-mishna__error" dir="ltr">
-                          {item.error}
-                        </span>
-                      ) : (
-                        <p className="limmud-mishna__text" dir="rtl">
-                          {item.textHe}
+                  {g.items.map((item) => {
+                    const en = englishByKey[englishKey(item)];
+                    return (
+                      <div key={item.mishnah} className="limmud-mishna">
+                        <p className="limmud-mishna__title" dir="rtl">
+                          משנה {hebrewNumeral(item.mishnah)}
                         </p>
-                      )}
-                    </div>
-                  ))}
+                        {item.status === "loading" ? (
+                          <span className="limmud-mishna__loading">Loading…</span>
+                        ) : item.status === "error" ? (
+                          <span className="limmud-mishna__error" dir="ltr">
+                            {item.error}
+                          </span>
+                        ) : (
+                          <p className="limmud-mishna__text" dir="rtl">
+                            {item.textHe}
+                          </p>
+                        )}
+
+                        {showEnglish && item.status === "loaded" && en && en.status !== "unavailable" && (
+                          <>
+                            <div className="limmud-mishna__hairline" />
+                            {en.status === "loading" && (
+                              <div className="limmud-english-skeleton" aria-hidden="true">
+                                <span className="limmud-english-skeleton__bar" style={{ width: "100%" }} />
+                                <span className="limmud-english-skeleton__bar" style={{ width: "92%" }} />
+                                <span className="limmud-english-skeleton__bar" style={{ width: "64%" }} />
+                              </div>
+                            )}
+                            {en.status === "error" && (
+                              <p className="limmud-english-error">
+                                English is not loading right now.
+                                <button className="limmud-english-retry" onClick={() => retryEnglish(item)}>
+                                  Try again
+                                </button>
+                              </p>
+                            )}
+                            {en.status === "ok" && (
+                              <p className="limmud-mishna__english" dir="ltr">
+                                {en.text}
+                              </p>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               ))}
+
+              <div className="limmud-english-row">
+                <EnglishSwitch on={showEnglish} onToggle={() => setShowEnglish((v) => !v)} />
+                {showEnglish && sharedEnglishAttribution && (
+                  <TranslationAttributionLine attribution={sharedEnglishAttribution} variant="short" />
+                )}
+              </div>
 
               <button
                 className={"restart limmud-mark-btn" + (justMarked ? " limmud-mark-btn--done" : "")}
