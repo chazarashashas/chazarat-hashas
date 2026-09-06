@@ -9,6 +9,7 @@ import { buildJourneyScopes } from "../../utils/shasJourney";
 import { NavIcon } from "../Sidebar/NavIcon";
 import { BrandMark } from "../BrandMark";
 import { FlipCounter } from "../FlipCounter/FlipCounter";
+import { useEscapeKey } from "../../utils/useEscapeKey";
 import { hebrewNumeral } from "../../utils/hebrewNumeral";
 import "./HomeScreen.css";
 
@@ -130,6 +131,7 @@ interface HomeScreenProps {
 
 export function HomeScreen({ onNavigate }: HomeScreenProps) {
   const [showIntro, setShowIntro] = useState(false);
+  useEscapeKey(() => setShowIntro(false));
   const progress = useLearningProgress();
   const { perekNotes } = usePerekNotes();
   const { isLoggedIn } = useAuth();
@@ -209,7 +211,11 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
               {progress.streak.current > 0 ? (
                 <>
                   <span className="home-hero__streak-dot" aria-hidden="true" />
-                  <span className="home-hero__streak">{progress.streak.current}-day streak</span>
+                  <span className="home-hero__streak">
+                    {progress.streak.current}-day streak
+                    {progress.streak.freezesAvailable > 0 &&
+                      ` · ${progress.streak.freezesAvailable} freeze${progress.streak.freezesAvailable === 1 ? "" : "s"} banked`}
+                  </span>
                 </>
               ) : (
                 <span className="home-hero__streak">Learn today to start a streak</span>
@@ -255,7 +261,12 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
       {showIntro && (
         <div className="scrim intro-scrim" onClick={() => setShowIntro(false)}>
           <div className="popup intro-popup" onClick={(e) => e.stopPropagation()}>
-            <button className="intro-popup__close" onClick={() => setShowIntro(false)} title="Close">
+            <button
+              className="intro-popup__close"
+              onClick={() => setShowIntro(false)}
+              title="Close"
+              aria-label="Close"
+            >
               ✕
             </button>
             <h2 className="intro-popup__title">How this app works</h2>

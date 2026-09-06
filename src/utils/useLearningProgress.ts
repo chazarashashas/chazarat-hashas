@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useLocalStorageState } from "./useLocalStorageState";
 import { MISHNA_SEQUENCE, mishnaKey, endOfPerekIndex } from "../data/mishnaSequence";
 import { SEDARIM } from "../data/shas";
@@ -72,6 +73,13 @@ export function useLearningProgress() {
   const [position, setPosition] = useLocalStorageState<number>("dailyLimmudPosition", 0);
   const [pace, setPace] = useLocalStorageState<Pace>("dailyLimmudPace", "1");
   const [concepts, setConcepts] = useLocalStorageState<ConceptNote[]>("conceptNotes", []);
+  // Streak freeze: bridges exactly one missed day so a single off day
+  // doesn't zero out an otherwise-real streak. Starts with two freezes as
+  // a welcome gift, then earns one more per full week of unfrozen streak
+  // (capped at 3 banked) — see the two effects below.
+  const [streakFreezes, setStreakFreezes] = useLocalStorageState<number>("streakFreezes", 2);
+  const [frozenDates, setFrozenDates] = useLocalStorageState<string[]>("frozenDates", []);
+  const [lastFreezeMilestone, setLastFreezeMilestone] = useLocalStorageState<number>("lastFreezeMilestone", 0);
 
   const completedKeys = new Set(completions.map(mishnaKey));
 
@@ -152,9 +160,11 @@ export function useLearningProgress() {
     setConcepts((prev) => [...prev, entry]);
   }
 
-  // Streak: consecutive days (by any completion, either source) ending
-  // today or yesterday — a day isn't "missed" until it's fully passed.
-  const activeDates = new Set(completions.map((c) => c.date));
+  // Streak: consecutive days (by any completion, either source, or a day
+  // bridged by a streak freeze) ending today or yesterday — a day isn't
+  // "missed" until it's fully passed.
+  const rawActiveDates = new Set(completions.map((c) => c.date));
+  const activeDates = new Set([...rawActiveDates, ...frozenDates]);
   let longest = 0;
   {
     const sorted = Array.from(activeDates).sort();
@@ -176,6 +186,40 @@ export function useLearningProgress() {
       cursor = addDaysStr(cursor, -1);
     }
   }
+
+  // Spends one freeze to bridge yesterday, but only when doing so actually
+  // saves a real streak: today is active, yesterday isn't (and hasn't
+  // already been frozen), and the day before yesterday was itself active —
+  // an isolated missed day with nothing before it isn't worth a freeze.
+  useEffect(() => {
+    Promise.resolve().then(() => {
+      const today = todayStr();
+      const yesterday = addDaysStr(today, -1);
+      const dayBefore = addDaysStr(today, -2);
+      const todayActive = rawActiveDates.has(today);
+      const yesterdayActive = rawActiveDates.has(yesterday) || frozenDates.includes(yesterday);
+      const dayBeforeActive = rawActiveDates.has(dayBefore) || frozenDates.includes(dayBefore);
+      if (todayActive && !yesterdayActive && dayBeforeActive && streakFreezes > 0) {
+        setFrozenDates((prev) => (prev.includes(yesterday) ? prev : [...prev, yesterday]));
+        setStreakFreezes((prev) => Math.max(0, prev - 1));
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [completions]);
+
+  // Grants one freeze per full week of streak (capped at 3 banked) —
+  // milestone-gated so it only ever fires once per week reached, not on
+  // every render where current happens to still be a multiple of 7.
+  useEffect(() => {
+    Promise.resolve().then(() => {
+      const milestone = Math.floor(current / 7) * 7;
+      if (milestone > lastFreezeMilestone && milestone > 0) {
+        setLastFreezeMilestone(milestone);
+        setStreakFreezes((prev) => Math.min(3, prev + 1));
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [current]);
 
   function shasPercent(): number {
     return MISHNA_SEQUENCE.length === 0
@@ -238,7 +282,7 @@ export function useLearningProgress() {
     addConcept,
     getMasechetPosition,
     markMasechetMishnaLearned,
-    streak: { current, longest },
+    streak: { current, longest, freezesAvailable: streakFreezes },
     shasPercent,
     sederPercent,
     masechetPercent,

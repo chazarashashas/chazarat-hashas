@@ -80,9 +80,10 @@ function buildMasechetRange(masechetEn: string, start: MishnaItem, pace: Pace, t
 
 interface DailyLimmudScreenProps {
   onOpenNotes?: () => void;
+  onOpenLogin?: () => void;
 }
 
-export function DailyLimmudScreen({ onOpenNotes }: DailyLimmudScreenProps) {
+export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScreenProps) {
   const { firstName, username, session } = useAuth();
   const progress = useLearningProgress();
   const { pace, setPace, streak } = progress;
@@ -274,6 +275,11 @@ export function DailyLimmudScreen({ onOpenNotes }: DailyLimmudScreenProps) {
         <p className="panel__subtitle">
           Your next portion of Mishnayot, straight through Shas in order — Berachot to Uktzin.
         </p>
+        {!session && onOpenLogin && (
+          <button className="limmud-signin-link" onClick={onOpenLogin}>
+            Sign in to save your progress to your account →
+          </button>
+        )}
 
         {finished ? (
           <div className="note-banner note-banner--good limmud-finished">
@@ -388,6 +394,11 @@ export function DailyLimmudScreen({ onOpenNotes }: DailyLimmudScreenProps) {
               <button className="limmud-notes__open" onClick={() => setNoteOpen(true)}>
                 {firstItem && getPerekNote(firstItem.masechetEn, firstItem.perek) ? "View note" : "Add note"}
               </button>
+              {onOpenNotes && (
+                <button className="limmud-concept__open-all" onClick={onOpenNotes}>
+                  → View or print all your notes in Mishna Notes
+                </button>
+              )}
 
               <p className="limmud-notes__label limmud-notes__label--concepts">Concepts to review</p>
               <input

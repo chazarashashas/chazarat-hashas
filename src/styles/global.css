@@ -26,3 +26,16 @@ button {
 select {
   font-family: inherit;
 }
+
+/* Keyboard-only focus ring — visible on every interactive element
+   regardless of any component-level `outline: none` on click-focus,
+   since :focus-visible only fires for keyboard/programmatic focus. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2.5px solid var(--gold);
+  outline-offset: 2px;
+}

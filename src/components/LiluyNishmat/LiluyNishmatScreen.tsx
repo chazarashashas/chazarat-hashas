@@ -3,6 +3,7 @@ import { useAuth } from "../../utils/useAuth";
 import { useSiyumim, type PerekClaim, type Siyum, type Visibility } from "../../utils/useSiyumim";
 import { ALL_PEREK_SLOTS } from "../../utils/nishmatMosaic";
 import { useLocalStorageState } from "../../utils/useLocalStorageState";
+import { useEscapeKey } from "../../utils/useEscapeKey";
 import { SiyumDetail } from "./SiyumDetail";
 import "./LiluyNishmat.css";
 
@@ -132,6 +133,7 @@ export function LiluyNishmatScreen({ onOpenLogin, initialSlug }: LiluyNishmatScr
   const [openSiyum, setOpenSiyum] = useState<Siyum | null>(null);
   const [deepLinkTried, setDeepLinkTried] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
+  useEscapeKey(() => setCreateOpen(false));
 
   const [dedication, setDedication] = useState("");
   const [occasion, setOccasion] = useState("");

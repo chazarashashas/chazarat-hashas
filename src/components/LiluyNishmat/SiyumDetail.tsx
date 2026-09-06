@@ -4,6 +4,7 @@ import { getPerekName } from "../../data/perekInfo";
 import { hebrewNumeral } from "../../utils/hebrewNumeral";
 import { getSederHue } from "../../utils/sederHue";
 import { useLearningProgress } from "../../utils/useLearningProgress";
+import { useEscapeKey } from "../../utils/useEscapeKey";
 import { ALL_PEREK_SLOTS } from "../../utils/nishmatMosaic";
 import type { PerekClaim, Siyum, useSiyumim } from "../../utils/useSiyumim";
 import "./LiluyNishmat.css";
@@ -442,6 +443,7 @@ function ClaimModal({
   const [anonymous, setAnonymous] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  useEscapeKey(onCancel);
 
   const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 
@@ -523,6 +525,7 @@ function ManageClaimModal({
 }) {
   const [busy, setBusy] = useState<"learn" | "queue" | null>(null);
   const [error, setError] = useState<string | null>(null);
+  useEscapeKey(onDismiss);
 
   async function handleLearn() {
     setBusy("learn");

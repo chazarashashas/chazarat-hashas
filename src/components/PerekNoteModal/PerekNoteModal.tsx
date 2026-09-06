@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { hebrewNumeral } from "../../utils/hebrewNumeral";
+import { useEscapeKey } from "../../utils/useEscapeKey";
 import "./PerekNoteModal.css";
 
 interface PerekNoteModalProps {
@@ -35,6 +36,7 @@ export function PerekNoteModal({
   onOpenNotes,
 }: PerekNoteModalProps) {
   const [draft, setDraft] = useState(initialValue);
+  useEscapeKey(onClose);
 
   function handleSave() {
     onSave(draft);
@@ -50,7 +52,7 @@ export function PerekNoteModal({
   return (
     <div className="scrim note-modal-scrim" onClick={onClose}>
       <div className="popup note-modal" onClick={(e) => e.stopPropagation()}>
-        <button className="note-modal__close" onClick={onClose} title="Close">
+        <button className="note-modal__close" onClick={onClose} title="Close" aria-label="Close">
           ✕
         </button>
         <p className="note-modal__label">

@@ -130,7 +130,7 @@ function App() {
           ) : section === "resources" ? (
             <ResourcesScreen />
           ) : section === "limmud" ? (
-            <DailyLimmudScreen onOpenNotes={() => setSection("perek")} />
+            <DailyLimmudScreen onOpenNotes={() => setSection("perek")} onOpenLogin={() => requestLogin("limmud")} />
           ) : section === "progress" ? (
             <ProgressScreen onOpenNishmat={() => handleSelect("liluy")} />
           ) : section === "login" ? (

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { SEDARIM } from "../../data/shas";
 import { getPerekName } from "../../data/perekInfo";
+import { useEscapeKey } from "../../utils/useEscapeKey";
 import "./LogLearningModal.css";
 
 interface LogLearningModalProps {
@@ -23,6 +24,7 @@ export function LogLearningModal({ onSave, onClose }: LogLearningModalProps) {
   const [perek, setPerek] = useState(1);
   const [date, setDate] = useState(todayStr());
   const [saved, setSaved] = useState(false);
+  useEscapeKey(onClose);
 
   function handleSederChange(nextId: string) {
     setSederId(nextId);
@@ -45,7 +47,7 @@ export function LogLearningModal({ onSave, onClose }: LogLearningModalProps) {
   return (
     <div className="scrim log-modal-scrim" onClick={onClose}>
       <div className="popup log-modal" onClick={(e) => e.stopPropagation()}>
-        <button className="note-modal__close" onClick={onClose} title="Close">
+        <button className="note-modal__close" onClick={onClose} title="Close" aria-label="Close">
           ✕
         </button>
         <h2 className="log-modal__title">Log learning</h2>
