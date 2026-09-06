@@ -148,10 +148,6 @@ export function MapOfShasScreen({ onOpenNotes }: MapOfShasScreenProps) {
                   {s.he}
                 </span>
                 <span className="map-tile__en">{s.en}</span>
-                <span className="map-tile__sub">{s.translation}</span>
-                <div className="map-tile__bar">
-                  <div className="map-tile__bar-fill" style={{ width: `${progress.sederPercent(s.id)}%` }} />
-                </div>
               </button>
             ))}
           </div>
@@ -166,12 +162,6 @@ export function MapOfShasScreen({ onOpenNotes }: MapOfShasScreenProps) {
                 </span>
                 <span className="map-tile__en">{m.en}</span>
                 <span className="map-tile__sub">{m.perakim} perakim</span>
-                <div className="map-tile__bar">
-                  <div
-                    className="map-tile__bar-fill"
-                    style={{ width: `${progress.masechetPercent(m.en, m.perakim)}%` }}
-                  />
-                </div>
               </button>
             ))}
           </div>

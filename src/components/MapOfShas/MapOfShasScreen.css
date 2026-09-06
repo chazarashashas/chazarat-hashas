@@ -130,28 +130,6 @@
   color: var(--muted);
 }
 
-.map-tile__bar {
-  width: 100%;
-  height: 5px;
-  border-radius: 999px;
-  background: var(--track);
-  overflow: hidden;
-  margin-top: 3px;
-}
-
-.map-tile__bar-fill {
-  height: 100%;
-  border-radius: 999px;
-  background: var(--tile-hue, var(--gold));
-  transition: width 0.4s ease;
-}
-
-.map-tile__pct {
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--tile-hue, var(--muted));
-}
-
 .map-tile--perek {
   padding: 10px 6px;
   border-left: 3px solid transparent;
