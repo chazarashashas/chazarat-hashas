@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
 import { SEDARIM } from "../../data/shas";
 import { shuffle } from "../../utils/shuffle";
+import { getSederHue } from "../../utils/sederHue";
 import "./SederSortScreen.css";
 
 interface FlatMasechet {
@@ -150,6 +151,9 @@ export function SederSortScreen() {
         <p className="sort-count">
           {placedCount} / {TOTAL} placed
         </p>
+        <div className="sort-progress">
+          <div className="sort-progress__fill" style={{ width: `${(placedCount / TOTAL) * 100}%` }} />
+        </div>
 
         <div className="sort-bins">
           {SEDARIM.map((seder) => (
@@ -162,6 +166,7 @@ export function SederSortScreen() {
                 (!drag && selectedName ? " sort-bin--selectable" : "") +
                 (rejectBin === seder.id ? " sort-bin--reject" : "")
               }
+              style={{ ["--bin-hue" as string]: getSederHue(seder.id) }}
               onClick={() => handleBinTap(seder.id)}
             >
               <div className="sort-bin__title">{seder.en}</div>
