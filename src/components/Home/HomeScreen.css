@@ -3,6 +3,13 @@
   width: 100%;
 }
 
+.home-brand-mark {
+  display: block;
+  width: 72px;
+  height: auto;
+  margin: 0 auto 14px;
+}
+
 .home-panel .app-title {
   display: block;
   margin: 0 0 6px;

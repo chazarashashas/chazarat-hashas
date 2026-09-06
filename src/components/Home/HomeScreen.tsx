@@ -7,6 +7,7 @@ import { useChevrusa } from "../../utils/useChevrusa";
 import { getSederHue } from "../../utils/sederHue";
 import { buildJourneyScopes } from "../../utils/shasJourney";
 import { NavIcon } from "../Sidebar/NavIcon";
+import { BrandMark } from "../BrandMark";
 import { FlipCounter } from "../FlipCounter/FlipCounter";
 import { hebrewNumeral } from "../../utils/hebrewNumeral";
 import "./HomeScreen.css";
@@ -166,6 +167,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
   return (
     <div className="stage">
       <div className="panel home-panel">
+        <BrandMark variant="outline" className="home-brand-mark" />
         <p className="app-title">Chazarat Hashas</p>
         <h1 className="home-title" dir="rtl">
           חזרת הש״ס
