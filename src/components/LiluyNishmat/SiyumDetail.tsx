@@ -14,6 +14,56 @@ function shareUrl(shareSlug: string): string {
   return `${window.location.origin}/?siyum=${shareSlug}`;
 }
 
+function timeAgo(iso: string): string {
+  const seconds = Math.max(0, (Date.now() - new Date(iso).getTime()) / 1000);
+  if (seconds < 60) return "just now";
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
+}
+
+interface ActivityEvent {
+  key: string;
+  at: string;
+  text: string;
+}
+
+/** Owner-only — a plain "who's doing what" list built straight from the
+    claimed_at/learned_at timestamps already on each claim, so it costs
+    nothing new server-side. Covers the low end of the "notifications"
+    ask without needing email/push infrastructure. */
+function ActivityFeed({ claims }: { claims: PerekClaim[] }) {
+  const events: ActivityEvent[] = [];
+  for (const c of claims) {
+    const who = c.anonymous ? "Someone" : (c.claimedByName ?? "Someone");
+    const where = `${c.masechetEn} — Perek ${hebrewNumeral(c.perek)}`;
+    events.push({ key: `${c.id}-claim`, at: c.claimedAt, text: `${who} took ${where}` });
+    if (c.learned && c.learnedAt) {
+      events.push({ key: `${c.id}-learn`, at: c.learnedAt, text: `${who} finished ${where}` });
+    }
+  }
+  events.sort((a, b) => b.at.localeCompare(a.at));
+  const recent = events.slice(0, 8);
+
+  if (recent.length === 0) return null;
+
+  return (
+    <div className="nishmat-activity">
+      <p className="nishmat-activity__title">Recent activity</p>
+      {recent.map((e) => (
+        <div className="nishmat-activity__row" key={e.key}>
+          <span className="nishmat-activity__dot" aria-hidden="true" />
+          <span className="nishmat-activity__text">{e.text}</span>
+          <span className="nishmat-activity__time">{timeAgo(e.at)}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 interface Props {
   siyum: Siyum;
   siyumim: ReturnType<typeof useSiyumim>;
@@ -247,6 +297,8 @@ export function SiyumDetail({ siyum, siyumim, isOwner, onBack, onOpenLogin }: Pr
             </button>
           </div>
         )}
+
+        {isOwner && <ActivityFeed claims={claims} />}
 
         <div className="nishmat-accordion">
           <div className="nishmat-accordion__head">

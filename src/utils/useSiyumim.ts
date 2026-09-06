@@ -26,6 +26,8 @@ export interface PerekClaim {
   anonymous: boolean;
   learned: boolean;
   queuedInDailyLimmud: boolean;
+  claimedAt: string;
+  learnedAt: string | null;
 }
 
 /** A claim this browser made — the local, device-level proof of
@@ -47,7 +49,7 @@ const TOTAL_PERAKIM = 524;
     claim_token and claimed_by_email, which must never leave the
     server for anyone but the claimer themselves (see claimPerek). */
 const PUBLIC_CLAIM_COLUMNS =
-  "id, siyum_id, masechet_en, perek, claimed_by_user_id, claimed_by_name, anonymous, learned, queued_in_daily_limmud";
+  "id, siyum_id, masechet_en, perek, claimed_by_user_id, claimed_by_name, anonymous, learned, queued_in_daily_limmud, claimed_at, learned_at";
 
 function todayStr(): string {
   return new Date().toISOString().slice(0, 10);
@@ -93,6 +95,8 @@ function mapClaim(row: Record<string, unknown>): PerekClaim {
     anonymous: Boolean(row.anonymous),
     learned: Boolean(row.learned),
     queuedInDailyLimmud: Boolean(row.queued_in_daily_limmud),
+    claimedAt: row.claimed_at as string,
+    learnedAt: (row.learned_at as string | null) ?? null,
   };
 }
 
