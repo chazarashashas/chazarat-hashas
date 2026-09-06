@@ -73,6 +73,44 @@
   color: var(--muted);
 }
 
+.progress-shas-done {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.progress-shas-done__text {
+  margin: 0;
+  font-weight: 700;
+}
+
+.progress-cert-btn {
+  flex-shrink: 0;
+  min-height: 36px;
+  padding: 0 16px;
+  background: var(--gold);
+  color: var(--ink);
+  border: none;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-heading);
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.progress-cert-btn:hover {
+  background: var(--ink);
+  color: #fff;
+}
+
+.progress-cert-btn--row {
+  display: block;
+  margin: 4px 0 6px;
+}
+
 .progress-actions {
   display: flex;
   justify-content: center;

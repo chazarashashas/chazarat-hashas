@@ -2,10 +2,12 @@ import { useState } from "react";
 import { SEDARIM } from "../../data/shas";
 import { getPerekName, getMishnayotCount } from "../../data/perekInfo";
 import { useLearningProgress } from "../../utils/useLearningProgress";
+import { useAuth } from "../../utils/useAuth";
 import { FlipCounter, type FlipScope } from "../FlipCounter/FlipCounter";
 import { SEDER_HUE, getSederHue } from "../../utils/sederHue";
 import { LogLearningModal } from "./LogLearningModal";
 import { PrintNotesView } from "../PrintNotes/PrintNotesView";
+import { CertificateView } from "../Certificate/CertificateView";
 import "./ProgressScreen.css";
 
 function ProgressBar({ pct }: { pct: number }) {
@@ -27,9 +29,16 @@ interface ProgressScreenProps {
 
 export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
   const progress = useLearningProgress();
+  const auth = useAuth();
   const [expanded, setExpanded] = useState<string | null>(null);
   const [logOpen, setLogOpen] = useState(false);
   const [printOpen, setPrintOpen] = useState(false);
+  const [certificateFor, setCertificateFor] = useState<{ en: string; he: string } | null>(null);
+  const [shasCertificateOpen, setShasCertificateOpen] = useState(false);
+
+  const certificateName = auth.firstName
+    ? `${auth.firstName}${auth.lastName ? ` ${auth.lastName}` : ""}`
+    : (auth.username ?? "");
 
   // Totals for the journey-to-a-siyum framing (HANDOFF30 §2).
   let perakimFinished = 0;
@@ -160,6 +169,15 @@ export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
           </div>
         </div>
 
+        {shasPct === 100 && (
+          <div className="note-banner note-banner--good progress-shas-done">
+            <p className="progress-shas-done__text">You've completed all of Shas!</p>
+            <button className="progress-cert-btn" onClick={() => setShasCertificateOpen(true)}>
+              Get your certificate
+            </button>
+          </div>
+        )}
+
         <p className="siyumim-next-label">Next siyum</p>
         <FlipCounter large scopes={scopes} />
 
@@ -221,6 +239,14 @@ export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
                             </span>
                           </button>
                           <ProgressBar pct={progress.masechetPercent(m.en, m.perakim)} />
+                          {progress.masechetPercent(m.en, m.perakim) === 100 && (
+                            <button
+                              className="progress-cert-btn progress-cert-btn--row"
+                              onClick={() => setCertificateFor({ en: m.en, he: m.he })}
+                            >
+                              Get certificate
+                            </button>
+                          )}
 
                           {mOpen && (
                             <div className="progress-perakim">
@@ -258,6 +284,17 @@ export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
         />
       )}
       {printOpen && <PrintNotesView onClose={() => setPrintOpen(false)} />}
+      {certificateFor && (
+        <CertificateView
+          masechetEn={certificateFor.en}
+          masechetHe={certificateFor.he}
+          defaultName={certificateName}
+          onClose={() => setCertificateFor(null)}
+        />
+      )}
+      {shasCertificateOpen && (
+        <CertificateView masechetEn={null} defaultName={certificateName} onClose={() => setShasCertificateOpen(false)} />
+      )}
     </div>
   );
 }
