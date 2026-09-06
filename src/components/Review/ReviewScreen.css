@@ -1,0 +1,134 @@
+.stage {
+  position: relative;
+  width: 100%;
+}
+
+.review-panel {
+  text-align: center;
+}
+
+.review-empty {
+  margin-top: 18px;
+  text-align: left;
+}
+
+.review-card {
+  margin-top: 18px;
+  background: var(--surface);
+  border-top: 3px solid var(--tile-hue, var(--line));
+  border-radius: var(--radius-card);
+  padding: 22px 20px;
+}
+
+.review-card__progress {
+  margin: 0 0 14px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--faint);
+}
+
+.review-card__front {
+  margin-bottom: 18px;
+}
+
+.review-card__masechet {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--tile-hue, var(--ink));
+}
+
+.review-card__ref {
+  margin: 6px 0 0;
+  font-family: var(--font-hebrew);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--ink);
+}
+
+.review-card__learned {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.review-card__reveal {
+  width: auto;
+  padding: 10px 24px;
+}
+
+.review-card__text-block {
+  min-height: 40px;
+  margin-bottom: 14px;
+}
+
+.review-card__status {
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.review-card__text {
+  font-family: var(--font-hebrew);
+  font-size: 16px;
+  line-height: 2;
+  color: var(--ink);
+  text-align: right;
+}
+
+.review-card__note {
+  text-align: left;
+  background: #fbf1d6;
+  border-radius: var(--radius-control);
+  padding: 10px 14px;
+  margin-bottom: 16px;
+}
+
+.review-card__note-label {
+  margin: 0 0 3px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #8a6a1d;
+}
+
+.review-card__note-text {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--ink);
+}
+
+.review-card__rate {
+  display: flex;
+  gap: 10px;
+}
+
+.review-card__rate-btn {
+  flex: 1;
+  min-height: 44px;
+  border: none;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-heading);
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.review-card__rate-btn--miss {
+  background: var(--track);
+  color: var(--ink);
+}
+
+.review-card__rate-btn--miss:hover {
+  background: var(--line);
+}
+
+.review-card__rate-btn--hit {
+  background: var(--gold);
+  color: var(--ink);
+}
+
+.review-card__rate-btn--hit:hover {
+  background: var(--ink);
+  color: #fff;
+}

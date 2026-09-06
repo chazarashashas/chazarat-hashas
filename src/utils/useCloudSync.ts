@@ -16,6 +16,7 @@ const SYNC_KEYS = [
   "streakFreezes",
   "frozenDates",
   "lastFreezeMilestone",
+  "reviewState",
 ] as const;
 
 type SyncBlob = Partial<Record<(typeof SYNC_KEYS)[number], unknown>>;
@@ -111,6 +112,34 @@ function mergeGameStats(local: unknown, cloud: unknown): Record<string, unknown>
   return merged;
 }
 
+interface ReviewStateEntry {
+  box: number;
+  nextReview: string;
+  lastReviewed: string | null;
+  timesReviewed: number;
+}
+
+/** Per-mishnah review schedule merge — whichever side has the more
+    recent lastReviewed date wins that item outright (its box/schedule
+    reflects a real review that happened, so it's more trustworthy than
+    guessing from box number alone); untouched items just carry over. */
+function mergeReviewState(local: unknown, cloud: unknown): Record<string, ReviewStateEntry> {
+  const l = (local && typeof local === "object" ? local : {}) as Record<string, ReviewStateEntry>;
+  const c = (cloud && typeof cloud === "object" ? cloud : {}) as Record<string, ReviewStateEntry>;
+  const keys = new Set([...Object.keys(l), ...Object.keys(c)]);
+  const merged: Record<string, ReviewStateEntry> = {};
+  for (const key of keys) {
+    const lv = l[key];
+    const cv = c[key];
+    if (lv && cv) {
+      merged[key] = (lv.lastReviewed ?? "") >= (cv.lastReviewed ?? "") ? lv : cv;
+    } else {
+      merged[key] = lv ?? cv;
+    }
+  }
+  return merged;
+}
+
 /** Merges this device's local data with whatever's already saved to the
     account — local edits always win on a direct conflict, cloud fills in
     anything local is missing, nothing is silently discarded. */
@@ -134,6 +163,7 @@ function mergeBlobs(local: SyncBlob, cloud: SyncBlob): SyncBlob {
     streakFreezes: Math.max(Number(local.streakFreezes) || 0, Number(cloud.streakFreezes) || 0),
     frozenDates: mergeUniqueBy(local.frozenDates, cloud.frozenDates, (item) => item as string),
     lastFreezeMilestone: Math.max(Number(local.lastFreezeMilestone) || 0, Number(cloud.lastFreezeMilestone) || 0),
+    reviewState: mergeReviewState(local.reviewState, cloud.reviewState),
   };
 }
 

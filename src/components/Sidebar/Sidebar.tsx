@@ -14,6 +14,7 @@ interface NavItem {
 const HUE: Record<string, string> = {
   home: "var(--hue-home)",
   limmud: "var(--hue-limmud)",
+  review: "var(--hue-review)",
   map: "var(--hue-explore)",
   perek: "var(--hue-notes)",
   progress: "var(--hue-siyumim)",
@@ -39,6 +40,7 @@ const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
     items: [
       { id: "home", label: "Home", built: true },
       { id: "limmud", label: "Daily Limmud", built: true },
+      { id: "review", label: "Review", built: true },
       { id: "map", label: "Explore Shas", built: true },
       { id: "perek", label: "Mishna Notes", built: true },
       { id: "progress", label: "My Siyumim", built: true },

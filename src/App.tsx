@@ -17,6 +17,7 @@ import { ChevrusaScreen } from "./components/Chevrusa/ChevrusaScreen";
 import { MapOfShasScreen } from "./components/MapOfShas/MapOfShasScreen";
 import { LiluyNishmatScreen } from "./components/LiluyNishmat/LiluyNishmatScreen";
 import { AdminScreen } from "./components/Admin/AdminScreen";
+import { ReviewScreen } from "./components/Review/ReviewScreen";
 import { useAuth } from "./utils/useAuth";
 import { useCloudSync } from "./utils/useCloudSync";
 import { shuffle } from "./utils/shuffle";
@@ -131,6 +132,8 @@ function App() {
             <ResourcesScreen />
           ) : section === "limmud" ? (
             <DailyLimmudScreen onOpenNotes={() => setSection("perek")} onOpenLogin={() => requestLogin("limmud")} />
+          ) : section === "review" ? (
+            <ReviewScreen />
           ) : section === "progress" ? (
             <ProgressScreen onOpenNishmat={() => handleSelect("liluy")} />
           ) : section === "login" ? (

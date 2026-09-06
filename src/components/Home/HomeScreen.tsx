@@ -4,6 +4,7 @@ import { useLearningProgress } from "../../utils/useLearningProgress";
 import { usePerekNotes } from "../../utils/usePerekNotes";
 import { useAuth } from "../../utils/useAuth";
 import { useChevrusa } from "../../utils/useChevrusa";
+import { useSpacedReview } from "../../utils/useSpacedReview";
 import { buildJourneyScopes } from "../../utils/shasJourney";
 import { NavIcon } from "../Sidebar/NavIcon";
 import { BrandMark } from "../BrandMark";
@@ -28,6 +29,12 @@ const MY_MISHNA: Feature[] = [
     id: "limmud",
     title: "Daily Limmud",
     desc: "Your next portion of Mishnayot, straight through Shas in order.",
+    built: true,
+  },
+  {
+    id: "review",
+    title: "Review",
+    desc: "Mishnayot you've learned before, resurfaced before you forget them.",
     built: true,
   },
   {
@@ -135,6 +142,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
   const { perekNotes } = usePerekNotes();
   const { isLoggedIn } = useAuth();
   const { groups } = useChevrusa();
+  const { dueItems } = useSpacedReview(progress.completions);
 
   const upNext = progress.todaysItems[0];
   const upNextSeder = upNext ? SEDARIM.find((s) => s.id === upNext.sederId) : undefined;
@@ -152,6 +160,9 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
         ...f,
         status: progress.finishedShas ? "Finished Shas!" : `${progress.streak.current}-day streak`,
       };
+    }
+    if (f.id === "review" && dueItems.length > 0) {
+      return { ...f, status: `${dueItems.length} due today` };
     }
     if (f.id === "progress" && progress.shasPercent() > 0) {
       return { ...f, status: `${progress.shasPercent()}% of Shas learned` };
