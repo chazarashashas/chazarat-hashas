@@ -3,6 +3,7 @@ import { SEDARIM, type Seder, type Masechet } from "../../data/shas";
 import { SEDER_TABS } from "../../data/sederTabs";
 import { fetchRandomMishna } from "../../utils/sefaria";
 import { usePerekNotes } from "../../utils/usePerekNotes";
+import { getSederHue } from "../../utils/sederHue";
 import { PerekNoteModal } from "../PerekNoteModal/PerekNoteModal";
 import { TabBar } from "../TabBar/TabBar";
 import "./MishnaIdScreen.css";
@@ -379,7 +380,7 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
               size="sm"
               options={[
                 { value: "streak", label: "🔥 Streak" },
-                { value: "quiz", label: "📝 Quiz" },
+                { value: "quiz", label: "Quiz" },
               ]}
               value={mode}
               onChange={handleModeChange}
@@ -503,24 +504,25 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
               <div className="note-banner">
                 Time's up — it was {card.seder.en} › {card.masechet.en} › Perek {card.perek}.
                 <button className="mishna-note-link" onClick={() => setNoteOpen(true)}>
-                  {getPerekNote(card.masechet.en, card.perek) ? "📝 View note" : "📝 Add note"}
+                  {getPerekNote(card.masechet.en, card.perek) ? "View note" : "Add note"}
                 </button>
               </div>
             ) : card.failed && !coreSolved ? (
               <div className="note-banner">
                 Not quite — it was {card.seder.en} › {card.masechet.en} › Perek {card.perek}.
                 <button className="mishna-note-link" onClick={() => setNoteOpen(true)}>
-                  {getPerekNote(card.masechet.en, card.perek) ? "📝 View note" : "📝 Add note"}
+                  {getPerekNote(card.masechet.en, card.perek) ? "View note" : "Add note"}
                 </button>
               </div>
             ) : !sederDone ? (
               <div className="mishna-step">
                 <div className="mishna-step-label">Which seder?</div>
-                <div className="pill-row pill-row--nowrap">
+                <div className="pill-row pill-row--nowrap mishna-seder-choice">
                   {SEDARIM.map((s) => (
                     <button
                       key={s.id}
-                      className={"pill" + (wrongFlash === "seder:" + s.id ? " pill--reject" : "")}
+                      className={"pill mishna-seder-pill" + (wrongFlash === "seder:" + s.id ? " pill--reject" : "")}
+                      style={{ ["--opt-hue" as string]: getSederHue(s.id) }}
                       onClick={() => guessSeder(s.id)}
                     >
                       {s.en}
@@ -550,7 +552,7 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
                   {perekRevealed ? ` › Perek ${card.perek}.` : "."}
                   {perekRevealed && (
                     <button className="mishna-note-link" onClick={() => setNoteOpen(true)}>
-                      {getPerekNote(card.masechet.en, card.perek) ? "📝 View note" : "📝 Add note"}
+                      {getPerekNote(card.masechet.en, card.perek) ? "View note" : "Add note"}
                     </button>
                   )}
                 </div>

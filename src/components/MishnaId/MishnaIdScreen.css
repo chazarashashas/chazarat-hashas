@@ -131,13 +131,13 @@
 .mishna-narrow-select {
   height: 27px;
   max-width: 130px;
-  border-radius: 999px;
-  border: 1.5px solid var(--border);
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--line);
   font-size: 9px;
   font-weight: 500;
   padding: 0 8px;
   font-family: var(--font-body);
-  background: #fffbf0;
+  background: var(--surface-hi);
   color: var(--ink);
 }
 
@@ -145,7 +145,7 @@
   text-align: center;
   font-size: 13px;
   font-weight: 700;
-  color: var(--ink-soft);
+  color: var(--gold);
   margin-bottom: 10px;
   font-family: var(--font-heading);
 }
@@ -160,9 +160,9 @@
 }
 
 .mishna-card {
-  background: #fffbf0;
-  border: 1.5px solid var(--border);
-  border-radius: 12px;
+  background: var(--surface-hi);
+  border: none;
+  border-radius: var(--radius-page);
   padding: 20px 18px;
   height: 170px;
   display: flex;
@@ -185,7 +185,19 @@
   align-items: center;
   justify-content: center;
   background: rgba(247, 236, 201, 0.18);
-  border-radius: 12px;
+  border-radius: var(--radius-page);
+}
+
+.mishna-seder-choice .mishna-seder-pill {
+  flex: 1 1 auto;
+  border-radius: var(--radius-control);
+  border: 1.5px solid var(--line);
+  border-top: 3px solid var(--opt-hue, var(--line));
+}
+
+.mishna-seder-choice .mishna-seder-pill.pill--active {
+  background: var(--opt-hue, var(--ink));
+  border-color: var(--opt-hue, var(--ink));
 }
 
 .mishna-card-overlay .restart {
