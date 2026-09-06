@@ -25,6 +25,25 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,ico}'],
+        runtimeCaching: [
+          {
+            // Mishnah text never changes, so once fetched it's a safe
+            // offline fallback — try the network first (so a connected
+            // user always sees the canonical response), fall back to
+            // whatever was cached on a previous visit when offline.
+            urlPattern: /^https:\/\/www\.sefaria\.org\/api\//,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'sefaria-api-cache',
+              networkTimeoutSeconds: 4,
+              expiration: {
+                maxEntries: 5000,
+                maxAgeSeconds: 60 * 60 * 24 * 30,
+              },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+        ],
       },
     }),
   ],

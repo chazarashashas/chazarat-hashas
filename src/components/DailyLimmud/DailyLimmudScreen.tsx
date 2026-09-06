@@ -4,6 +4,7 @@ import { getPerekName, getMishnayotCount } from "../../data/perekInfo";
 import { fetchMishna } from "../../utils/sefaria";
 import { usePerekNotes } from "../../utils/usePerekNotes";
 import { useLearningProgress, type Pace } from "../../utils/useLearningProgress";
+import { useOfflinePrefetch } from "../../utils/useOfflinePrefetch";
 import { useAuth } from "../../utils/useAuth";
 import { useChevrusa, recordGroupActivityForMasechet } from "../../utils/useChevrusa";
 import { useSiyumim } from "../../utils/useSiyumim";
@@ -87,6 +88,7 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
   const { firstName, username, session } = useAuth();
   const progress = useLearningProgress();
   const { pace, setPace, streak } = progress;
+  useOfflinePrefetch(progress.position, pace, progress.finishedShas);
   const { getPerekNote, setPerekNote } = usePerekNotes();
   const { groups, updateGroupMasechet } = useChevrusa();
   const siyumim = useSiyumim();
