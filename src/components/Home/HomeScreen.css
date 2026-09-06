@@ -41,10 +41,12 @@
 .home-quote {
   margin: 4px 0 0;
   padding: 10px 14px;
-  border-right: 3px solid var(--gold);
+  border-left: 3px solid var(--gold);
   background: #fbf1d6;
   border-radius: 8px;
   text-align: center;
+  overflow-x: auto;
+  scrollbar-width: thin;
 }
 
 .home-quote__text {
@@ -53,6 +55,7 @@
   font-size: 13.5px;
   color: var(--ink);
   line-height: 1.6;
+  white-space: nowrap;
 }
 
 .home-quote__source {
