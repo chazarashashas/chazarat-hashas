@@ -105,6 +105,21 @@ export function useAuth() {
     return error ? error.message : null;
   }
 
+  /** Redirects to Google's own sign-in page, then back to wherever the
+      app is currently hosted — Supabase handles the OAuth exchange and
+      session creation on return, so there's no callback code to write
+      here. A first-time Google sign-in may land without a username set
+      (Google doesn't collect one), same as any profile field left
+      blank — My Account's editor already covers filling that in. */
+  async function signInWithGoogle(): Promise<string | null> {
+    if (!supabase) return "Accounts aren't connected yet.";
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: window.location.origin },
+    });
+    return error ? error.message : null;
+  }
+
   async function signOut() {
     if (!supabase) return;
     await supabase.auth.signOut();
@@ -169,6 +184,7 @@ export function useAuth() {
     checkUsernameAvailable,
     signUp,
     signIn,
+    signInWithGoogle,
     signOut,
     updateProfile,
     deleteAccount,

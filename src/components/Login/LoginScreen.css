@@ -18,6 +18,51 @@
   margin: 18px 0 14px;
 }
 
+.google-signin-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 44px;
+  margin-top: 18px;
+  background: var(--surface-hi);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-control);
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.google-signin-btn:hover:not(:disabled) {
+  border-color: var(--ink-2);
+}
+
+.google-signin-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.login-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 16px 0;
+  color: var(--faint);
+  font-size: 11px;
+}
+
+.login-divider::before,
+.login-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
 .login-field__label {
   display: block;
   font-family: var(--font-body);

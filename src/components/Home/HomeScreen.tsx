@@ -175,6 +175,12 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
         </h1>
         <p className="panel__subtitle">let's learn shas, together</p>
 
+        {!isLoggedIn && (
+          <button className="home-signin-link" onClick={() => onNavigate("login")}>
+            Sign in to save your progress to your account →
+          </button>
+        )}
+
         <button className="home-new-here" onClick={() => setShowIntro(true)}>
           <span className="home-new-here__title">How this app works</span>
           <span className="home-new-here__sub">See how Shas is put together, and how this app tracks it.</span>
