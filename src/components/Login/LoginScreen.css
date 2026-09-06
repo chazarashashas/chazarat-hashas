@@ -30,10 +30,10 @@
 .login-field input {
   width: 100%;
   box-sizing: border-box;
-  height: 40px;
-  border-radius: 10px;
-  border: 1.5px solid var(--border);
-  background: #fffbf0;
+  height: 44px;
+  border-radius: var(--radius-control);
+  border: none;
+  background: var(--surface-hi);
   padding: 0 14px;
   font-size: 13px;
   font-family: var(--font-body);
@@ -41,8 +41,8 @@
 }
 
 .login-field input:focus {
-  outline: none;
-  border-color: var(--brand);
+  outline: 2px solid var(--ink-2);
+  outline-offset: 1px;
 }
 
 .login-panel .restart:disabled {

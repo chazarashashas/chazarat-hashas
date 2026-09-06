@@ -9,6 +9,50 @@
   margin-bottom: 16px;
 }
 
+.chevrusa-form {
+  background: var(--surface);
+  border-left: 3px solid var(--hue-chevrusa);
+  border-radius: var(--radius-card);
+  padding: 16px 16px 14px;
+  margin-bottom: 4px;
+}
+
+@keyframes chevrusa-error-wobble {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}
+
+.chevrusa-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bad-bg);
+  color: var(--bad);
+  border-radius: var(--radius-control);
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: left;
+  margin-bottom: 12px;
+  animation: chevrusa-error-wobble 0.4s ease;
+}
+
+.chevrusa-error__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--bad-dot);
+  flex-shrink: 0;
+}
+
 .login-field {
   display: block;
   text-align: left;
@@ -17,12 +61,10 @@
 
 .login-field__label {
   display: block;
-  font-family: var(--font-heading);
-  font-size: 10.5px;
-  font-weight: 700;
-  color: var(--ink-soft);
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
   margin-bottom: 5px;
 }
 
@@ -30,10 +72,10 @@
 .login-field select {
   width: 100%;
   box-sizing: border-box;
-  height: 40px;
-  border-radius: 10px;
-  border: 1.5px solid var(--border);
-  background: #fffbf0;
+  height: 44px;
+  border-radius: var(--radius-control);
+  border: none;
+  background: var(--surface-hi);
   padding: 0 14px;
   font-size: 13px;
   font-family: var(--font-body);
@@ -42,8 +84,8 @@
 
 .login-field input:focus,
 .login-field select:focus {
-  outline: none;
-  border-color: var(--brand);
+  outline: 2px solid var(--ink-2);
+  outline-offset: 1px;
 }
 
 .chevrusa-section {
@@ -77,10 +119,10 @@
 .chabura-member-row input {
   width: 100%;
   box-sizing: border-box;
-  height: 40px;
-  border-radius: 10px;
-  border: 1.5px solid var(--border);
-  background: #fffbf0;
+  height: 44px;
+  border-radius: var(--radius-control);
+  border: none;
+  background: var(--surface-hi);
   padding: 0 14px;
   font-size: 13px;
   font-family: var(--font-body);
@@ -88,18 +130,18 @@
 }
 
 .chabura-member-row input:focus {
-  outline: none;
-  border-color: var(--brand);
+  outline: 2px solid var(--ink-2);
+  outline-offset: 1px;
 }
 
 .chabura-member-remove {
   flex-shrink: 0;
-  width: 32px;
-  height: 32px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  border: 1.5px solid var(--border);
-  background: #fffbf0;
-  color: var(--ink-soft);
+  border: 1.5px solid var(--line);
+  background: var(--surface-hi);
+  color: var(--muted);
   cursor: pointer;
   font-size: 12px;
 }
@@ -121,9 +163,10 @@
 }
 
 .group-card {
-  background: #fffdf6;
-  border: 1.5px solid var(--border);
-  border-radius: 10px;
+  background: var(--surface);
+  border: none;
+  border-left: 3px solid var(--hue-chevrusa);
+  border-radius: var(--radius-control);
   padding: 10px 14px;
   margin-bottom: 8px;
   text-align: left;

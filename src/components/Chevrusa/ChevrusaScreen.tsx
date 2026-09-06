@@ -58,6 +58,15 @@ function memberLabel(m: { firstName: string | null; username: string | null }): 
   return m.firstName ?? m.username ?? "Someone";
 }
 
+function ErrorRow({ message }: { message: string }) {
+  return (
+    <div className="chevrusa-error" dir="ltr">
+      <span className="chevrusa-error__dot" aria-hidden="true" />
+      {message}
+    </div>
+  );
+}
+
 function todayStr(): string {
   return new Date().toISOString().slice(0, 10);
 }
@@ -302,12 +311,6 @@ export function ChevrusaScreen({ onOpenLogin }: ChevrusaScreenProps) {
           streaks compared, no ranking, just "they showed up."
         </p>
 
-        {error && (
-          <p className="login-error" dir="ltr">
-            {error}
-          </p>
-        )}
-
         <div className="pill-row">
           <button
             className={"pill" + (mode === "chevrusa" ? " pill--active" : "")}
@@ -325,33 +328,37 @@ export function ChevrusaScreen({ onOpenLogin }: ChevrusaScreenProps) {
 
         {mode === "chevrusa" ? (
           <>
-            <label className="login-field">
-              <span className="login-field__label">Invite by email</span>
-              <input
-                type="email"
-                value={inviteValue}
-                onChange={(e) => setInviteValue(e.target.value)}
-                placeholder="chevrusa@example.com"
-              />
-            </label>
+            <div className="chevrusa-form">
+              <label className="login-field">
+                <span className="login-field__label">Invite by email</span>
+                <input
+                  type="email"
+                  value={inviteValue}
+                  onChange={(e) => setInviteValue(e.target.value)}
+                  placeholder="chevrusa@example.com"
+                />
+              </label>
 
-            <label className="login-field">
-              <span className="login-field__label">Masechet to learn together</span>
-              <MasechetSelect value={masechetValue} onChange={setMasechetValue} />
-            </label>
+              <label className="login-field">
+                <span className="login-field__label">Masechet to learn together</span>
+                <MasechetSelect value={masechetValue} onChange={setMasechetValue} />
+              </label>
 
-            <label className="login-field">
-              <span className="login-field__label">Pace</span>
-              <PaceSelect value={invitePace} onChange={setInvitePace} />
-            </label>
+              <label className="login-field">
+                <span className="login-field__label">Pace</span>
+                <PaceSelect value={invitePace} onChange={setInvitePace} />
+              </label>
 
-            <button
-              className="restart"
-              disabled={busy || !inviteValue || !masechetValue}
-              onClick={handleSendInvite}
-            >
-              {busy ? "Sending…" : "Send invite"}
-            </button>
+              {error && <ErrorRow message={error} />}
+
+              <button
+                className="restart"
+                disabled={busy || !inviteValue || !masechetValue}
+                onClick={handleSendInvite}
+              >
+                {busy ? "Sending…" : "Send invite"}
+              </button>
+            </div>
 
             <div className="chevrusa-section">
               <p className="chevrusa-section__label">Your chevrusot</p>
@@ -391,61 +398,65 @@ export function ChevrusaScreen({ onOpenLogin }: ChevrusaScreenProps) {
               </div>
             )}
 
-            <label className="login-field">
-              <span className="login-field__label">{chaburaKind === "class" ? "Class name" : "Chabura name"}</span>
-              <input
-                type="text"
-                value={chaburaName}
-                onChange={(e) => setChaburaName(e.target.value)}
-                placeholder={chaburaKind === "class" ? "e.g. 9th Grade Gemara" : "e.g. Tuesday Night Seder Nezikin"}
-              />
-            </label>
+            <div className="chevrusa-form">
+              <label className="login-field">
+                <span className="login-field__label">{chaburaKind === "class" ? "Class name" : "Chabura name"}</span>
+                <input
+                  type="text"
+                  value={chaburaName}
+                  onChange={(e) => setChaburaName(e.target.value)}
+                  placeholder={chaburaKind === "class" ? "e.g. 9th Grade Gemara" : "e.g. Tuesday Night Seder Nezikin"}
+                />
+              </label>
 
-            <label className="login-field">
-              <span className="login-field__label">Masechet to learn together</span>
-              <MasechetSelect value={chaburaMasechet} onChange={setChaburaMasechet} />
-            </label>
+              <label className="login-field">
+                <span className="login-field__label">Masechet to learn together</span>
+                <MasechetSelect value={chaburaMasechet} onChange={setChaburaMasechet} />
+              </label>
 
-            <label className="login-field">
-              <span className="login-field__label">Pace</span>
-              <PaceSelect value={chaburaPace} onChange={setChaburaPace} />
-            </label>
+              <label className="login-field">
+                <span className="login-field__label">Pace</span>
+                <PaceSelect value={chaburaPace} onChange={setChaburaPace} />
+              </label>
 
-            <div className="login-field">
-              <span className="login-field__label">
-                {chaburaKind === "class" ? "Invite students by email" : "Invite members by email"}
-              </span>
-              {memberEmails.map((email, i) => (
-                <div className="chabura-member-row" key={i}>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => updateMember(i, e.target.value)}
-                    placeholder={chaburaKind === "class" ? "student@example.com" : "member@example.com"}
-                  />
-                  <button
-                    type="button"
-                    className="chabura-member-remove"
-                    onClick={() => removeMemberField(i)}
-                    disabled={memberEmails.length === 1}
-                    title="Remove"
-                  >
-                    ✕
-                  </button>
-                </div>
-              ))}
-              <button type="button" className="chabura-add-member" onClick={addMemberField}>
-                + Add another member
+              <div className="login-field">
+                <span className="login-field__label">
+                  {chaburaKind === "class" ? "Invite students by email" : "Invite members by email"}
+                </span>
+                {memberEmails.map((email, i) => (
+                  <div className="chabura-member-row" key={i}>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => updateMember(i, e.target.value)}
+                      placeholder={chaburaKind === "class" ? "student@example.com" : "member@example.com"}
+                    />
+                    <button
+                      type="button"
+                      className="chabura-member-remove"
+                      onClick={() => removeMemberField(i)}
+                      disabled={memberEmails.length === 1}
+                      title="Remove"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+                <button type="button" className="chabura-add-member" onClick={addMemberField}>
+                  + Add another member
+                </button>
+              </div>
+
+              {error && <ErrorRow message={error} />}
+
+              <button
+                className="restart"
+                disabled={busy || !chaburaName || !chaburaMasechet}
+                onClick={handleStartChabura}
+              >
+                {busy ? "Creating…" : chaburaKind === "class" ? "Start class" : "Start chabura"}
               </button>
             </div>
-
-            <button
-              className="restart"
-              disabled={busy || !chaburaName || !chaburaMasechet}
-              onClick={handleStartChabura}
-            >
-              {busy ? "Creating…" : chaburaKind === "class" ? "Start class" : "Start chabura"}
-            </button>
 
             <div className="chevrusa-section">
               <p className="chevrusa-section__label">Your chaburot</p>
