@@ -4,7 +4,6 @@ import { useLearningProgress } from "../../utils/useLearningProgress";
 import { usePerekNotes } from "../../utils/usePerekNotes";
 import { useAuth } from "../../utils/useAuth";
 import { useChevrusa } from "../../utils/useChevrusa";
-import { getSederHue } from "../../utils/sederHue";
 import { buildJourneyScopes } from "../../utils/shasJourney";
 import { NavIcon } from "../Sidebar/NavIcon";
 import { BrandMark } from "../BrandMark";
@@ -228,28 +227,6 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
         </div>
 
         <FlipCounter scopes={journeyScopes} />
-
-        <h2 className="home-section-title">Explore Shas</h2>
-        <div className="home-seder-grid">
-          {SEDARIM.map((seder) => (
-            <button
-              key={seder.id}
-              className="home-seder-tile"
-              style={{ ["--tile-hue" as string]: getSederHue(seder.id) }}
-              onClick={() => onNavigate("map")}
-            >
-              <span className="home-seder-tile__he" dir="rtl">
-                {seder.he}
-              </span>
-              <div className="home-seder-tile__bar">
-                <div
-                  className="home-seder-tile__bar-fill"
-                  style={{ width: `${progress.sederPercent(seder.id)}%` }}
-                />
-              </div>
-            </button>
-          ))}
-        </div>
 
         <h2 className="home-section-title">My Mishna</h2>
         <FeatureGrid features={myMishnaWithStatus} onNavigate={onNavigate} />
