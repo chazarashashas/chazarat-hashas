@@ -32,9 +32,9 @@
 
 .recall-timer {
   font-family: var(--font-heading);
-  font-size: 20px;
+  font-size: 26px;
   font-weight: 800;
-  color: var(--ink);
+  color: var(--hue-chazara);
   font-variant-numeric: tabular-nums;
 }
 
@@ -42,7 +42,7 @@
   font-family: var(--font-heading);
   font-size: 20px;
   font-weight: 800;
-  color: var(--ink-soft);
+  color: var(--muted);
   font-variant-numeric: tabular-nums;
 }
 
@@ -94,10 +94,10 @@
 .recall-input {
   width: 100%;
   box-sizing: border-box;
-  height: 42px;
-  border-radius: 10px;
-  border: 1.5px solid var(--border);
-  background: #fffbf0;
+  height: 46px;
+  border-radius: var(--radius-control);
+  border: none;
+  background: var(--surface-hi);
   padding: 0 14px;
   font-size: 14px;
   font-weight: 600;
@@ -107,8 +107,8 @@
 }
 
 .recall-input:focus {
-  outline: none;
-  border-color: var(--brand);
+  outline: 2px solid var(--hue-chazara);
+  outline-offset: 1px;
 }
 
 .recall-grid {
@@ -137,13 +137,16 @@
 }
 
 .recall-chip--pending {
-  border: 1.5px dashed var(--border);
-  background: #fffbf0;
+  border: 1.5px dashed var(--line);
+  background: var(--surface);
 }
 
 .recall-chip--found {
-  background: var(--brand);
-  color: #fff;
+  border: none;
+  border-left: 3px solid var(--hue-chazara);
+  border-radius: 0 8px 8px 0;
+  background: var(--surface);
+  color: var(--ink);
 }
 
 .recall-missed {
@@ -173,7 +176,7 @@
   font-size: 10px;
   font-weight: 700;
   color: var(--bad);
-  background: #fbeded;
-  border-radius: 999px;
+  background: var(--bad-bg);
+  border-radius: var(--radius-pill);
   padding: 3px 9px;
 }
