@@ -1,9 +1,14 @@
 import { useState } from "react";
+import { SEDARIM } from "../../data/shas";
 import { useLearningProgress } from "../../utils/useLearningProgress";
 import { usePerekNotes } from "../../utils/usePerekNotes";
 import { useAuth } from "../../utils/useAuth";
 import { useChevrusa } from "../../utils/useChevrusa";
+import { getSederHue } from "../../utils/sederHue";
+import { buildJourneyScopes } from "../../utils/shasJourney";
 import { NavIcon } from "../Sidebar/NavIcon";
+import { FlipCounter } from "../FlipCounter/FlipCounter";
+import { hebrewNumeral } from "../../utils/hebrewNumeral";
 import "./HomeScreen.css";
 
 interface Feature {
@@ -129,6 +134,11 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
   const { isLoggedIn } = useAuth();
   const { groups } = useChevrusa();
 
+  const upNext = progress.todaysItems[0];
+  const upNextSeder = upNext ? SEDARIM.find((s) => s.id === upNext.sederId) : undefined;
+  const ringPct = progress.shasPercent();
+  const journeyScopes = buildJourneyScopes(progress);
+
   const noteCount = Object.values(perekNotes).reduce(
     (total, notes) => total + notes.filter((n) => n && n.trim()).length,
     0,
@@ -138,9 +148,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
     if (f.id === "limmud") {
       return {
         ...f,
-        status: progress.finishedShas
-          ? "Finished Shas!"
-          : `🔥 ${progress.streak.current}-day streak`,
+        status: progress.finishedShas ? "Finished Shas!" : `${progress.streak.current}-day streak`,
       };
     }
     if (f.id === "progress") {
@@ -171,6 +179,58 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
           </p>
           <cite className="home-quote__source">— תענית ז׳ ב׳–ח׳ א׳</cite>
         </blockquote>
+
+        <div className="home-hero">
+          <div className="home-hero__ring" style={{ ["--ring-pct" as string]: `${ringPct}%` }}>
+            <span className="home-hero__ring-num">{ringPct}%</span>
+          </div>
+          <div className="home-hero__body">
+            {progress.finishedShas ? (
+              <p className="home-hero__title">You've finished all of Shas!</p>
+            ) : upNext ? (
+              <>
+                <p className="home-hero__label">Up next</p>
+                <p className="home-hero__title">
+                  {upNextSeder ? `${upNextSeder.en} · ` : ""}
+                  {upNext.masechetEn} {hebrewNumeral(upNext.perek)}:{upNext.mishnah}
+                </p>
+              </>
+            ) : (
+              <p className="home-hero__title">Ready when you are</p>
+            )}
+            <div className="home-hero__row">
+              <span className="home-hero__streak-dot" aria-hidden="true" />
+              <span className="home-hero__streak">{progress.streak.current}-day streak</span>
+              <button className="home-hero__btn" onClick={() => onNavigate("limmud")}>
+                Continue learning
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <FlipCounter scopes={journeyScopes} />
+
+        <h2 className="home-section-title">Your Shas</h2>
+        <div className="home-seder-grid">
+          {SEDARIM.map((seder) => (
+            <button
+              key={seder.id}
+              className="home-seder-tile"
+              style={{ ["--tile-hue" as string]: getSederHue(seder.id) }}
+              onClick={() => onNavigate("map")}
+            >
+              <span className="home-seder-tile__he" dir="rtl">
+                {seder.he}
+              </span>
+              <div className="home-seder-tile__bar">
+                <div
+                  className="home-seder-tile__bar-fill"
+                  style={{ width: `${progress.sederPercent(seder.id)}%` }}
+                />
+              </div>
+            </button>
+          ))}
+        </div>
 
         <h2 className="home-section-title">My Mishna</h2>
         <FeatureGrid features={myMishnaWithStatus} onNavigate={onNavigate} />

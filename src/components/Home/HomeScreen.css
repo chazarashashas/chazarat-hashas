@@ -220,6 +220,154 @@
   color: var(--muted);
 }
 
+.home-hero {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+  background: var(--ink);
+  border-radius: var(--radius-hero);
+  padding: 20px 22px;
+  box-shadow: var(--shadow-hero);
+}
+
+.home-hero__ring {
+  flex-shrink: 0;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: conic-gradient(var(--gold) var(--ring-pct, 0%), rgba(255, 255, 255, 0.15) 0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.home-hero__ring-num {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.home-hero__body {
+  flex: 1;
+  min-width: 160px;
+}
+
+.home-hero__label {
+  margin: 0 0 2px;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.home-hero__title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.home-hero__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.home-hero__streak-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--gold);
+  flex-shrink: 0;
+}
+
+.home-hero__streak {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.75);
+  margin-right: auto;
+}
+
+.home-hero__btn {
+  min-height: 36px;
+  padding: 0 16px;
+  background: var(--gold);
+  color: var(--ink);
+  border: none;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-heading);
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.home-seder-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 10px 0 0;
+}
+
+@media (max-width: 640px) {
+  .home-seder-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.home-seder-tile {
+  background: var(--surface);
+  border: none;
+  border-top: 3px solid var(--tile-hue, var(--line));
+  border-radius: var(--radius-card);
+  padding: 14px 10px 12px;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.home-seder-tile:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.home-seder-tile__he {
+  display: block;
+  font-family: var(--font-hebrew);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--tile-hue, var(--ink));
+  margin-bottom: 8px;
+}
+
+.home-seder-tile__bar {
+  height: 5px;
+  border-radius: 999px;
+  background: var(--track);
+  overflow: hidden;
+}
+
+.home-seder-tile__bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--tile-hue, var(--gold));
+  transition: width 0.4s ease;
+}
+
 .home-section-title {
   margin: 26px 0 4px;
   font-family: var(--font-heading);
