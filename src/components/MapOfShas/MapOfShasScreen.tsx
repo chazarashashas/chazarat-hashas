@@ -5,6 +5,7 @@ import { fetchMishna } from "../../utils/sefaria";
 import { hebrewNumeral } from "../../utils/hebrewNumeral";
 import { useLearningProgress } from "../../utils/useLearningProgress";
 import { usePerekNotes } from "../../utils/usePerekNotes";
+import { getSederHue } from "../../utils/sederHue";
 import { PerekNoteModal } from "../PerekNoteModal/PerekNoteModal";
 import "./MapOfShasScreen.css";
 
@@ -109,7 +110,7 @@ export function MapOfShasScreen({ onOpenNotes }: MapOfShasScreenProps) {
           </button>
           {seder && (
             <>
-              <span className="map-crumb-sep">▸</span>
+              <span className="map-crumb-sep">‹</span>
               <button className="map-crumb" onClick={() => goTo("masechtot")}>
                 {seder.en}
               </button>
@@ -117,7 +118,7 @@ export function MapOfShasScreen({ onOpenNotes }: MapOfShasScreenProps) {
           )}
           {masechet && (
             <>
-              <span className="map-crumb-sep">▸</span>
+              <span className="map-crumb-sep">‹</span>
               <button className="map-crumb" onClick={() => goTo("perakim")}>
                 {masechet.en}
               </button>
@@ -125,7 +126,7 @@ export function MapOfShasScreen({ onOpenNotes }: MapOfShasScreenProps) {
           )}
           {perek != null && (
             <>
-              <span className="map-crumb-sep">▸</span>
+              <span className="map-crumb-sep">‹</span>
               <button className="map-crumb" onClick={() => goTo("mishnayot")}>
                 Perek {hebrewNumeral(perek)}
               </button>
@@ -133,48 +134,70 @@ export function MapOfShasScreen({ onOpenNotes }: MapOfShasScreenProps) {
           )}
           {mishnah != null && (
             <>
-              <span className="map-crumb-sep">▸</span>
+              <span className="map-crumb-sep">‹</span>
               <span className="map-crumb map-crumb--current">משנה {hebrewNumeral(mishnah)}</span>
             </>
           )}
         </div>
 
         {level === "sedarim" && (
-          <div className="map-grid">
+          <div className="map-grid map-grid--sedarim">
             {SEDARIM.map((s) => (
-              <button key={s.id} className="map-tile" onClick={() => openSeder(s.id)}>
+              <button
+                key={s.id}
+                className="map-tile map-tile--seder"
+                style={{ ["--tile-hue" as string]: getSederHue(s.id) }}
+                onClick={() => openSeder(s.id)}
+              >
                 <span className="map-tile__he" dir="rtl">
                   {s.he}
                 </span>
                 <span className="map-tile__en">{s.en}</span>
                 <span className="map-tile__sub">{s.translation}</span>
-                <PercentBadge percent={progress.sederPercent(s.id)} />
+                <div className="map-tile__bar">
+                  <div className="map-tile__bar-fill" style={{ width: `${progress.sederPercent(s.id)}%` }} />
+                </div>
+                <span className="map-tile__pct">{progress.sederPercent(s.id)}%</span>
               </button>
             ))}
           </div>
         )}
 
         {level === "masechtot" && seder && (
-          <div className="map-grid">
+          <div className="map-grid" style={{ ["--tile-hue" as string]: getSederHue(seder.id) }}>
             {seder.masechtot.map((m) => (
-              <button key={m.en} className="map-tile" onClick={() => openMasechet(m)}>
+              <button key={m.en} className="map-tile map-tile--masechet" onClick={() => openMasechet(m)}>
                 <span className="map-tile__he" dir="rtl">
                   {m.he}
                 </span>
                 <span className="map-tile__en">{m.en}</span>
                 <span className="map-tile__sub">{m.perakim} perakim</span>
+                <div className="map-tile__bar">
+                  <div
+                    className="map-tile__bar-fill"
+                    style={{ width: `${progress.masechetPercent(m.en, m.perakim)}%` }}
+                  />
+                </div>
                 <PercentBadge percent={progress.masechetPercent(m.en, m.perakim)} />
               </button>
             ))}
           </div>
         )}
 
-        {level === "perakim" && masechet && (
-          <div className="map-grid map-grid--perakim">
+        {level === "perakim" && masechet && seder && (
+          <div
+            className="map-grid map-grid--perakim"
+            style={{ ["--tile-hue" as string]: getSederHue(seder.id) }}
+          >
             {Array.from({ length: masechet.perakim }, (_, i) => i + 1).map((p) => {
               const name = getPerekName(masechet.en, p);
+              const done = progress.perekPercent(masechet.en, p) === 100;
               return (
-                <button key={p} className="map-tile map-tile--perek" onClick={() => openPerek(p)}>
+                <button
+                  key={p}
+                  className={"map-tile map-tile--perek" + (done ? " map-tile--perek-done" : "")}
+                  onClick={() => openPerek(p)}
+                >
                   <span className="map-tile__perek-num" dir="rtl">
                     {hebrewNumeral(p)}
                   </span>
@@ -209,7 +232,7 @@ export function MapOfShasScreen({ onOpenNotes }: MapOfShasScreenProps) {
               ))}
             </div>
             <button className="map-note-link" onClick={() => setNoteOpen(true)}>
-              📝 {getPerekNote(masechet.en, perek) ? "View/edit note" : "Add note"} for this perek
+              {getPerekNote(masechet.en, perek) ? "View/edit note" : "Add note"} for this perek
             </button>
           </>
         )}

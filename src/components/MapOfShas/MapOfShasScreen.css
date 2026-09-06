@@ -12,36 +12,58 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 6px;
   margin-bottom: 16px;
 }
 
 .map-crumb {
-  background: none;
-  border: none;
-  color: var(--brand);
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background: var(--surface-hi);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-pill);
+  color: var(--ink);
   font-family: var(--font-heading);
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 700;
   cursor: pointer;
-  padding: 2px 2px;
+  padding: 6px 13px;
+}
+
+.map-crumb:hover {
+  border-color: var(--ink);
 }
 
 .map-crumb--current {
-  color: var(--ink-soft);
+  background: none;
+  border: none;
+  color: var(--faint);
   font-weight: 600;
   cursor: default;
+  padding: 6px 2px;
 }
 
 .map-crumb-sep {
-  color: var(--ink-soft);
-  font-size: 10px;
+  color: var(--faint);
+  font-size: 11px;
 }
 
 .map-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   gap: 10px;
+}
+
+.map-grid--sedarim {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (max-width: 640px) {
+  .map-grid--sedarim {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .map-grid--perakim {
@@ -60,24 +82,39 @@
   flex-direction: column;
   align-items: center;
   gap: 3px;
-  background: #fffbf0;
-  border: 1.5px solid var(--border);
-  border-radius: 12px;
+  background: var(--surface);
+  border: none;
+  border-radius: var(--radius-card);
   padding: 12px 8px;
   cursor: pointer;
   font-family: var(--font-body);
   text-align: center;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .map-tile:hover {
-  border-color: var(--brand);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+
+.map-tile--seder,
+.map-tile--masechet {
+  border-top: 3px solid var(--tile-hue, var(--line));
+}
+
+.map-tile--seder .map-tile__he,
+.map-tile--masechet .map-tile__he {
+  color: var(--tile-hue, var(--ink));
 }
 
 .map-tile__he {
   font-family: var(--font-hebrew);
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--ink);
+  line-height: 1.4;
 }
 
 .map-tile__en {
@@ -89,18 +126,45 @@
 
 .map-tile__sub {
   font-size: 10px;
-  color: var(--ink-soft);
+  color: var(--muted);
+}
+
+.map-tile__bar {
+  width: 100%;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--track);
+  overflow: hidden;
+  margin-top: 3px;
+}
+
+.map-tile__bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--tile-hue, var(--gold));
+  transition: width 0.4s ease;
+}
+
+.map-tile__pct {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--tile-hue, var(--muted));
 }
 
 .map-tile--perek {
   padding: 10px 6px;
+  border-left: 3px solid transparent;
+}
+
+.map-tile--perek-done {
+  border-left-color: var(--tile-hue, var(--gold));
 }
 
 .map-tile__perek-num {
   font-family: var(--font-hebrew);
   font-size: 16px;
   font-weight: 700;
-  color: var(--brand);
+  color: var(--ink);
 }
 
 .map-tile--mishnah {
@@ -112,9 +176,12 @@
 }
 
 .map-tile--done {
-  background: var(--brand);
-  border-color: var(--brand);
+  background: var(--ink);
   color: #fff;
+}
+
+.map-tile--done:hover {
+  transform: none;
 }
 
 .map-badge {
@@ -122,11 +189,11 @@
   top: 4px;
   right: 4px;
   background: var(--gold);
-  color: var(--brand);
+  color: var(--ink);
   font-size: 9px;
   font-weight: 700;
   font-family: var(--font-heading);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   padding: 1px 5px;
 }
 
@@ -138,7 +205,7 @@
 .map-note-link {
   background: none;
   border: none;
-  color: var(--brand);
+  color: var(--ink);
   font-family: var(--font-heading);
   font-size: 12px;
   font-weight: 700;
@@ -148,18 +215,21 @@
 
 .map-text-block {
   text-align: left;
+  background: var(--surface-hi);
+  border-radius: var(--radius-page);
+  padding: 18px 20px;
 }
 
 .map-text-status {
   font-size: 12px;
-  color: var(--ink-soft);
+  color: var(--muted);
   text-align: center;
 }
 
 .map-text {
   font-family: var(--font-hebrew);
   font-size: 15px;
-  line-height: 1.7;
+  line-height: 2;
   color: var(--ink);
   text-align: right;
 }

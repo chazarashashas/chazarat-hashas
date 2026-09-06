@@ -3,18 +3,10 @@ import { SEDARIM } from "../../data/shas";
 import { getPerekName, getMishnayotCount } from "../../data/perekInfo";
 import { useLearningProgress } from "../../utils/useLearningProgress";
 import { FlipCounter, type FlipScope } from "../FlipCounter/FlipCounter";
+import { SEDER_HUE, getSederHue } from "../../utils/sederHue";
 import { LogLearningModal } from "./LogLearningModal";
 import { PrintNotesView } from "../PrintNotes/PrintNotesView";
 import "./ProgressScreen.css";
-
-const SEDER_HUE: Record<string, string> = {
-  zeraim: "var(--seder-zeraim)",
-  moed: "var(--seder-moed)",
-  nashim: "var(--seder-nashim)",
-  nezikin: "var(--seder-nezikin)",
-  kodashim: "var(--seder-kodashim)",
-  taharot: "var(--seder-taharot)",
-};
 
 function ProgressBar({ pct }: { pct: number }) {
   return (
@@ -77,7 +69,7 @@ export function ProgressScreen() {
   const masechetPct = progress.masechetPercent(nextMasechet.en, nextMasechet.perakim);
   const sederPct = progress.sederPercent(nextSeder.id);
   const shasPct = progress.shasPercent();
-  const hue = SEDER_HUE[nextSeder.id] ?? "var(--gold)";
+  const hue = getSederHue(nextSeder.id);
 
   let mDone = 0;
   let mTotal = 0;
