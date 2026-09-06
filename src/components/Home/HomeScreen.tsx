@@ -145,13 +145,13 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
   );
 
   const myMishnaWithStatus = MY_MISHNA.map((f) => {
-    if (f.id === "limmud") {
+    if (f.id === "limmud" && (progress.finishedShas || progress.streak.current > 0)) {
       return {
         ...f,
         status: progress.finishedShas ? "Finished Shas!" : `${progress.streak.current}-day streak`,
       };
     }
-    if (f.id === "progress") {
+    if (f.id === "progress" && progress.shasPercent() > 0) {
       return { ...f, status: `${progress.shasPercent()}% of Shas learned` };
     }
     if (f.id === "perek" && noteCount > 0) {
@@ -199,8 +199,14 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
               <p className="home-hero__title">Ready when you are</p>
             )}
             <div className="home-hero__row">
-              <span className="home-hero__streak-dot" aria-hidden="true" />
-              <span className="home-hero__streak">{progress.streak.current}-day streak</span>
+              {progress.streak.current > 0 ? (
+                <>
+                  <span className="home-hero__streak-dot" aria-hidden="true" />
+                  <span className="home-hero__streak">{progress.streak.current}-day streak</span>
+                </>
+              ) : (
+                <span className="home-hero__streak">Learn today to start a streak</span>
+              )}
               <button className="home-hero__btn" onClick={() => onNavigate("limmud")}>
                 Continue learning
               </button>
