@@ -38,7 +38,7 @@ const MY_MISHNA: Feature[] = [
   },
   {
     id: "progress",
-    title: "Siyumim",
+    title: "My Siyumim",
     desc: "Track your streak and how much of Shas you've learned so far.",
     built: true,
   },

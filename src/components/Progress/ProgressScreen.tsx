@@ -136,7 +136,7 @@ export function ProgressScreen() {
   return (
     <div className="stage">
       <div className="panel">
-        <h1 className="panel__title">Siyumim</h1>
+        <h1 className="panel__title">My Siyumim</h1>
         <p className="panel__subtitle">
           The journey to a siyum — Daily Limmud and anything you've logged, together.
         </p>

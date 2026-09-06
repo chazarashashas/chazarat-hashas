@@ -124,6 +124,7 @@ export function DailyLimmudScreen({ onOpenNotes }: DailyLimmudScreenProps) {
 
   const [contents, setContents] = useState<MishnaContent[]>([]);
   const [justMarked, setJustMarked] = useState(false);
+  const [confirmPerek, setConfirmPerek] = useState<{ perek: number; remaining: number } | null>(null);
   const [noteOpen, setNoteOpen] = useState(false);
   const [conceptTitle, setConceptTitle] = useState("");
   const [conceptNote, setConceptNote] = useState("");
@@ -185,6 +186,22 @@ export function DailyLimmudScreen({ onOpenNotes }: DailyLimmudScreenProps) {
   }, [rangeKey]);
 
   function handleMarkLearned() {
+    if (!firstItem) return;
+
+    // Captured before the mark lands, while `items`/`isCompleted` still
+    // reflect the pre-mark state — needed for "what's left in the perek"
+    // in the confirmation banner, since `firstItem` itself moves on to
+    // the next perek/masechet the instant position advances.
+    const perekTotal = getMishnayotCount(firstItem.masechetEn, firstItem.perek);
+    let doneBefore = 0;
+    for (let mi = 1; mi <= perekTotal; mi++) {
+      if (progress.isCompleted({ masechetEn: firstItem.masechetEn, perek: firstItem.perek, mishnah: mi })) {
+        doneBefore++;
+      }
+    }
+    const markingNow = items.filter((i) => i.perek === firstItem.perek).length;
+    const remaining = Math.max(0, perekTotal - doneBefore - markingNow);
+
     if (isSelf) {
       progress.markTodayLearned();
       const masechetEn = items[0]?.masechetEn;
@@ -196,8 +213,9 @@ export function DailyLimmudScreen({ onOpenNotes }: DailyLimmudScreenProps) {
       const masechetEn = items[0]?.masechetEn;
       if (session && masechetEn) recordGroupActivityForMasechet(session.user.id, masechetEn);
     }
+    setConfirmPerek({ perek: firstItem.perek, remaining });
     setJustMarked(true);
-    window.setTimeout(() => setJustMarked(false), 2200);
+    window.setTimeout(() => setJustMarked(false), 4000);
   }
 
   function handlePaceChange(next: Pace) {
@@ -335,9 +353,24 @@ export function DailyLimmudScreen({ onOpenNotes }: DailyLimmudScreenProps) {
               <button
                 className={"restart limmud-mark-btn" + (justMarked ? " limmud-mark-btn--done" : "")}
                 onClick={handleMarkLearned}
+                disabled={justMarked}
               >
-                {justMarked ? "✓ Marked as learned!" : "Mark as learned"}
+                {justMarked ? "Marked as learned" : "Mark as learned"}
               </button>
+
+              {justMarked && confirmPerek && (
+                <div className="limmud-confirm" key={confirmPerek.perek}>
+                  <span className="limmud-confirm__letter" dir="rtl">
+                    {hebrewNumeral(confirmPerek.perek)}
+                  </span>
+                  <span className="limmud-confirm__text">
+                    Streak day {streak.current} —{" "}
+                    {confirmPerek.remaining === 0
+                      ? "Perek complete!"
+                      : `${confirmPerek.remaining} mishnah${confirmPerek.remaining === 1 ? "" : "s"} left in this perek`}
+                  </span>
+                </div>
+              )}
             </div>
 
             <div className="limmud-notes">
