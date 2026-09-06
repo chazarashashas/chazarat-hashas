@@ -8,6 +8,8 @@ import { SEDER_HUE, getSederHue } from "../../utils/sederHue";
 import { LogLearningModal } from "./LogLearningModal";
 import { PrintNotesView } from "../PrintNotes/PrintNotesView";
 import { CertificateView } from "../Certificate/CertificateView";
+import { NudgeStrip } from "../NudgeStrip/NudgeStrip";
+import { nudgeCopy, pluralize } from "../../utils/nudgeCopy";
 import "./ProgressScreen.css";
 
 function ProgressBar({ pct }: { pct: number }) {
@@ -25,9 +27,10 @@ function ProgressBar({ pct }: { pct: number }) {
  */
 interface ProgressScreenProps {
   onOpenNishmat?: () => void;
+  onOpenLogin?: () => void;
 }
 
-export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
+export function ProgressScreen({ onOpenNishmat, onOpenLogin }: ProgressScreenProps) {
   const progress = useLearningProgress();
   const auth = useAuth();
   const [expanded, setExpanded] = useState<string | null>(null);
@@ -153,6 +156,22 @@ export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
         <p className="panel__subtitle">
           The journey to a siyum — Daily Limmud and anything you've logged, together.
         </p>
+
+        {!auth.isLoggedIn && onOpenLogin && (
+          <NudgeStrip
+            text={nudgeCopy(
+              [
+                perakimFinished > 0 ? pluralize(perakimFinished, "perek finished", "perakim finished") : null,
+                masechtotCompleted > 0
+                  ? pluralize(masechtotCompleted, "masechet completed", "masechtot completed")
+                  : null,
+              ],
+              "on this device only.",
+            )}
+            actionLabel="Keep them →"
+            onAction={onOpenLogin}
+          />
+        )}
 
         <div className="siyumim-stats">
           <div className="siyumim-stat">

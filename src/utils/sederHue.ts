@@ -13,3 +13,18 @@ export const SEDER_HUE: Record<string, string> = {
 export function getSederHue(sederId: string | null | undefined): string {
   return (sederId && SEDER_HUE[sederId]) || "var(--gold)";
 }
+
+/** Same six hues, darkened enough to hold 4.5:1 as small text on cream —
+    the fill hues above are for fills only, never small type. */
+export const SEDER_HUE_TEXT: Record<string, string> = {
+  zeraim: "var(--seder-zeraim-text)",
+  moed: "var(--seder-moed-text)",
+  nashim: "var(--seder-nashim-text)",
+  nezikin: "var(--seder-nezikin-text)",
+  kodashim: "var(--seder-kodashim-text)",
+  taharot: "var(--seder-taharot-text)",
+};
+
+export function getSederHueText(sederId: string | null | undefined): string {
+  return (sederId && SEDER_HUE_TEXT[sederId]) || "var(--brass-text)";
+}

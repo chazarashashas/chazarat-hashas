@@ -13,6 +13,8 @@ import { hebrewNumeral } from "../../utils/hebrewNumeral";
 import { FlipCounter } from "../FlipCounter/FlipCounter";
 import { buildJourneyScopes } from "../../utils/shasJourney";
 import { QueuedSiyumPerek } from "./QueuedSiyumPerek";
+import { NudgeStrip } from "../NudgeStrip/NudgeStrip";
+import { getSederHueText } from "../../utils/sederHue";
 import "./DailyLimmudScreen.css";
 
 interface MishnaItem {
@@ -277,12 +279,6 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
         <p className="panel__subtitle">
           Your next portion of Mishnayot, straight through Shas in order — Berachot to Uktzin.
         </p>
-        {!session && onOpenLogin && (
-          <button className="limmud-signin-link" onClick={onOpenLogin}>
-            Sign in to save your progress to your account →
-          </button>
-        )}
-
         {finished ? (
           <div className="note-banner note-banner--good limmud-finished">
             {isSelf ? (
@@ -381,6 +377,15 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
                       : `${confirmPerek.remaining} mishnah${confirmPerek.remaining === 1 ? "" : "s"} left in this perek`}
                   </span>
                 </div>
+              )}
+
+              {justMarked && !session && onOpenLogin && streak.current >= 3 && (
+                <NudgeStrip
+                  text={`${streak.current} days is worth keeping.`}
+                  actionLabel="Save my streak →"
+                  onAction={onOpenLogin}
+                  accentColor={getSederHueText(seder?.id)}
+                />
               )}
 
               {isSelf &&

@@ -5,6 +5,7 @@ import { ALL_PEREK_SLOTS } from "../../utils/nishmatMosaic";
 import { useLocalStorageState } from "../../utils/useLocalStorageState";
 import { useEscapeKey } from "../../utils/useEscapeKey";
 import { SiyumDetail } from "./SiyumDetail";
+import { GateCard } from "../GateCard/GateCard";
 import "./LiluyNishmat.css";
 
 type Tab = "managing" | "helping";
@@ -122,7 +123,7 @@ function SiyumCard({
 }
 
 interface LiluyNishmatScreenProps {
-  onOpenLogin?: () => void;
+  onOpenLogin?: (mode?: "signIn" | "signUp") => void;
   initialSlug?: string | null;
 }
 
@@ -219,18 +220,21 @@ export function LiluyNishmatScreen({ onOpenLogin, initialSlug }: LiluyNishmatScr
               Dedicate a full siyum on Shas to a neshama — others take perakim to help finish it.
             </p>
           </div>
-          {session ? (
+          {session && (
             <button className="nishmat-start-btn" onClick={() => setCreateOpen(true)}>
               + Start a siyum
             </button>
-          ) : (
-            onOpenLogin && (
-              <button className="nishmat-start-btn" onClick={onOpenLogin}>
-                Log in to start one
-              </button>
-            )
           )}
         </div>
+
+        {!session && onOpenLogin && tab === "managing" && (
+          <GateCard
+            title="Starting a siyum needs an account"
+            body="A siyum tracks who's taken which perek and who's already learned it — that only works if it's tied to your account, not just this device."
+            onCreateAccount={() => onOpenLogin("signUp")}
+            onSignIn={() => onOpenLogin("signIn")}
+          />
+        )}
 
         <div className="pill-row">
           <button
@@ -255,9 +259,6 @@ export function LiluyNishmatScreen({ onOpenLogin, initialSlug }: LiluyNishmatScr
         )}
 
         <div className="nishmat-list">
-          {tab === "managing" && !session && (
-            <p className="chevrusa-empty">Log in to start or manage a siyum.</p>
-          )}
           {list.length === 0 && (session || tab === "helping") && (
             <p className="chevrusa-empty">
               {tab === "managing"

@@ -15,23 +15,6 @@
   color: var(--good);
 }
 
-.limmud-signin-link {
-  display: block;
-  margin: 8px auto 0;
-  background: none;
-  border: none;
-  padding: 4px;
-  font-family: var(--font-heading);
-  font-size: 11.5px;
-  font-weight: 700;
-  color: var(--ink-2);
-  cursor: pointer;
-}
-
-.limmud-signin-link:hover {
-  color: var(--gold);
-}
-
 .limmud-settings {
   margin-top: 18px;
   padding: 15px 16px;

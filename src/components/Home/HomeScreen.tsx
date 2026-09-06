@@ -10,6 +10,8 @@ import { BrandMark } from "../BrandMark";
 import { FlipCounter } from "../FlipCounter/FlipCounter";
 import { useEscapeKey } from "../../utils/useEscapeKey";
 import { hebrewNumeral } from "../../utils/hebrewNumeral";
+import { NudgeStrip } from "../NudgeStrip/NudgeStrip";
+import { nudgeCopy, pluralize } from "../../utils/nudgeCopy";
 import "./HomeScreen.css";
 
 interface Feature {
@@ -52,12 +54,6 @@ const MY_MISHNA: Feature[] = [
     id: "chevrusa",
     title: "Chevrusa",
     desc: "Pair up with a study partner or start a chabura to learn together.",
-    built: true,
-  },
-  {
-    id: "login",
-    title: "My Account",
-    desc: "See your stats, chevrusas, and practice history — sign in to save them.",
     built: true,
   },
 ];
@@ -176,9 +172,17 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
         <p className="panel__subtitle">let's learn shas, together</p>
 
         {!isLoggedIn && (
-          <button className="home-signin-link" onClick={() => onNavigate("login")}>
-            Sign in to save your progress to your account →
-          </button>
+          <NudgeStrip
+            text={nudgeCopy(
+              [
+                progress.streak.current > 0 ? `${progress.streak.current}-day streak` : null,
+                progress.completions.length > 0 ? pluralize(progress.completions.length, "mishnah", "mishnayot") : null,
+              ],
+              "Saved on this device only.",
+            )}
+            actionLabel="Keep them →"
+            onAction={() => onNavigate("login")}
+          />
         )}
 
         <button className="home-new-here" onClick={() => setShowIntro(true)}>

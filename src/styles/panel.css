@@ -100,7 +100,7 @@
   border-radius: var(--radius-control);
   padding: 10px 13px;
   font-size: 11.5px;
-  color: #8a6a1d;
+  color: var(--brass-text);
   text-align: left;
   margin-bottom: 14px;
   font-weight: 600;

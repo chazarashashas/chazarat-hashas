@@ -10,6 +10,20 @@ interface ProgressLike {
   shasPercent: () => number;
 }
 
+/** How many masechtot are fully done — the same "just finished a
+    masechet" fact the first-open prompt's one-time exception checks for
+    (see useFirstOpenPrompt), computed off the same percent function
+    Siyumim already uses rather than re-walking every mishnah by hand. */
+export function countCompletedMasechtot(progress: ProgressLike): number {
+  let count = 0;
+  for (const seder of SEDARIM) {
+    for (const m of seder.masechtot) {
+      if (progress.masechetPercent(m.en, m.perakim) === 100) count++;
+    }
+  }
+  return count;
+}
+
 /** The masechet you'd finish next, in Shas order — same "first not-yet-
     100%" rule Siyumim uses for its own Next Siyum card. */
 export function findNextMasechet(progress: ProgressLike): { seder: Seder; masechet: Masechet } {

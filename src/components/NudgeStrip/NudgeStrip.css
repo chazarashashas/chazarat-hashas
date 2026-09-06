@@ -1,0 +1,37 @@
+.nudge-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  background: var(--surface);
+  border-radius: 13px;
+  border-left: 3px solid var(--nudge-accent, var(--gold));
+  padding: 12px 15px;
+  margin: 12px 0;
+}
+
+.nudge-strip__text {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+.nudge-strip__action {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 12px;
+  color: var(--nudge-accent, var(--brass-text));
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.nudge-strip__action:hover {
+  color: var(--ink);
+}

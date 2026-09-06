@@ -16,7 +16,7 @@
   font-family: var(--font-heading);
   font-size: 12px;
   font-weight: 700;
-  color: var(--faint);
+  color: var(--muted);
   text-align: center;
 }
 
@@ -196,24 +196,6 @@
   font-size: 11.5px;
   line-height: 1.5;
   color: var(--muted);
-}
-
-.home-signin-link {
-  display: block;
-  margin: 8px auto 0;
-  background: none;
-  border: none;
-  padding: 4px;
-  font-family: var(--font-heading);
-  font-size: 11.5px;
-  font-weight: 700;
-  color: var(--ink-2);
-  cursor: pointer;
-  text-align: center;
-}
-
-.home-signin-link:hover {
-  color: var(--gold);
 }
 
 .home-new-here {
@@ -401,9 +383,6 @@
 }
 .home-card--chevrusa {
   --card-hue: var(--hue-chevrusa);
-}
-.home-card--login {
-  --card-hue: var(--hue-login);
 }
 .home-card--sedarim {
   --card-hue: var(--hue-sedarim);

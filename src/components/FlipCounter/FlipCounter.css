@@ -99,7 +99,7 @@
   text-align: center;
   font-size: 11.5px;
   font-weight: 500;
-  color: var(--faint);
+  color: var(--muted);
 }
 
 .flip-counter__chips {

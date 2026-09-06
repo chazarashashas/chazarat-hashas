@@ -18,8 +18,13 @@ import { MapOfShasScreen } from "./components/MapOfShas/MapOfShasScreen";
 import { LiluyNishmatScreen } from "./components/LiluyNishmat/LiluyNishmatScreen";
 import { AdminScreen } from "./components/Admin/AdminScreen";
 import { ReviewScreen } from "./components/Review/ReviewScreen";
+import { FirstOpenPrompt } from "./components/FirstOpenPrompt/FirstOpenPrompt";
 import { useAuth } from "./utils/useAuth";
 import { useCloudSync } from "./utils/useCloudSync";
+import { useLearningProgress } from "./utils/useLearningProgress";
+import { usePerekNotes } from "./utils/usePerekNotes";
+import { useFirstOpenPrompt } from "./utils/useFirstOpenPrompt";
+import { countCompletedMasechtot } from "./utils/shasJourney";
 import { shuffle } from "./utils/shuffle";
 import type { ViewState } from "./types/viewState";
 import "./App.css";
@@ -89,12 +94,50 @@ function App() {
   // that gates an action behind an account (see requestLogin), so "Log
   // in first" never dead-ends: it returns you to what you were doing.
   const [loginReturnTo, setLoginReturnTo] = useState<string | null>(null);
-  const { session, isAdmin } = useAuth();
+  // Which pill the login screen opens on — set only when a gate card
+  // sends the user here, so "Create an account" and "I already have
+  // one" don't both dead-end on the same default pill.
+  const [loginMode, setLoginMode] = useState<"signIn" | "signUp" | undefined>(undefined);
+  // Set only when the first-open prompt's "Use an email address" sent the
+  // user here, so that choice lands on the email form, not the
+  // Google-first default.
+  const [loginEmailOpen, setLoginEmailOpen] = useState(false);
+  const { session, isAdmin, isLoggedIn, signInWithGoogle } = useAuth();
   useCloudSync(session);
 
-  function requestLogin(from: string) {
+  const progress = useLearningProgress();
+  const { perekNotes } = usePerekNotes();
+  const noteCount = Object.values(perekNotes).reduce(
+    (total, notes) => total + notes.filter((n) => n && n.trim()).length,
+    0,
+  );
+  const firstOpen = useFirstOpenPrompt({
+    // A ?siyum= deep link means someone was sent here for one specific
+    // siyum — that content should never be greeted with an unrelated
+    // sign-in card on top of it, so this treats it like "don't show"
+    // without touching the ask-count/retirement bookkeeping.
+    isLoggedIn: isLoggedIn || !!deepLinkSlug,
+    streakCurrent: progress.streak.current,
+    mishnayotCount: progress.completions.length,
+    noteCount,
+    masechtotCompleted: countCompletedMasechtot(progress),
+  });
+
+  function requestLogin(from: string, mode?: "signIn" | "signUp", emailOpen?: boolean) {
     setLoginReturnTo(from);
+    setLoginMode(mode);
+    setLoginEmailOpen(!!emailOpen);
     setSection("login");
+  }
+
+  async function handlePromptGoogle() {
+    firstOpen.dismiss();
+    await signInWithGoogle();
+  }
+
+  function handlePromptEmail() {
+    firstOpen.dismiss();
+    requestLogin(section, undefined, true);
   }
 
   function handleSelect(next: string) {
@@ -123,7 +166,7 @@ function App() {
           ) : section === "mishna" ? (
             <MishnaIdScreen onOpenNotes={() => setSection("perek")} />
           ) : section === "perek" ? (
-            <PerekNamesScreen />
+            <PerekNamesScreen onOpenLogin={() => requestLogin("perek")} />
           ) : section === "sort" ? (
             <SederSortScreen />
           ) : section === "dash" ? (
@@ -135,9 +178,11 @@ function App() {
           ) : section === "review" ? (
             <ReviewScreen />
           ) : section === "progress" ? (
-            <ProgressScreen onOpenNishmat={() => handleSelect("liluy")} />
+            <ProgressScreen onOpenNishmat={() => handleSelect("liluy")} onOpenLogin={() => requestLogin("progress")} />
           ) : section === "login" ? (
             <LoginScreen
+              initialMode={loginMode}
+              initialEmailOpen={loginEmailOpen}
               onLoggedIn={() => {
                 setSection(loginReturnTo ?? "home");
                 setLoginReturnTo(null);
@@ -146,11 +191,11 @@ function App() {
             />
           ) : section === "chevrusa" ? (
             <ChevrusaScreen
-              onOpenLogin={() => requestLogin("chevrusa")}
+              onOpenLogin={(mode) => requestLogin("chevrusa", mode)}
               onOpenNishmat={() => handleSelect("liluy")}
             />
           ) : section === "liluy" ? (
-            <LiluyNishmatScreen onOpenLogin={() => requestLogin("liluy")} initialSlug={deepLinkSlug} />
+            <LiluyNishmatScreen onOpenLogin={(mode) => requestLogin("liluy", mode)} initialSlug={deepLinkSlug} />
           ) : section === "admin" ? (
             isAdmin ? <AdminScreen /> : <HomeScreen onNavigate={setSection} />
           ) : (
@@ -158,6 +203,17 @@ function App() {
           )}
         </div>
       </main>
+      {firstOpen.variant && (
+        <FirstOpenPrompt
+          variant={firstOpen.variant}
+          streakCurrent={progress.streak.current}
+          mishnayotCount={progress.completions.length}
+          noteCount={noteCount}
+          onGoogle={handlePromptGoogle}
+          onEmail={handlePromptEmail}
+          onDismiss={firstOpen.dismiss}
+        />
+      )}
     </div>
   );
 }

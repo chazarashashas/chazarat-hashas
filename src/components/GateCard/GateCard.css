@@ -1,0 +1,67 @@
+.gate-card {
+  background: var(--surface);
+  border-radius: 18px;
+  border-left: 3px solid #b8543f;
+  padding: 20px;
+  margin: 14px 0;
+}
+
+.gate-card__title {
+  margin: 0 0 6px;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--ink);
+}
+
+.gate-card__body {
+  margin: 0 0 16px;
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.gate-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.gate-card__primary {
+  flex: 1 1 180px;
+  min-height: 44px;
+  padding: 0 16px;
+  background: var(--ink);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-control);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.gate-card__primary:hover {
+  background: var(--gold);
+  color: var(--ink);
+}
+
+.gate-card__secondary {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 0 16px;
+  background: #f0e9d7;
+  color: var(--ink);
+  border: none;
+  border-radius: var(--radius-control);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.gate-card__secondary:hover {
+  background: var(--line);
+}

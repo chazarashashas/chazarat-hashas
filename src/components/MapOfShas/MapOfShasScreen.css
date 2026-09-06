@@ -105,14 +105,14 @@
 .map-crumb--current {
   background: none;
   border: none;
-  color: var(--faint);
+  color: var(--muted);
   font-weight: 600;
   cursor: default;
   padding: 6px 2px;
 }
 
 .map-crumb-sep {
-  color: var(--faint);
+  color: var(--muted);
   font-size: 11px;
 }
 

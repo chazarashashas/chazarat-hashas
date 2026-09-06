@@ -5,13 +5,20 @@ import { TabBar } from "../TabBar/TabBar";
 import { hebrewNumeral } from "../../utils/hebrewNumeral";
 import { usePerekNotes } from "../../utils/usePerekNotes";
 import { useLearningProgress } from "../../utils/useLearningProgress";
+import { useAuth } from "../../utils/useAuth";
 import { PrintNotesView } from "../PrintNotes/PrintNotesView";
 import { PerekNotebookModal } from "../PerekNotebookModal/PerekNotebookModal";
+import { NudgeStrip } from "../NudgeStrip/NudgeStrip";
+import { nudgeCopy, pluralize } from "../../utils/nudgeCopy";
 import "./PerekNamesScreen.css";
 
 type DocView = "notes" | "concepts";
 
-export function PerekNamesScreen() {
+interface PerekNamesScreenProps {
+  onOpenLogin?: () => void;
+}
+
+export function PerekNamesScreen({ onOpenLogin }: PerekNamesScreenProps) {
   const [docView, setDocView] = useState<DocView>("notes");
   const [sederTab, setSederTab] = useState("all");
   const [selectedSederId, setSelectedSederId] = useState<string>(SEDARIM[0].id);
@@ -21,7 +28,13 @@ export function PerekNamesScreen() {
   const { perekNotes, setPerekNotes, masechetSentences, setMasechetSentences, getPerekNotebook, setPerekNotebookEntry } =
     usePerekNotes();
   const { concepts } = useLearningProgress();
+  const { isLoggedIn } = useAuth();
   const sortedConcepts = [...concepts].sort((a, b) => b.date.localeCompare(a.date));
+
+  const noteCount = Object.values(perekNotes).reduce(
+    (total, notes) => total + notes.filter((n) => n && n.trim()).length,
+    0,
+  );
 
   const activeSeder = SEDARIM.find((s) => s.id === sederTab);
   const sentenceSeder = SEDARIM.find((s) => s.id === selectedSederId)!;
@@ -86,6 +99,20 @@ export function PerekNamesScreen() {
           "the laws of Zimmun," "who is considered ne'eman." Want to write more than a name? Open that
           perek's notebook.
         </p>
+
+        {!isLoggedIn && onOpenLogin && (
+          <NudgeStrip
+            text={nudgeCopy(
+              [
+                noteCount > 0 ? pluralize(noteCount, "perek name", "perek names") : null,
+                concepts.length > 0 ? pluralize(concepts.length, "concept", "concepts") : null,
+              ],
+              "on this device only.",
+            )}
+            actionLabel="Keep them →"
+            onAction={onOpenLogin}
+          />
+        )}
 
         <div className="pill-row">
           <button

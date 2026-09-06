@@ -199,7 +199,7 @@
 
 .siyum-card__stat-label {
   font-size: 10px;
-  color: var(--faint);
+  color: var(--muted);
 }
 
 .siyum-card__bar {
@@ -406,7 +406,7 @@
 
 .nishmat-mosaic__count {
   font-size: 9px;
-  color: var(--faint);
+  color: var(--muted);
 }
 
 .nishmat-mosaic__squares {
@@ -615,7 +615,7 @@
 .nishmat-activity__time {
   flex-shrink: 0;
   font-size: 10.5px;
-  color: var(--faint);
+  color: var(--muted);
 }
 
 .nishmat-accordion__head {
@@ -696,7 +696,7 @@
 .nishmat-masechet-row__meta {
   font-size: 10.5px;
   font-weight: 600;
-  color: var(--faint);
+  color: var(--muted);
 }
 
 .nishmat-perek-grid {
@@ -735,7 +735,7 @@
 
 .nishmat-perek-tile__name {
   font-size: 8.5px;
-  color: var(--faint);
+  color: var(--muted);
 }
 
 .nishmat-perek-tile--other {

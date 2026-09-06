@@ -3,6 +3,7 @@ import { SEDARIM } from "../../data/shas";
 import { useAuth } from "../../utils/useAuth";
 import { useChevrusa, type Group, type PendingInvite, type SentInvite } from "../../utils/useChevrusa";
 import type { Pace } from "../../utils/useLearningProgress";
+import { GateCard } from "../GateCard/GateCard";
 import "./ChevrusaScreen.css";
 
 type Mode = "chevrusa" | "chabura";
@@ -166,7 +167,7 @@ function GroupCard({
  * original design.
  */
 interface ChevrusaScreenProps {
-  onOpenLogin?: () => void;
+  onOpenLogin?: (mode?: "signIn" | "signUp") => void;
   onOpenNishmat?: () => void;
 }
 
@@ -284,14 +285,13 @@ export function ChevrusaScreen({ onOpenLogin, onOpenNishmat }: ChevrusaScreenPro
           <p className="panel__subtitle">
             Pair one-on-one, or start a chabura with a whole group — one masechet at a time.
           </p>
-          <div className="note-banner login-notice">
-            Log in first — chevrusa pairing is tied to your account, so an invite can reach someone
-            else's.
-          </div>
           {onOpenLogin && (
-            <button className="restart" onClick={onOpenLogin}>
-              Go to Log In
-            </button>
+            <GateCard
+              title="Starting a chabura needs an account"
+              body="Your chevrusa has to be able to find you, and you both need to see who learned today. That only works with an account behind it."
+              onCreateAccount={() => onOpenLogin("signUp")}
+              onSignIn={() => onOpenLogin("signIn")}
+            />
           )}
         </div>
       </div>

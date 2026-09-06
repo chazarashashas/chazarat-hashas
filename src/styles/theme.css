@@ -30,6 +30,17 @@
   --seder-kodashim: #2f4470;
   --seder-taharot: #2f7a72;
 
+  /* The sedarim hues and --gold are fill colors only — never used
+     directly as small type, since they don't hold 4.5:1 against cream
+     at text sizes. These are the darkened variants that do. */
+  --brass-text: #836419;
+  --seder-zeraim-text: #3f6332;
+  --seder-moed-text: #836419;
+  --seder-nashim-text: #73415b;
+  --seder-nezikin-text: #96422f;
+  --seder-kodashim-text: #2f4470;
+  --seder-taharot-text: #25615a;
+
   /* Each screen owns one hue for its active nav item, accent rule, and
      its own progress/answer accents. */
   --hue-home: #2f4470;

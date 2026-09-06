@@ -28,17 +28,18 @@
   min-height: 44px;
   margin-top: 18px;
   background: var(--surface-hi);
-  border: 1.5px solid var(--line);
-  border-radius: var(--radius-control);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 15px 18px;
   font-family: var(--font-heading);
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 600;
   color: var(--ink);
   cursor: pointer;
 }
 
 .google-signin-btn:hover:not(:disabled) {
-  border-color: var(--ink-2);
+  border-color: var(--ink);
 }
 
 .google-signin-btn:disabled {
@@ -46,13 +47,20 @@
   cursor: not-allowed;
 }
 
+.google-signin-btn--demoted {
+  min-height: auto;
+  margin-top: 0;
+  padding: 13px 18px;
+  font-size: 13px;
+}
+
 .login-divider {
   display: flex;
   align-items: center;
   gap: 10px;
   margin: 16px 0;
-  color: var(--faint);
-  font-size: 11px;
+  color: var(--muted);
+  font-size: 11.5px;
 }
 
 .login-divider::before,
@@ -61,6 +69,91 @@
   flex: 1;
   height: 1px;
   background: var(--line);
+}
+
+.onthis-panel {
+  background: var(--surface);
+  border-left: 3px solid var(--gold);
+  border-radius: 16px;
+  padding: 16px 18px;
+  margin-top: 4px;
+}
+
+.onthis-panel__label {
+  margin: 0 0 12px;
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  text-align: left;
+}
+
+.onthis-panel__figures {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.onthis-panel__figure {
+  text-align: center;
+}
+
+.onthis-panel__num {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.onthis-panel__unit {
+  margin: 2px 0 0;
+  font-size: 10.5px;
+  color: var(--muted);
+}
+
+.email-toggle-btn {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 44px;
+  background: #f0e9d7;
+  border: none;
+  border-radius: 14px;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.email-toggle-btn:hover {
+  background: var(--line);
+}
+
+.login-back-btn {
+  display: block;
+  margin: 0 0 14px;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 12px;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.login-back-btn:hover {
+  color: var(--ink);
+}
+
+.login-reassurance {
+  margin: 14px 0 0;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--muted);
+  text-align: center;
 }
 
 .login-field__label {
@@ -205,6 +298,44 @@
   text-align: center;
 }
 
+.account-card--profile-view {
+  background: var(--ink);
+  padding: 24px 18px;
+}
+
+.account-card__initials {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gold);
+  color: var(--ink);
+  border-radius: 13px;
+  font-family: var(--font-heading);
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.account-card--profile-view .account-card__name {
+  color: #fff;
+}
+
+.account-card--profile-view .account-card__username,
+.account-card--profile-view .account-card__location {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.account-card--profile-view .account-signout-btn {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.account-card--profile-view .account-signout-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
 .account-card__label {
   margin: 0 0 4px;
   font-size: 11.5px;
@@ -223,7 +354,7 @@
 .account-card__username {
   margin: 2px 0 0;
   font-size: 12px;
-  color: var(--faint);
+  color: var(--muted);
 }
 
 .account-card__location {
@@ -344,7 +475,7 @@
 .account-seder-bar__pct {
   font-size: 11px;
   font-weight: 600;
-  color: var(--faint);
+  color: var(--muted);
   text-align: right;
 }
 
@@ -401,7 +532,7 @@
 .account-group-row__type {
   font-size: 10px;
   font-weight: 600;
-  color: var(--faint);
+  color: var(--muted);
 }
 
 .account-group-row__sub {
