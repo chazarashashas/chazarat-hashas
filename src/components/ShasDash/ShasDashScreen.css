@@ -7,6 +7,131 @@
   width: 100%;
 }
 
+/* Shas Dash lives on navy (HANDOFF §9) — everything below this point
+   overrides the shared cream-panel look scoped to .dash-panel only, so
+   no other screen is affected. */
+.dash-panel {
+  background: var(--ink);
+}
+
+.dash-panel .panel__title,
+.dash-panel .dash-story,
+.dash-panel .dash-msg {
+  color: #fff;
+}
+
+.dash-panel .dash-story {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.dash-panel .dash-msg {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.dash-panel .icon-btn {
+  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.dash-panel .icon-btn:hover {
+  color: #fff;
+  border-color: #fff;
+}
+
+.dash-panel .dash-instructions {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.dash-panel .dash-lives {
+  gap: 6px;
+  font-size: 0;
+}
+
+.dash-panel .dash-lives span {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--gold);
+  margin-right: 4px;
+}
+
+.dash-panel .dash-lives span.dash-lives__lost {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.dash-panel .dash-score {
+  color: #8fa3e3;
+}
+
+.dash-panel .dash-best {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.dash-panel .dash-combo {
+  background: rgba(184, 134, 43, 0.25);
+  color: var(--gold);
+}
+
+.dash-panel .dash-lanes {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.dash-panel .dash-lane {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.dash-panel .dash-paused-overlay {
+  background: rgba(22, 35, 63, 0.85);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+.dash-panel .dash-bucket {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.dash-panel .dash-bucket--complete {
+  border-color: var(--good);
+}
+
+.dash-panel .dash-steer__btn {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.dash-panel .dash-steer__btn:disabled {
+  opacity: 0.4;
+}
+
+.dash-panel .dash-steer__btn:disabled:active {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.dash-panel .dash-steer__btn--lock {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.dash-panel .dash-board-overlay {
+  background: rgba(22, 35, 63, 0.5);
+}
+
+.dash-panel .dash-center__big {
+  color: #fff;
+}
+
+.dash-panel .dash-center__sub {
+  color: rgba(255, 255, 255, 0.65);
+}
+
 .dash-panel-icons {
   position: absolute;
   top: 14px;
