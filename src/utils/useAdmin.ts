@@ -18,6 +18,8 @@ export interface AdminUserRow {
   username: string | null;
   firstName: string | null;
   lastName: string | null;
+  city: string | null;
+  country: string | null;
   isAdmin: boolean;
   createdAt: string;
   mishnayotLearned: number;
@@ -66,6 +68,8 @@ export function useAdmin(isAdmin: boolean) {
           username: r.username as string | null,
           firstName: r.first_name as string | null,
           lastName: r.last_name as string | null,
+          city: r.city as string | null,
+          country: r.country as string | null,
           isAdmin: Boolean(r.is_admin),
           createdAt: r.created_at as string,
           mishnayotLearned: Number(r.mishnayot_learned),

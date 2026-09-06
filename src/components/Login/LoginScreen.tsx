@@ -41,6 +41,8 @@ function AccountDashboard({ onNavigate }: { onNavigate?: (id: string) => void })
   const [firstName, setFirstName] = useState(auth.firstName ?? "");
   const [lastName, setLastName] = useState(auth.lastName ?? "");
   const [username, setUsername] = useState(auth.username ?? "");
+  const [city, setCity] = useState(auth.city ?? "");
+  const [country, setCountry] = useState(auth.country ?? "");
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
@@ -58,7 +60,7 @@ function AccountDashboard({ onNavigate }: { onNavigate?: (id: string) => void })
   async function handleSaveProfile() {
     setSaveError(null);
     setSaving(true);
-    const result = await auth.updateProfile({ firstName, lastName, username });
+    const result = await auth.updateProfile({ firstName, lastName, username, city, country });
     setSaving(false);
     if (result) setSaveError(result);
     else setEditing(false);
@@ -84,6 +86,9 @@ function AccountDashboard({ onNavigate }: { onNavigate?: (id: string) => void })
             <p className="account-card__label">Signed in as</p>
             <p className="account-card__name">{displayName}</p>
             {auth.username && <p className="account-card__username">@{auth.username}</p>}
+            {(auth.city || auth.country) && (
+              <p className="account-card__location">{[auth.city, auth.country].filter(Boolean).join(", ")}</p>
+            )}
             <div className="account-card__actions">
               <button className="account-edit-btn" onClick={() => setEditing(true)}>
                 Edit profile
@@ -108,6 +113,19 @@ function AccountDashboard({ onNavigate }: { onNavigate?: (id: string) => void })
               <span className="login-field__label">Username</span>
               <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
             </label>
+            <label className="login-field">
+              <span className="login-field__label">City</span>
+              <input type="text" value={city} onChange={(e) => setCity(e.target.value)} placeholder="e.g. Lakewood" />
+            </label>
+            <label className="login-field">
+              <span className="login-field__label">Country</span>
+              <input
+                type="text"
+                value={country}
+                onChange={(e) => setCountry(e.target.value)}
+                placeholder="e.g. United States"
+              />
+            </label>
             {saveError && (
               <p className="login-error" dir="ltr">
                 {saveError}
@@ -125,6 +143,8 @@ function AccountDashboard({ onNavigate }: { onNavigate?: (id: string) => void })
                   setFirstName(auth.firstName ?? "");
                   setLastName(auth.lastName ?? "");
                   setUsername(auth.username ?? "");
+                  setCity(auth.city ?? "");
+                  setCountry(auth.country ?? "");
                 }}
               >
                 Cancel
@@ -148,6 +168,10 @@ function AccountDashboard({ onNavigate }: { onNavigate?: (id: string) => void })
           <div className="account-stat">
             <p className="account-stat__num">{progress.streak.longest}</p>
             <p className="account-stat__label">longest streak</p>
+          </div>
+          <div className="account-stat">
+            <p className="account-stat__num">{progress.streak.freezesAvailable}</p>
+            <p className="account-stat__label">freezes banked</p>
           </div>
           <div className="account-stat">
             <p className="account-stat__num">{progress.completions.length}</p>

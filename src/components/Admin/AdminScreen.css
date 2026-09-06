@@ -79,3 +79,13 @@
 .admin-table tbody td {
   color: var(--ink);
 }
+
+.admin-table__mailto {
+  color: var(--ink-2);
+  text-decoration: none;
+}
+
+.admin-table__mailto:hover {
+  color: var(--gold);
+  text-decoration: underline;
+}

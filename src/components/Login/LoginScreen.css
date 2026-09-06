@@ -181,6 +181,12 @@
   color: var(--faint);
 }
 
+.account-card__location {
+  margin: 2px 0 0;
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
 .account-card__actions {
   display: flex;
   justify-content: center;

@@ -6,6 +6,8 @@ interface Profile {
   username: string | null;
   firstName: string | null;
   lastName: string | null;
+  city: string | null;
+  country: string | null;
   isAdmin: boolean;
 }
 
@@ -14,27 +16,37 @@ interface AuthState extends Profile {
   loading: boolean;
 }
 
-const EMPTY_PROFILE: Profile = { username: null, firstName: null, lastName: null, isAdmin: false };
+const EMPTY_PROFILE: Profile = {
+  username: null,
+  firstName: null,
+  lastName: null,
+  city: null,
+  country: null,
+  isAdmin: false,
+};
 
 async function fetchProfile(userId: string): Promise<Profile> {
   if (!supabase) return EMPTY_PROFILE;
   let { data, error } = await supabase
     .from("profiles")
-    .select("username, first_name, last_name, is_admin")
+    .select("username, first_name, last_name, city, country, is_admin")
     .eq("id", userId)
     .single();
-  // is_admin only exists once admin_setup.sql has been run — fall back to
-  // the columns that are always there so profile loading never breaks in
-  // the gap between deploying this code and running that script.
+  // is_admin/city/country only exist once admin_setup.sql has been run —
+  // fall back to the columns that are always there so profile loading
+  // never breaks in the gap between deploying this and running that SQL.
   if (error) {
     ({ data } = await supabase.from("profiles").select("username, first_name, last_name").eq("id", userId).single());
   }
   if (!data) return EMPTY_PROFILE;
+  const d = data as { city?: string; country?: string; is_admin?: boolean } & typeof data;
   return {
     username: data.username,
     firstName: data.first_name,
     lastName: data.last_name,
-    isAdmin: Boolean((data as { is_admin?: boolean }).is_admin),
+    city: d.city ?? null,
+    country: d.country ?? null,
+    isAdmin: Boolean(d.is_admin),
   };
 }
 
@@ -101,7 +113,13 @@ export function useAuth() {
   /** Updates the signed-in user's own profile row. Requires the
       "you can update your own profile" RLS policy (auth.uid() = id) —
       profiles had no UPDATE policy at all until that fix landed. */
-  async function updateProfile(fields: { firstName?: string; lastName?: string; username?: string }): Promise<string | null> {
+  async function updateProfile(fields: {
+    firstName?: string;
+    lastName?: string;
+    username?: string;
+    city?: string;
+    country?: string;
+  }): Promise<string | null> {
     if (!supabase || !state.session) return "Accounts aren't connected yet.";
     if (fields.username && fields.username !== state.username) {
       const available = await checkUsernameAvailable(fields.username);
@@ -111,6 +129,8 @@ export function useAuth() {
     if (fields.firstName !== undefined) patch.first_name = fields.firstName;
     if (fields.lastName !== undefined) patch.last_name = fields.lastName;
     if (fields.username !== undefined) patch.username = fields.username;
+    if (fields.city !== undefined) patch.city = fields.city;
+    if (fields.country !== undefined) patch.country = fields.country;
     const { error } = await supabase.from("profiles").update(patch).eq("id", state.session.user.id);
     if (error) return error.message;
     setState((prev) => ({
@@ -118,6 +138,8 @@ export function useAuth() {
       firstName: fields.firstName ?? prev.firstName,
       lastName: fields.lastName ?? prev.lastName,
       username: fields.username ?? prev.username,
+      city: fields.city ?? prev.city,
+      country: fields.country ?? prev.country,
     }));
     return null;
   }
@@ -139,6 +161,8 @@ export function useAuth() {
     username: state.username,
     firstName: state.firstName,
     lastName: state.lastName,
+    city: state.city,
+    country: state.country,
     isAdmin: state.isAdmin,
     loading: state.loading,
     isLoggedIn: Boolean(state.session),

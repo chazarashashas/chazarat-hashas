@@ -57,7 +57,8 @@ export function AdminScreen() {
               <tr>
                 <th>Name</th>
                 <th>Username</th>
-                <th>Email</th>
+                <th>Location</th>
+                <th>Contact</th>
                 <th>Joined</th>
                 <th>Mishnayot</th>
                 <th>Admin</th>
@@ -68,7 +69,12 @@ export function AdminScreen() {
                 <tr key={u.id}>
                   <td>{u.firstName ? `${u.firstName} ${u.lastName ?? ""}`.trim() : "—"}</td>
                   <td>{u.username ?? "—"}</td>
-                  <td>{u.email}</td>
+                  <td>{[u.city, u.country].filter(Boolean).join(", ") || "—"}</td>
+                  <td>
+                    <a className="admin-table__mailto" href={`mailto:${u.email}`}>
+                      {u.email}
+                    </a>
+                  </td>
                   <td>{new Date(u.createdAt).toLocaleDateString()}</td>
                   <td>{u.mishnayotLearned}</td>
                   <td>{u.isAdmin ? "Yes" : ""}</td>
