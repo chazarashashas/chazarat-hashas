@@ -216,7 +216,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
 
         <FlipCounter scopes={journeyScopes} />
 
-        <h2 className="home-section-title">Your Shas</h2>
+        <h2 className="home-section-title">Explore Shas</h2>
         <div className="home-seder-grid">
           {SEDARIM.map((seder) => (
             <button

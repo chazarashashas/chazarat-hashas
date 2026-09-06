@@ -165,24 +165,6 @@
   transform: none;
 }
 
-.map-badge {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  background: var(--gold);
-  color: var(--ink);
-  font-size: 9px;
-  font-weight: 700;
-  font-family: var(--font-heading);
-  border-radius: var(--radius-pill);
-  padding: 1px 5px;
-}
-
-.map-badge--done {
-  background: var(--good);
-  color: #fff;
-}
-
 .map-note-link {
   background: none;
   border: none;
