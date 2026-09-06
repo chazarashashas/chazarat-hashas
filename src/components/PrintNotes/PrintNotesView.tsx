@@ -3,6 +3,7 @@ import { SEDARIM } from "../../data/shas";
 import { usePerekNotes } from "../../utils/usePerekNotes";
 import { useLearningProgress } from "../../utils/useLearningProgress";
 import { hebrewNumeral } from "../../utils/hebrewNumeral";
+import { BrandMark } from "../BrandMark";
 import "./PrintNotesView.css";
 
 interface PrintNotesViewProps {
@@ -97,7 +98,10 @@ export function PrintNotesView({ initialMasechetEn, onClose }: PrintNotesViewPro
       </div>
 
       <div className="print-content">
-        <h1 className="print-title">Mishna Notes — {scopeLabel}</h1>
+        <div className="print-header">
+          <BrandMark variant="oneink" className="print-header__mark" />
+          <h1 className="print-title">Mishna Notes — {scopeLabel}</h1>
+        </div>
         {groups.length === 0 ? (
           <p className="print-empty">No notes yet in {scopeLabel}.</p>
         ) : (

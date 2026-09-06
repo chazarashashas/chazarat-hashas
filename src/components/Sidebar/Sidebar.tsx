@@ -1,4 +1,5 @@
 import { NavIcon } from "./NavIcon";
+import { BrandMark } from "../BrandMark";
 import "./Sidebar.css";
 
 interface NavItem {
@@ -87,9 +88,7 @@ function NavButton({ item, active, onSelect }: { item: NavItem; active: boolean;
 export function Sidebar({ activeId, onSelect }: SidebarProps) {
   return (
     <nav className="sidebar">
-      <span className="sidebar__brand" aria-hidden="true">
-        ש
-      </span>
+      <BrandMark variant="reversed" className="sidebar__brand" />
       {NAV_GROUPS.map((group) => (
         <div className="nav-group" key={group.label}>
           <span className="nav-group__label">{group.label}</span>

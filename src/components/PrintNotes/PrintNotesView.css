@@ -67,12 +67,25 @@
   margin: 0 auto;
 }
 
+.print-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 20px;
+}
+
+.print-header__mark {
+  width: 26px;
+  height: auto;
+  flex-shrink: 0;
+}
+
 .print-title {
   font-family: var(--font-heading);
   font-size: 20px;
   font-weight: 700;
   color: var(--brand);
-  margin: 0 0 20px;
+  margin: 0;
 }
 
 .print-empty {
