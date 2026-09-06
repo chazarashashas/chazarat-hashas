@@ -40,21 +40,20 @@
 
 .home-quote {
   margin: 4px 0 0;
-  padding: 10px 14px;
+  padding: 12px 16px;
   border-left: 3px solid var(--gold);
   background: #fbf1d6;
   border-radius: 8px;
   text-align: center;
-  overflow: hidden;
 }
 
 .home-quote__text {
-  margin: 0 0 4px;
+  margin: 0 0 6px;
   font-family: var(--font-hebrew);
-  font-size: clamp(8px, 2.4vw, 13.5px);
+  font-size: 14.5px;
   color: var(--ink);
-  line-height: 1.6;
-  white-space: nowrap;
+  line-height: 1.75;
+  text-wrap: balance;
 }
 
 .home-quote__source {
