@@ -33,7 +33,7 @@
   height: 34px;
   border-radius: 8px;
   border: 1.5px solid var(--border);
-  background: #fffbf0;
+  background: var(--surface-hi);
   padding: 0 8px;
   font-size: 12px;
   font-family: var(--font-body);
@@ -145,7 +145,7 @@
 
 .print-concept__title {
   font-weight: 700;
-  color: #8a6b1e;
+  color: #8a6a1d;
 }
 
 @media print {

@@ -89,7 +89,7 @@
   height: 24px;
   border-radius: 50%;
   border: 1.5px solid var(--border);
-  background: #fffbf0;
+  background: var(--surface-hi);
   color: var(--ink-soft);
   font-size: 11px;
   cursor: pointer;

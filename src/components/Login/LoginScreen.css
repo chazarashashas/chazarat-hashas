@@ -52,7 +52,7 @@
 
 .login-error {
   text-align: left;
-  color: #b3261e;
+  color: var(--bad);
   font-size: 12px;
   margin: 0 0 10px;
 }
@@ -80,7 +80,7 @@
 }
 
 .delete-account__link:hover {
-  color: #b3261e;
+  color: var(--bad);
 }
 
 .delete-account__confirm {
@@ -104,7 +104,7 @@
   height: 30px;
   border-radius: 8px;
   border: 1.5px solid var(--border);
-  background: #fffbf0;
+  background: var(--surface-hi);
   padding: 0 10px;
   font-size: 12px;
   font-family: var(--font-body);
@@ -113,12 +113,12 @@
 
 .delete-account__confirm input:focus {
   outline: none;
-  border-color: #b3261e;
+  border-color: var(--bad);
 }
 
 .delete-account__button {
   padding: 7px 12px;
-  background: #b3261e;
+  background: var(--bad);
   color: #fff;
   border: none;
   border-radius: 8px;

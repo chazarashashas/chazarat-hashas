@@ -37,10 +37,10 @@ type Phase = "ready" | "playing" | "ended";
 function DestinationIcon() {
   return (
     <svg viewBox="0 0 40 40" width="26" height="26" aria-hidden="true">
-      <path d="M6 17 Q20 3 34 17" fill="none" stroke="#c99a2e" strokeWidth="4" strokeLinecap="round" />
-      <rect x="7" y="16" width="5" height="20" rx="1" fill="#c99a2e" />
-      <rect x="28" y="16" width="5" height="20" rx="1" fill="#c99a2e" />
-      <rect x="16" y="25" width="8" height="11" fill="#1b3358" />
+      <path d="M6 17 Q20 3 34 17" fill="none" stroke="var(--gold)" strokeWidth="4" strokeLinecap="round" />
+      <rect x="7" y="16" width="5" height="20" rx="1" fill="var(--gold)" />
+      <rect x="28" y="16" width="5" height="20" rx="1" fill="var(--gold)" />
+      <rect x="16" y="25" width="8" height="11" fill="var(--paper)" />
     </svg>
   );
 }
