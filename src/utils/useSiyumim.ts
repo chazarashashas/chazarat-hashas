@@ -43,6 +43,12 @@ interface MyClaimRef {
 
 const TOTAL_PERAKIM = 524;
 
+/** Columns safe to send to every viewer of a siyum's claims — excludes
+    claim_token and claimed_by_email, which must never leave the
+    server for anyone but the claimer themselves (see claimPerek). */
+const PUBLIC_CLAIM_COLUMNS =
+  "id, siyum_id, masechet_en, perek, claimed_by_user_id, claimed_by_name, anonymous, learned, queued_in_daily_limmud";
+
 function todayStr(): string {
   return new Date().toISOString().slice(0, 10);
 }
@@ -135,7 +141,7 @@ export function useSiyumim() {
     const ids = myClaimRefs.map((c) => c.id);
     const { data } = await supabase
       .from("nishmat_perakim")
-      .select("*, nishmat_siyumim(dedication)")
+      .select(`${PUBLIC_CLAIM_COLUMNS}, nishmat_siyumim(dedication)`)
       .in("id", ids)
       .eq("learned", false)
       .eq("queued_in_daily_limmud", true);
@@ -207,7 +213,7 @@ export function useSiyumim() {
 
   async function getClaims(siyumId: string): Promise<PerekClaim[]> {
     if (!supabase) return [];
-    const { data } = await supabase.from("nishmat_perakim").select("*").eq("siyum_id", siyumId);
+    const { data } = await supabase.from("nishmat_perakim").select(PUBLIC_CLAIM_COLUMNS).eq("siyum_id", siyumId);
     return (data ?? []).map(mapClaim);
   }
 
@@ -254,14 +260,22 @@ export function useSiyumim() {
   /** Marks a claimed perek learned. Callers are also responsible for
       calling progress.logLearning(masechetEn, perek, date) on the same
       action — this only updates the siyum's own rollup; the personal
-      completion record it's tagged against lives in the usual place. */
+      completion record it's tagged against lives in the usual place.
+
+      Goes through the nishmat_mark_learned RPC rather than a direct
+      table update: direct UPDATE is denied by RLS, and the RPC itself
+      re-checks the token/owner server-side before writing anything —
+      a client-side .eq('claim_token', ...) filter alone can't be
+      trusted, since RLS doesn't enforce it and the token is only ever
+      known to whoever legitimately holds it. */
   async function markLearned(claim: PerekClaim): Promise<string | null> {
     if (!supabase) return "Accounts aren't connected yet.";
-    const { error } = await supabase
-      .from("nishmat_perakim")
-      .update({ learned: true, learned_at: new Date().toISOString(), queued_in_daily_limmud: false })
-      .eq("id", claim.id);
+    const { data, error } = await supabase.rpc("nishmat_mark_learned", {
+      p_claim_id: claim.id,
+      p_token: tokenFor(claim.id) ?? "",
+    });
     if (error) return friendlyError(error.message);
+    if (!data) return "This claim isn't yours to update.";
     setMyClaimRefs((prev) => prev.filter((c) => c.id !== claim.id));
     await refreshMyQueued();
     return null;
@@ -269,23 +283,26 @@ export function useSiyumim() {
 
   async function addToDailyLimmud(claim: PerekClaim): Promise<string | null> {
     if (!supabase) return "Accounts aren't connected yet.";
-    const { error } = await supabase.from("nishmat_perakim").update({ queued_in_daily_limmud: true }).eq("id", claim.id);
+    const { data, error } = await supabase.rpc("nishmat_toggle_queue", {
+      p_claim_id: claim.id,
+      p_token: tokenFor(claim.id) ?? "",
+      p_queued: true,
+    });
     if (error) return friendlyError(error.message);
+    if (!data) return "This claim isn't yours to update.";
     await refreshMyQueued();
     return null;
   }
 
-  /** Releases a claim you can't get to — back to open for someone else.
-      Matches by claim_token (or your user id) rather than trusting the
-      caller blindly, same trust model as the rest of this feature. */
+  /** Releases a claim you can't get to — back to open for someone else. */
   async function releaseClaim(claim: PerekClaim): Promise<string | null> {
     if (!supabase) return "Accounts aren't connected yet.";
-    const token = tokenFor(claim.id);
-    let query = supabase.from("nishmat_perakim").delete().eq("id", claim.id);
-    if (token) query = query.eq("claim_token", token);
-    else if (session) query = query.eq("claimed_by_user_id", session.user.id);
-    const { error } = await query;
+    const { data, error } = await supabase.rpc("nishmat_release_claim", {
+      p_claim_id: claim.id,
+      p_token: tokenFor(claim.id) ?? "",
+    });
     if (error) return friendlyError(error.message);
+    if (!data) return "This claim isn't yours to release.";
     setMyClaimRefs((prev) => prev.filter((c) => c.id !== claim.id));
     await refreshMyQueued();
     return null;
@@ -296,10 +313,7 @@ export function useSiyumim() {
       other side. */
   async function markLearnedById(claimId: string): Promise<void> {
     if (!supabase) return;
-    await supabase
-      .from("nishmat_perakim")
-      .update({ learned: true, learned_at: new Date().toISOString() })
-      .eq("id", claimId);
+    await supabase.rpc("nishmat_mark_learned", { p_claim_id: claimId, p_token: tokenFor(claimId) ?? "" });
     setMyClaimRefs((prev) => prev.filter((c) => c.id !== claimId));
     await refreshMyQueued();
   }
