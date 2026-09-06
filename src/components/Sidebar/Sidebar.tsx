@@ -40,7 +40,6 @@ const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
     items: [
       { id: "home", label: "Home", built: true },
       { id: "limmud", label: "Daily Limmud", built: true },
-      { id: "review", label: "Review", built: true },
       { id: "map", label: "Explore Shas", built: true },
       { id: "perek", label: "Mishna Notes", built: true },
       { id: "progress", label: "My Siyumim", built: true },
