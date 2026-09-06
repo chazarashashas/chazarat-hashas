@@ -4,6 +4,7 @@ import { getPerekName } from "../../data/perekInfo";
 import { hebrewNumeral } from "../../utils/hebrewNumeral";
 import { getSederHue } from "../../utils/sederHue";
 import { useLearningProgress } from "../../utils/useLearningProgress";
+import { ALL_PEREK_SLOTS } from "../../utils/nishmatMosaic";
 import type { PerekClaim, Siyum, useSiyumim } from "../../utils/useSiyumim";
 import "./LiluyNishmat.css";
 
@@ -12,12 +13,6 @@ type Filter = "all" | "open" | "yours";
 function shareUrl(shareSlug: string): string {
   return `${window.location.origin}/?siyum=${shareSlug}`;
 }
-
-const ALL_PEREK_SLOTS = SEDARIM.flatMap((seder) =>
-  seder.masechtot.flatMap((m) =>
-    Array.from({ length: m.perakim }, (_, i) => ({ sederId: seder.id, masechetEn: m.en, perek: i + 1 })),
-  ),
-);
 
 interface Props {
   siyum: Siyum;

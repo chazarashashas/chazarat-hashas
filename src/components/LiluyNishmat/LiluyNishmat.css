@@ -108,6 +108,36 @@
   color: var(--muted);
 }
 
+.siyum-card__mosaic {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 10px 0;
+  padding: 10px;
+  background: var(--surface-hi);
+  border-radius: var(--radius-control);
+}
+
+.siyum-card__mosaic-row {
+  display: flex;
+  gap: 1.5px;
+}
+
+.siyum-card__mosaic-sq {
+  flex: 1;
+  height: 6px;
+  border-radius: 1px;
+  background: #f0e9d7;
+}
+
+.siyum-card__mosaic-sq--taken {
+  background: #c98f7f;
+}
+
+.siyum-card__mosaic-sq--learned {
+  background: var(--hue-chevrusa);
+}
+
 .siyum-card__stats {
   display: flex;
   gap: 18px;

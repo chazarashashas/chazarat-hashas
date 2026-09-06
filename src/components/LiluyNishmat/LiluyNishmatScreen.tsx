@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../../utils/useAuth";
-import { useSiyumim, type Siyum, type Visibility } from "../../utils/useSiyumim";
+import { useSiyumim, type PerekClaim, type Siyum, type Visibility } from "../../utils/useSiyumim";
+import { ALL_PEREK_SLOTS } from "../../utils/nishmatMosaic";
 import { SiyumDetail } from "./SiyumDetail";
 import "./LiluyNishmat.css";
 
@@ -16,14 +17,54 @@ function ProgressBar({ learned, taken, open }: { learned: number; taken: number;
   );
 }
 
+/** A compact preview of the full mosaic — the point is that you see the
+    shape of the siyum before you ever click in, not just numbers. Same
+    Shas order and seder rows as the real mosaic, just smaller and with
+    the labels/legend dropped. */
+function MiniMosaic({ claims }: { claims: PerekClaim[] }) {
+  const byKey = new Map(claims.map((c) => [`${c.masechetEn}:${c.perek}`, c]));
+  const rows: { sederId: string; slots: (PerekClaim | undefined)[] }[] = [];
+  for (const slot of ALL_PEREK_SLOTS) {
+    let row = rows[rows.length - 1];
+    if (!row || row.sederId !== slot.sederId) {
+      row = { sederId: slot.sederId, slots: [] };
+      rows.push(row);
+    }
+    row.slots.push(byKey.get(`${slot.masechetEn}:${slot.perek}`));
+  }
+  return (
+    <div className="siyum-card__mosaic">
+      {rows.map((row) => (
+        <div className="siyum-card__mosaic-row" key={row.sederId}>
+          {row.slots.map((claim, i) => (
+            <span
+              key={i}
+              className={
+                "siyum-card__mosaic-sq" +
+                (claim?.learned
+                  ? " siyum-card__mosaic-sq--learned"
+                  : claim
+                    ? " siyum-card__mosaic-sq--taken"
+                    : "")
+              }
+            />
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function SiyumCard({
   siyum,
   stats,
+  claims,
   mine,
   onOpen,
 }: {
   siyum: Siyum;
   stats: { learned: number; taken: number; open: number };
+  claims: PerekClaim[];
   mine: boolean;
   onOpen: () => void;
 }) {
@@ -36,6 +77,8 @@ function SiyumCard({
         </span>
       </div>
       {siyum.occasion && <p className="siyum-card__occasion">{siyum.occasion}</p>}
+
+      <MiniMosaic claims={claims} />
 
       <div className="siyum-card__stats">
         <div className="siyum-card__stat siyum-card__stat--learned">
@@ -90,15 +133,20 @@ export function LiluyNishmatScreen({ onOpenLogin, initialSlug }: LiluyNishmatScr
   }
 
   const [allStats, setAllStats] = useState<Record<string, { learned: number; taken: number; open: number }>>({});
+  const [allClaims, setAllClaims] = useState<Record<string, PerekClaim[]>>({});
 
   async function loadStats(list: Siyum[]) {
     const entries = await Promise.all(
       list.map(async (s) => {
         const claims = await siyumim.getClaims(s.id);
-        return [s.id, siyumim.statsFor(claims)] as const;
+        return [s.id, claims] as const;
       }),
     );
-    setAllStats((prev) => ({ ...prev, ...Object.fromEntries(entries) }));
+    setAllClaims((prev) => ({ ...prev, ...Object.fromEntries(entries) }));
+    setAllStats((prev) => ({
+      ...prev,
+      ...Object.fromEntries(entries.map(([id, claims]) => [id, siyumim.statsFor(claims)])),
+    }));
   }
 
   const list = tab === "managing" ? siyumim.mine : siyumim.publicList;
@@ -199,6 +247,7 @@ export function LiluyNishmatScreen({ onOpenLogin, initialSlug }: LiluyNishmatScr
               key={s.id}
               siyum={s}
               stats={allStats[s.id] ?? { learned: 0, taken: 0, open: siyumim.TOTAL_PERAKIM }}
+              claims={allClaims[s.id] ?? []}
               mine={session?.user.id === s.ownerId}
               onOpen={() => setOpenSiyum(s)}
             />
