@@ -56,8 +56,8 @@ const MY_MISHNA: Feature[] = [
   },
   {
     id: "login",
-    title: "Log In",
-    desc: "Sign in to save your notes, progress, and streak to your account.",
+    title: "My Account",
+    desc: "See your stats, chevrusas, and practice history — sign in to save them.",
     built: true,
   },
 ];
@@ -215,7 +215,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
                 <span className="home-hero__streak">Learn today to start a streak</span>
               )}
               <button className="home-hero__btn" onClick={() => onNavigate("limmud")}>
-                Continue learning
+                Go to My Limmud
               </button>
             </div>
           </div>

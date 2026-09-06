@@ -61,7 +61,7 @@ const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
 /** Login sits alone at the very bottom of the rail, separate from both
     groups — account access is conventionally placed apart from feature
     navigation, not buried mid-list (user feedback). */
-const LOGIN_ITEM: NavItem = { id: "login", label: "Log In", built: true };
+const LOGIN_ITEM: NavItem = { id: "login", label: "My Account", built: true };
 
 interface SidebarProps {
   activeId: string;

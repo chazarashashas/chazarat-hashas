@@ -86,6 +86,30 @@ export function useAuth() {
     await supabase.auth.signOut();
   }
 
+  /** Updates the signed-in user's own profile row. Requires the
+      "you can update your own profile" RLS policy (auth.uid() = id) —
+      profiles had no UPDATE policy at all until that fix landed. */
+  async function updateProfile(fields: { firstName?: string; lastName?: string; username?: string }): Promise<string | null> {
+    if (!supabase || !state.session) return "Accounts aren't connected yet.";
+    if (fields.username && fields.username !== state.username) {
+      const available = await checkUsernameAvailable(fields.username);
+      if (!available) return "That username is already taken.";
+    }
+    const patch: Record<string, string> = {};
+    if (fields.firstName !== undefined) patch.first_name = fields.firstName;
+    if (fields.lastName !== undefined) patch.last_name = fields.lastName;
+    if (fields.username !== undefined) patch.username = fields.username;
+    const { error } = await supabase.from("profiles").update(patch).eq("id", state.session.user.id);
+    if (error) return error.message;
+    setState((prev) => ({
+      ...prev,
+      firstName: fields.firstName ?? prev.firstName,
+      lastName: fields.lastName ?? prev.lastName,
+      username: fields.username ?? prev.username,
+    }));
+    return null;
+  }
+
   /** Permanently deletes the signed-in user's own account (and, via
       cascading foreign keys, their profile and synced data). Calls a
       server-side Edge Function since deleting an auth user needs the
@@ -109,6 +133,7 @@ export function useAuth() {
     signUp,
     signIn,
     signOut,
+    updateProfile,
     deleteAccount,
   };
 }

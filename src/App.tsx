@@ -138,6 +138,7 @@ function App() {
                 setSection(loginReturnTo ?? "home");
                 setLoginReturnTo(null);
               }}
+              onNavigate={setSection}
             />
           ) : section === "chevrusa" ? (
             <ChevrusaScreen

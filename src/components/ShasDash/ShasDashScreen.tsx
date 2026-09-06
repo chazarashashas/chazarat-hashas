@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { SEDARIM } from "../../data/shas";
 import { getSederHue } from "../../utils/sederHue";
+import { useGameStats } from "../../utils/useGameStats";
 import "./ShasDashScreen.css";
 
 interface FlatMasechet {
@@ -46,6 +47,7 @@ function DestinationIcon() {
 }
 
 export function ShasDashScreen() {
+  const { recordDashScore } = useGameStats();
   const [phase, setPhase] = useState<Phase>("ready");
   const [score, setScore] = useState(0);
   const [lives, setLives] = useState(3);
@@ -274,6 +276,7 @@ export function ShasDashScreen() {
     runningRef.current = false;
     setWon(didWin);
     setPhase("ended");
+    recordDashScore(scoreRef.current);
   }
 
   function handleStart() {

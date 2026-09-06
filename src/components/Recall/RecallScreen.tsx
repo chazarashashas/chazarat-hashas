@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { SEDARIM, type Masechet } from "../../data/shas";
 import { SEDER_TABS } from "../../data/sederTabs";
 import { TabBar } from "../TabBar/TabBar";
+import { useGameStats } from "../../utils/useGameStats";
 import "./RecallScreen.css";
 
 function flatList(): Masechet[] {
@@ -70,6 +71,7 @@ function formatTime(totalSeconds: number): string {
 type Phase = "ready" | "playing" | "ended";
 
 export function RecallScreen() {
+  const { recordChazaraResult } = useGameStats();
   const [sederTab, setSederTab] = useState("all");
   const [phase, setPhase] = useState<Phase>("ready");
   const [guess, setGuess] = useState("");
@@ -94,6 +96,11 @@ export function RecallScreen() {
       });
     }, 1000);
     return () => window.clearInterval(id);
+  }, [phase]);
+
+  useEffect(() => {
+    if (phase === "ended") recordChazaraResult(found.size);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase]);
 
   function handleSederTabChange(next: string) {

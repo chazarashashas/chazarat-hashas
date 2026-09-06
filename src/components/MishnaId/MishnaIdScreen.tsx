@@ -3,6 +3,7 @@ import { SEDARIM, type Seder, type Masechet } from "../../data/shas";
 import { SEDER_TABS } from "../../data/sederTabs";
 import { fetchRandomMishna } from "../../utils/sefaria";
 import { usePerekNotes } from "../../utils/usePerekNotes";
+import { useGameStats } from "../../utils/useGameStats";
 import { getSederHue } from "../../utils/sederHue";
 import { PerekNoteModal } from "../PerekNoteModal/PerekNoteModal";
 import { TabBar } from "../TabBar/TabBar";
@@ -156,6 +157,7 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
   const [textFontSize, setTextFontSize] = useState(MAX_TEXT_FONT_SIZE);
   const [noteOpen, setNoteOpen] = useState(false);
   const { getPerekNote, setPerekNote } = usePerekNotes();
+  const { recordQuizResult } = useGameStats();
   const timerRef = useRef<number | null>(null);
   const cardBoxRef = useRef<HTMLDivElement>(null);
   const cardTextRef = useRef<HTMLSpanElement>(null);
@@ -335,11 +337,13 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
     if (mode === "quiz") {
       const scoreDelta = coreSolved ? 1 : 0;
       const nextIndex = quizCardIndex + 1;
+      const finalScore = quizScore + scoreDelta;
       setQuizScore((s) => s + scoreDelta);
       if (card.guessedPerek) setQuizBonus((b) => b + 1);
       setQuizCardIndex(nextIndex);
       if (nextIndex >= QUIZ_LENGTH) {
         setQuizFinished(true);
+        recordQuizResult(finalScore, QUIZ_LENGTH);
         return;
       }
     }

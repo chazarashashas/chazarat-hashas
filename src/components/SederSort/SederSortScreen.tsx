@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
 import { SEDARIM } from "../../data/shas";
 import { shuffle } from "../../utils/shuffle";
 import { getSederHue } from "../../utils/sederHue";
+import { useGameStats } from "../../utils/useGameStats";
 import "./SederSortScreen.css";
 
 interface FlatMasechet {
@@ -42,6 +43,7 @@ function initState() {
 const TAP_MOVE_THRESHOLD = 6;
 
 export function SederSortScreen() {
+  const { recordSortCompletion } = useGameStats();
   const [{ placed, pool }, setState] = useState(initState);
   const [drag, setDrag] = useState<DragState | null>(null);
   const [hoverBin, setHoverBin] = useState<string | null>(null);
@@ -51,6 +53,15 @@ export function SederSortScreen() {
   const placedCount = TOTAL - pool.length;
   const completed = placedCount === TOTAL;
   const bySederId = Object.fromEntries(ALL_MASECHTOT.map((m) => [m.name, m.sederId]));
+
+  const recordedRef = useRef(false);
+  useEffect(() => {
+    if (completed && !recordedRef.current) {
+      recordedRef.current = true;
+      recordSortCompletion();
+    }
+    if (!completed) recordedRef.current = false;
+  }, [completed, recordSortCompletion]);
 
   function handleReset() {
     setState(initState());
