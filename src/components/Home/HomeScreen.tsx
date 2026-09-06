@@ -172,6 +172,11 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
         </h1>
         <p className="panel__subtitle">let's learn shas, together</p>
 
+        <button className="home-new-here" onClick={() => setShowIntro(true)}>
+          <span className="home-new-here__title">How this app works</span>
+          <span className="home-new-here__sub">See how Shas is put together, and how this app tracks it.</span>
+        </button>
+
         <blockquote className="home-quote" dir="rtl">
           <p className="home-quote__text">
             "רֵישׁ לָקִישׁ אָמַר: אִם רָאִיתָ תַּלְמִיד שֶׁתַּלְמוּדוֹ קָשֶׁה עָלָיו כַּבַּרְזֶל — בִּשְׁבִיל מִשְׁנָתוֹ
@@ -243,11 +248,6 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
 
         <h2 className="home-section-title">Practice</h2>
         <FeatureGrid features={LEARNING_TOOLS} onNavigate={onNavigate} />
-
-        <button className="home-new-here" onClick={() => setShowIntro(true)}>
-          <span className="home-new-here__title">New here?</span>
-          <span className="home-new-here__sub">See how Shas is put together, and how this app tracks it.</span>
-        </button>
       </div>
 
       {showIntro && (
