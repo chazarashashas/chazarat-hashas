@@ -67,6 +67,18 @@ export function ResourcesScreen() {
               Print
             </button>
           </div>
+
+          <div className="resource-card">
+            <div className="resource-card__body">
+              <p className="resource-card__title">Support &amp; Feedback</p>
+              <p className="resource-card__desc">
+                Found a bug, or have an idea for the app? We'd love to hear from you.
+              </p>
+            </div>
+            <a className="resource-card__download" href="mailto:chazarashashas@gmail.com">
+              Email us
+            </a>
+          </div>
         </div>
       </div>
 
