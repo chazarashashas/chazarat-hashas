@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAuth } from "../../utils/useAuth";
 import { useSiyumim, type PerekClaim, type Siyum, type Visibility } from "../../utils/useSiyumim";
 import { ALL_PEREK_SLOTS } from "../../utils/nishmatMosaic";
+import { useLocalStorageState } from "../../utils/useLocalStorageState";
 import { SiyumDetail } from "./SiyumDetail";
 import "./LiluyNishmat.css";
 
@@ -61,44 +62,61 @@ function SiyumCard({
   claims,
   mine,
   onOpen,
+  onHide,
 }: {
   siyum: Siyum;
   stats: { learned: number; taken: number; open: number };
   claims: PerekClaim[];
   mine: boolean;
   onOpen: () => void;
+  onHide?: () => void;
 }) {
   return (
-    <button className="siyum-card" onClick={onOpen}>
-      <div className="siyum-card__head">
-        <span className="siyum-card__name">{siyum.dedication}</span>
-        <span className={"siyum-card__badge" + (siyum.visibility === "public" ? " siyum-card__badge--public" : "")}>
-          {siyum.visibility === "public" ? "Public" : "Private"}
-        </span>
-      </div>
-      {siyum.occasion && <p className="siyum-card__occasion">{siyum.occasion}</p>}
-
-      <MiniMosaic claims={claims} />
-
-      <div className="siyum-card__stats">
-        <div className="siyum-card__stat siyum-card__stat--learned">
-          <span className="siyum-card__stat-num">{stats.learned}</span>
-          <span className="siyum-card__stat-label">learned</span>
+    <div className="siyum-card">
+      <button className="siyum-card__open" onClick={onOpen}>
+        <div className="siyum-card__head">
+          <span className="siyum-card__name">{siyum.dedication}</span>
+          <span className={"siyum-card__badge" + (siyum.visibility === "public" ? " siyum-card__badge--public" : "")}>
+            {siyum.visibility === "public" ? "Public" : "Private"}
+          </span>
         </div>
-        <div className="siyum-card__stat siyum-card__stat--taken">
-          <span className="siyum-card__stat-num">{stats.taken}</span>
-          <span className="siyum-card__stat-label">taken</span>
-        </div>
-        <div className="siyum-card__stat siyum-card__stat--open">
-          <span className="siyum-card__stat-num">{stats.open}</span>
-          <span className="siyum-card__stat-label">still open</span>
-        </div>
-      </div>
+        {siyum.occasion && <p className="siyum-card__occasion">{siyum.occasion}</p>}
 
-      <ProgressBar {...stats} />
+        <MiniMosaic claims={claims} />
 
-      <span className="siyum-card__cta">{mine ? "Open siyum →" : "Take a perek →"}</span>
-    </button>
+        <div className="siyum-card__stats">
+          <div className="siyum-card__stat siyum-card__stat--learned">
+            <span className="siyum-card__stat-num">{stats.learned}</span>
+            <span className="siyum-card__stat-label">learned</span>
+          </div>
+          <div className="siyum-card__stat siyum-card__stat--taken">
+            <span className="siyum-card__stat-num">{stats.taken}</span>
+            <span className="siyum-card__stat-label">taken</span>
+          </div>
+          <div className="siyum-card__stat siyum-card__stat--open">
+            <span className="siyum-card__stat-num">{stats.open}</span>
+            <span className="siyum-card__stat-label">still open</span>
+          </div>
+        </div>
+
+        <ProgressBar {...stats} />
+
+        <span className="siyum-card__cta">{mine ? "Open siyum →" : "Take a perek →"}</span>
+      </button>
+
+      {onHide && (
+        <button
+          className="siyum-card__hide"
+          title="Hide this siyum from your list"
+          onClick={(e) => {
+            e.stopPropagation();
+            onHide();
+          }}
+        >
+          Hide
+        </button>
+      )}
+    </div>
   );
 }
 
@@ -149,7 +167,10 @@ export function LiluyNishmatScreen({ onOpenLogin, initialSlug }: LiluyNishmatScr
     }));
   }
 
-  const list = tab === "managing" ? siyumim.mine : siyumim.publicList;
+  const [hiddenIds, setHiddenIds] = useLocalStorageState<string[]>("nishmatHiddenSiyumim", []);
+
+  const list =
+    tab === "managing" ? siyumim.mine : siyumim.publicList.filter((s) => !hiddenIds.includes(s.id));
   const [statsLoadedFor, setStatsLoadedFor] = useState("");
   const listKey = list.map((s) => s.id).join(",");
   if (listKey !== statsLoadedFor && list.length > 0) {
@@ -250,6 +271,7 @@ export function LiluyNishmatScreen({ onOpenLogin, initialSlug }: LiluyNishmatScr
               claims={allClaims[s.id] ?? []}
               mine={session?.user.id === s.ownerId}
               onOpen={() => setOpenSiyum(s)}
+              onHide={tab === "helping" ? () => setHiddenIds((prev) => [...prev, s.id]) : undefined}
             />
           ))}
         </div>

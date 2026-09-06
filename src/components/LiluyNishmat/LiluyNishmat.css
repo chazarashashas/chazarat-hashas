@@ -58,19 +58,49 @@
 }
 
 .siyum-card {
-  display: block;
-  width: 100%;
-  text-align: left;
+  position: relative;
   background: var(--surface);
-  border: none;
   border-radius: var(--radius-card);
   padding: 15px 16px;
-  cursor: pointer;
   font-family: var(--font-body);
+  transition: box-shadow 0.15s ease;
 }
 
 .siyum-card:hover {
   box-shadow: var(--shadow-hover);
+}
+
+.siyum-card__open {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+  color: inherit;
+}
+
+.siyum-card__hide {
+  position: absolute;
+  bottom: 14px;
+  right: 16px;
+  min-height: 28px;
+  padding: 4px 10px;
+  background: var(--surface-hi);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  color: var(--muted);
+  font-family: var(--font-heading);
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.siyum-card__hide:hover {
+  color: var(--bad);
+  border-color: var(--bad);
 }
 
 .siyum-card__head {

@@ -94,61 +94,50 @@
 /* Fixed height, sized for the longest real case (Keilim, 30 perakim) so
    neither column ever resizes when you switch masechet, seder, or mode. */
 .perek-tabs {
-  width: 108px;
+  width: 130px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
+  gap: 3px;
   height: 510px;
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: thin;
-  padding-right: 6px;
+  padding-right: 10px;
 }
 
-/* Styled like binder/notebook index tabs: rounded on the outer edge only,
-   flush against the spine on the left, layered with a small shadow. */
 .perek-tab {
   display: block;
   width: 100%;
   flex-shrink: 0;
   text-align: left;
   background: var(--surface);
-  border: 1.5px solid var(--border);
-  border-right: none;
-  border-radius: 0 999px 999px 0;
-  padding: 6px 10px 6px 8px;
-  margin-bottom: 3px;
-  font-size: 10.5px;
+  border: none;
+  border-left: 3px solid transparent;
+  border-radius: var(--radius-control);
+  padding: 9px 12px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--ink);
   cursor: pointer;
   font-family: var(--font-body);
-  box-shadow: 2px 2px 3px rgba(27, 51, 88, 0.1);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  transition:
-    transform 0.12s ease,
-    background 0.12s ease,
-    color 0.12s ease;
+  transition: background 0.15s ease;
 }
 
 .perek-tab:hover {
-  transform: translateX(2px);
+  background: var(--track);
 }
 
 .perek-tab--active {
   background: var(--surface-hi);
-  border-color: var(--line);
-  border-left: 3px solid var(--hue-notes);
-  padding-left: 5px;
-  color: var(--ink);
-  transform: translateX(5px);
-  box-shadow: 2px 2px 4px rgba(22, 35, 63, 0.12);
+  border-left-color: var(--hue-notes);
+  color: var(--hue-notes);
+  font-weight: 700;
 }
 
-/* Notebook-page feel: a margin rule on the left; each row draws its own
-   ruled line via border-bottom, so the lines always match real rows. */
 .perek-detail {
   flex: 1;
   min-width: 0;
@@ -158,12 +147,12 @@
   background: var(--surface-hi);
   border: none;
   border-radius: var(--radius-page);
-  padding: 10px 14px 10px 30px;
+  padding: 16px 18px;
   border-left: 3px solid var(--hue-notes);
 }
 
 .perek-detail__label {
-  margin: 4px 0 12px;
+  margin: 4px 0 14px;
   font-family: var(--font-heading);
   font-size: 15px;
   font-weight: 700;
@@ -173,27 +162,27 @@
 .perek-row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  height: 19px;
+  gap: 10px;
+  min-height: 34px;
   flex-shrink: 0;
   border-bottom: 1px solid var(--line);
 }
 
 .perek-row__num {
-  width: 20px;
+  width: 22px;
   flex-shrink: 0;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   line-height: 1.35;
-  color: var(--gold);
+  color: var(--hue-notes);
   text-align: center;
   font-family: var(--font-hebrew);
 }
 
 .perek-row__label {
-  width: 92px;
+  width: 100px;
   flex-shrink: 0;
-  font-size: 10.5px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--ink);
   font-family: var(--font-body);
@@ -203,8 +192,7 @@
 }
 
 .perek-row--sentence {
-  height: auto;
-  min-height: 26px;
+  min-height: 38px;
 }
 
 .perek-row input {
@@ -214,7 +202,7 @@
   border: none;
   background: transparent;
   padding: 0 4px;
-  font-size: 10.5px;
+  font-size: 12px;
   font-family: var(--font-body);
   color: var(--ink);
 }
@@ -249,17 +237,15 @@
   .perek-tab {
     flex-shrink: 0;
     width: auto;
-    margin-bottom: 0;
-    border-right: 1.5px solid var(--border);
+    border-left: none;
+    border-bottom: 3px solid transparent;
     border-radius: var(--radius-pill);
-    box-shadow: none;
-    padding: 5px 10px;
-    font-size: 9.5px;
+    padding: 7px 12px;
+    font-size: 11px;
   }
 
-  .perek-tab:hover,
   .perek-tab--active {
-    transform: none;
+    border-bottom-color: var(--hue-notes);
   }
 
   .perek-detail {

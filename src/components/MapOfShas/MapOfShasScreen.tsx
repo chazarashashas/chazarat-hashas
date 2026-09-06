@@ -100,11 +100,11 @@ export function MapOfShasScreen({ onOpenNotes }: MapOfShasScreenProps) {
         </p>
 
         <div className="map-breadcrumb" dir="ltr">
-          <button className="map-crumb" onClick={() => goTo("sedarim")}>
-            Shas
-          </button>
           {seder && (
             <>
+              <button className="map-crumb" onClick={() => goTo("sedarim")}>
+                Shas
+              </button>
               <span className="map-crumb-sep">‹</span>
               <button className="map-crumb" onClick={() => goTo("masechtot")}>
                 {seder.en}
