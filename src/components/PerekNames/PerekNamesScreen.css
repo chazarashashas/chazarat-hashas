@@ -211,6 +211,29 @@
   outline: none;
 }
 
+.perek-row__notebook-btn {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  color: var(--faint);
+  cursor: pointer;
+}
+
+.perek-row__notebook-btn:hover {
+  background: var(--track);
+  color: var(--ink);
+}
+
+.perek-row__notebook-btn--filled {
+  color: var(--hue-notes);
+}
+
 /* Below phone width the side-by-side notebook-tab layout leaves almost no
    room for the detail column — inputs were shrinking to a few characters
    wide. Stack instead: tabs become a wrapping pill row up top (styled as

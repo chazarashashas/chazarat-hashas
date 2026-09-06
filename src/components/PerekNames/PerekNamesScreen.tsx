@@ -6,6 +6,7 @@ import { hebrewNumeral } from "../../utils/hebrewNumeral";
 import { usePerekNotes } from "../../utils/usePerekNotes";
 import { useLearningProgress } from "../../utils/useLearningProgress";
 import { PrintNotesView } from "../PrintNotes/PrintNotesView";
+import { PerekNotebookModal } from "../PerekNotebookModal/PerekNotebookModal";
 import "./PerekNamesScreen.css";
 
 type DocView = "notes" | "concepts";
@@ -16,7 +17,9 @@ export function PerekNamesScreen() {
   const [selectedSederId, setSelectedSederId] = useState<string>(SEDARIM[0].id);
   const [selectedMasechetEn, setSelectedMasechetEn] = useState<string>(SEDARIM[0].masechtot[0].en);
   const [printOpen, setPrintOpen] = useState(false);
-  const { perekNotes, setPerekNotes, masechetSentences, setMasechetSentences } = usePerekNotes();
+  const [notebookPerek, setNotebookPerek] = useState<number | null>(null);
+  const { perekNotes, setPerekNotes, masechetSentences, setMasechetSentences, getPerekNotebook, setPerekNotebookEntry } =
+    usePerekNotes();
   const { concepts } = useLearningProgress();
   const sortedConcepts = [...concepts].sort((a, b) => b.date.localeCompare(a.date));
 
@@ -79,8 +82,9 @@ export function PerekNamesScreen() {
         <p className="app-title">Chazarat Hashas</p>
         <h1 className="panel__title">Mishna Notes</h1>
         <p className="panel__subtitle">
-          Pick a masechet, then give each perek a nickname to help it stick. For example: "the laws of
-          Zimmun," "who is considered ne'eman."
+          The goal here: give each perek a name only you would think of, so it sticks. For example:
+          "the laws of Zimmun," "who is considered ne'eman." Want to write more than a name? Open that
+          perek's notebook.
         </p>
 
         <div className="pill-row">
@@ -165,18 +169,37 @@ export function PerekNamesScreen() {
             ) : selectedMasechet ? (
               <>
                 <p className="perek-detail__label">Mishna Notes — {selectedMasechet.en}</p>
-                {Array.from({ length: selectedMasechet.perakim }, (_, i) => i + 1).map((n) => (
-                  <div key={n} className="perek-row">
-                    <span className="perek-row__num" dir="rtl">
-                      {hebrewNumeral(n)}
-                    </span>
-                    <input
-                      value={activePerekNotes[n - 1] ?? ""}
-                      onChange={(e) => updatePerekNote(selectedMasechet.en, n - 1, e.target.value)}
-                      placeholder={`My name for Perek ${hebrewNumeral(n)}`}
-                    />
-                  </div>
-                ))}
+                {Array.from({ length: selectedMasechet.perakim }, (_, i) => i + 1).map((n) => {
+                  const hasNotebook = getPerekNotebook(selectedMasechet.en, n).trim().length > 0;
+                  return (
+                    <div key={n} className="perek-row">
+                      <span className="perek-row__num" dir="rtl">
+                        {hebrewNumeral(n)}
+                      </span>
+                      <input
+                        value={activePerekNotes[n - 1] ?? ""}
+                        onChange={(e) => updatePerekNote(selectedMasechet.en, n - 1, e.target.value)}
+                        placeholder={`My name for Perek ${hebrewNumeral(n)}`}
+                      />
+                      <button
+                        className={"perek-row__notebook-btn" + (hasNotebook ? " perek-row__notebook-btn--filled" : "")}
+                        title={hasNotebook ? "Open notebook (has notes)" : "Open notebook"}
+                        onClick={() => setNotebookPerek(n)}
+                      >
+                        <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                          <path
+                            d="M6 3.5h11a1 1 0 011 1v15a1 1 0 01-1 1H6a1 1 0 01-1-1v-15a1 1 0 011-1zM9 3.5v17M9 8h5M9 12h5"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.6"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  );
+                })}
               </>
             ) : null}
           </div>
@@ -190,6 +213,15 @@ export function PerekNamesScreen() {
         <PrintNotesView
           initialMasechetEn={sederTab !== "all" ? selectedMasechetEn : undefined}
           onClose={() => setPrintOpen(false)}
+        />
+      )}
+      {notebookPerek !== null && selectedMasechet && (
+        <PerekNotebookModal
+          masechetEn={selectedMasechet.en}
+          perek={notebookPerek}
+          initialValue={getPerekNotebook(selectedMasechet.en, notebookPerek)}
+          onSave={(value) => setPerekNotebookEntry(selectedMasechet.en, notebookPerek, value)}
+          onClose={() => setNotebookPerek(null)}
         />
       )}
     </div>

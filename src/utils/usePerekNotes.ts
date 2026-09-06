@@ -13,6 +13,14 @@ export function usePerekNotes() {
     "masechetSentences",
     {},
   );
+  // The notebook is deliberately a separate store from perekNotes — that
+  // field is the short, memorable *name* for a perek; this is open-ended
+  // writing, kept out of the way (opened on demand, not shown inline)
+  // rather than folded into the same short field.
+  const [perekNotebook, setPerekNotebook] = useLocalStorageState<Record<string, string[]>>(
+    "perekNotebook",
+    {},
+  );
 
   function getPerekNote(masechetEn: string, perek: number): string {
     return perekNotes[masechetEn]?.[perek - 1] ?? "";
@@ -27,12 +35,29 @@ export function usePerekNotes() {
     });
   }
 
+  function getPerekNotebook(masechetEn: string, perek: number): string {
+    return perekNotebook[masechetEn]?.[perek - 1] ?? "";
+  }
+
+  function setPerekNotebookEntry(masechetEn: string, perek: number, value: string) {
+    setPerekNotebook((prev) => {
+      const existing = prev[masechetEn] ?? [];
+      const next = [...existing];
+      next[perek - 1] = value;
+      return { ...prev, [masechetEn]: next };
+    });
+  }
+
   return {
     perekNotes,
     setPerekNotes,
     masechetSentences,
     setMasechetSentences,
+    perekNotebook,
+    setPerekNotebook,
     getPerekNote,
     setPerekNote,
+    getPerekNotebook,
+    setPerekNotebookEntry,
   };
 }

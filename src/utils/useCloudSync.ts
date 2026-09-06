@@ -6,6 +6,7 @@ import { STORAGE_SYNC_EVENT } from "./useLocalStorageState";
 const PREFIX = "chazarat-hashas:";
 const SYNC_KEYS = [
   "perekNotes",
+  "perekNotebook",
   "masechetSentences",
   "completions",
   "dailyLimmudPosition",
@@ -146,6 +147,7 @@ function mergeReviewState(local: unknown, cloud: unknown): Record<string, Review
 function mergeBlobs(local: SyncBlob, cloud: SyncBlob): SyncBlob {
   return {
     perekNotes: mergeRecordPreferLocal(local.perekNotes, cloud.perekNotes),
+    perekNotebook: mergeRecordPreferLocal(local.perekNotebook, cloud.perekNotebook),
     masechetSentences: mergeRecordPreferLocal(local.masechetSentences, cloud.masechetSentences),
     completions: mergeUniqueBy(
       local.completions,
