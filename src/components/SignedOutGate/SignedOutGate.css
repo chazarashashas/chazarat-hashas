@@ -1,0 +1,452 @@
+/* Shared primitives for the Chevrusa/Chabura signed-out "explain, then
+   gate" screens, and (KindTabs only) the signed-in kind picker too. See
+   CHEVRUSA-CHABURA-BRIEF.md. */
+
+.gate2-title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: clamp(25px, 6vw, 30px);
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  color: var(--ink);
+}
+
+.gate2-subtitle {
+  margin: 6px 0 0;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+/* ---------- Kind tabs (Chabura's internal choice) ---------- */
+
+.gate2-kind-tabs {
+  display: flex;
+  gap: 7px;
+  margin-top: 12px;
+}
+
+.gate2-kind-tab {
+  flex: 1;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 13px;
+  background: rgba(22, 35, 63, 0.05);
+  cursor: pointer;
+  transition: background 0.12s ease, box-shadow 0.12s ease;
+}
+
+.gate2-kind-tab--active {
+  background: var(--surface);
+  box-shadow: inset 0 0 0 2px var(--ink);
+}
+
+.gate2-kind-tab__label {
+  display: block;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 12px;
+  color: var(--ink);
+}
+
+.gate2-kind-tab__note {
+  display: block;
+  margin-top: 2px;
+  font-size: 10.5px;
+  color: #5f5749;
+}
+
+.gate2-kind-tab__note--active {
+  color: var(--muted);
+}
+
+/* ---------- Fact cards ---------- */
+
+.gate2-facts {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 13px;
+}
+
+.gate2-fact {
+  background: var(--ink);
+  border-radius: 16px;
+  padding: 13px 14px;
+}
+
+.gate2-fact__head {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: #fff;
+}
+
+.gate2-fact__body {
+  margin: 2px 0 0;
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: rgba(240, 238, 230, 0.7);
+}
+
+.gate2-fact__preview {
+  margin-top: 10px;
+  padding: 10px 11px;
+  border-radius: 12px;
+  background: rgba(240, 238, 230, 0.08);
+}
+
+/* ---------- Invite row preview ---------- */
+
+.gate2-invite-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.gate2-invite-row__email {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+  color: rgba(240, 238, 230, 0.66);
+}
+
+.gate2-invite-row__pill {
+  flex-shrink: 0;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: var(--good);
+  color: #fff;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 9.5px;
+}
+
+/* ---------- Week dots preview ---------- */
+
+.gate2-week {
+  display: flex;
+  align-items: flex-end;
+  gap: 7px;
+}
+
+.gate2-week__col {
+  text-align: center;
+}
+
+.gate2-week__dot {
+  display: block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: inset 0 0 0 2px rgba(240, 238, 230, 0.34);
+}
+
+.gate2-week__dot--on {
+  background: var(--good);
+  box-shadow: none;
+}
+
+.gate2-week__day {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 8px;
+  color: rgba(240, 238, 230, 0.5);
+}
+
+.gate2-week__note {
+  margin-left: auto;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 10.5px;
+  color: #d9a63d;
+}
+
+/* ---------- Nudge card preview ---------- */
+
+.gate2-nudge-card {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--gold);
+  color: var(--ink);
+}
+
+.gate2-nudge-card__from {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 10.5px;
+}
+
+.gate2-nudge-card__text {
+  margin: 2px 0 0;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+/* ---------- Note card preview (dark, nested — see the real note card's
+   own light styling in GroupNotes.css for the built feature) ---------- */
+
+.gate2-note-card {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(240, 238, 230, 0.08);
+  border-left: 3px solid #d9a63d;
+}
+
+.gate2-note-card__head {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+}
+
+.gate2-note-card__author {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 10px;
+  color: #fff;
+}
+
+.gate2-note-card__source {
+  flex: 1;
+  font-size: 9.5px;
+  color: rgba(240, 238, 230, 0.55);
+}
+
+.gate2-note-card__edit {
+  font-weight: 600;
+  font-size: 9.5px;
+  color: #d9a63d;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.gate2-note-card__body {
+  margin: 4px 0 0;
+  font-size: 11px;
+  line-height: 1.55;
+  color: rgba(240, 238, 230, 0.8);
+}
+
+.gate2-note-card__reply {
+  margin-top: 7px;
+  padding-left: 9px;
+  border-left: 2px solid rgba(240, 238, 230, 0.2);
+  font-size: 10.5px;
+  line-height: 1.5;
+  color: rgba(240, 238, 230, 0.66);
+}
+
+.gate2-note-card__reply-author {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 10.5px;
+  color: #a8bce0;
+}
+
+.gate2-note-card__comment {
+  display: block;
+  margin-top: 7px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 10px;
+  color: #d9a63d;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ---------- Roster preview ---------- */
+
+.gate2-roster {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.gate2-roster__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gate2-roster__dot {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: inset 0 0 0 2px rgba(240, 238, 230, 0.34);
+}
+
+.gate2-roster__dot--on {
+  background: var(--good);
+  box-shadow: none;
+}
+
+.gate2-roster__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 10.5px;
+  color: #f0eee6;
+}
+
+.gate2-roster__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.gate2-roster__val {
+  flex-shrink: 0;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 10px;
+  color: #d9a63d;
+}
+
+.gate2-roster__val--muted {
+  color: rgba(240, 238, 230, 0.7);
+}
+
+/* ---------- Bundle preview ---------- */
+
+.gate2-bundle__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.gate2-bundle__chip {
+  padding: 5px 10px;
+  border-radius: 999px;
+  color: #fff;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 10px;
+}
+
+.gate2-bundle__row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+  margin-top: 9px;
+}
+
+.gate2-bundle__send {
+  flex-shrink: 0;
+  padding: 7px 13px;
+  border: none;
+  border-radius: 10px;
+  background: var(--gold);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.gate2-bundle__send:hover {
+  background: #d9a63d;
+}
+
+.gate2-bundle__hint {
+  font-size: 10px;
+  color: rgba(240, 238, 230, 0.58);
+}
+
+/* ---------- Bottom CTA ---------- */
+
+.gate2-cta {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: var(--ink);
+  border-radius: 18px;
+  padding: 15px;
+}
+
+.gate2-cta__text {
+  flex: 1;
+  min-width: 140px;
+}
+
+.gate2-cta__heading {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 13.5px;
+  line-height: 1.35;
+  color: #fff;
+}
+
+.gate2-cta__body {
+  margin: 2px 0 0;
+  font-size: 11px;
+  line-height: 1.55;
+  color: rgba(240, 238, 230, 0.7);
+}
+
+.gate2-cta__btn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 11px 16px;
+  border: none;
+  border-radius: 12px;
+  background: var(--gold);
+  color: var(--ink);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 12.5px;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.gate2-cta__btn:hover {
+  background: #d9a63d;
+}
+
+.gate2-footer {
+  margin: 11px 0 0;
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.gate2-footer a,
+.gate2-footer button {
+  color: var(--brass-text);
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.gate2-footer a:hover,
+.gate2-footer button:hover {
+  color: var(--ink);
+}

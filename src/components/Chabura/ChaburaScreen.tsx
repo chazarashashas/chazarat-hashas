@@ -4,8 +4,18 @@ import { useAuth } from "../../utils/useAuth";
 import { useChevrusa, type PendingInvite, type SentInvite } from "../../utils/useChevrusa";
 import type { Pace } from "../../utils/useLearningProgress";
 import { useEscapeKey } from "../../utils/useEscapeKey";
-import { GateCard } from "../GateCard/GateCard";
 import { GroupCard } from "../GroupCard/GroupCard";
+import {
+  KindTabs,
+  FactCard,
+  InviteRowPreview,
+  WeekDotsPreview,
+  NudgeCardPreview,
+  NoteCardPreview,
+  RosterPreview,
+  BundlePreview,
+  GateCTA,
+} from "../SignedOutGate/SignedOutGate";
 import "../Chevrusa/ChevrusaScreen.css";
 import "./ChaburaScreen.css";
 
@@ -24,9 +34,9 @@ function AboutChaburaModal({ onClose }: { onClose: () => void }) {
         </button>
         <h2 className="intro-popup__title">About Chaburas</h2>
         <p className="intro-popup__lead">
-          A chabura is a group of any size learning one masechet together — casual ("Friends and
-          Family"), or led by a rebbe ("Rebbe & Class"). Starting a Rebbe &amp; Class chabura makes
-          you its rebbe automatically; everyone else who joins is a talmid.
+          A chabura is a group of any size learning one masechet together — with your shiur or
+          class, or among friends. Starting one with your shiur or class makes you its rebbe
+          automatically; everyone else who joins is a talmid.
         </p>
 
         <p className="intro-popup__subtitle">If you're the rebbe</p>
@@ -80,7 +90,46 @@ function AboutChaburaModal({ onClose }: { onClose: () => void }) {
   );
 }
 
-type ChaburaKind = "friends" | "class";
+type ChaburaKind = "shiur" | "friends";
+
+const KIND_OPTIONS = [
+  { value: "shiur" as const, label: "With your shiur or class", note: "your rebbe adds you, you send your day in" },
+  { value: "friends" as const, label: "Among friends", note: "anyone starts one, anyone invites" },
+];
+
+const SIGNED_OUT_KIND = {
+  shiur: {
+    standfirst: "Your shiur or class on one masechet, with each day's learning sent in.",
+    weekPattern: [true, true, false, true, true, false, true],
+    weekNote: "sent 5 of 7",
+    nudgeFrom: "Rav Romi sent you chizuk",
+    nudgeText: "Saw you sent four yesterday. Keep it going.",
+    gateHeading: "Your rebbe adds you to the chabura",
+    gateBody: "Sign in with the email he has for you and it will be waiting here.",
+  },
+  friends: {
+    standfirst: "A few friends on one masechet, with everyone in it having the same say.",
+    weekPattern: [true, true, true, false, true, true, true],
+    weekNote: "someone, 6 of 7",
+    nudgeFrom: "Shimon sent you chizuk",
+    nudgeText: "Two perakim left in Shabbat. Finish it with us.",
+    gateHeading: "Ready to start one?",
+    gateBody: "A name and an email is all it takes.",
+  },
+};
+
+const ROSTER_PREVIEW = [
+  { name: "Yitzy Feldman", learned: true, value: "4 mishnayot · B+" },
+  { name: "Moshe Guttman", learned: true, value: "2 mishnayot · A−" },
+  { name: "Eli Brandwein", learned: true, value: "1 mishnah", valueMuted: true },
+  { name: "Shmuli Klein", learned: false, value: "not yet today", valueMuted: true },
+];
+
+const BUNDLE_PREVIEW = [
+  { text: "4 mishnayot", hue: "var(--good)" },
+  { text: "quiz B+", hue: "var(--gold)" },
+  { text: "Sedarim 6/6", hue: "var(--ink-2)" },
+];
 
 const PACE_OPTIONS: { value: Pace; label: string }[] = [
   { value: "1", label: "1 Mishnah/day" },
@@ -191,19 +240,20 @@ function JoinByCode() {
 }
 
 /**
- * Group learning — a chabura of any size, either a casual "Friends and
- * Family" group or a Rebbe-led class. Split out from one-on-one
- * chevrusa pairing (see ../Chevrusa/ChevrusaScreen) since the two are
- * different features with different shapes: a chevrusa is a fixed pair,
- * a chabura is an open group that can have a teacher role, a join code,
- * and (for a class) the rebbe dashboard's daily reports.
+ * Group learning — a chabura of any size, either a casual friends group
+ * or a rebbe-led shiur/class. Split out from one-on-one chevrusa pairing
+ * (see ../Chevrusa/ChevrusaScreen) since the two are different features
+ * with different shapes: a chevrusa is a fixed pair, a chabura is an
+ * open group that can have a teacher role, a join code, and (for a
+ * shiur) the rebbe dashboard's daily reports.
  */
 interface ChaburaScreenProps {
   onOpenLogin?: (mode?: "signIn" | "signUp") => void;
   onOpenNishmat?: () => void;
+  onNavigate?: (id: string) => void;
 }
 
-export function ChaburaScreen({ onOpenLogin, onOpenNishmat }: ChaburaScreenProps) {
+export function ChaburaScreen({ onOpenLogin, onOpenNishmat, onNavigate }: ChaburaScreenProps) {
   const { session } = useAuth();
   const { groups, pendingInvites, sentInvites, createGroup, addMembers, acceptInvite, declineInvite, cancelInvite, leaveGroup } =
     useChevrusa();
@@ -233,7 +283,7 @@ export function ChaburaScreen({ onOpenLogin, onOpenNishmat }: ChaburaScreenProps
   async function handleStartChabura() {
     setError(null);
     setBusy(true);
-    const result = await createGroup(chaburaMasechet, true, chaburaName, memberEmails, chaburaPace, chaburaKind === "class");
+    const result = await createGroup(chaburaMasechet, true, chaburaName, memberEmails, chaburaPace, chaburaKind === "shiur");
     setBusy(false);
     if (result) {
       setError(result);
@@ -275,23 +325,69 @@ export function ChaburaScreen({ onOpenLogin, onOpenNishmat }: ChaburaScreenProps
   }
 
   if (!session) {
+    const k = SIGNED_OUT_KIND[chaburaKind];
     return (
       <div className="stage">
         <div className="panel">
           <p className="app-title">Chazarat Hashas</p>
-          <h1 className="panel__title">Chabura</h1>
-          <p className="panel__subtitle">Start or join a group learning together — with or without a rebbe.</p>
-          <button className="chabura-about-link" onClick={() => setAboutOpen(true)}>
-            How rebbe &amp; talmid works →
-          </button>
+          <h1 className="gate2-title">Chabura</h1>
+          <p className="gate2-subtitle">{k.standfirst}</p>
+
+          <KindTabs options={KIND_OPTIONS} value={chaburaKind} onChange={setChaburaKind} />
+
+          <div className="gate2-facts">
+            {chaburaKind === "shiur" ? (
+              <>
+                <FactCard
+                  head="Your rebbe sets the masechet"
+                  body="He opens the chabura and adds the talmidim; you appear in it as soon as he does."
+                >
+                  <InviteRowPreview email="shimon.adler@…" pillLabel="Joined" />
+                </FactCard>
+                <FactCard
+                  head="One send a day"
+                  body="The day is already listed before you press anything — the limmud, the quiz, whichever games you played."
+                >
+                  <BundlePreview chips={BUNDLE_PREVIEW} />
+                </FactCard>
+                <FactCard head="He sees one row per talmid" body="Your day beside every other name in the shiur, at a glance.">
+                  <RosterPreview rows={ROSTER_PREVIEW} />
+                </FactCard>
+                <FactCard head="A nudge, with a line if he wants one" body="A short word of chizuk on the days it helps, with his own sentence added.">
+                  <NudgeCardPreview from={k.nudgeFrom} text={k.nudgeText} />
+                </FactCard>
+              </>
+            ) : (
+              <>
+                <FactCard head="Anyone can invite" body="Everyone in it has the same say — bring in whoever you like, step out freely whenever you need to.">
+                  <InviteRowPreview email="shimon.adler@…" pillLabel="Joined" />
+                </FactCard>
+                <FactCard head="A dot for each day someone learns" body="More names than a chevrusa, and the same easy signal for each of them.">
+                  <WeekDotsPreview pattern={k.weekPattern} note={k.weekNote} />
+                </FactCard>
+                <FactCard head="A nudge, with a line if you want one" body="One tap sends chizuk to anyone in the chabura, with a sentence of your own.">
+                  <NudgeCardPreview from={k.nudgeFrom} text={k.nudgeText} />
+                </FactCard>
+                <FactCard head="Notes the whole chabura writes" body="Every note carries whose it is. Edit your own, reply under anyone's.">
+                  <NoteCardPreview
+                    author="You"
+                    source="Shabbat 7:2 · this morning"
+                    body="Learn the 39 in their groups — the eleven of bread first."
+                    replyAuthor="Shimon"
+                    reply="Second group is the eleven of a garment."
+                  />
+                </FactCard>
+              </>
+            )}
+          </div>
+
           {onOpenLogin && (
-            <GateCard
-              title="Starting a chabura needs an account"
-              body="Your chabura has to be able to find you, and everyone needs to see who learned today. That only works with an account behind it."
-              onCreateAccount={() => onOpenLogin("signUp")}
-              onSignIn={() => onOpenLogin("signIn")}
-            />
+            <GateCTA heading={k.gateHeading} body={k.gateBody} onAction={() => onOpenLogin("signUp")} />
           )}
+          <p className="gate2-footer">
+            Everything else is open already —{" "}
+            <button onClick={() => onNavigate?.("limmud")}>carry on learning on your own</button>.
+          </p>
         </div>
         {aboutOpen && <AboutChaburaModal onClose={() => setAboutOpen(false)} />}
       </div>
@@ -326,23 +422,10 @@ export function ChaburaScreen({ onOpenLogin, onOpenNishmat }: ChaburaScreenProps
 
         <label className="login-field">
           <span className="login-field__label">Learning with</span>
-          <div className="pill-row">
-            <button
-              className={"pill" + (chaburaKind === "friends" ? " pill--active" : "")}
-              onClick={() => setChaburaKind("friends")}
-            >
-              Friends and Family
-            </button>
-            <button
-              className={"pill" + (chaburaKind === "class" ? " pill--active" : "")}
-              onClick={() => setChaburaKind("class")}
-            >
-              Rebbe & Class
-            </button>
-          </div>
+          <KindTabs options={KIND_OPTIONS} value={chaburaKind} onChange={setChaburaKind} />
         </label>
 
-        {chaburaKind === "class" && (
+        {chaburaKind === "shiur" && (
           <div className="note-banner login-notice">
             As the Rebbe, you'll see each student's learned-today status, and their daily reports on
             your Dashboard. Students only see their own — not their classmates'.
@@ -351,12 +434,12 @@ export function ChaburaScreen({ onOpenLogin, onOpenNishmat }: ChaburaScreenProps
 
         <div className="chevrusa-form">
           <label className="login-field">
-            <span className="login-field__label">{chaburaKind === "class" ? "Class name" : "Chabura name"}</span>
+            <span className="login-field__label">{chaburaKind === "shiur" ? "Class name" : "Chabura name"}</span>
             <input
               type="text"
               value={chaburaName}
               onChange={(e) => setChaburaName(e.target.value)}
-              placeholder={chaburaKind === "class" ? "e.g. 9th Grade Gemara" : "e.g. Tuesday Night Seder Nezikin"}
+              placeholder={chaburaKind === "shiur" ? "e.g. 9th Grade Gemara" : "e.g. Tuesday Night Seder Nezikin"}
             />
           </label>
 
@@ -372,7 +455,7 @@ export function ChaburaScreen({ onOpenLogin, onOpenNishmat }: ChaburaScreenProps
 
           <div className="login-field">
             <span className="login-field__label">
-              {chaburaKind === "class" ? "Invite students by email" : "Invite members by email"}
+              {chaburaKind === "shiur" ? "Invite students by email" : "Invite members by email"}
             </span>
             {memberEmails.map((email, i) => (
               <div className="chabura-member-row" key={i}>
@@ -380,7 +463,7 @@ export function ChaburaScreen({ onOpenLogin, onOpenNishmat }: ChaburaScreenProps
                   type="email"
                   value={email}
                   onChange={(e) => updateMember(i, e.target.value)}
-                  placeholder={chaburaKind === "class" ? "student@example.com" : "member@example.com"}
+                  placeholder={chaburaKind === "shiur" ? "student@example.com" : "member@example.com"}
                 />
                 <button
                   type="button"
@@ -401,11 +484,11 @@ export function ChaburaScreen({ onOpenLogin, onOpenNishmat }: ChaburaScreenProps
           {error && <ErrorRow message={error} />}
 
           <button className="restart" disabled={busy || !chaburaName || !chaburaMasechet} onClick={handleStartChabura}>
-            {busy ? "Creating…" : chaburaKind === "class" ? "Start class" : "Start chabura"}
+            {busy ? "Creating…" : chaburaKind === "shiur" ? "Start class" : "Start chabura"}
           </button>
           <FormHint
             missing={[
-              !chaburaName ? (chaburaKind === "class" ? "a class name" : "a chabura name") : null,
+              !chaburaName ? (chaburaKind === "shiur" ? "a class name" : "a chabura name") : null,
               !chaburaMasechet ? "a masechet" : null,
             ].filter((m): m is string => m !== null)}
           />

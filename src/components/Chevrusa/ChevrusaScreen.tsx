@@ -3,8 +3,15 @@ import { SEDARIM } from "../../data/shas";
 import { useAuth } from "../../utils/useAuth";
 import { useChevrusa, type PendingInvite, type SentInvite } from "../../utils/useChevrusa";
 import type { Pace } from "../../utils/useLearningProgress";
-import { GateCard } from "../GateCard/GateCard";
 import { GroupCard } from "../GroupCard/GroupCard";
+import {
+  FactCard,
+  InviteRowPreview,
+  WeekDotsPreview,
+  NudgeCardPreview,
+  NoteCardPreview,
+  GateCTA,
+} from "../SignedOutGate/SignedOutGate";
 import "./ChevrusaScreen.css";
 
 const PACE_OPTIONS: { value: Pace; label: string }[] = [
@@ -84,9 +91,10 @@ function FormHint({ missing }: { missing: string[] }) {
  */
 interface ChevrusaScreenProps {
   onOpenLogin?: (mode?: "signIn" | "signUp") => void;
+  onNavigate?: (id: string) => void;
 }
 
-export function ChevrusaScreen({ onOpenLogin }: ChevrusaScreenProps) {
+export function ChevrusaScreen({ onOpenLogin, onNavigate }: ChevrusaScreenProps) {
   const { session } = useAuth();
   const { groups, pendingInvites, sentInvites, createGroup, addMembers, acceptInvite, declineInvite, cancelInvite, leaveGroup } =
     useChevrusa();
@@ -145,16 +153,44 @@ export function ChevrusaScreen({ onOpenLogin }: ChevrusaScreenProps) {
       <div className="stage">
         <div className="panel">
           <p className="app-title">Chazarat Hashas</p>
-          <h1 className="panel__title">Chevrusa</h1>
-          <p className="panel__subtitle">Pair one-on-one with a study partner, one masechet at a time.</p>
+          <h1 className="gate2-title">Chevrusa</h1>
+          <p className="gate2-subtitle">One partner, one masechet, each of you learning when the day allows.</p>
+
+          <div className="gate2-facts">
+            <FactCard head="Invite by email, and you are set" body="Once they accept, they see your progress on the masechet and you see theirs.">
+              <InviteRowPreview email="yehuda.klein@…" pillLabel="Accepted" />
+            </FactCard>
+            <FactCard head="A dot for each day you learn" body="Enough to know your chevrusa is in it with you.">
+              <WeekDotsPreview pattern={[true, true, false, true, true, false, true]} note="both, 5 of 7" />
+            </FactCard>
+            <FactCard
+              head="A nudge, with a line if you want one"
+              body="One tap sends chizuk. Adding a sentence of your own is usually the part that lands."
+            >
+              <NudgeCardPreview from="Yehuda sent you chizuk" text="Perek beis is where it clicks. Worth pushing through." />
+            </FactCard>
+            <FactCard head="Notes you both write" body="Every note carries whose it is. Edit your own, reply under either.">
+              <NoteCardPreview
+                author="You"
+                source="Berachot 1:1 · this morning"
+                body="The three watches are the key to the whole sugya."
+                replyAuthor="Yehuda"
+                reply="That framing helped — I had it as one list."
+              />
+            </FactCard>
+          </div>
+
           {onOpenLogin && (
-            <GateCard
-              title="Starting a chevrusa needs an account"
-              body="Your chevrusa has to be able to find you, and you both need to see who learned today. That only works with an account behind it."
-              onCreateAccount={() => onOpenLogin("signUp")}
-              onSignIn={() => onOpenLogin("signIn")}
+            <GateCTA
+              heading="Ready to start one?"
+              body="A name and an email is all it takes."
+              onAction={() => onOpenLogin("signUp")}
             />
           )}
+          <p className="gate2-footer">
+            Everything else is open already —{" "}
+            <button onClick={() => onNavigate?.("limmud")}>carry on learning on your own</button>.
+          </p>
         </div>
       </div>
     );
