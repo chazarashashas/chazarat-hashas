@@ -786,3 +786,23 @@
     margin-left: 12px;
   }
 }
+
+/* Below ~480px the row's own math stops working — tile + rule +
+   traditional name + "More notes" leaves the actual name field only a
+   few characters wide. The traditional name is the one purely decorative
+   piece here (the brief already treats it as optional when a masechet
+   has none), so it's what gives way — same principle, one more case. */
+@media (max-width: 480px) {
+  .notes-row {
+    gap: 6px;
+  }
+
+  .notes-row__traditional {
+    display: none;
+  }
+
+  .notes-row__more {
+    padding: 0 4px;
+    font-size: 9.5px;
+  }
+}
