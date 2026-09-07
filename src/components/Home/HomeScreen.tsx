@@ -136,10 +136,16 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
   const versionsInUse = showIntro ? readVersionsSeen() : [];
   const progress = useLearningProgress();
   const { perekNotes } = usePerekNotes();
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, session } = useAuth();
   const { groups } = useChevrusa();
   const todaySnapshot = useTodaySnapshot();
-  const myShiurim = groups.filter((g) => g.isClass);
+  // Only chaburot where *this* account is a student — the teacher of a
+  // class has no business seeing a card offering to send activity to
+  // themselves. Whoever creates a Rebbe & Class chabura is automatically
+  // its teacher, so that same account never sees this card for it.
+  const myShiurim = groups.filter(
+    (g) => g.isClass && g.members.some((m) => m.userId === session?.user.id && m.role !== "teacher"),
+  );
 
   const upNext = progress.todaysItems[0];
   const upNextSeder = upNext ? SEDARIM.find((s) => s.id === upNext.sederId) : undefined;
