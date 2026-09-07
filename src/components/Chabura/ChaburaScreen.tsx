@@ -3,10 +3,82 @@ import { SEDARIM } from "../../data/shas";
 import { useAuth } from "../../utils/useAuth";
 import { useChevrusa, type PendingInvite, type SentInvite } from "../../utils/useChevrusa";
 import type { Pace } from "../../utils/useLearningProgress";
+import { useEscapeKey } from "../../utils/useEscapeKey";
 import { GateCard } from "../GateCard/GateCard";
 import { GroupCard } from "../GroupCard/GroupCard";
 import "../Chevrusa/ChevrusaScreen.css";
 import "./ChaburaScreen.css";
+
+/** Explains the rebbe/talmid roles a "Rebbe & Class" chabura creates —
+    nothing in the create-a-chabura form itself teaches a new rebbe what
+    their Dashboard does, or a new student what "sending" means, so this
+    is the one place both sides can go read it. Mirrors Home's "How this
+    app works" popup (same scrim/popup shell, its own content). */
+function AboutChaburaModal({ onClose }: { onClose: () => void }) {
+  useEscapeKey(onClose);
+  return (
+    <div className="scrim intro-scrim" onClick={onClose}>
+      <div className="popup intro-popup" onClick={(e) => e.stopPropagation()}>
+        <button className="intro-popup__close" onClick={onClose} title="Close" aria-label="Close">
+          ✕
+        </button>
+        <h2 className="intro-popup__title">About Chaburas</h2>
+        <p className="intro-popup__lead">
+          A chabura is a group of any size learning one masechet together — casual ("Friends and
+          Family"), or led by a rebbe ("Rebbe & Class"). Starting a Rebbe &amp; Class chabura makes
+          you its rebbe automatically; everyone else who joins is a talmid.
+        </p>
+
+        <p className="intro-popup__subtitle">If you're the rebbe</p>
+        <div className="intro-job intro-job--gold">
+          <p className="intro-job__title">Get your class in</p>
+          <p className="intro-job__text">
+            Share the join code shown on your Dashboard, or invite students by email from here.
+          </p>
+        </div>
+        <div className="intro-job intro-job--gold">
+          <p className="intro-job__title">See who's quiet</p>
+          <p className="intro-job__text">
+            Your Dashboard (in the sidebar once you have a class) lists students quietest-first, so
+            you always know who to check on. Switch to Grid for the whole shiur at a glance, or
+            export it as a CSV.
+          </p>
+        </div>
+        <div className="intro-job intro-job--gold">
+          <p className="intro-job__title">Only what they send</p>
+          <p className="intro-job__text">
+            You see a student's daily report — what they learned and where. Their own notes and
+            concepts stay theirs.
+          </p>
+        </div>
+
+        <p className="intro-popup__subtitle">If you're a talmid</p>
+        <div className="intro-job">
+          <p className="intro-job__title">Learn as usual</p>
+          <p className="intro-job__text">
+            Daily Limmud, Mishna Quiz, any of the Practice games — nothing about how you learn
+            changes.
+          </p>
+        </div>
+        <div className="intro-job">
+          <p className="intro-job__title">Send it with one tap</p>
+          <p className="intro-job__text">
+            Home shows a "Today's learning" card summarizing what you've done, with a button to send
+            it to your rebbe. One send a day — keep learning after, and sending again updates it.
+          </p>
+        </div>
+        <div className="intro-job">
+          <p className="intro-job__title">Just you and your rebbe</p>
+          <p className="intro-job__text">Classmates never see your report, and you never see theirs.</p>
+        </div>
+
+        <p className="intro-popup__text" style={{ marginTop: 14, marginBottom: 0 }}>
+          Looking to pair with one study partner instead, no group or rebbe? That's Chevrusa.
+        </p>
+      </div>
+    </div>
+  );
+}
 
 type ChaburaKind = "friends" | "class";
 
@@ -144,6 +216,7 @@ export function ChaburaScreen({ onOpenLogin, onOpenNishmat }: ChaburaScreenProps
 
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [aboutOpen, setAboutOpen] = useState(false);
 
   function updateMember(index: number, value: string) {
     setMemberEmails((prev) => prev.map((v, i) => (i === index ? value : v)));
@@ -208,6 +281,9 @@ export function ChaburaScreen({ onOpenLogin, onOpenNishmat }: ChaburaScreenProps
           <p className="app-title">Chazarat Hashas</p>
           <h1 className="panel__title">Chabura</h1>
           <p className="panel__subtitle">Start or join a group learning together — with or without a rebbe.</p>
+          <button className="chabura-about-link" onClick={() => setAboutOpen(true)}>
+            How rebbe &amp; talmid works →
+          </button>
           {onOpenLogin && (
             <GateCard
               title="Starting a chabura needs an account"
@@ -217,6 +293,7 @@ export function ChaburaScreen({ onOpenLogin, onOpenNishmat }: ChaburaScreenProps
             />
           )}
         </div>
+        {aboutOpen && <AboutChaburaModal onClose={() => setAboutOpen(false)} />}
       </div>
     );
   }
@@ -234,6 +311,10 @@ export function ChaburaScreen({ onOpenLogin, onOpenNishmat }: ChaburaScreenProps
           Start or join a group learning together, one masechet at a time. Know when the group has
           learned today — no streaks compared, no ranking, just "they showed up."
         </p>
+
+        <button className="chabura-about-link" onClick={() => setAboutOpen(true)}>
+          How rebbe &amp; talmid works →
+        </button>
 
         {onOpenNishmat && (
           <button className="chevrusa-nishmat-link" onClick={onOpenNishmat}>
@@ -388,6 +469,7 @@ export function ChaburaScreen({ onOpenLogin, onOpenNishmat }: ChaburaScreenProps
           )}
         </div>
       </div>
+      {aboutOpen && <AboutChaburaModal onClose={() => setAboutOpen(false)} />}
     </div>
   );
 }
