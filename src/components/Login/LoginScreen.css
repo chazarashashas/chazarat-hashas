@@ -207,6 +207,133 @@
   text-align: center;
 }
 
+.reset-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.reset-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.reset-row:last-child {
+  border-bottom: none;
+  padding-bottom: 2px;
+}
+
+.reset-row--everything {
+  margin-top: 4px;
+  padding-top: 16px;
+  border-top: 1.5px solid var(--line);
+}
+
+.reset-row__text {
+  min-width: 0;
+}
+
+.reset-row__label {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.reset-row--everything .reset-row__label {
+  color: var(--bad);
+}
+
+.reset-row__desc {
+  margin: 2px 0 0;
+  font-size: 10.5px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+.reset-row__btn {
+  flex-shrink: 0;
+  min-height: 32px;
+  padding: 0 14px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--surface-hi);
+  color: var(--ink);
+  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.reset-row__btn:hover {
+  border-color: var(--ink);
+}
+
+.reset-row__btn--danger {
+  border-color: var(--bad);
+  color: var(--bad);
+}
+
+.reset-row__btn--danger:hover {
+  background: var(--bad);
+  color: #fff;
+}
+
+.reset-row__confirm {
+  flex-shrink: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  max-width: 200px;
+}
+
+.reset-row__confirm-text {
+  flex: 1 1 100%;
+  text-align: right;
+  font-size: 10px;
+  color: var(--bad);
+}
+
+.reset-row__confirm-yes {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 8px;
+  background: var(--bad);
+  color: #fff;
+  font-family: var(--font-heading);
+  font-size: 10.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.reset-row__confirm-yes:hover {
+  background: #8f1e18;
+}
+
+.reset-row__confirm-no {
+  padding: 6px 10px;
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-hi);
+  color: var(--muted);
+  font-family: var(--font-heading);
+  font-size: 10.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.reset-row__done {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--good);
+}
+
 .delete-account__link {
   background: none;
   border: none;

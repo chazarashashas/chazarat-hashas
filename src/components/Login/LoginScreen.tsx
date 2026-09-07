@@ -5,10 +5,109 @@ import { usePerekNotes } from "../../utils/usePerekNotes";
 import { useChevrusa } from "../../utils/useChevrusa";
 import { useSiyumim } from "../../utils/useSiyumim";
 import { useGameStats } from "../../utils/useGameStats";
+import { useAccountReset } from "../../utils/useAccountReset";
 import { SEDARIM } from "../../data/shas";
 import { getSederHue } from "../../utils/sederHue";
 import { supabaseConfigured } from "../../utils/supabase";
 import "./LoginScreen.css";
+
+const RESET_ITEMS = [
+  {
+    key: "daily_limmud",
+    label: "Daily Limmud & streak",
+    desc: "Your sequential position in Shas, every completion, and your streak/freeze history.",
+  },
+  {
+    key: "notes",
+    label: "Perek Notes & notebook",
+    desc: "Every perek name, notebook entry, and one-line masechet summary.",
+  },
+  { key: "concepts", label: "Concepts to Review", desc: "Everything saved to revisit later." },
+  {
+    key: "game_stats",
+    label: "Practice game stats",
+    desc: "Best scores and play counts for Mishna Quiz, Shas Dash, Mishna Chazara, Seder Sort, and Sidrei Hamishna.",
+  },
+] as const;
+
+/** Resets specific trackers back to empty — separate from deleting the
+    account itself below. Deliberately doesn't touch L'Iluy Nishmat
+    claims (a commitment tied to other people's dedications, not a
+    personal practice tracker) or account/profile fields. Shown whether
+    or not the visitor is signed in — there's plenty to reset on this
+    device alone before ever making an account. */
+function ResetProgressSection() {
+  const reset = useAccountReset();
+  const [confirming, setConfirming] = useState<string | null>(null);
+  const [justReset, setJustReset] = useState<string | null>(null);
+
+  const actionFor: Record<string, () => void> = {
+    daily_limmud: reset.resetDailyLimmud,
+    notes: reset.resetNotes,
+    concepts: reset.resetConcepts,
+    game_stats: reset.resetGameStats,
+    everything: reset.resetEverything,
+  };
+
+  function handleConfirm(key: string) {
+    actionFor[key]();
+    setConfirming(null);
+    setJustReset(key);
+    window.setTimeout(() => setJustReset((prev) => (prev === key ? null : prev)), 3000);
+  }
+
+  function renderAction(key: string, confirmLabel: string, danger?: boolean) {
+    if (confirming === key) {
+      return (
+        <div className="reset-row__confirm">
+          <span className="reset-row__confirm-text">Sure? This can't be undone.</span>
+          <button className="reset-row__confirm-yes" onClick={() => handleConfirm(key)}>
+            {confirmLabel}
+          </button>
+          <button className="reset-row__confirm-no" onClick={() => setConfirming(null)}>
+            Cancel
+          </button>
+        </div>
+      );
+    }
+    if (justReset === key) return <span className="reset-row__done">Reset ✓</span>;
+    return (
+      <button
+        className={"reset-row__btn" + (danger ? " reset-row__btn--danger" : "")}
+        onClick={() => setConfirming(key)}
+      >
+        Reset
+      </button>
+    );
+  }
+
+  return (
+    <>
+      <h2 className="account-section-title">Reset your progress</h2>
+      <div className="account-card reset-card">
+        {RESET_ITEMS.map((item) => (
+          <div key={item.key} className="reset-row">
+            <div className="reset-row__text">
+              <p className="reset-row__label">{item.label}</p>
+              <p className="reset-row__desc">{item.desc}</p>
+            </div>
+            {renderAction(item.key, "Yes, reset")}
+          </div>
+        ))}
+        <div className="reset-row reset-row--everything">
+          <div className="reset-row__text">
+            <p className="reset-row__label">Everything above</p>
+            <p className="reset-row__desc">
+              Starts fresh, as if you'd never opened the app. Your account and any chevrusa or chabura
+              memberships stay.
+            </p>
+          </div>
+          {renderAction("everything", "Yes, reset everything", true)}
+        </div>
+      </div>
+    </>
+  );
+}
 
 type Mode = "signIn" | "signUp";
 
@@ -330,6 +429,8 @@ function AccountDashboard({ onNavigate }: { onNavigate?: (id: string) => void })
         </>
       )}
 
+      <ResetProgressSection />
+
       <div className="delete-account">
         {!deleteOpen ? (
           <button className="delete-account__link" onClick={() => setDeleteOpen(true)}>
@@ -474,6 +575,8 @@ export function LoginScreen({ onLoggedIn, onNavigate, initialMode, initialEmailO
               Signing in never changes what you have already learned — your progress on this
               device merges into your account.
             </p>
+
+            <ResetProgressSection />
           </>
         ) : (
           <>

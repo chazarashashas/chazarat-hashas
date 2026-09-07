@@ -1,8 +1,70 @@
+import { useState } from "react";
 import { useAdmin } from "../../utils/useAdmin";
 import { useAdminActivityGrid } from "../../utils/useAdminActivityGrid";
+import { supabase } from "../../utils/supabase";
 import { RebbeGrid } from "../RebbeDashboard/RebbeDashboardScreen";
 import "../RebbeDashboard/RebbeDashboardScreen.css";
 import "./AdminScreen.css";
+
+const RESET_SCOPES = [
+  { value: "daily_limmud", label: "Daily Limmud & streak" },
+  { value: "perek_notes", label: "Perek Notes & notebook" },
+  { value: "concepts", label: "Concepts to Review" },
+  { value: "game_stats", label: "Practice game stats" },
+  { value: "everything", label: "Everything" },
+] as const;
+
+/** One user row's reset control — a scope picker plus its own inline
+    confirm, since this calls admin_reset_user_data (see
+    account_reset_schema.sql) on someone else's account and needs its own
+    guard against a stray click, same as the self-service version. */
+function AdminResetCell({ userId, email }: { userId: string; email: string }) {
+  const [scope, setScope] = useState<string>(RESET_SCOPES[0].value);
+  const [confirming, setConfirming] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+
+  async function handleConfirm() {
+    if (!supabase) return;
+    setBusy(true);
+    const { error } = await supabase.rpc("admin_reset_user_data", { p_user_id: userId, p_scope: scope });
+    setBusy(false);
+    setConfirming(false);
+    setMessage(error ? `Failed: ${error.message}` : "Reset.");
+    window.setTimeout(() => setMessage(null), 4000);
+  }
+
+  if (message) return <span className="admin-reset__message">{message}</span>;
+
+  if (confirming) {
+    return (
+      <span className="admin-reset__confirm">
+        <span>Reset {RESET_SCOPES.find((s) => s.value === scope)?.label} for {email}?</span>
+        <button className="admin-reset__confirm-yes" disabled={busy} onClick={handleConfirm}>
+          {busy ? "…" : "Yes"}
+        </button>
+        <button className="admin-reset__confirm-no" disabled={busy} onClick={() => setConfirming(false)}>
+          Cancel
+        </button>
+      </span>
+    );
+  }
+
+  return (
+    <span className="admin-reset">
+      <select className="admin-reset__select" value={scope} onChange={(e) => setScope(e.target.value)}>
+        {RESET_SCOPES.map((s) => (
+          <option key={s.value} value={s.value}>
+            {s.label}
+          </option>
+        ))}
+      </select>
+      <button className="admin-reset__btn" onClick={() => setConfirming(true)}>
+        Reset
+      </button>
+    </span>
+  );
+}
 
 export function AdminScreen() {
   const { overview, users, loading, error } = useAdmin(true);
@@ -13,7 +75,7 @@ export function AdminScreen() {
       <div className="panel admin-panel">
         <p className="app-title">Chazarat Hashas</p>
         <h1 className="panel__title">Admin</h1>
-        <p className="panel__subtitle">Everything across every account, read-only.</p>
+        <p className="panel__subtitle">Everything across every account, read-only except Reset below.</p>
 
         {error && (
           <p className="login-error" dir="ltr">
@@ -81,6 +143,7 @@ export function AdminScreen() {
                 <th>Joined</th>
                 <th>Mishnayot</th>
                 <th>Admin</th>
+                <th>Reset trackers</th>
               </tr>
             </thead>
             <tbody>
@@ -97,6 +160,9 @@ export function AdminScreen() {
                   <td>{new Date(u.createdAt).toLocaleDateString()}</td>
                   <td>{u.mishnayotLearned}</td>
                   <td>{u.isAdmin ? "Yes" : ""}</td>
+                  <td>
+                    <AdminResetCell userId={u.id} email={u.email} />
+                  </td>
                 </tr>
               ))}
             </tbody>

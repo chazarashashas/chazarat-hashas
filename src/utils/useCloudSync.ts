@@ -3,8 +3,13 @@ import type { Session } from "@supabase/supabase-js";
 import { supabase } from "./supabase";
 import { STORAGE_SYNC_EVENT } from "./useLocalStorageState";
 
-const PREFIX = "chazarat-hashas:";
-const SYNC_KEYS = [
+export const PREFIX = "chazarat-hashas:";
+/** This device's own marker of the last reset it has already applied —
+    never synced itself (each device tracks this independently), so a
+    device that's been offline can tell a reset happened while it was
+    away from one that already caught up. */
+const RESET_SEEN_KEY = PREFIX + "_lastResetSeenAt";
+export const SYNC_KEYS = [
   "perekNotes",
   "perekNotebook",
   "masechetSentences",
@@ -22,7 +27,7 @@ const SYNC_KEYS = [
   "nishmatHiddenSiyumim",
 ] as const;
 
-type SyncBlob = Partial<Record<(typeof SYNC_KEYS)[number], unknown>>;
+export type SyncBlob = Partial<Record<(typeof SYNC_KEYS)[number], unknown>>;
 
 function readLocalBlob(): SyncBlob {
   const blob: SyncBlob = {};
@@ -179,6 +184,40 @@ function mergeBlobs(local: SyncBlob, cloud: SyncBlob): SyncBlob {
 }
 
 /**
+ * Clears specific trackers to an explicit "fresh" value (never removes a
+ * key — an absent key wouldn't overwrite a stale cached one locally on
+ * another device, an empty one does) and, when signed in, pushes the
+ * result to the account immediately rather than waiting for the 10s poll.
+ *
+ * Writes straight to localStorage instead of going through each hook's
+ * own setState — those only flush to localStorage in a later effect, so
+ * reading local state back immediately afterward could still see the old
+ * values. This also stamps `reset_requested_at`, which the sign-in merge
+ * below checks: another of this account's devices, syncing later, needs
+ * to know a reset happened rather than merging its own stale copy of the
+ * same fields back in over the top of it. The tradeoff is that a reset
+ * adopts the account's cloud state wholesale on that other device, which
+ * can also discard anything that device changed in an unrelated tracker
+ * but hadn't synced yet — accepted here as a rare edge case rather than
+ * building a per-key reset ledger.
+ */
+export function applyReset(session: Session | null, patch: SyncBlob) {
+  for (const key of Object.keys(patch) as (typeof SYNC_KEYS)[number][]) {
+    localStorage.setItem(PREFIX + key, JSON.stringify(patch[key]));
+  }
+  window.dispatchEvent(new Event(STORAGE_SYNC_EVENT));
+
+  if (!session || !supabase) return;
+  const resetAt = new Date().toISOString();
+  const fullBlob = readLocalBlob();
+  localStorage.setItem(RESET_SEEN_KEY, resetAt);
+  supabase
+    .from("user_data")
+    .upsert({ user_id: session.user.id, data: fullBlob, reset_requested_at: resetAt, updated_at: resetAt })
+    .then(() => {});
+}
+
+/**
  * Ties the app's localStorage-backed notes/progress/concepts to the
  * signed-in account, without touching the hooks that already read and
  * write those keys (usePerekNotes, useLearningProgress) — this is a
@@ -223,6 +262,7 @@ export function useCloudSync(session: Session | null) {
     for (const key of SYNC_KEYS) {
       localStorage.removeItem(PREFIX + key);
     }
+    localStorage.removeItem(RESET_SEEN_KEY);
     window.dispatchEvent(new Event(STORAGE_SYNC_EVENT));
   }, [session]);
 
@@ -236,20 +276,36 @@ export function useCloudSync(session: Session | null) {
 
     let cancelled = false;
     (async () => {
-      const { data } = await supabase!
+      // reset_requested_at only exists once account_reset_schema.sql has
+      // been run — fall back to the column that's always been there so
+      // sync never breaks outright in the gap between deploying this and
+      // running that SQL (same pattern as useAuth's fetchProfile).
+      let { data, error } = await supabase!
         .from("user_data")
-        .select("data")
+        .select("data, reset_requested_at")
         .eq("user_id", session.user.id)
         .maybeSingle();
+      if (!cancelled && error) {
+        ({ data } = await supabase!.from("user_data").select("data").eq("user_id", session.user.id).maybeSingle());
+      }
       if (cancelled) return;
 
       const cloudBlob = (data?.data ?? {}) as SyncBlob;
+      const cloudResetAt = (data as { reset_requested_at?: string | null } | null)?.reset_requested_at ?? null;
+      const seenResetAt = localStorage.getItem(RESET_SEEN_KEY);
       const localBlob = readLocalBlob();
-      const merged = mergeBlobs(localBlob, cloudBlob);
+      // A reset (this device's own, or another device's / an admin's) has
+      // landed on the account since this device last saw one — adopt the
+      // account's current state as-is rather than merging, so this
+      // device's stale copy of whatever was just cleared can't merge its
+      // way back in.
+      const resetIsNew = cloudResetAt !== null && (!seenResetAt || cloudResetAt > seenResetAt);
+      const merged = resetIsNew ? cloudBlob : mergeBlobs(localBlob, cloudBlob);
       const localSerialized = JSON.stringify(localBlob);
       const mergedSerialized = JSON.stringify(merged);
 
       writeLocalBlob(merged);
+      if (cloudResetAt) localStorage.setItem(RESET_SEEN_KEY, cloudResetAt);
       lastPushedRef.current = mergedSerialized;
       await supabase!
         .from("user_data")
