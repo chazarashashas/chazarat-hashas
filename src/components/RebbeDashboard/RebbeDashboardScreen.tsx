@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useAuth } from "../../utils/useAuth";
 import { useChevrusa, type Group } from "../../utils/useChevrusa";
 import { useRebbeChabura, standingsBySilence, historyFor, type StudentStanding } from "../../utils/useRebbeChabura";
 import type { SubmissionActivity } from "../../utils/useDailySubmission";
@@ -156,7 +155,6 @@ interface RebbeDashboardScreenProps {
 }
 
 export function RebbeDashboardScreen({ shiurim }: RebbeDashboardScreenProps) {
-  const { session } = useAuth();
   const [shiurId, setShiurId] = useState(shiurim[0]?.id ?? "");
   const group = shiurim.find((g) => g.id === shiurId) ?? shiurim[0];
   const { students, submissions, refresh } = useRebbeChabura(group?.id ?? null);
@@ -186,8 +184,6 @@ export function RebbeDashboardScreen({ shiurim }: RebbeDashboardScreenProps) {
   const sentToday = standings.filter((s) => s.daysQuiet === null).length;
   const notYetToday = standings.length - sentToday;
   const quiet3Plus = standings.filter((s) => isFinite(s.daysQuiet ?? 0) && (s.daysQuiet ?? 0) >= 3).length;
-
-  const teacherName = session?.user.user_metadata?.first_name ?? "Rebbe";
 
   if (selectedStudent) {
     const standing = standings.find((s) => s.student.userId === selectedStudent);
