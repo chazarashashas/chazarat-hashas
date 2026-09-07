@@ -90,6 +90,16 @@
   font-size: 13px;
 }
 
+.today-learning-card__empty {
+  margin: 0 0 10px;
+  padding: 14px 12px;
+  background: var(--surface-hi);
+  border-radius: 13px;
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+}
+
 .today-learning-card__send {
   display: block;
   width: 100%;

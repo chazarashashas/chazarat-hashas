@@ -65,8 +65,10 @@ interface TodayLearningCardProps {
  * than one chabura membership, so the single-card design would silently
  * drop the ability to report to a second rebbe).
  *
- * Renders nothing on a day with nothing to send (§1: "Exists only on
- * days with something in it").
+ * Stays visible even on a day with nothing done yet — a card that
+ * vanishes reads as broken, not as "nothing to report." The empty state
+ * says so plainly and disables Send, same pattern as Chevrusa's
+ * disabled-button hints.
  */
 export function TodayLearningCard({ group, snapshot }: TodayLearningCardProps) {
   const { session } = useAuth();
@@ -83,7 +85,7 @@ export function TodayLearningCard({ group, snapshot }: TodayLearningCardProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
 
-  if (snapshot.activities.length === 0) return null;
+  const hasActivities = snapshot.activities.length > 0;
 
   if (state === "sent") {
     return (
@@ -116,22 +118,30 @@ export function TodayLearningCard({ group, snapshot }: TodayLearningCardProps) {
         <span className="today-learning-card__date">{dateLabel(snapshot.date)}</span>
       </div>
 
-      {snapshot.activities.map((a) => (
-        <div className="today-activity-row" key={a.key}>
-          <span className="today-activity-row__tick" style={{ background: HUE_BY_KEY[a.key] }}>
-            <NavIcon id={ICON_BY_KEY[a.key]} />
-          </span>
-          <div className="today-activity-row__body">
-            <p className="today-activity-row__label">{a.label}</p>
-            <p className="today-activity-row__detail">{a.detail}</p>
+      {hasActivities ? (
+        snapshot.activities.map((a) => (
+          <div className="today-activity-row" key={a.key}>
+            <span className="today-activity-row__tick" style={{ background: HUE_BY_KEY[a.key] }}>
+              <NavIcon id={ICON_BY_KEY[a.key]} />
+            </span>
+            <div className="today-activity-row__body">
+              <p className="today-activity-row__label">{a.label}</p>
+              <p className="today-activity-row__detail">{a.detail}</p>
+            </div>
+            <span className="today-activity-row__figure" style={{ color: HUE_BY_KEY[a.key] }}>
+              {a.figure}
+            </span>
           </div>
-          <span className="today-activity-row__figure" style={{ color: HUE_BY_KEY[a.key] }}>
-            {a.figure}
-          </span>
-        </div>
-      ))}
+        ))
+      ) : (
+        <p className="today-learning-card__empty">Nothing yet to submit — do your Daily Limmud or a drill first.</p>
+      )}
 
-      <button className="today-learning-card__send" onClick={() => send(snapshot)} disabled={state === "sending"}>
+      <button
+        className="today-learning-card__send"
+        onClick={() => send(snapshot)}
+        disabled={state === "sending" || !hasActivities}
+      >
         {state === "sending" ? "Sending…" : `Send to ${teacherLabel}`}
       </button>
       <p className="today-learning-card__note">
