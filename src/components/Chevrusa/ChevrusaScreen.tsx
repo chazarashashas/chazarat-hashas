@@ -68,6 +68,68 @@ function ErrorRow({ message }: { message: string }) {
   );
 }
 
+/** A disabled submit button with no explanation just looks broken —
+    names whatever's still missing so the next step is obvious, without
+    it reading as an error (nothing has gone wrong yet). */
+function missingFieldsHint(missing: string[]): string | null {
+  if (missing.length === 0) return null;
+  if (missing.length === 1) return `Add ${missing[0]} to continue.`;
+  return `Add ${missing.slice(0, -1).join(", ")} and ${missing[missing.length - 1]} to continue.`;
+}
+
+function FormHint({ missing }: { missing: string[] }) {
+  const hint = missingFieldsHint(missing);
+  if (!hint) return null;
+  return <p className="chevrusa-form-hint">{hint}</p>;
+}
+
+/** Joining by code is the faster alternative to being emailed an invite
+    — a rebbe reads the code out in shiur rather than typing eighteen
+    addresses. Entering it is the student's own consenting action, same
+    as accepting an emailed invite. */
+function JoinByCode() {
+  const { joinByCode } = useChevrusa();
+  const [code, setCode] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [joined, setJoined] = useState(false);
+
+  async function handleJoin() {
+    if (!code.trim()) return;
+    setBusy(true);
+    setError(null);
+    const result = await joinByCode(code);
+    setBusy(false);
+    if (result) setError(result);
+    else {
+      setJoined(true);
+      setCode("");
+      window.setTimeout(() => setJoined(false), 3000);
+    }
+  }
+
+  return (
+    <div className="join-by-code">
+      <label className="login-field">
+        <span className="login-field__label">Have a join code from your rebbe?</span>
+        <div className="join-by-code__row">
+          <input
+            type="text"
+            value={code}
+            onChange={(e) => setCode(e.target.value.toUpperCase())}
+            placeholder="e.g. K7M4XQ"
+            maxLength={6}
+          />
+          <button className="join-by-code__btn" disabled={busy || !code.trim()} onClick={handleJoin}>
+            {busy ? "…" : joined ? "Joined ✓" : "Join"}
+          </button>
+        </div>
+      </label>
+      {error && <ErrorRow message={error} />}
+    </div>
+  );
+}
+
 function todayStr(): string {
   return new Date().toISOString().slice(0, 10);
 }
@@ -365,6 +427,12 @@ export function ChevrusaScreen({ onOpenLogin, onOpenNishmat }: ChevrusaScreenPro
               >
                 {busy ? "Sending…" : "Send invite"}
               </button>
+              <FormHint
+                missing={[
+                  !inviteValue ? "their email" : null,
+                  !masechetValue ? "a masechet" : null,
+                ].filter((m): m is string => m !== null)}
+              />
             </div>
 
             <div className="chevrusa-section">
@@ -380,6 +448,8 @@ export function ChevrusaScreen({ onOpenLogin, onOpenNishmat }: ChevrusaScreenPro
           </>
         ) : (
           <>
+            <JoinByCode />
+
             <label className="login-field">
               <span className="login-field__label">Learning with</span>
               <div className="pill-row">
@@ -463,6 +533,12 @@ export function ChevrusaScreen({ onOpenLogin, onOpenNishmat }: ChevrusaScreenPro
               >
                 {busy ? "Creating…" : chaburaKind === "class" ? "Start class" : "Start chabura"}
               </button>
+              <FormHint
+                missing={[
+                  !chaburaName ? (chaburaKind === "class" ? "a class name" : "a chabura name") : null,
+                  !chaburaMasechet ? "a masechet" : null,
+                ].filter((m): m is string => m !== null)}
+              />
             </div>
 
             <div className="chevrusa-section">

@@ -43,7 +43,7 @@ function initState() {
 const TAP_MOVE_THRESHOLD = 6;
 
 export function SederSortScreen() {
-  const { recordSortCompletion } = useGameStats();
+  const { recordSortCompletion, recordSortProgress } = useGameStats();
   const [{ placed, pool }, setState] = useState(initState);
   const [drag, setDrag] = useState<DragState | null>(null);
   const [hoverBin, setHoverBin] = useState<string | null>(null);
@@ -62,6 +62,13 @@ export function SederSortScreen() {
     }
     if (!completed) recordedRef.current = false;
   }, [completed, recordSortCompletion]);
+
+  // Today's best placed-count, whether or not this attempt finishes —
+  // an abandoned attempt still gives the rebbe dashboard a real figure.
+  useEffect(() => {
+    if (placedCount > 0) recordSortProgress(placedCount, TOTAL);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [placedCount]);
 
   function handleReset() {
     setState(initState());

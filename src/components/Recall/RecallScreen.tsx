@@ -99,7 +99,7 @@ export function RecallScreen() {
   }, [phase]);
 
   useEffect(() => {
-    if (phase === "ended") recordChazaraResult(found.size);
+    if (phase === "ended") recordChazaraResult(found.size, scopeLabel);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase]);
 

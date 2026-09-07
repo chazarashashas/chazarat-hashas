@@ -28,6 +28,19 @@ export interface Group {
       context) stays consistent without re-choosing it each time. */
   pace: Pace;
   members: GroupMember[];
+  /** Faster than emailing eighteen addresses — a student who has the
+      code joins directly (see joinGroupByCode). Only ever set for a
+      class chabura; null otherwise. */
+  joinCode: string | null;
+}
+
+/** Whether I hold the "teacher" role in at least one class chabura — the
+    rebbe dashboard's sidebar entry and role gate both key off this
+    rather than a separate account type, since a rebbe who also learns
+    keeps their own streak and notes on the same account. */
+export function isRebbe(groups: Group[], userId: string | undefined): boolean {
+  if (!userId) return false;
+  return groups.some((g) => g.isClass && g.members.some((m) => m.userId === userId && m.role === "teacher"));
 }
 
 export interface PendingInvite {
@@ -111,7 +124,7 @@ export function useChevrusa() {
 
     if (groupIds.length > 0) {
       const [{ data: groupsData }, { data: membersData }, { data: activityData }] = await Promise.all([
-        supabase.from("groups").select("id, name, masechet_en, is_chabura, is_class, pace").in("id", groupIds),
+        supabase.from("groups").select("id, name, masechet_en, is_chabura, is_class, pace, join_code").in("id", groupIds),
         supabase.from("group_members").select("group_id, user_id, role").in("group_id", groupIds),
         supabase.from("group_activity").select("group_id, user_id, last_learned_date").in("group_id", groupIds),
       ]);
@@ -133,6 +146,7 @@ export function useChevrusa() {
         isChabura: g.is_chabura,
         isClass: g.is_class,
         pace: (g.pace as Pace) ?? "1",
+        joinCode: (g.join_code as string | null) ?? null,
         members: (membersData ?? [])
           .filter((m) => m.group_id === g.id)
           .map((m) => {
@@ -347,12 +361,16 @@ export function useChevrusa() {
     return null;
   }
 
-  /** Leaves a group — removes just your own membership row. If you were
-      the last member, the group itself is left orphaned (harmless: with
-      nobody left in group_members, nobody's RLS policy can see it
+  /** Leaves a group — removes your own membership row and, per the
+      dashboard brief's "leaving takes the data with it," your own
+      submission history for it too. Explicit rather than relying on a
+      cascade, so leaving doesn't silently depend on delete order. If you
+      were the last member, the group itself is left orphaned (harmless:
+      with nobody left in group_members, nobody's RLS policy can see it
       anymore, so it simply stops appearing anywhere). */
   async function leaveGroup(groupId: string): Promise<string | null> {
     if (!supabase || !session) return "Accounts aren't connected yet.";
+    await supabase.from("group_submissions").delete().eq("group_id", groupId).eq("user_id", session.user.id);
     const { error } = await supabase
       .from("group_members")
       .delete()
@@ -361,6 +379,27 @@ export function useChevrusa() {
     if (error) return friendlyError(error.message);
     await refresh();
     return null;
+  }
+
+  /** Joins a chabura by its join code — the student's own action of
+      entering a code they were given is the consent, same as accepting
+      an emailed invite (see join_group_by_code in the schema). */
+  async function joinByCode(code: string): Promise<string | null> {
+    if (!supabase || !session) return "Accounts aren't connected yet.";
+    const { error } = await supabase.rpc("join_group_by_code", { p_code: code.trim() });
+    if (error) return error.message.includes("Invalid") ? error.message : friendlyError(error.message);
+    await refresh();
+    return null;
+  }
+
+  /** Generates this chabura's first join code, or rotates it — old codes
+      stop working immediately since lookup is by exact match. */
+  async function rotateJoinCode(groupId: string): Promise<{ code: string | null; error: string | null }> {
+    if (!supabase) return { code: null, error: "Accounts aren't connected yet." };
+    const { data, error } = await supabase.rpc("rotate_join_code", { p_group_id: groupId });
+    if (error) return { code: null, error: friendlyError(error.message) };
+    await refresh();
+    return { code: data as string, error: null };
   }
 
   return {
@@ -374,6 +413,8 @@ export function useChevrusa() {
     cancelInvite,
     leaveGroup,
     updateGroupMasechet,
+    joinByCode,
+    rotateJoinCode,
     refresh,
   };
 }

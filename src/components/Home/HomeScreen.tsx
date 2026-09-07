@@ -13,6 +13,8 @@ import { hebrewNumeral } from "../../utils/hebrewNumeral";
 import { NudgeStrip } from "../NudgeStrip/NudgeStrip";
 import { nudgeCopy, pluralize } from "../../utils/nudgeCopy";
 import { readVersionsSeen, licenseDeedUrl } from "../../utils/translation";
+import { useTodaySnapshot } from "../../utils/useDailySubmission";
+import { TodayLearningCard } from "../TodayLearning/TodayLearningCard";
 import "./HomeScreen.css";
 
 interface Feature {
@@ -136,6 +138,8 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
   const { perekNotes } = usePerekNotes();
   const { isLoggedIn } = useAuth();
   const { groups } = useChevrusa();
+  const todaySnapshot = useTodaySnapshot();
+  const myShiurim = groups.filter((g) => g.isClass);
 
   const upNext = progress.todaysItems[0];
   const upNextSeder = upNext ? SEDARIM.find((s) => s.id === upNext.sederId) : undefined;
@@ -240,6 +244,10 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
             </div>
           </div>
         </div>
+
+        {myShiurim.map((g) => (
+          <TodayLearningCard key={g.id} group={g} snapshot={todaySnapshot} />
+        ))}
 
         <FlipCounter scopes={journeyScopes} />
 

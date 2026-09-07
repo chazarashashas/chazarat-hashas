@@ -1,0 +1,243 @@
+.today-learning-card {
+  background: var(--paper);
+  border-radius: 20px;
+  padding: 22px;
+  margin-top: 18px;
+}
+
+.today-learning-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.today-learning-card__title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 19px;
+  color: var(--ink);
+}
+
+.today-learning-card__sub {
+  margin: 2px 0 0;
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+.today-learning-card__date {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.today-activity-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface-hi);
+  border-radius: 13px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+
+.today-activity-row__tick {
+  flex-shrink: 0;
+  width: 21px;
+  height: 21px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+.today-activity-row__tick svg {
+  width: 13px;
+  height: 13px;
+}
+
+.today-activity-row__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.today-activity-row__label {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--ink);
+}
+
+.today-activity-row__detail {
+  margin: 1px 0 0;
+  font-size: 11px;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.today-activity-row__figure {
+  flex-shrink: 0;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.today-learning-card__send {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 44px;
+  margin-top: 10px;
+  background: var(--ink);
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 13.5px;
+  cursor: pointer;
+}
+
+.today-learning-card__send:hover:not(:disabled) {
+  background: var(--gold);
+  color: var(--ink);
+}
+
+.today-learning-card__send:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.today-learning-card__note {
+  margin: 8px 0 0;
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.today-learning-card--sent {
+  background: var(--seder-zeraim);
+  border-radius: 18px;
+  text-align: center;
+  color: #fff;
+}
+
+@keyframes today-sent-tick-pop {
+  0% {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes today-sent-rise {
+  from {
+    transform: translateY(-6px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.today-learning-card--sent {
+  animation: today-sent-rise 0.3s ease;
+}
+
+.today-sent__tick {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 800;
+  animation: today-sent-tick-pop 0.35s ease 0.1s both;
+}
+
+.today-sent__title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 17px;
+}
+
+.today-sent__summary {
+  margin: 4px 0 0;
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.today-sent__update {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 3px solid var(--gold);
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.today-sent__update button {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 11.5px;
+  color: #fff;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.today-week-strip {
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+  margin-top: 14px;
+}
+
+.today-week-strip__cell {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.today-week-strip__cell--sent {
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--seder-zeraim);
+}
+
+.today-week-strip__cell--missed {
+  background: #e5dcc4;
+  color: #e5dcc4;
+}
+
+.today-week-strip__cell--future {
+  background: #f0e9d7;
+  color: var(--muted);
+}

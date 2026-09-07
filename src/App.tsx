@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Sidebar } from "./components/Sidebar/Sidebar";
 import { MATCH_VIEWS } from "./data/matchViews";
 import { MatchBoard } from "./components/MatchBoard/MatchBoard";
@@ -19,11 +19,14 @@ import { LiluyNishmatScreen } from "./components/LiluyNishmat/LiluyNishmatScreen
 import { AdminScreen } from "./components/Admin/AdminScreen";
 import { ReviewScreen } from "./components/Review/ReviewScreen";
 import { FirstOpenPrompt } from "./components/FirstOpenPrompt/FirstOpenPrompt";
+import { RebbeDashboardScreen } from "./components/RebbeDashboard/RebbeDashboardScreen";
 import { useAuth } from "./utils/useAuth";
+import { useChevrusa, isRebbe } from "./utils/useChevrusa";
 import { useCloudSync } from "./utils/useCloudSync";
 import { useLearningProgress } from "./utils/useLearningProgress";
 import { usePerekNotes } from "./utils/usePerekNotes";
 import { useFirstOpenPrompt } from "./utils/useFirstOpenPrompt";
+import { useGameStats } from "./utils/useGameStats";
 import { countCompletedMasechtot } from "./utils/shasJourney";
 import { shuffle } from "./utils/shuffle";
 import type { ViewState } from "./types/viewState";
@@ -34,6 +37,7 @@ function initViewState(items: string[]): ViewState {
 }
 
 function SedarimSection() {
+  const { recordSidreiCompletion, recordSidreiProgress } = useGameStats();
   const [activeId, setActiveId] = useState(MATCH_VIEWS[0].id);
   const [viewStates, setViewStates] = useState<Record<string, ViewState>>(() =>
     Object.fromEntries(MATCH_VIEWS.map((v) => [v.id, initViewState(v.items)])),
@@ -41,10 +45,24 @@ function SedarimSection() {
 
   const activeView = MATCH_VIEWS.find((v) => v.id === activeId)!;
   const activeState = viewStates[activeId];
+  const activePlacedCount = activeView.items.length - activeState.pool.length;
 
   const clearedSederIds = new Set(
     MATCH_VIEWS.filter((v) => viewStates[v.id]?.placed.every((p) => p !== null)).map((v) => v.id),
   );
+
+  // Today's best placed-count across whichever view is active, plus one
+  // completion tick the first time a view is newly cleared this session
+  // — the rebbe dashboard's daily figure for this game.
+  const recordedClearsRef = useRef(new Set<string>());
+  useEffect(() => {
+    if (activePlacedCount > 0) recordSidreiProgress(activePlacedCount, activeView.items.length);
+    if (activePlacedCount === activeView.items.length && !recordedClearsRef.current.has(activeId)) {
+      recordedClearsRef.current.add(activeId);
+      recordSidreiCompletion();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeId, activePlacedCount]);
 
   function handlePlace(itemId: string, slotIndex: number) {
     setViewStates((prev) => {
@@ -105,6 +123,12 @@ function App() {
   const { session, isAdmin, isLoggedIn, signInWithGoogle } = useAuth();
   useCloudSync(session);
 
+  const { groups } = useChevrusa();
+  const myShiurimToTeach = groups.filter(
+    (g) => g.isClass && g.members.some((m) => m.userId === session?.user.id && m.role === "teacher"),
+  );
+  const amRebbe = isRebbe(groups, session?.user.id);
+
   const progress = useLearningProgress();
   const { perekNotes } = usePerekNotes();
   const noteCount = Object.values(perekNotes).reduce(
@@ -147,7 +171,7 @@ function App() {
 
   return (
     <div className="app">
-      <Sidebar activeId={section} onSelect={handleSelect} isAdmin={isAdmin} />
+      <Sidebar activeId={section} onSelect={handleSelect} isAdmin={isAdmin} isRebbe={amRebbe} />
       <main className="main">
         <div
           className={
@@ -198,6 +222,8 @@ function App() {
             <LiluyNishmatScreen onOpenLogin={(mode) => requestLogin("liluy", mode)} initialSlug={deepLinkSlug} />
           ) : section === "admin" ? (
             isAdmin ? <AdminScreen /> : <HomeScreen onNavigate={setSection} />
+          ) : section === "rebbe" ? (
+            amRebbe ? <RebbeDashboardScreen shiurim={myShiurimToTeach} /> : <HomeScreen onNavigate={setSection} />
           ) : (
             <RecallScreen />
           )}

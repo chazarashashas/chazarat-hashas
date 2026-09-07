@@ -28,6 +28,7 @@ const HUE: Record<string, string> = {
   dash: "var(--hue-dash)",
   resources: "var(--hue-resources)",
   admin: "var(--hue-login)",
+  rebbe: "var(--hue-login)",
 };
 
 /** Mirrors Home's own "My Mishna" / "Learning Tools" split, with Home
@@ -65,11 +66,15 @@ const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
     navigation, not buried mid-list (user feedback). */
 const LOGIN_ITEM: NavItem = { id: "login", label: "My Account", built: true };
 const ADMIN_ITEM: NavItem = { id: "admin", label: "Admin", built: true };
+const REBBE_ITEM: NavItem = { id: "rebbe", label: "Dashboard", built: true };
 
 interface SidebarProps {
   activeId: string;
   onSelect: (id: string) => void;
   isAdmin?: boolean;
+  /** Holds the "teacher" role in at least one class chabura — students
+      never see this entry (REBBE-DASHBOARD-BRIEF.md §5). */
+  isRebbe?: boolean;
 }
 
 function NavButton({ item, active, onSelect }: { item: NavItem; active: boolean; onSelect: (id: string) => void }) {
@@ -89,7 +94,7 @@ function NavButton({ item, active, onSelect }: { item: NavItem; active: boolean;
   );
 }
 
-export function Sidebar({ activeId, onSelect, isAdmin }: SidebarProps) {
+export function Sidebar({ activeId, onSelect, isAdmin, isRebbe }: SidebarProps) {
   return (
     <nav className="sidebar">
       <BrandMark variant="reversed" className="sidebar__brand" />
@@ -104,6 +109,11 @@ export function Sidebar({ activeId, onSelect, isAdmin }: SidebarProps) {
       {isAdmin && (
         <div className="nav-group nav-group--login">
           <NavButton item={ADMIN_ITEM} active={activeId === ADMIN_ITEM.id} onSelect={onSelect} />
+        </div>
+      )}
+      {isRebbe && (
+        <div className="nav-group nav-group--login">
+          <NavButton item={REBBE_ITEM} active={activeId === REBBE_ITEM.id} onSelect={onSelect} />
         </div>
       )}
       <div className="nav-group nav-group--login">

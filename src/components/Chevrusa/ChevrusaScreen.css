@@ -23,6 +23,50 @@
   padding: 0 0 14px;
 }
 
+.join-by-code {
+  margin-bottom: 16px;
+}
+
+.join-by-code__row {
+  display: flex;
+  gap: 8px;
+}
+
+.join-by-code__row input {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  box-sizing: border-box;
+  border-radius: var(--radius-control);
+  border: none;
+  background: var(--surface-hi);
+  padding: 0 14px;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.join-by-code__btn {
+  flex-shrink: 0;
+  min-height: 44px;
+  padding: 0 18px;
+  background: var(--ink);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-control);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+.join-by-code__btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .chevrusa-form {
   background: var(--surface);
   border-left: 3px solid var(--hue-chevrusa);
@@ -65,6 +109,13 @@
   border-radius: 50%;
   background: var(--bad-dot);
   flex-shrink: 0;
+}
+
+.chevrusa-form-hint {
+  margin: 8px 0 0;
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
 }
 
 .login-field {
