@@ -291,6 +291,10 @@
   margin-right: auto;
 }
 
+.home-panel .flip-counter {
+  margin-top: 18px;
+}
+
 .home-hero__btn {
   min-height: 36px;
   padding: 0 16px;
