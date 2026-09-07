@@ -11,12 +11,16 @@ alter table profiles add column if not exists is_admin boolean not null default 
 alter table profiles add column if not exists city text;
 alter table profiles add column if not exists country text;
 
--- One-time repair: creates a profiles row (blank — just the id) for any
--- account that signed up but never got one, so accounts that already
--- exist today are covered even before the admin_list_users fix below
--- makes future gaps merely cosmetic instead of invisible. Safe to re-run.
-insert into profiles (id)
-select u.id from auth.users u
+-- One-time repair: creates a profiles row for any account that signed
+-- up but never got one, so accounts that already exist today are
+-- covered even before the admin_list_users fix below makes future gaps
+-- merely cosmetic instead of invisible. username is NOT NULL (and
+-- presumably unique) with no default, so this needs a real placeholder
+-- rather than leaving it blank — the user's own id guarantees no
+-- collision. Safe to re-run.
+insert into profiles (id, username)
+select u.id, 'user_' || u.id::text
+from auth.users u
 left join profiles p on p.id = u.id
 where p.id is null
 on conflict (id) do nothing;
