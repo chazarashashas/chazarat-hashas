@@ -184,11 +184,10 @@ function ErrorRow({ message }: { message: string }) {
  */
 interface ChaburaScreenProps {
   onOpenLogin?: (mode?: "signIn" | "signUp") => void;
-  onOpenNishmat?: () => void;
   onNavigate?: (id: string) => void;
 }
 
-export function ChaburaScreen({ onOpenLogin, onOpenNishmat, onNavigate }: ChaburaScreenProps) {
+export function ChaburaScreen({ onOpenLogin, onNavigate }: ChaburaScreenProps) {
   const { session } = useAuth();
   const {
     groups,
@@ -376,12 +375,6 @@ export function ChaburaScreen({ onOpenLogin, onOpenNishmat, onNavigate }: Chabur
         </button>
 
         <ReceivedNudges />
-
-        {onOpenNishmat && (
-          <button className="chevrusa-nishmat-link" onClick={onOpenNishmat}>
-            Looking for a bigger group commitment? Join a siyum in L'Iluy Nishmat →
-          </button>
-        )}
 
         <CreateCard
           heading={chaburaKind === "shiur" ? "Open one for your class" : "Start a chabura"}

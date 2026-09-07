@@ -217,11 +217,7 @@ function App() {
           ) : section === "chevrusa" ? (
             <ChevrusaScreen onOpenLogin={(mode) => requestLogin("chevrusa", mode)} onNavigate={setSection} />
           ) : section === "chabura" ? (
-            <ChaburaScreen
-              onOpenLogin={(mode) => requestLogin("chabura", mode)}
-              onOpenNishmat={() => handleSelect("liluy")}
-              onNavigate={setSection}
-            />
+            <ChaburaScreen onOpenLogin={(mode) => requestLogin("chabura", mode)} onNavigate={setSection} />
           ) : section === "liluy" ? (
             <LiluyNishmatScreen onOpenLogin={(mode) => requestLogin("liluy", mode)} initialSlug={deepLinkSlug} />
           ) : section === "admin" ? (
