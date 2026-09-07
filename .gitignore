@@ -13,6 +13,12 @@ dist-ssr
 dev-dist
 *.local
 
+# Android: the web build Capacitor copies in on every `npx cap sync
+# android` — regenerated from dist/, not source. Run that sync before
+# building so this folder reflects the latest web code.
+android/app/src/main/assets/public
+android/app/src/main/assets/capacitor.config.json
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
