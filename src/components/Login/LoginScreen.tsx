@@ -30,6 +30,38 @@ const RESET_ITEMS = [
   },
 ] as const;
 
+/** A real modal, not an inline swap — resetting is destructive enough
+    that confirming needs its own deliberate click away from wherever the
+    triggering "Reset" button was, not a button that can land under a
+    fast second click at roughly the same spot. */
+function ResetConfirmModal({
+  label,
+  onConfirm,
+  onCancel,
+}: {
+  label: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  return (
+    <div className="scrim" onClick={onCancel}>
+      <div className="popup reset-confirm-popup" onClick={(e) => e.stopPropagation()}>
+        <p className="popup__mark" aria-hidden="true">
+          ↺
+        </p>
+        <p className="popup__text">Reset {label}?</p>
+        <p className="reset-confirm-popup__hint">This can't be undone.</p>
+        <button className="restart reset-confirm-popup__confirm" onClick={onConfirm}>
+          Yes, reset
+        </button>
+        <button className="reset-confirm-popup__cancel" onClick={onCancel}>
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /** Resets specific trackers back to empty — separate from deleting the
     account itself below. Deliberately doesn't touch L'Iluy Nishmat
     claims (a commitment tied to other people's dedications, not a
@@ -48,28 +80,20 @@ function ResetProgressSection() {
     game_stats: reset.resetGameStats,
     everything: reset.resetEverything,
   };
+  const labelFor: Record<string, string> = {
+    ...Object.fromEntries(RESET_ITEMS.map((item) => [item.key, item.label])),
+    everything: "everything",
+  };
 
-  function handleConfirm(key: string) {
-    actionFor[key]();
+  function handleConfirm() {
+    if (!confirming) return;
+    actionFor[confirming]();
+    setJustReset(confirming);
     setConfirming(null);
-    setJustReset(key);
-    window.setTimeout(() => setJustReset((prev) => (prev === key ? null : prev)), 3000);
+    window.setTimeout(() => setJustReset((prev) => (prev === confirming ? null : prev)), 3000);
   }
 
-  function renderAction(key: string, confirmLabel: string, danger?: boolean) {
-    if (confirming === key) {
-      return (
-        <div className="reset-row__confirm">
-          <span className="reset-row__confirm-text">Sure? This can't be undone.</span>
-          <button className="reset-row__confirm-yes" onClick={() => handleConfirm(key)}>
-            {confirmLabel}
-          </button>
-          <button className="reset-row__confirm-no" onClick={() => setConfirming(null)}>
-            Cancel
-          </button>
-        </div>
-      );
-    }
+  function renderAction(key: string, danger?: boolean) {
     if (justReset === key) return <span className="reset-row__done">Reset ✓</span>;
     return (
       <button
@@ -91,7 +115,7 @@ function ResetProgressSection() {
               <p className="reset-row__label">{item.label}</p>
               <p className="reset-row__desc">{item.desc}</p>
             </div>
-            {renderAction(item.key, "Yes, reset")}
+            {renderAction(item.key)}
           </div>
         ))}
         <div className="reset-row reset-row--everything">
@@ -102,9 +126,12 @@ function ResetProgressSection() {
               memberships stay.
             </p>
           </div>
-          {renderAction("everything", "Yes, reset everything", true)}
+          {renderAction("everything", true)}
         </div>
       </div>
+      {confirming && (
+        <ResetConfirmModal label={labelFor[confirming]} onConfirm={handleConfirm} onCancel={() => setConfirming(null)} />
+      )}
     </>
   );
 }

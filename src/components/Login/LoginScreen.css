@@ -282,49 +282,42 @@
   color: #fff;
 }
 
-.reset-row__confirm {
-  flex-shrink: 0;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 6px;
-  max-width: 200px;
+.reset-confirm-popup {
+  width: 280px;
 }
 
-.reset-row__confirm-text {
-  flex: 1 1 100%;
-  text-align: right;
-  font-size: 10px;
+.reset-confirm-popup__hint {
+  margin: 4px 0 0;
+  font-size: 11.5px;
   color: var(--bad);
 }
 
-.reset-row__confirm-yes {
-  padding: 6px 10px;
-  border: none;
-  border-radius: 8px;
+.reset-confirm-popup__confirm {
+  margin-top: 16px;
   background: var(--bad);
-  color: #fff;
-  font-family: var(--font-heading);
-  font-size: 10.5px;
-  font-weight: 700;
-  cursor: pointer;
 }
 
-.reset-row__confirm-yes:hover {
+.reset-confirm-popup__confirm:hover {
   background: #8f1e18;
 }
 
-.reset-row__confirm-no {
-  padding: 6px 10px;
+.reset-confirm-popup__cancel {
+  margin-top: 8px;
+  width: 100%;
+  min-height: 40px;
   border: 1.5px solid var(--line);
-  border-radius: 8px;
-  background: var(--surface-hi);
+  border-radius: var(--radius-control);
+  background: none;
   color: var(--muted);
   font-family: var(--font-heading);
-  font-size: 10.5px;
-  font-weight: 700;
+  font-weight: 600;
+  font-size: 12.5px;
   cursor: pointer;
+}
+
+.reset-confirm-popup__cancel:hover {
+  color: var(--ink);
+  border-color: var(--ink);
 }
 
 .reset-row__done {

@@ -14,10 +14,46 @@ const RESET_SCOPES = [
   { value: "everything", label: "Everything" },
 ] as const;
 
-/** One user row's reset control — a scope picker plus its own inline
+/** A real modal, not an inline swap — the same deliberate-second-click
+    guard as the self-service reset (see LoginScreen's ResetConfirmModal),
+    since this one acts on someone else's account. */
+function AdminResetConfirmModal({
+  scopeLabel,
+  email,
+  busy,
+  onConfirm,
+  onCancel,
+}: {
+  scopeLabel: string;
+  email: string;
+  busy: boolean;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  return (
+    <div className="scrim" onClick={busy ? undefined : onCancel}>
+      <div className="popup reset-confirm-popup" onClick={(e) => e.stopPropagation()}>
+        <p className="popup__mark" aria-hidden="true">
+          ↺
+        </p>
+        <p className="popup__text">
+          Reset {scopeLabel} for {email}?
+        </p>
+        <p className="reset-confirm-popup__hint">This can't be undone.</p>
+        <button className="restart reset-confirm-popup__confirm" disabled={busy} onClick={onConfirm}>
+          {busy ? "Resetting…" : "Yes, reset"}
+        </button>
+        <button className="reset-confirm-popup__cancel" disabled={busy} onClick={onCancel}>
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/** One user row's reset control — a scope picker plus its own modal
     confirm, since this calls admin_reset_user_data (see
-    account_reset_schema.sql) on someone else's account and needs its own
-    guard against a stray click, same as the self-service version. */
+    account_reset_schema.sql) on someone else's account. */
 function AdminResetCell({ userId, email }: { userId: string; email: string }) {
   const [scope, setScope] = useState<string>(RESET_SCOPES[0].value);
   const [confirming, setConfirming] = useState(false);
@@ -36,20 +72,6 @@ function AdminResetCell({ userId, email }: { userId: string; email: string }) {
 
   if (message) return <span className="admin-reset__message">{message}</span>;
 
-  if (confirming) {
-    return (
-      <span className="admin-reset__confirm">
-        <span>Reset {RESET_SCOPES.find((s) => s.value === scope)?.label} for {email}?</span>
-        <button className="admin-reset__confirm-yes" disabled={busy} onClick={handleConfirm}>
-          {busy ? "…" : "Yes"}
-        </button>
-        <button className="admin-reset__confirm-no" disabled={busy} onClick={() => setConfirming(false)}>
-          Cancel
-        </button>
-      </span>
-    );
-  }
-
   return (
     <span className="admin-reset">
       <select className="admin-reset__select" value={scope} onChange={(e) => setScope(e.target.value)}>
@@ -62,6 +84,15 @@ function AdminResetCell({ userId, email }: { userId: string; email: string }) {
       <button className="admin-reset__btn" onClick={() => setConfirming(true)}>
         Reset
       </button>
+      {confirming && (
+        <AdminResetConfirmModal
+          scopeLabel={RESET_SCOPES.find((s) => s.value === scope)?.label ?? scope}
+          email={email}
+          busy={busy}
+          onConfirm={handleConfirm}
+          onCancel={() => setConfirming(false)}
+        />
+      )}
     </span>
   );
 }
