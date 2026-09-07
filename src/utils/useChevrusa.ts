@@ -327,9 +327,11 @@ export function useChevrusa() {
 
   async function acceptInvite(invite: PendingInvite): Promise<string | null> {
     if (!supabase || !session) return "Accounts aren't connected yet.";
+    // role is explicit, not left to whatever the column defaults to —
+    // accepting an invite always makes you a member, never a teacher.
     const { error: memberError } = await supabase
       .from("group_members")
-      .insert({ group_id: invite.groupId, user_id: session.user.id });
+      .insert({ group_id: invite.groupId, user_id: session.user.id, role: "member" });
     if (memberError) return friendlyError(memberError.message);
 
     const { error: updateError } = await supabase
