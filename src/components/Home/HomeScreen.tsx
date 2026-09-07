@@ -1,15 +1,12 @@
 import { useState } from "react";
-import { SEDARIM } from "../../data/shas";
 import { useLearningProgress } from "../../utils/useLearningProgress";
 import { usePerekNotes } from "../../utils/usePerekNotes";
 import { useAuth } from "../../utils/useAuth";
 import { useChevrusa } from "../../utils/useChevrusa";
-import { buildJourneyScopes } from "../../utils/shasJourney";
 import { NavIcon } from "../Sidebar/NavIcon";
 import { BrandMark } from "../BrandMark";
-import { FlipCounter } from "../FlipCounter/FlipCounter";
+import { ProgressHeaderBar } from "../ProgressHeaderBar/ProgressHeaderBar";
 import { useEscapeKey } from "../../utils/useEscapeKey";
-import { hebrewNumeral } from "../../utils/hebrewNumeral";
 import { NudgeStrip } from "../NudgeStrip/NudgeStrip";
 import { nudgeCopy, pluralize } from "../../utils/nudgeCopy";
 import { readVersionsSeen, licenseDeedUrl } from "../../utils/translation";
@@ -153,11 +150,6 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
     (g) => g.isClass && g.members.some((m) => m.userId === session?.user.id && m.role !== "teacher"),
   );
 
-  const upNext = progress.todaysItems[0];
-  const upNextSeder = upNext ? SEDARIM.find((s) => s.id === upNext.sederId) : undefined;
-  const ringPct = progress.shasPercent();
-  const journeyScopes = buildJourneyScopes(progress);
-
   const noteCount = Object.values(perekNotes).reduce(
     (total, notes) => total + notes.filter((n) => n && n.trim()).length,
     0,
@@ -224,49 +216,11 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
           <cite className="home-quote__source">— תענית ז׳ ב׳–ח׳ א׳</cite>
         </blockquote>
 
-        <div className="home-hero">
-          <div className="home-hero__ring" style={{ ["--ring-pct" as string]: `${ringPct}%` }}>
-            <span className="home-hero__ring-num">{ringPct}%</span>
-          </div>
-          <div className="home-hero__body">
-            {progress.finishedShas ? (
-              <p className="home-hero__title">You've finished all of Shas!</p>
-            ) : upNext ? (
-              <>
-                <p className="home-hero__label">Up next</p>
-                <p className="home-hero__title">
-                  {upNextSeder ? `${upNextSeder.en} · ` : ""}
-                  {upNext.masechetEn} {hebrewNumeral(upNext.perek)}:{upNext.mishnah}
-                </p>
-              </>
-            ) : (
-              <p className="home-hero__title">Ready when you are</p>
-            )}
-            <div className="home-hero__row">
-              {progress.streak.current > 0 ? (
-                <>
-                  <span className="home-hero__streak-dot" aria-hidden="true" />
-                  <span className="home-hero__streak">
-                    {progress.streak.current}-day streak
-                    {progress.streak.freezesAvailable > 0 &&
-                      ` · ${progress.streak.freezesAvailable} freeze${progress.streak.freezesAvailable === 1 ? "" : "s"} banked`}
-                  </span>
-                </>
-              ) : (
-                <span className="home-hero__streak">Learn today to start a streak</span>
-              )}
-              <button className="home-hero__btn" onClick={() => onNavigate("limmud")}>
-                Go to My Limmud
-              </button>
-            </div>
-          </div>
-        </div>
+        <ProgressHeaderBar progress={progress} onGoToLimmud={() => onNavigate("limmud")} />
 
         {myShiurim.map((g) => (
           <TodayLearningCard key={g.id} group={g} snapshot={todaySnapshot} />
         ))}
-
-        <FlipCounter scopes={journeyScopes} />
 
         <h2 className="home-section-title">My Mishna</h2>
         <FeatureGrid features={myMishnaWithStatus} onNavigate={onNavigate} />
