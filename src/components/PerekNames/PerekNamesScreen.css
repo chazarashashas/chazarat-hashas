@@ -3,37 +3,669 @@
   width: 100%;
 }
 
-.print-notes-trigger {
-  position: absolute;
-  top: 14px;
-  left: 14px;
-  background: var(--surface-hi);
-  border: 1.5px solid var(--line);
-  border-radius: var(--radius-pill);
-  padding: 5px 12px;
+.notes-panel {
+  text-align: left;
+}
+
+/* ---------- Header ---------- */
+
+.notes-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.notes-header__left {
+  min-width: 0;
+}
+
+.notes-header__title {
+  margin: 0 0 4px;
   font-family: var(--font-heading);
-  font-size: 10px;
+  font-size: clamp(26px, 4vw, 34px);
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--ink);
+}
+
+.notes-header__subtitle {
+  margin: 0;
+  max-width: 420px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.notes-header__right {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.notes-print-link {
+  /* Clears the shared panel's restart icon (position:absolute, top-right
+     corner of the panel) — without this the two controls' click targets
+     overlap at this screen's exact corner. */
+  margin-right: 26px;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 11.5px;
+  color: var(--brass-text);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.notes-print-link:hover {
+  color: var(--ink);
+}
+
+.docview-toggle {
+  display: flex;
+  gap: 2px;
+  background: #e5dcc4;
+  border-radius: var(--radius-pill);
+  padding: 3px;
+}
+
+.docview-toggle__btn {
+  min-height: 32px;
+  padding: 0 14px;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: none;
+  font-family: var(--font-heading);
+  font-size: 11px;
   font-weight: 700;
   color: var(--muted);
   cursor: pointer;
-  z-index: 2;
+  transition: background 0.15s ease, color 0.15s ease;
 }
 
-.print-notes-trigger:hover {
-  color: var(--ink);
-  border-color: var(--ink);
+.docview-toggle__btn--active {
+  background: var(--ink);
+  color: #fff;
 }
 
-.perek-body {
+/* ---------- Seder pills ---------- */
+
+.seder-pill-row {
   display: flex;
-  gap: 0;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 18px;
 }
 
-.concepts-doc {
+.seder-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 7px 14px;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--line);
+  background: var(--surface-hi);
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.seder-pill--active {
+  color: #fff;
+}
+
+.seder-pill:not(.seder-pill--active):hover {
+  border-color: var(--ink-2);
+}
+
+.seder-pill__he {
+  font-family: var(--font-hebrew);
+  font-size: 13.5px;
+  line-height: 1;
+}
+
+.seder-pill__en {
+  font-family: var(--font-body);
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+/* ---------- Masechet grid ---------- */
+
+.masechet-panel {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--active-seder-hue) 12%, var(--surface-hi));
+}
+
+.masechet-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--masechet-count, 6), minmax(0, 1fr));
+  gap: 5px;
+}
+
+.masechet-chip {
+  position: relative;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 4px;
+  border: none;
+  border-radius: 10px;
+  background: var(--surface-hi);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.masechet-chip--active {
+  background: var(--ink);
+}
+
+.masechet-chip__label {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-body);
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--ink-2);
+  text-align: center;
+}
+
+.masechet-chip--active .masechet-chip__label {
+  color: #fff;
+}
+
+.masechet-chip__badge {
+  position: absolute;
+  top: -6px;
+  right: -4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  font-family: var(--font-heading);
+  font-size: 9px;
+  font-weight: 800;
+  background: color-mix(in srgb, var(--active-seder-hue) 22%, var(--surface-hi));
+  color: var(--active-seder-ink);
+}
+
+.masechet-chip--active .masechet-chip__badge {
+  background: rgba(251, 248, 241, 0.22);
+  color: var(--surface);
+}
+
+/* ---------- Concepts band (on the perakim view) ---------- */
+
+.concepts-band {
+  margin-top: 12px;
+  padding: 12px 15px;
+  border-radius: 16px;
+  border-left: 3px solid var(--gold);
+  background: var(--surface-hi);
+}
+
+.concepts-band__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.concepts-band__title {
+  font-family: var(--font-heading);
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--brass-text);
+}
+
+.concepts-band__all {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.concepts-band__all:hover {
+  color: var(--ink);
+}
+
+.concepts-band__empty {
+  margin: 8px 0 0;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.concepts-band__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 6px;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 10px;
+  background: var(--surface);
+  text-align: left;
+  cursor: pointer;
+}
+
+.concepts-band__row-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.concepts-band__row-date {
+  flex-shrink: 0;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.source-pill {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+  background: color-mix(in srgb, var(--pill-hue) 16%, var(--surface-hi));
+  color: var(--pill-ink);
+}
+
+/* ---------- The page (masechet header + perek rows) ---------- */
+
+.notes-page {
+  margin-top: 14px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--surface);
+  padding-bottom: 8px;
+}
+
+.notes-page__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 12px 12px 0;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: var(--surface-hi);
+}
+
+.notes-page__masechet {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.notes-page__meta {
+  margin: 3px 0 0;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.notes-page__progress {
+  flex-shrink: 0;
+  min-width: 130px;
+  text-align: right;
+}
+
+.notes-page__progress-text {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+
+.notes-page__progress-text strong {
+  font-family: var(--font-heading);
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.notes-progress-bar {
+  margin-top: 6px;
+  width: 100%;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--track);
+  overflow: hidden;
+}
+
+.notes-progress-bar__fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.2s ease;
+}
+
+.notes-page__sentence {
+  margin: 10px 12px 4px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--paper);
+}
+
+.notes-page__sentence-label {
+  display: block;
+  margin-bottom: 4px;
+  font-family: var(--font-body);
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.notes-page__sentence input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  color: var(--ink);
+  padding: 0;
+}
+
+.notes-page__sentence input:focus {
+  outline: none;
+}
+
+.notes-page__sentence input::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+
+.notes-page__rows {
+  margin-top: 4px;
+  padding: 0 12px;
+}
+
+.notes-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 12px;
+  border-radius: 10px;
+  transition: background 0.15s ease;
+}
+
+.notes-row-wrap:not(:last-child) .notes-row {
+  border-bottom: 1px solid var(--line);
+}
+
+.notes-row:hover {
+  background: var(--paper);
+}
+
+.notes-row__tile {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  font-family: var(--font-hebrew);
+  font-size: 15px;
+  font-weight: 700;
+  background: color-mix(in srgb, var(--active-seder-hue) 12%, var(--surface-hi));
+  color: var(--active-seder-ink);
+}
+
+.notes-row__tile--named {
+  background: var(--active-seder-hue);
+  color: #fff;
+}
+
+.notes-row__rule {
+  flex-shrink: 0;
+  align-self: stretch;
+  width: 2px;
+  border-radius: 1px;
+  background: #eee8d9;
+}
+
+.notes-row__rule--named {
+  background: var(--active-seder-hue);
+}
+
+.notes-row__traditional {
+  flex-shrink: 0;
+  width: 132px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-hebrew);
+  font-size: 15px;
+  color: var(--active-seder-ink);
+  text-align: right;
+}
+
+.notes-row__input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  font-weight: 400;
+  color: var(--ink);
+  padding: 0 2px;
+}
+
+.notes-row__input--filled {
+  font-weight: 600;
+}
+
+.notes-row__input:focus {
+  outline: none;
+}
+
+.notes-row__input::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+
+.notes-row__more {
+  flex-shrink: 0;
+  min-height: 44px;
+  padding: 0 6px;
+  display: flex;
+  align-items: center;
+  border: none;
+  background: none;
+  font-family: var(--font-body);
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--muted);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.notes-row__more:hover,
+.notes-row__more--open {
+  color: var(--active-seder-ink);
+}
+
+/* ---------- Inline "More notes" expansion ---------- */
+
+.notes-expand {
+  margin: 2px 12px 12px 60px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border-left: 3px solid var(--active-seder-hue);
+  background: var(--surface-hi);
+  animation: notes-expand-pop 0.18s ease;
+}
+
+@keyframes notes-expand-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.notes-expand__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.notes-expand__title {
+  font-family: var(--font-heading);
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.notes-expand__saves {
+  flex-shrink: 0;
+  font-size: 10px;
+  font-style: italic;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.notes-expand__textarea {
+  width: 100%;
+  min-height: 80px;
+  border: none;
+  background: transparent;
+  resize: vertical;
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--ink);
+  padding: 0;
+}
+
+.notes-expand__textarea:focus {
+  outline: none;
+}
+
+.notes-expand__textarea::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+
+.notes-expand__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.notes-expand__read {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--font-body);
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--brass-text);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.notes-expand__read:hover {
+  color: var(--ink);
+}
+
+.notes-expand__done {
+  flex-shrink: 0;
+  min-height: 36px;
+  padding: 0 16px;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--ink);
+  color: #fff;
+  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.notes-expand__done:hover {
+  background: var(--gold);
+  color: var(--ink);
+}
+
+/* ---------- Concepts tab ---------- */
+
+.concepts-tab {
+  margin-top: 16px;
+}
+
+.concepts-tab__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.concepts-tab__title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.concepts-tab__count {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--brass-text);
+}
+
+.concepts-tab__list {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  max-height: 510px;
+  max-height: 520px;
   overflow-y: auto;
   scrollbar-width: thin;
 }
@@ -48,10 +680,10 @@
 
 .concept-card {
   background: var(--surface-hi);
-  border: 1.5px solid var(--border);
-  border-left: 3px solid var(--gold);
-  border-radius: 10px;
-  padding: 10px 14px;
+  border: none;
+  border-left: 3px solid var(--card-hue, var(--gold));
+  border-radius: 16px;
+  padding: 12px 14px;
   text-align: left;
 }
 
@@ -64,220 +696,93 @@
 }
 
 .concept-card__title {
-  font-family: var(--font-heading);
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--ink);
-}
-
-.concept-card__source {
-  font-size: 10.5px;
-  font-weight: 600;
-  color: var(--ink-soft);
-  white-space: nowrap;
-}
-
-.concept-card__note {
-  margin: 6px 0 0;
-  font-size: 12px;
-  color: var(--ink);
-  line-height: 1.4;
-}
-
-.concept-card__date {
-  display: block;
-  margin-top: 6px;
-  font-size: 9.5px;
-  color: var(--ink-soft);
-}
-
-/* Fixed height, sized for the longest real case (Keilim, 30 perakim) so
-   neither column ever resizes when you switch masechet, seder, or mode. */
-.perek-tabs {
-  width: 130px;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  height: 510px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  scrollbar-width: thin;
-  padding-right: 10px;
-}
-
-.perek-tab {
-  display: block;
-  width: 100%;
-  flex-shrink: 0;
-  text-align: left;
-  background: var(--surface);
-  border: none;
-  border-left: 3px solid transparent;
-  border-radius: var(--radius-control);
-  padding: 9px 12px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--ink);
-  cursor: pointer;
-  font-family: var(--font-body);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  transition: background 0.15s ease;
-}
-
-.perek-tab:hover {
-  background: var(--track);
-}
-
-.perek-tab--active {
-  background: var(--surface-hi);
-  border-left-color: var(--hue-notes);
-  color: var(--hue-notes);
-  font-weight: 700;
-}
-
-.perek-detail {
-  flex: 1;
-  min-width: 0;
-  height: 510px;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  background: var(--surface-hi);
-  border: none;
-  border-radius: var(--radius-page);
-  padding: 16px 18px;
-  border-left: 3px solid var(--hue-notes);
-}
-
-.perek-detail__label {
-  margin: 4px 0 14px;
+  margin: 0;
   font-family: var(--font-heading);
   font-size: 15px;
   font-weight: 700;
   color: var(--ink);
 }
 
-.perek-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-height: 34px;
+.concept-card__date {
   flex-shrink: 0;
-  border-bottom: 1px solid var(--line);
-}
-
-.perek-row__num {
-  width: 22px;
-  flex-shrink: 0;
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 1.35;
-  color: var(--hue-notes);
-  text-align: center;
-  font-family: var(--font-hebrew);
-}
-
-.perek-row__label {
-  width: 100px;
-  flex-shrink: 0;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--ink);
-  font-family: var(--font-body);
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-size: 10.5px;
+  color: var(--muted);
   white-space: nowrap;
 }
 
-.perek-row--sentence {
-  min-height: 38px;
-}
-
-.perek-row input {
-  flex: 1;
-  min-width: 0;
-  height: 100%;
-  border: none;
-  background: transparent;
-  padding: 0 4px;
-  font-size: 12px;
+.concept-card__body {
+  margin: 6px 0 0;
   font-family: var(--font-body);
+  font-size: 13px;
+  line-height: 1.7;
   color: var(--ink);
 }
 
-.perek-row input:focus {
-  outline: none;
-}
-
-.perek-row__notebook-btn {
-  flex-shrink: 0;
-  width: 26px;
-  height: 26px;
+.concept-card__foot {
   display: flex;
   align-items: center;
-  justify-content: center;
-  background: none;
-  border: none;
-  border-radius: 6px;
-  color: var(--faint);
-  cursor: pointer;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 10px;
 }
 
-.perek-row__notebook-btn:hover {
-  background: var(--track);
+.concept-card__goto {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--brass-text);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.concept-card__goto:hover {
   color: var(--ink);
 }
 
-.perek-row__notebook-btn--filled {
-  color: var(--hue-notes);
-}
+/* ---------- Phone ---------- */
 
-/* Below phone width the side-by-side notebook-tab layout leaves almost no
-   room for the detail column — inputs were shrinking to a few characters
-   wide. Stack instead: tabs become a wrapping pill row up top (styled as
-   plain pills, since the "index tab poking out from a spine" look only
-   reads correctly in a vertical list), detail column takes the full width.
-   Wrap rather than horizontal-scroll — a strip you have to scroll to see
-   the rest of is worse than a couple of short extra rows. */
-@media (max-width: 760px) {
-  .perek-body {
+@media (max-width: 640px) {
+  .notes-header {
     flex-direction: column;
+    gap: 12px;
+  }
+
+  .notes-header__right {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .masechet-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .notes-page__header {
+    flex-direction: column;
+    align-items: flex-start;
     gap: 10px;
   }
 
-  .perek-tabs {
+  .notes-page__progress {
     width: 100%;
-    height: auto;
-    flex-direction: row;
-    flex-wrap: wrap;
-    overflow: visible;
-    padding-right: 0;
-    gap: 5px;
+    text-align: left;
   }
 
-  .perek-tab {
-    flex-shrink: 0;
-    width: auto;
-    border-left: none;
-    border-bottom: 3px solid transparent;
-    border-radius: var(--radius-pill);
-    padding: 7px 12px;
-    font-size: 11px;
+  .notes-row__traditional {
+    width: 74px;
+    font-size: 13px;
   }
 
-  .perek-tab--active {
-    border-bottom-color: var(--hue-notes);
-  }
-
-  .perek-detail {
-    width: 100%;
-    border-left: 3px solid var(--hue-notes);
-    padding: 10px 12px 10px 16px;
-  }
-
-  .perek-row__label {
-    width: 38%;
+  .notes-expand {
+    margin-left: 12px;
   }
 }

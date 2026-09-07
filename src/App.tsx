@@ -177,7 +177,7 @@ function App() {
         <div
           className={
             "main__content" +
-            (section === "dash" || section === "limmud" || section === "map" || section === "liluy"
+            (section === "dash" || section === "limmud" || section === "map" || section === "liluy" || section === "perek"
               ? " main__content--wide"
               : "")
           }
@@ -191,7 +191,7 @@ function App() {
           ) : section === "mishna" ? (
             <MishnaIdScreen onOpenNotes={() => setSection("perek")} />
           ) : section === "perek" ? (
-            <PerekNamesScreen onOpenLogin={() => requestLogin("perek")} />
+            <PerekNamesScreen onOpenLogin={() => requestLogin("perek")} onOpenText={() => setSection("map")} />
           ) : section === "sort" ? (
             <SederSortScreen />
           ) : section === "dash" ? (
