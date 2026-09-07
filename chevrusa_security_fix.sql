@@ -17,6 +17,7 @@
 --    a pending invite for this exact group — and you can never grant
 --    yourself 'teacher' through the invite path, only the creator can.
 drop policy if exists "users can add themselves as a member" on group_members;
+drop policy if exists "users can add themselves as a member with a valid invite" on group_members;
 
 create policy "users can add themselves as a member with a valid invite" on group_members
   for insert
@@ -56,6 +57,7 @@ create policy "members can see fellow members" on group_members
 
 -- 3. group_activity: insert requires actually belonging to the group.
 drop policy if exists "users can upsert their own activity" on group_activity;
+drop policy if exists "members can upsert their own activity" on group_activity;
 
 create policy "members can upsert their own activity" on group_activity
   for insert
@@ -66,10 +68,14 @@ create policy "members can upsert their own activity" on group_activity
 
 -- 4. groups: no UPDATE/DELETE policy existed at all — updateGroupMasechet
 --    in the app has been silently failing for everyone.
+drop policy if exists "creator or teacher can update their group" on groups;
+
 create policy "creator or teacher can update their group" on groups
   for update
   using (created_by = auth.uid() or is_group_teacher(id, auth.uid()))
   with check (created_by = auth.uid() or is_group_teacher(id, auth.uid()));
+
+drop policy if exists "creator can delete their group" on groups;
 
 create policy "creator can delete their group" on groups
   for delete
@@ -77,6 +83,8 @@ create policy "creator can delete their group" on groups
 
 -- 5. profiles: no UPDATE policy existed — any rename-yourself feature
 --    would be silently failing too.
+drop policy if exists "you can update your own profile" on profiles;
+
 create policy "you can update your own profile" on profiles
   for update
   using (auth.uid() = id)
