@@ -184,6 +184,29 @@
   color: var(--muted);
 }
 
+.rebbe-row__week {
+  display: flex;
+  gap: 3px;
+}
+
+.rebbe-row__week-cell {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  background: #e5dcc4;
+}
+
+.rebbe-row__week-cell--sent {
+  background: var(--good);
+}
+
+@media (max-width: 420px) {
+  .rebbe-row__week-cell {
+    width: 10px;
+    height: 10px;
+  }
+}
+
 @media (max-width: 420px) {
   .rebbe-row {
     flex-wrap: wrap;

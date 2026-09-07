@@ -167,13 +167,17 @@ export function RebbeDashboardScreen({ shiurim }: RebbeDashboardScreenProps) {
   if (!group) return null;
 
   const standings = standingsBySilence(students, submissions);
-  const weekStart = new Date();
-  weekStart.setDate(weekStart.getDate() - 6);
-  const weekStartStr = weekStart.toISOString().slice(0, 10);
-  const weekCounts = new Map<string, number>();
+  const weekDays: string[] = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    weekDays.push(d.toISOString().slice(0, 10));
+  }
+  const sentDatesByStudent = new Map<string, Set<string>>();
   for (const s of submissions) {
-    if (s.date < weekStartStr) continue;
-    weekCounts.set(s.userId, (weekCounts.get(s.userId) ?? 0) + 1);
+    if (!weekDays.includes(s.date)) continue;
+    if (!sentDatesByStudent.has(s.userId)) sentDatesByStudent.set(s.userId, new Set());
+    sentDatesByStudent.get(s.userId)!.add(s.date);
   }
   const displayed = sortByName
     ? [...standings].sort((a, b) => (a.student.firstName ?? a.student.username ?? "").localeCompare(b.student.firstName ?? b.student.username ?? ""))
@@ -283,7 +287,17 @@ export function RebbeDashboardScreen({ shiurim }: RebbeDashboardScreenProps) {
                     </span>
                     <span className="rebbe-row__figures">
                       {view === "week" ? (
-                        <span className="rebbe-row__figure">{weekCounts.get(s.student.userId) ?? 0}/7 sent</span>
+                        <span className="rebbe-row__week" title={`${sentDatesByStudent.get(s.student.userId)?.size ?? 0}/7 sent`}>
+                          {weekDays.map((d) => (
+                            <span
+                              key={d}
+                              className={
+                                "rebbe-row__week-cell" +
+                                (sentDatesByStudent.get(s.student.userId)?.has(d) ? " rebbe-row__week-cell--sent" : "")
+                              }
+                            />
+                          ))}
+                        </span>
                       ) : s.todayActivities.length > 0 ? (
                         s.todayActivities.slice(0, 2).map((a) => (
                           <span key={a.key} className="rebbe-row__figure">
