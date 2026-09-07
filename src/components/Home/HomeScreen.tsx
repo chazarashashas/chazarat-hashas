@@ -7,11 +7,10 @@ import { NavIcon } from "../Sidebar/NavIcon";
 import { BrandMark } from "../BrandMark";
 import { ProgressHeaderBar } from "../ProgressHeaderBar/ProgressHeaderBar";
 import { useEscapeKey } from "../../utils/useEscapeKey";
-import { NudgeStrip } from "../NudgeStrip/NudgeStrip";
-import { nudgeCopy, pluralize } from "../../utils/nudgeCopy";
 import { readVersionsSeen, licenseDeedUrl } from "../../utils/translation";
 import { useTodaySnapshot } from "../../utils/useDailySubmission";
 import { TodayLearningCard } from "../TodayLearning/TodayLearningCard";
+import { ReceivedNudges } from "../GroupCard/ReceivedNudges";
 import "./HomeScreen.css";
 
 interface Feature {
@@ -189,25 +188,6 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
         </h1>
         <p className="panel__subtitle">let's learn shas, together</p>
 
-        {!isLoggedIn && (
-          <NudgeStrip
-            text={nudgeCopy(
-              [
-                progress.streak.current > 0 ? `${progress.streak.current}-day streak` : null,
-                progress.completions.length > 0 ? pluralize(progress.completions.length, "mishnah", "mishnayot") : null,
-              ],
-              "Saved on this device only.",
-            )}
-            actionLabel="Keep them →"
-            onAction={() => onNavigate("login")}
-          />
-        )}
-
-        <button className="home-new-here" onClick={() => setShowIntro(true)}>
-          <span className="home-new-here__title">How this app works</span>
-          <span className="home-new-here__sub">See how Shas is put together, and how this app tracks it.</span>
-        </button>
-
         <blockquote className="home-quote" dir="rtl">
           <p className="home-quote__text">
             "רֵישׁ לָקִישׁ אָמַר: אִם רָאִיתָ תַּלְמִיד שֶׁתַּלְמוּדוֹ קָשֶׁה עָלָיו כַּבַּרְזֶל — בִּשְׁבִיל מִשְׁנָתוֹ
@@ -216,7 +196,14 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
           <cite className="home-quote__source">— תענית ז׳ ב׳–ח׳ א׳</cite>
         </blockquote>
 
+        <ReceivedNudges />
+
         <ProgressHeaderBar progress={progress} onGoToLimmud={() => onNavigate("limmud")} />
+
+        <button className="home-new-here" onClick={() => setShowIntro(true)}>
+          <span className="home-new-here__title">How this app works</span>
+          <span className="home-new-here__sub">See how Shas is put together, and how this app tracks it.</span>
+        </button>
 
         {myShiurim.map((g) => (
           <TodayLearningCard key={g.id} group={g} snapshot={todaySnapshot} />

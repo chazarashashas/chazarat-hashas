@@ -52,15 +52,132 @@
 
 .group-card__members {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.group-member-wrap {
+  width: 100%;
 }
 
 .group-member {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   font-size: 11.5px;
+  color: var(--ink);
+  min-height: 22px;
+}
+
+.group-member__nudge-pill {
+  margin-left: 4px;
+  padding: 3px 9px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(184, 134, 43, 0.14);
+  color: var(--brass-text);
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.group-member__nudge-pill:hover {
+  background: rgba(184, 134, 43, 0.24);
+}
+
+.group-member__nudged {
+  margin-left: 4px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--gold);
+  color: var(--ink);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 10px;
+}
+
+.nudge-composer {
+  margin: 4px 0 4px 14px;
+  padding: 13px;
+  border-radius: 14px;
+  background: #faf3e0;
+}
+
+.nudge-composer__title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 12.5px;
+  color: var(--ink);
+}
+
+.nudge-composer__hint {
+  margin: 3px 0 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.nudge-composer__input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 9px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border);
+  background: var(--surface-hi);
+  padding: 0 10px;
+  font-size: 12px;
+  font-family: var(--font-body);
+  color: var(--ink);
+}
+
+.nudge-composer__input:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+
+.nudge-composer__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 9px;
+}
+
+.nudge-composer__send {
+  border: none;
+  border-radius: 11px;
+  padding: 8px 14px;
+  background: var(--gold);
+  color: var(--ink);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.nudge-composer__send:hover:not(:disabled) {
+  background: #d9a63d;
+}
+
+.nudge-composer__send:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.nudge-composer__cancel {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.nudge-composer__cancel:hover:not(:disabled) {
   color: var(--ink);
 }
 

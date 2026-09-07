@@ -1,0 +1,26 @@
+.received-nudges {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 14px 0;
+}
+
+.received-nudge {
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--gold);
+  color: var(--ink);
+}
+
+.received-nudge__from {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.received-nudge__note {
+  margin: 3px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+}

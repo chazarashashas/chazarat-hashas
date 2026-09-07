@@ -4,6 +4,7 @@ import { useAuth } from "../../utils/useAuth";
 import { useChevrusa, type PendingInvite, type SentInvite } from "../../utils/useChevrusa";
 import type { Pace } from "../../utils/useLearningProgress";
 import { GroupCard } from "../GroupCard/GroupCard";
+import { ReceivedNudges } from "../GroupCard/ReceivedNudges";
 import {
   FactCard,
   InviteRowPreview,
@@ -210,6 +211,8 @@ export function ChevrusaScreen({ onOpenLogin, onNavigate }: ChevrusaScreenProps)
           each on something different. Know when they've learned today — no streaks compared, no
           ranking, just "they showed up."
         </p>
+
+        <ReceivedNudges />
 
         <div className="chevrusa-form">
           <label className="login-field">

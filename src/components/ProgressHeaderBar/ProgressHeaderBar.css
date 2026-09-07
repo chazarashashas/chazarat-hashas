@@ -203,6 +203,25 @@
     gap: 16px;
   }
 
+  /* Stacked, "up next" leads (it's the actionable part) and the tracks
+     fall to the bottom — the passuk stays put in the middle. Targeted by
+     position since the row's two rule divs share one class. */
+  .phb-row > *:nth-child(1) {
+    order: 5;
+  }
+  .phb-row > *:nth-child(2) {
+    order: 2;
+  }
+  .phb-row > *:nth-child(3) {
+    order: 3;
+  }
+  .phb-row > *:nth-child(4) {
+    order: 4;
+  }
+  .phb-row > *:nth-child(5) {
+    order: 1;
+  }
+
   .phb-tracks {
     width: 100%;
     flex-basis: auto;

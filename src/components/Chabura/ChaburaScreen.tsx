@@ -5,6 +5,7 @@ import { useChevrusa, type PendingInvite, type SentInvite } from "../../utils/us
 import type { Pace } from "../../utils/useLearningProgress";
 import { useEscapeKey } from "../../utils/useEscapeKey";
 import { GroupCard } from "../GroupCard/GroupCard";
+import { ReceivedNudges } from "../GroupCard/ReceivedNudges";
 import {
   KindTabs,
   FactCard,
@@ -411,6 +412,8 @@ export function ChaburaScreen({ onOpenLogin, onOpenNishmat, onNavigate }: Chabur
         <button className="chabura-about-link" onClick={() => setAboutOpen(true)}>
           How rebbe &amp; talmid works →
         </button>
+
+        <ReceivedNudges />
 
         {onOpenNishmat && (
           <button className="chevrusa-nishmat-link" onClick={onOpenNishmat}>
