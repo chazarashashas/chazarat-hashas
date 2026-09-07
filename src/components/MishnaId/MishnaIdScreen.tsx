@@ -344,7 +344,9 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
       setQuizCardIndex(nextIndex);
       if (nextIndex >= QUIZ_LENGTH) {
         setQuizFinished(true);
-        recordQuizResult(finalScore, QUIZ_LENGTH);
+        const scopeLabel =
+          scopeType === "all" ? "All of Shas" : scopeType === "seder" ? (SEDARIM.find((s) => s.id === scopeValue)?.en ?? scopeValue) : scopeValue;
+        recordQuizResult(finalScore, QUIZ_LENGTH, scopeLabel);
         return;
       }
     }

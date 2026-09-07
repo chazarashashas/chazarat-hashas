@@ -67,13 +67,13 @@ export function useTodaySnapshot(): TodaySnapshot {
   }
 
   if (stats.quiz.today?.date === date) {
-    const { bestScore, bestOutOf } = stats.quiz.today;
+    const { bestScore, bestOutOf, scope } = stats.quiz.today;
     const pct = bestOutOf > 0 ? (bestScore / bestOutOf) * 100 : 0;
     const grade = pct >= 90 ? "A" : pct >= 80 ? "B" : pct >= 70 ? "C" : pct >= 60 ? "D" : "F";
     activities.push({
       key: "quiz",
       label: "Mishna Quiz",
-      detail: `${bestScore}/${bestOutOf} — ${grade}`,
+      detail: `${bestScore}/${bestOutOf} — ${grade}${scope ? ` — ${scope}` : ""}`,
       figure: grade,
       value: bestScore,
       outOf: bestOutOf,

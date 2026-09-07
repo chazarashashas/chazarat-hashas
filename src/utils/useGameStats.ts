@@ -8,6 +8,10 @@ interface DailyQuiz {
   date: string;
   bestScore: number;
   bestOutOf: number;
+  /** Which pool the quiz was played on — "All of Shas", a seder's name,
+      or one masechet — so the rebbe dashboard can say what was actually
+      studied, not just the grade. */
+  scope: string;
 }
 interface DailyDash {
   date: string;
@@ -78,7 +82,7 @@ export function useGameStats() {
     setRawStats((prevRaw) => updater(normalize(prevRaw)));
   }
 
-  function recordQuizResult(score: number, outOf: number) {
+  function recordQuizResult(score: number, outOf: number, scope: string) {
     const date = todayStr();
     setStats((prev) => ({
       ...prev,
@@ -86,7 +90,7 @@ export function useGameStats() {
         timesPlayed: prev.quiz.timesPlayed + 1,
         bestScore: score > prev.quiz.bestScore ? score : prev.quiz.bestScore,
         bestOutOf: score > prev.quiz.bestScore ? outOf : prev.quiz.bestOutOf || outOf,
-        today: bestToday(prev.quiz.today, { date, bestScore: score, bestOutOf: outOf }, (a, b) => a.bestScore > b.bestScore),
+        today: bestToday(prev.quiz.today, { date, bestScore: score, bestOutOf: outOf, scope }, (a, b) => a.bestScore > b.bestScore),
       },
     }));
   }
