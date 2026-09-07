@@ -15,7 +15,7 @@ const RESET_ITEMS = [
   {
     key: "daily_limmud",
     label: "Daily Limmud & streak",
-    desc: "Your sequential position in Shas, every completion, and your streak/freeze history.",
+    desc: "Your sequential position in Shas, every completion, and your streak.",
   },
   {
     key: "notes",
@@ -353,10 +353,6 @@ function AccountDashboard({ onNavigate }: { onNavigate?: (id: string) => void })
           <div className="account-stat">
             <p className="account-stat__num">{progress.streak.longest}</p>
             <p className="account-stat__label">longest streak</p>
-          </div>
-          <div className="account-stat">
-            <p className="account-stat__num">{progress.streak.freezesAvailable}</p>
-            <p className="account-stat__label">freezes banked</p>
           </div>
           <div className="account-stat">
             <p className="account-stat__num">{progress.completions.length}</p>
