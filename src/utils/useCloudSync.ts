@@ -19,6 +19,7 @@ const SYNC_KEYS = [
   "lastFreezeMilestone",
   "reviewState",
   "showEnglish",
+  "nishmatHiddenSiyumim",
 ] as const;
 
 type SyncBlob = Partial<Record<(typeof SYNC_KEYS)[number], unknown>>;
@@ -173,6 +174,7 @@ function mergeBlobs(local: SyncBlob, cloud: SyncBlob): SyncBlob {
     // load" is about not flickering before this merge runs, not about
     // this merge's own outcome.
     showEnglish: typeof cloud.showEnglish === "boolean" ? cloud.showEnglish : (local.showEnglish ?? false),
+    nishmatHiddenSiyumim: mergeUniqueBy(local.nishmatHiddenSiyumim, cloud.nishmatHiddenSiyumim, (item) => item as string),
   };
 }
 
