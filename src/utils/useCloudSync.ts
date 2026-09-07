@@ -204,6 +204,27 @@ function mergeBlobs(local: SyncBlob, cloud: SyncBlob): SyncBlob {
 export function useCloudSync(session: Session | null) {
   const hasMergedRef = useRef(false);
   const lastPushedRef = useRef<string | null>(null);
+  const wasSignedInRef = useRef(false);
+
+  // Clears this device's local cache on an actual sign-out (had a
+  // session, now don't) — not on first load while merely browsing
+  // anonymously. Without this, a second account signing in on the same
+  // device would inherit the first account's local data through the
+  // login merge below, since that merge treats local as authoritative.
+  // Safe for the account that just signed out: everything here was
+  // already pushed to their account before this fires.
+  useEffect(() => {
+    if (session) {
+      wasSignedInRef.current = true;
+      return;
+    }
+    if (!wasSignedInRef.current) return;
+    wasSignedInRef.current = false;
+    for (const key of SYNC_KEYS) {
+      localStorage.removeItem(PREFIX + key);
+    }
+    window.dispatchEvent(new Event(STORAGE_SYNC_EVENT));
+  }, [session]);
 
   useEffect(() => {
     if (!session || !supabase) {
