@@ -1,8 +1,12 @@
 import { useAdmin } from "../../utils/useAdmin";
+import { useAdminActivityGrid } from "../../utils/useAdminActivityGrid";
+import { RebbeGrid } from "../RebbeDashboard/RebbeDashboardScreen";
+import "../RebbeDashboard/RebbeDashboardScreen.css";
 import "./AdminScreen.css";
 
 export function AdminScreen() {
   const { overview, users, loading, error } = useAdmin(true);
+  const activityGrid = useAdminActivityGrid(true);
 
   return (
     <div className="stage">
@@ -48,6 +52,21 @@ export function AdminScreen() {
               </div>
             </div>
           )
+        )}
+
+        <h2 className="account-section-title">Today's activity — everyone, live</h2>
+        <p className="panel__subtitle" style={{ marginBottom: 12 }}>
+          Same figures the rebbe dashboard grid shows, read directly — nothing needs to be sent to you first.
+        </p>
+        {activityGrid.error && (
+          <p className="login-error" dir="ltr">
+            {activityGrid.error}
+          </p>
+        )}
+        {activityGrid.loading && activityGrid.students.length === 0 ? (
+          <p className="admin-loading">Loading…</p>
+        ) : (
+          <RebbeGrid students={activityGrid.students} submissions={activityGrid.submissions} />
         )}
 
         <h2 className="account-section-title">Users</h2>

@@ -18,6 +18,13 @@ export interface SubmissionActivity {
   /** The short right-aligned figure — "4 mishnayot", "B", "12/15",
       "47", "5 masechtot". Same source the grid's column reads. */
   figure: string;
+  /** Raw numbers behind `figure`, kept separately so the grid's shiur-
+      average row (REBBE-DASHBOARD-BRIEF.md §3b) can average honestly
+      instead of parsing a formatted string back apart. `outOf` is the
+      quiz's out-of or a placed-count's total; absent for plain counts
+      (limmud mishnayot, Dash score, Chazara recalled). */
+  value: number;
+  outOf?: number;
 }
 
 export interface TodaySnapshot {
@@ -55,6 +62,7 @@ export function useTodaySnapshot(): TodaySnapshot {
       label: "Daily Limmud",
       detail: parts.join("; "),
       figure: `${todaysCompletions.length} mishnah${todaysCompletions.length === 1 ? "" : "yot"}`,
+      value: todaysCompletions.length,
     });
   }
 
@@ -67,6 +75,8 @@ export function useTodaySnapshot(): TodaySnapshot {
       label: "Mishna Quiz",
       detail: `${bestScore}/${bestOutOf} — ${grade}`,
       figure: grade,
+      value: bestScore,
+      outOf: bestOutOf,
     });
   }
 
@@ -77,6 +87,8 @@ export function useTodaySnapshot(): TodaySnapshot {
       label: "Sidrei Hamishna",
       detail: `${placed} of ${total} placed`,
       figure: `${placed}/${total}`,
+      value: placed,
+      outOf: total,
     });
   }
 
@@ -87,6 +99,8 @@ export function useTodaySnapshot(): TodaySnapshot {
       label: "Seder Sort",
       detail: `${placed} of ${total} placed`,
       figure: `${placed}/${total}`,
+      value: placed,
+      outOf: total,
     });
   }
 
@@ -96,6 +110,7 @@ export function useTodaySnapshot(): TodaySnapshot {
       label: "Shas Dash",
       detail: `Best score ${stats.dash.today.bestScore}`,
       figure: String(stats.dash.today.bestScore),
+      value: stats.dash.today.bestScore,
     });
   }
 
@@ -106,6 +121,7 @@ export function useTodaySnapshot(): TodaySnapshot {
       label: "Mishna Chazara",
       detail: `${bestCount} recalled — ${scope}`,
       figure: `${bestCount} masechet${bestCount === 1 ? "" : "ot"}`,
+      value: bestCount,
     });
   }
 

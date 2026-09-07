@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAuth } from "../../utils/useAuth";
 import { useChevrusa, type Group } from "../../utils/useChevrusa";
 import { useRebbeChabura, standingsBySilence, historyFor, type StudentStanding } from "../../utils/useRebbeChabura";
+import type { SubmissionActivity } from "../../utils/useDailySubmission";
 import "./RebbeDashboardScreen.css";
 
 type View = "today" | "week" | "grid";
@@ -309,7 +310,7 @@ export function RebbeDashboardScreen({ shiurim }: RebbeDashboardScreenProps) {
   );
 }
 
-const GRID_ACTIVITIES: { key: string; label: string; unit: string }[] = [
+const GRID_ACTIVITIES: { key: SubmissionActivity["key"]; label: string; unit: string }[] = [
   { key: "limmud", label: "Limmud", unit: "mishnayot" },
   { key: "quiz", label: "Quiz", unit: "grade" },
   { key: "sidrei", label: "Sidrei", unit: "placed" },
@@ -318,55 +319,185 @@ const GRID_ACTIVITIES: { key: string; label: string; unit: string }[] = [
   { key: "chazara", label: "Chazara", unit: "recalled" },
 ];
 
-function RebbeGrid({
+function letterGradeFromPct(pct: number): string {
+  if (pct >= 90) return "A";
+  if (pct >= 80) return "B";
+  if (pct >= 70) return "C";
+  if (pct >= 60) return "D";
+  return "F";
+}
+const GPA_POINTS: Record<string, number> = { A: 4, B: 3, C: 2, D: 1, F: 0 };
+function gpaToLetter(gpa: number): string {
+  if (gpa >= 3.5) return "A";
+  if (gpa >= 2.5) return "B";
+  if (gpa >= 1.5) return "C";
+  if (gpa >= 0.5) return "D";
+  return "F";
+}
+
+/** Averages honestly over students who attempted, per REBBE-DASHBOARD-
+    BRIEF.md §3b: grades convert to a 4-point scale and back to the
+    nearest letter; placed/total figures average as a fraction; plain
+    counts average arithmetically. Never averages across activities. */
+function averageFigure(key: SubmissionActivity["key"], entries: SubmissionActivity[]): string | null {
+  if (entries.length === 0) return null;
+  if (key === "quiz") {
+    const gpas = entries.map((e) => GPA_POINTS[letterGradeFromPct((e.value / (e.outOf || 1)) * 100)] ?? 0);
+    return gpaToLetter(gpas.reduce((a, b) => a + b, 0) / gpas.length);
+  }
+  if (key === "sidrei" || key === "sort") {
+    const avgPlaced = Math.round(entries.reduce((a, e) => a + e.value, 0) / entries.length);
+    const total = entries[0].outOf ?? avgPlaced;
+    return `${avgPlaced}/${total}`;
+  }
+  return String(Math.round(entries.reduce((a, e) => a + e.value, 0) / entries.length));
+}
+
+function downloadCsv(
+  students: { userId: string; firstName: string | null; username: string | null }[],
+  todaysByStudent: Map<string, Map<string, SubmissionActivity>>,
+) {
+  const header = ["Student", ...GRID_ACTIVITIES.map((a) => a.label)];
+  const rows = students.map((st) => {
+    const figures = todaysByStudent.get(st.userId);
+    return [
+      st.firstName ?? st.username ?? "Student",
+      ...GRID_ACTIVITIES.map((a) => figures?.get(a.key)?.figure ?? ""),
+    ];
+  });
+  const csv = [header, ...rows]
+    .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","))
+    .join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `shiur-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+export function RebbeGrid({
   students,
   submissions,
 }: {
   students: { userId: string; firstName: string | null; username: string | null }[];
   submissions: ReturnType<typeof useRebbeChabura>["submissions"];
 }) {
+  const [mobileActivity, setMobileActivity] = useState<SubmissionActivity["key"]>(GRID_ACTIVITIES[0].key);
   const today = new Date().toISOString().slice(0, 10);
-  const todaysByStudent = new Map<string, Map<string, string>>();
+  const todaysByStudent = new Map<string, Map<string, SubmissionActivity>>();
   for (const s of submissions) {
     if (s.date !== today) continue;
-    const map = new Map(s.activities.map((a) => [a.key, a.figure]));
-    todaysByStudent.set(s.userId, map);
+    todaysByStudent.set(s.userId, new Map(s.activities.map((a) => [a.key, a])));
   }
 
+  const averages = GRID_ACTIVITIES.map((a) => {
+    const entries: SubmissionActivity[] = [];
+    for (const figures of todaysByStudent.values()) {
+      const entry = figures.get(a.key);
+      if (entry) entries.push(entry);
+    }
+    return { key: a.key, avg: averageFigure(a.key, entries), count: entries.length };
+  });
+
   return (
-    <div className="rebbe-grid-wrap">
-      <table className="rebbe-grid">
-        <thead>
-          <tr>
-            <th className="rebbe-grid__student-col">STUDENT</th>
-            {GRID_ACTIVITIES.map((a) => (
-              <th key={a.key}>
-                <span className="rebbe-grid__col-label">{a.label}</span>
-                <span className="rebbe-grid__col-unit">{a.unit}</span>
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {students.map((st) => {
-            const figures = todaysByStudent.get(st.userId);
-            return (
-              <tr key={st.userId}>
-                <td className="rebbe-grid__student-col">
-                  <span className="rebbe-grid__avatar">{initials(st.firstName, st.username)}</span>
-                  {st.firstName ?? st.username ?? "Student"}
-                </td>
-                {GRID_ACTIVITIES.map((a) => (
-                  <td key={a.key} className={figures?.get(a.key) ? "" : "rebbe-grid__empty"}>
-                    {figures?.get(a.key) ?? "—"}
+    <>
+      <div className="rebbe-grid-wrap rebbe-grid-wrap--desktop">
+        <table className="rebbe-grid">
+          <thead>
+            <tr>
+              <th className="rebbe-grid__student-col">STUDENT</th>
+              {GRID_ACTIVITIES.map((a) => (
+                <th key={a.key}>
+                  <span className="rebbe-grid__col-label">{a.label}</span>
+                  <span className="rebbe-grid__col-unit">{a.unit}</span>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {students.map((st) => {
+              const figures = todaysByStudent.get(st.userId);
+              return (
+                <tr key={st.userId}>
+                  <td className="rebbe-grid__student-col">
+                    <span className="rebbe-grid__avatar">{initials(st.firstName, st.username)}</span>
+                    {st.firstName ?? st.username ?? "Student"}
                   </td>
-                ))}
-              </tr>
+                  {GRID_ACTIVITIES.map((a) => {
+                    const entry = figures?.get(a.key);
+                    return (
+                      <td key={a.key} className={entry ? "" : "rebbe-grid__empty"}>
+                        {entry?.figure ?? "—"}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
+          <tfoot>
+            <tr className="rebbe-grid__avg-row">
+              <td className="rebbe-grid__student-col">Shiur average</td>
+              {averages.map((a) => (
+                <td key={a.key}>
+                  {a.avg ? (
+                    <>
+                      {a.avg}
+                      <span className="rebbe-grid__avg-count"> · {a.count} of {students.length}</span>
+                    </>
+                  ) : (
+                    "—"
+                  )}
+                </td>
+              ))}
+            </tr>
+          </tfoot>
+        </table>
+        <div className="rebbe-grid__foot">
+          <p className="rebbe-grid__legend">Em-dash means nothing attempted today, not a zero.</p>
+          <button className="rebbe-grid__csv" onClick={() => downloadCsv(students, todaysByStudent)}>
+            Export CSV
+          </button>
+        </div>
+      </div>
+
+      <div className="rebbe-grid-mobile">
+        <div className="pill-row rebbe-grid-mobile__pills">
+          {GRID_ACTIVITIES.map((a) => (
+            <button
+              key={a.key}
+              className={"pill" + (mobileActivity === a.key ? " pill--active" : "")}
+              onClick={() => setMobileActivity(a.key)}
+            >
+              {a.label}
+            </button>
+          ))}
+        </div>
+        <div className="rebbe-grid-mobile__list">
+          {students.map((st) => {
+            const entry = todaysByStudent.get(st.userId)?.get(mobileActivity);
+            return (
+              <div key={st.userId} className="rebbe-grid-mobile__row">
+                <span className="rebbe-grid__avatar">{initials(st.firstName, st.username)}</span>
+                <span className="rebbe-grid-mobile__name">{st.firstName ?? st.username ?? "Student"}</span>
+                <span className={entry ? "rebbe-grid-mobile__figure" : "rebbe-grid-mobile__figure rebbe-grid__empty"}>
+                  {entry?.figure ?? "—"}
+                </span>
+              </div>
             );
           })}
-        </tbody>
-      </table>
-      <p className="rebbe-grid__legend">Em-dash means nothing attempted today, not a zero.</p>
-    </div>
+        </div>
+        {(() => {
+          const avg = averages.find((a) => a.key === mobileActivity);
+          return avg?.avg ? (
+            <p className="rebbe-grid-mobile__avg">
+              Shiur average: {avg.avg} · {avg.count} of {students.length}
+            </p>
+          ) : null;
+        })()}
+      </div>
+    </>
   );
 }
