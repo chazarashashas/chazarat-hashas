@@ -56,7 +56,13 @@ const MY_MISHNA: Feature[] = [
   {
     id: "chevrusa",
     title: "Chevrusa",
-    desc: "Pair up with a study partner or start a chabura to learn together.",
+    desc: "Pair up one-on-one with a study partner.",
+    built: true,
+  },
+  {
+    id: "chabura",
+    title: "Chabura",
+    desc: "Start or join a group learning together, with or without a rebbe.",
     built: true,
   },
 ];
@@ -170,8 +176,13 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
     if (f.id === "perek" && noteCount > 0) {
       return { ...f, status: `${noteCount} note${noteCount === 1 ? "" : "s"} saved` };
     }
-    if (f.id === "chevrusa" && isLoggedIn && groups.length > 0) {
-      return { ...f, status: groups.length === 1 ? "1 active chevrusa" : `${groups.length} active chevrusot` };
+    if (f.id === "chevrusa" && isLoggedIn) {
+      const count = groups.filter((g) => !g.isChabura).length;
+      if (count > 0) return { ...f, status: count === 1 ? "1 active chevrusa" : `${count} active chevrusot` };
+    }
+    if (f.id === "chabura" && isLoggedIn) {
+      const count = groups.filter((g) => g.isChabura).length;
+      if (count > 0) return { ...f, status: count === 1 ? "1 active chabura" : `${count} active chaburot` };
     }
     return f;
   });

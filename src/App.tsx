@@ -14,6 +14,7 @@ import { DailyLimmudScreen } from "./components/DailyLimmud/DailyLimmudScreen";
 import { ProgressScreen } from "./components/Progress/ProgressScreen";
 import { LoginScreen } from "./components/Login/LoginScreen";
 import { ChevrusaScreen } from "./components/Chevrusa/ChevrusaScreen";
+import { ChaburaScreen } from "./components/Chabura/ChaburaScreen";
 import { MapOfShasScreen } from "./components/MapOfShas/MapOfShasScreen";
 import { LiluyNishmatScreen } from "./components/LiluyNishmat/LiluyNishmatScreen";
 import { AdminScreen } from "./components/Admin/AdminScreen";
@@ -214,8 +215,10 @@ function App() {
               onNavigate={setSection}
             />
           ) : section === "chevrusa" ? (
-            <ChevrusaScreen
-              onOpenLogin={(mode) => requestLogin("chevrusa", mode)}
+            <ChevrusaScreen onOpenLogin={(mode) => requestLogin("chevrusa", mode)} />
+          ) : section === "chabura" ? (
+            <ChaburaScreen
+              onOpenLogin={(mode) => requestLogin("chabura", mode)}
               onOpenNishmat={() => handleSelect("liluy")}
             />
           ) : section === "liluy" ? (

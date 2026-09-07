@@ -20,6 +20,7 @@ const HUE: Record<string, string> = {
   progress: "var(--hue-siyumim)",
   liluy: "var(--hue-chevrusa)",
   chevrusa: "var(--hue-chevrusa)",
+  chabura: "var(--hue-chevrusa)",
   login: "var(--hue-login)",
   sedarim: "var(--hue-sedarim)",
   mishna: "var(--hue-quiz)",
@@ -45,6 +46,7 @@ const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
       { id: "perek", label: "Mishna Notes", built: true },
       { id: "progress", label: "My Siyumim", built: true },
       { id: "chevrusa", label: "Chevrusa", built: true },
+      { id: "chabura", label: "Chabura", built: true },
     ],
   },
   {

@@ -1,0 +1,3 @@
+/* Chabura reuses Chevrusa's shared primitives (login-field, group-card,
+   invite-row, form-hint, etc. — see ../Chevrusa/ChevrusaScreen.css).
+   Nothing chabura-specific has needed its own rule yet. */

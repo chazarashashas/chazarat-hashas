@@ -373,6 +373,9 @@
 .home-card--chevrusa {
   --card-hue: var(--hue-chevrusa);
 }
+.home-card--chabura {
+  --card-hue: var(--hue-chevrusa);
+}
 .home-card--sedarim {
   --card-hue: var(--hue-sedarim);
 }

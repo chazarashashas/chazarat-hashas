@@ -265,7 +265,7 @@ function AccountDashboard({ onNavigate }: { onNavigate?: (id: string) => void })
         </button>
       </div>
 
-      <h2 className="account-section-title">Chevrusas</h2>
+      <h2 className="account-section-title">Chevrusa &amp; Chabura</h2>
       <div className="account-card">
         {groups.length === 0 ? (
           <p className="account-empty">You're not in a chevrusa or chabura yet.</p>
@@ -286,7 +286,7 @@ function AccountDashboard({ onNavigate }: { onNavigate?: (id: string) => void })
           </div>
         )}
         <button className="account-view-link" onClick={() => onNavigate?.("chevrusa")}>
-          Go to Chevrusa →
+          Go to Chevrusa &amp; Chabura →
         </button>
       </div>
 
