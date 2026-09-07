@@ -47,12 +47,19 @@ export function isAcceptableLicense(license: string | null | undefined): boolean
  * Deliberately a narrow allowlist rather than a denylist: only sources
  * confirmed Orthodox pass, so a translation this list hasn't reviewed
  * yet fails closed (English hidden) instead of shipping unreviewed.
- * Currently: Koren – Steinsaltz (Rabbi Adin Even-Israel Steinsaltz,
- * Koren Publishers Jerusalem; on Sefaria as "William Davidson Edition").
+ * Currently:
+ *  - Koren – Steinsaltz (Rabbi Adin Even-Israel Steinsaltz, Koren
+ *    Publishers Jerusalem; on Sefaria as "William Davidson Edition") —
+ *    covers mishnayot embedded in a Talmud Bavli page only.
+ *  - Rabbi Shraga Silverstein's translation of the Mishnah with Ovadia
+ *    of Bartenura's commentary (Mesivta Rabbi Chaim Berlin alumnus,
+ *    published by Feldheim; CC-BY) — covers all of Moed, Nashim, and
+ *    Nezikin plus Berachot, filling in several Gemara-less tractates
+ *    (e.g. Avot) that Koren-Steinsaltz doesn't reach.
  * Expand this deliberately, source by source — do not widen it to "not
  * obviously wrong" without checking who actually produced the text.
  */
-const VETTED_ORTHODOX_SOURCE_RE = /william davidson|koren|steinsaltz/i;
+const VETTED_ORTHODOX_SOURCE_RE = /william davidson|koren|steinsaltz|silverstein|bartenura/i;
 
 export function isVettedOrthodoxSource(versionTitle: string, shortVersionTitle?: string): boolean {
   return VETTED_ORTHODOX_SOURCE_RE.test(versionTitle) || (!!shortVersionTitle && VETTED_ORTHODOX_SOURCE_RE.test(shortVersionTitle));
@@ -123,6 +130,46 @@ export function readVersionsSeen(): TranslationAttribution[] {
  * has to come from the exact version object the displayed text came
  * from (TRANSLATION-BRIEF.md §4), not a guess.
  */
+/** Sefaria's default `?version=english` returns whichever version it
+    ranks highest priority — for plain Mishnah text that's usually
+    Mishnah Yomit, not the Orthodox-sourced version that may also exist
+    at lower priority (e.g. Avot has both Mishnah Yomit and the
+    Silverstein/Bartenura translation; a plain request returns the
+    former). So this lists what's actually available first and asks for
+    a vetted one by name, rather than trusting the default pick. */
+async function findVettedEnglishVersion(ref: string): Promise<Record<string, unknown> | null> {
+  let response: Response;
+  try {
+    response = await fetch(`https://www.sefaria.org/api/texts/versions/${encodeURIComponent(ref)}`);
+  } catch {
+    return null;
+  }
+  if (!response.ok) return null;
+
+  let list: unknown;
+  try {
+    list = await response.json();
+  } catch {
+    return null;
+  }
+  if (!Array.isArray(list)) return null;
+
+  return (
+    (list.find((v) => {
+      const version = v as Record<string, unknown>;
+      const versionTitle = typeof version.versionTitle === "string" ? version.versionTitle : "";
+      const shortVersionTitle = typeof version.shortVersionTitle === "string" ? version.shortVersionTitle : undefined;
+      const license = typeof version.license === "string" ? version.license : "";
+      return (
+        version.language === "en" &&
+        isAcceptableLicense(license) &&
+        versionTitle &&
+        isVettedOrthodoxSource(versionTitle, shortVersionTitle)
+      );
+    }) as Record<string, unknown> | undefined) ?? null
+  );
+}
+
 export async function fetchMishnaTranslation(
   masechet: string,
   perek: number,
@@ -130,8 +177,14 @@ export async function fetchMishnaTranslation(
 ): Promise<TranslationFetchResult> {
   const ref = SEFARIA_REF_BY_MASECHET[masechet];
   if (!ref) return { status: "unavailable" };
+  const fullRef = `${ref}.${perek}.${mishnah}`;
 
-  const url = `https://www.sefaria.org/api/v3/texts/${encodeURIComponent(`${ref}.${perek}.${mishnah}`)}?version=english`;
+  const vetted = await findVettedEnglishVersion(ref);
+  if (!vetted) return { status: "unavailable" };
+
+  const versionTitle = (vetted.versionTitle as string).trim();
+  const versionParam = `english|${versionTitle}`;
+  const url = `https://www.sefaria.org/api/v3/texts/${encodeURIComponent(fullRef)}?version=${encodeURIComponent(versionParam)}`;
 
   let response: Response;
   try {
@@ -157,15 +210,19 @@ export async function fetchMishnaTranslation(
   const text = typeof version.text === "string" ? stripTags(version.text) : "";
   if (!text) return { status: "unavailable" };
 
+  // Re-checked against the actual version this specific ref resolved to
+  // (not just the masechet-level lookup above) — a mishnah-range request
+  // can in principle resolve differently, so this is the real gate, not
+  // a formality.
   const license = typeof version.license === "string" ? version.license.trim() : "";
-  const versionTitle = typeof version.versionTitle === "string" ? version.versionTitle.trim() : "";
+  const confirmedTitle = typeof version.versionTitle === "string" ? version.versionTitle.trim() : "";
   const shortVersionTitle =
     typeof version.shortVersionTitle === "string" && version.shortVersionTitle ? version.shortVersionTitle : undefined;
-  if (!isAcceptableLicense(license) || !versionTitle) return { status: "unavailable" };
-  if (!isVettedOrthodoxSource(versionTitle, shortVersionTitle)) return { status: "unavailable" };
+  if (!isAcceptableLicense(license) || !confirmedTitle) return { status: "unavailable" };
+  if (!isVettedOrthodoxSource(confirmedTitle, shortVersionTitle)) return { status: "unavailable" };
 
   const attribution: TranslationAttribution = {
-    versionTitle,
+    versionTitle: confirmedTitle,
     versionTitleInHebrew: typeof version.versionTitleInHebrew === "string" && version.versionTitleInHebrew
       ? version.versionTitleInHebrew
       : undefined,
