@@ -214,7 +214,10 @@ export function GroupNotes({ groupId, masechetEn, subtitle }: { groupId: string;
 
   return (
     <div className="group-notes">
-      <p className="group-notes__label">Notes · {subtitle}</p>
+      <div className="group-notes__head">
+        <p className="group-notes__title">Shared notes</p>
+        <span className="group-notes__subtitle">{subtitle}</span>
+      </div>
       <NoteComposer onSave={(p, m, body) => addNote(p, m, body)} />
       {notes.length > 0 && (
         <div className="group-notes__list">

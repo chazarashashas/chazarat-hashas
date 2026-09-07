@@ -18,20 +18,23 @@ interface KindOption<T extends string> {
   note: string;
 }
 
-/** Chabura's internal two-way choice — shown both signed out (to preview
-    each kind before choosing) and signed in (to actually pick one when
-    starting a chabura). Same tabs, same styling, in both places. */
+/** Chabura's internal two-way choice — shown signed out (to preview each
+    kind before choosing), and signed in inside the navy create card (to
+    actually pick one when starting a chabura) — the "navy" variant
+    inverts for that dark ground per CHEVRUSA-CHABURA-BRIEF.md §2b. */
 export function KindTabs<T extends string>({
   options,
   value,
   onChange,
+  variant = "cream",
 }: {
   options: KindOption<T>[];
   value: T;
   onChange: (value: T) => void;
+  variant?: "cream" | "navy";
 }) {
   return (
-    <div className="gate2-kind-tabs">
+    <div className={"gate2-kind-tabs" + (variant === "navy" ? " gate2-kind-tabs--navy" : "")}>
       {options.map((opt) => {
         const active = opt.value === value;
         return (

@@ -17,6 +17,16 @@ import {
   BundlePreview,
   GateCTA,
 } from "../SignedOutGate/SignedOutGate";
+import {
+  CreateCard,
+  ShiurNotice,
+  FieldInset,
+  PaceSegment,
+  InviteRepeaterRow,
+  CreateCta,
+  JoinByCodeCard,
+  InviteQueueRow,
+} from "../GroupCreateCard/GroupCreateCard";
 import "../Chevrusa/ChevrusaScreen.css";
 import "./ChaburaScreen.css";
 
@@ -138,23 +148,6 @@ const PACE_OPTIONS: { value: Pace; label: string }[] = [
   { value: "perek", label: "1 Perek/day" },
 ];
 
-function PaceSelect({ value, onChange }: { value: Pace; onChange: (value: Pace) => void }) {
-  return (
-    <div className="pill-row">
-      {PACE_OPTIONS.map((opt) => (
-        <button
-          key={opt.value}
-          type="button"
-          className={"pill" + (value === opt.value ? " pill--active" : "")}
-          onClick={() => onChange(opt.value)}
-        >
-          {opt.label}
-        </button>
-      ))}
-    </div>
-  );
-}
-
 function MasechetSelect({ value, onChange }: { value: string; onChange: (value: string) => void }) {
   return (
     <select value={value} onChange={(e) => onChange(e.target.value)}>
@@ -181,65 +174,6 @@ function ErrorRow({ message }: { message: string }) {
   );
 }
 
-function missingFieldsHint(missing: string[]): string | null {
-  if (missing.length === 0) return null;
-  if (missing.length === 1) return `Add ${missing[0]} to continue.`;
-  return `Add ${missing.slice(0, -1).join(", ")} and ${missing[missing.length - 1]} to continue.`;
-}
-
-function FormHint({ missing }: { missing: string[] }) {
-  const hint = missingFieldsHint(missing);
-  if (!hint) return null;
-  return <p className="chevrusa-form-hint">{hint}</p>;
-}
-
-/** Joining by code is the faster alternative to being emailed an invite
-    — a rebbe reads the code out in shiur rather than typing eighteen
-    addresses. Entering it is the student's own consenting action, same
-    as accepting an emailed invite. */
-function JoinByCode() {
-  const { joinByCode } = useChevrusa();
-  const [code, setCode] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [joined, setJoined] = useState(false);
-
-  async function handleJoin() {
-    if (!code.trim()) return;
-    setBusy(true);
-    setError(null);
-    const result = await joinByCode(code);
-    setBusy(false);
-    if (result) setError(result);
-    else {
-      setJoined(true);
-      setCode("");
-      window.setTimeout(() => setJoined(false), 3000);
-    }
-  }
-
-  return (
-    <div className="join-by-code">
-      <label className="login-field">
-        <span className="login-field__label">Have a join code from your rebbe?</span>
-        <div className="join-by-code__row">
-          <input
-            type="text"
-            value={code}
-            onChange={(e) => setCode(e.target.value.toUpperCase())}
-            placeholder="e.g. K7M4XQ"
-            maxLength={6}
-          />
-          <button className="join-by-code__btn" disabled={busy || !code.trim()} onClick={handleJoin}>
-            {busy ? "…" : joined ? "Joined ✓" : "Join"}
-          </button>
-        </div>
-      </label>
-      {error && <ErrorRow message={error} />}
-    </div>
-  );
-}
-
 /**
  * Group learning — a chabura of any size, either a casual friends group
  * or a rebbe-led shiur/class. Split out from one-on-one chevrusa pairing
@@ -256,8 +190,18 @@ interface ChaburaScreenProps {
 
 export function ChaburaScreen({ onOpenLogin, onOpenNishmat, onNavigate }: ChaburaScreenProps) {
   const { session } = useAuth();
-  const { groups, pendingInvites, sentInvites, createGroup, addMembers, acceptInvite, declineInvite, cancelInvite, leaveGroup } =
-    useChevrusa();
+  const {
+    groups,
+    pendingInvites,
+    sentInvites,
+    createGroup,
+    addMembers,
+    acceptInvite,
+    declineInvite,
+    cancelInvite,
+    leaveGroup,
+    joinByCode,
+  } = useChevrusa();
 
   const [chaburaKind, setChaburaKind] = useState<ChaburaKind>("friends");
   const [chaburaName, setChaburaName] = useState("");
@@ -268,6 +212,24 @@ export function ChaburaScreen({ onOpenLogin, onOpenNishmat, onNavigate }: Chabur
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [aboutOpen, setAboutOpen] = useState(false);
+
+  const [joinCode, setJoinCode] = useState("");
+  const [joinBusy, setJoinBusy] = useState(false);
+  const [joined, setJoined] = useState(false);
+
+  async function handleJoinByCode() {
+    if (!joinCode.trim()) return;
+    setJoinBusy(true);
+    setError(null);
+    const result = await joinByCode(joinCode);
+    setJoinBusy(false);
+    if (result) setError(result);
+    else {
+      setJoined(true);
+      setJoinCode("");
+      window.setTimeout(() => setJoined(false), 3000);
+    }
+  }
 
   function updateMember(index: number, value: string) {
     setMemberEmails((prev) => prev.map((v, i) => (i === index ? value : v)));
@@ -421,80 +383,99 @@ export function ChaburaScreen({ onOpenLogin, onOpenNishmat, onNavigate }: Chabur
           </button>
         )}
 
-        <JoinByCode />
+        <CreateCard
+          heading={chaburaKind === "shiur" ? "Open one for your class" : "Start a chabura"}
+          subtitle="Name it, pick the masechet, and add whoever is learning it with you."
+        >
+          <KindTabs options={KIND_OPTIONS} value={chaburaKind} onChange={setChaburaKind} variant="navy" />
 
-        <label className="login-field">
-          <span className="login-field__label">Learning with</span>
-          <KindTabs options={KIND_OPTIONS} value={chaburaKind} onChange={setChaburaKind} />
-        </label>
+          {chaburaKind === "shiur" && (
+            <ShiurNotice text="You are opening this as the rebbe. Every talmid you add sends his day to you, and you will see the class as one row each." />
+          )}
 
-        {chaburaKind === "shiur" && (
-          <div className="note-banner login-notice">
-            As the Rebbe, you'll see each student's learned-today status, and their daily reports on
-            your Dashboard. Students only see their own — not their classmates'.
-          </div>
-        )}
+          <div className="create-card__fields">
+            <FieldInset label={chaburaKind === "shiur" ? "Class name" : "Chabura name"}>
+              <input
+                type="text"
+                value={chaburaName}
+                onChange={(e) => setChaburaName(e.target.value)}
+                placeholder={chaburaKind === "shiur" ? "e.g. 9th Grade Gemara" : "e.g. Tuesday Night Seder Nezikin"}
+              />
+            </FieldInset>
 
-        <div className="chevrusa-form">
-          <label className="login-field">
-            <span className="login-field__label">{chaburaKind === "shiur" ? "Class name" : "Chabura name"}</span>
-            <input
-              type="text"
-              value={chaburaName}
-              onChange={(e) => setChaburaName(e.target.value)}
-              placeholder={chaburaKind === "shiur" ? "e.g. 9th Grade Gemara" : "e.g. Tuesday Night Seder Nezikin"}
+            <FieldInset label="Masechet to learn together" select hint="Anywhere in Shas — it need not follow your own sequential limmud.">
+              <MasechetSelect value={chaburaMasechet} onChange={setChaburaMasechet} />
+            </FieldInset>
+
+            <PaceSegment
+              options={PACE_OPTIONS}
+              value={chaburaPace}
+              onChange={setChaburaPace}
+              hint="A shared target, not a rule — nobody is held to it and nobody is told when it slips."
             />
-          </label>
 
-          <label className="login-field">
-            <span className="login-field__label">Masechet to learn together</span>
-            <MasechetSelect value={chaburaMasechet} onChange={setChaburaMasechet} />
-          </label>
-
-          <label className="login-field">
-            <span className="login-field__label">Pace</span>
-            <PaceSelect value={chaburaPace} onChange={setChaburaPace} />
-          </label>
-
-          <div className="login-field">
-            <span className="login-field__label">
-              {chaburaKind === "shiur" ? "Invite students by email" : "Invite members by email"}
-            </span>
-            {memberEmails.map((email, i) => (
-              <div className="chabura-member-row" key={i}>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => updateMember(i, e.target.value)}
-                  placeholder={chaburaKind === "shiur" ? "student@example.com" : "member@example.com"}
-                />
-                <button
-                  type="button"
-                  className="chabura-member-remove"
-                  onClick={() => removeMemberField(i)}
-                  disabled={memberEmails.length === 1}
-                  title="Remove"
-                >
-                  ✕
-                </button>
+            <div>
+              <div className="create-field__label create-field__label-row">
+                <span>{chaburaKind === "shiur" ? "Invite students by email" : "Invite members by email"}</span>
+                <span className="create-field__count">{memberEmails.filter((e) => e.trim()).length} invited</span>
               </div>
-            ))}
-            <button type="button" className="chabura-add-member" onClick={addMemberField}>
-              + Add another member
-            </button>
+              <div className="invite-repeater-list">
+                {memberEmails.map((email, i) => (
+                  <InviteRepeaterRow
+                    key={i}
+                    value={email}
+                    onChange={(v) => updateMember(i, v)}
+                    onRemove={memberEmails.length > 1 ? () => removeMemberField(i) : undefined}
+                    placeholder={chaburaKind === "shiur" ? "student@example.com" : "member@example.com"}
+                  />
+                ))}
+              </div>
+              <button type="button" className="create-add-invite" onClick={addMemberField}>
+                + Add another
+              </button>
+            </div>
           </div>
 
           {error && <ErrorRow message={error} />}
 
-          <button className="restart" disabled={busy || !chaburaName || !chaburaMasechet} onClick={handleStartChabura}>
-            {busy ? "Creating…" : chaburaKind === "shiur" ? "Start class" : "Start chabura"}
-          </button>
-          <FormHint
-            missing={[
-              !chaburaName ? (chaburaKind === "shiur" ? "a class name" : "a chabura name") : null,
-              !chaburaMasechet ? "a masechet" : null,
-            ].filter((m): m is string => m !== null)}
+          <CreateCta
+            label={busy ? "Creating…" : chaburaKind === "shiur" ? "Open the class" : "Start the chabura"}
+            note="They get one invitation each, and the chabura is yours from the moment you open it."
+            disabled={busy || !chaburaName || !chaburaMasechet}
+            onClick={handleStartChabura}
           />
+        </CreateCard>
+
+        <JoinByCodeCard
+          heading="Joining one instead?"
+          value={joinCode}
+          onChange={setJoinCode}
+          onJoin={handleJoinByCode}
+          busy={joinBusy}
+          joined={joined}
+        />
+
+        <div className="chevrusa-section">
+          <p className="chevrusa-section__label">Waiting for you</p>
+          {chaburaPending.length === 0 ? (
+            <p className="chevrusa-empty">No pending invites.</p>
+          ) : (
+            chaburaPending.map((inv) => (
+              <InviteQueueRow
+                key={inv.id}
+                waitingOnMe
+                title={inv.groupName ? `Chabura "${inv.groupName}"` : "Chabura"}
+                detail={`${inv.masechetEn}${inv.fromName ? ` · from ${inv.fromName}` : ""}`}
+              >
+                <button className="invite-queue-row__accept" onClick={() => handleAccept(inv)}>
+                  Accept
+                </button>
+                <button className="invite-queue-row__text-btn" onClick={() => handleDecline(inv)}>
+                  Decline
+                </button>
+              </InviteQueueRow>
+            ))
+          )}
         </div>
 
         <div className="chevrusa-section">
@@ -512,45 +493,21 @@ export function ChaburaScreen({ onOpenLogin, onOpenNishmat, onNavigate }: Chabur
         </div>
 
         <div className="chevrusa-section">
-          <p className="chevrusa-section__label">Pending invites</p>
-          {chaburaPending.length === 0 ? (
-            <p className="chevrusa-empty">No pending invites.</p>
-          ) : (
-            chaburaPending.map((inv) => (
-              <div key={inv.id} className="invite-row">
-                <span className="invite-row__text">
-                  Chabura "{inv.groupName}" — {inv.masechetEn}
-                  {inv.fromName && <span className="invite-row__from"> · from {inv.fromName}</span>}
-                </span>
-                <button className="invite-row__accept" onClick={() => handleAccept(inv)}>
-                  Accept
-                </button>
-                <button className="invite-row__decline" onClick={() => handleDecline(inv)}>
-                  Decline
-                </button>
-              </div>
-            ))
-          )}
-        </div>
-
-        <div className="chevrusa-section">
-          <p className="chevrusa-section__label">Invites you've sent</p>
+          <p className="chevrusa-section__label">Invitations you've sent</p>
           {chaburaSent.length === 0 ? (
             <p className="chevrusa-empty">No outstanding invites.</p>
           ) : (
             chaburaSent.map((inv) => (
-              <div key={inv.id} className="invite-row">
-                <span className="invite-row__text">
-                  {inv.invitedEmail} — {inv.masechetEn}
-                  <span className="invite-row__from">
-                    {" "}
-                    · {inv.status === "declined" ? "declined" : "waiting for them to accept"}
-                  </span>
-                </span>
-                <button className="invite-row__decline" onClick={() => handleCancel(inv)}>
+              <InviteQueueRow
+                key={inv.id}
+                waitingOnMe={false}
+                title={inv.invitedEmail}
+                detail={inv.status === "declined" ? "Declined" : "Waiting for them to accept"}
+              >
+                <button className="invite-queue-row__text-btn" onClick={() => handleCancel(inv)}>
                   Cancel
                 </button>
-              </div>
+              </InviteQueueRow>
             ))
           )}
         </div>

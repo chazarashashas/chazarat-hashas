@@ -13,30 +13,14 @@ import {
   NoteCardPreview,
   GateCTA,
 } from "../SignedOutGate/SignedOutGate";
+import { CreateCard, FieldInset, PaceSegment, CreateCta, InviteQueueRow } from "../GroupCreateCard/GroupCreateCard";
 import "./ChevrusaScreen.css";
 
 const PACE_OPTIONS: { value: Pace; label: string }[] = [
   { value: "1", label: "1 Mishnah/day" },
-  { value: "2", label: "2 Mishnayot/day" },
+  { value: "2", label: "2/day" },
   { value: "perek", label: "1 Perek/day" },
 ];
-
-function PaceSelect({ value, onChange }: { value: Pace; onChange: (value: Pace) => void }) {
-  return (
-    <div className="pill-row">
-      {PACE_OPTIONS.map((opt) => (
-        <button
-          key={opt.value}
-          type="button"
-          className={"pill" + (value === opt.value ? " pill--active" : "")}
-          onClick={() => onChange(opt.value)}
-        >
-          {opt.label}
-        </button>
-      ))}
-    </div>
-  );
-}
 
 function MasechetSelect({ value, onChange }: { value: string; onChange: (value: string) => void }) {
   return (
@@ -62,21 +46,6 @@ function ErrorRow({ message }: { message: string }) {
       {message}
     </div>
   );
-}
-
-/** A disabled submit button with no explanation just looks broken —
-    names whatever's still missing so the next step is obvious, without
-    it reading as an error (nothing has gone wrong yet). */
-function missingFieldsHint(missing: string[]): string | null {
-  if (missing.length === 0) return null;
-  if (missing.length === 1) return `Add ${missing[0]} to continue.`;
-  return `Add ${missing.slice(0, -1).join(", ")} and ${missing[missing.length - 1]} to continue.`;
-}
-
-function FormHint({ missing }: { missing: string[] }) {
-  const hint = missingFieldsHint(missing);
-  if (!hint) return null;
-  return <p className="chevrusa-form-hint">{hint}</p>;
 }
 
 /**
@@ -214,37 +183,60 @@ export function ChevrusaScreen({ onOpenLogin, onNavigate }: ChevrusaScreenProps)
 
         <ReceivedNudges />
 
-        <div className="chevrusa-form">
-          <label className="login-field">
-            <span className="login-field__label">Invite by email</span>
-            <input
-              type="email"
-              value={inviteValue}
-              onChange={(e) => setInviteValue(e.target.value)}
-              placeholder="chevrusa@example.com"
+        <CreateCard heading="Start a chevrusa" subtitle="Pick the masechet and send one invitation. They see your progress on it once they accept.">
+          <div className="create-card__fields">
+            <FieldInset label="Masechet to learn together" select hint="Anywhere in Shas — it need not follow your own sequential limmud.">
+              <MasechetSelect value={masechetValue} onChange={setMasechetValue} />
+            </FieldInset>
+
+            <FieldInset label="Who are you learning with">
+              <input
+                type="email"
+                value={inviteValue}
+                onChange={(e) => setInviteValue(e.target.value)}
+                placeholder="Their email address…"
+              />
+            </FieldInset>
+
+            <PaceSegment
+              options={PACE_OPTIONS}
+              value={invitePace}
+              onChange={setInvitePace}
+              hint="A shared target, not a rule — nobody is held to it and nobody is told when it slips."
             />
-          </label>
-
-          <label className="login-field">
-            <span className="login-field__label">Masechet to learn together</span>
-            <MasechetSelect value={masechetValue} onChange={setMasechetValue} />
-          </label>
-
-          <label className="login-field">
-            <span className="login-field__label">Pace</span>
-            <PaceSelect value={invitePace} onChange={setInvitePace} />
-          </label>
+          </div>
 
           {error && <ErrorRow message={error} />}
 
-          <button className="restart" disabled={busy || !inviteValue || !masechetValue} onClick={handleSendInvite}>
-            {busy ? "Sending…" : "Send invite"}
-          </button>
-          <FormHint
-            missing={[!inviteValue ? "their email" : null, !masechetValue ? "a masechet" : null].filter(
-              (m): m is string => m !== null,
-            )}
+          <CreateCta
+            label={busy ? "Sending…" : "Send the invitation"}
+            note="One invitation, and nothing sent to anyone else."
+            disabled={busy || !inviteValue || !masechetValue}
+            onClick={handleSendInvite}
           />
+        </CreateCard>
+
+        <div className="chevrusa-section">
+          <p className="chevrusa-section__label">Waiting for you</p>
+          {chevrusaPending.length === 0 ? (
+            <p className="chevrusa-empty">No pending invites.</p>
+          ) : (
+            chevrusaPending.map((inv) => (
+              <InviteQueueRow
+                key={inv.id}
+                waitingOnMe
+                title={inv.fromName ? `${inv.fromName}` : "Someone"}
+                detail={`Chevrusa on ${inv.masechetEn}`}
+              >
+                <button className="invite-queue-row__accept" onClick={() => handleAccept(inv)}>
+                  Accept
+                </button>
+                <button className="invite-queue-row__text-btn" onClick={() => handleDecline(inv)}>
+                  Decline
+                </button>
+              </InviteQueueRow>
+            ))
+          )}
         </div>
 
         <div className="chevrusa-section">
@@ -261,45 +253,21 @@ export function ChevrusaScreen({ onOpenLogin, onNavigate }: ChevrusaScreenProps)
         </div>
 
         <div className="chevrusa-section">
-          <p className="chevrusa-section__label">Pending invites</p>
-          {chevrusaPending.length === 0 ? (
-            <p className="chevrusa-empty">No pending invites.</p>
-          ) : (
-            chevrusaPending.map((inv) => (
-              <div key={inv.id} className="invite-row">
-                <span className="invite-row__text">
-                  Chevrusa — {inv.masechetEn}
-                  {inv.fromName && <span className="invite-row__from"> · from {inv.fromName}</span>}
-                </span>
-                <button className="invite-row__accept" onClick={() => handleAccept(inv)}>
-                  Accept
-                </button>
-                <button className="invite-row__decline" onClick={() => handleDecline(inv)}>
-                  Decline
-                </button>
-              </div>
-            ))
-          )}
-        </div>
-
-        <div className="chevrusa-section">
-          <p className="chevrusa-section__label">Invites you've sent</p>
+          <p className="chevrusa-section__label">Invitations you've sent</p>
           {chevrusaSent.length === 0 ? (
             <p className="chevrusa-empty">No outstanding invites.</p>
           ) : (
             chevrusaSent.map((inv) => (
-              <div key={inv.id} className="invite-row">
-                <span className="invite-row__text">
-                  {inv.invitedEmail} — {inv.masechetEn}
-                  <span className="invite-row__from">
-                    {" "}
-                    · {inv.status === "declined" ? "declined" : "waiting for them to accept"}
-                  </span>
-                </span>
-                <button className="invite-row__decline" onClick={() => handleCancel(inv)}>
+              <InviteQueueRow
+                key={inv.id}
+                waitingOnMe={false}
+                title={inv.invitedEmail}
+                detail={inv.status === "declined" ? "Declined" : "Waiting for them to accept"}
+              >
+                <button className="invite-queue-row__text-btn" onClick={() => handleCancel(inv)}>
                   Cancel
                 </button>
-              </div>
+              </InviteQueueRow>
             ))
           )}
         </div>

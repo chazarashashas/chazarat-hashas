@@ -61,6 +61,21 @@
   color: var(--muted);
 }
 
+/* Navy variant — the create card's own ground, per §2b. Active stays
+   --surface with the same --muted note text either way; only the
+   inactive tab and the active ring invert for the dark ground. */
+.gate2-kind-tabs--navy .gate2-kind-tab {
+  background: rgba(240, 238, 230, 0.08);
+}
+
+.gate2-kind-tabs--navy .gate2-kind-tab--active {
+  box-shadow: inset 0 0 0 2px #d9a63d;
+}
+
+.gate2-kind-tabs--navy .gate2-kind-tab__note {
+  color: rgba(240, 238, 230, 0.62);
+}
+
 /* ---------- Fact cards ---------- */
 
 .gate2-facts {

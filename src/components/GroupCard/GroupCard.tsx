@@ -1,9 +1,12 @@
 import { useRef, useState } from "react";
 import type { Group, GroupMember } from "../../utils/useChevrusa";
+import type { Pace } from "../../utils/useLearningProgress";
 import { useGroupNudges } from "../../utils/useGroupNudges";
 import { useEscapeKey } from "../../utils/useEscapeKey";
 import { GroupNotes } from "./GroupNotes";
 import "./GroupCard.css";
+
+const PACE_LABEL: Record<Pace, string> = { "1": "1 a day", "2": "2 a day", perek: "1 perek a day" };
 
 function todayStr(): string {
   return new Date().toISOString().slice(0, 10);
@@ -39,7 +42,9 @@ function NudgeComposer({
   return (
     <div className="nudge-composer">
       <p className="nudge-composer__title">Nudge {name}</p>
-      <p className="nudge-composer__hint">It arrives as a short word of chizuk from you — add a line if you have one.</p>
+      <p className="nudge-composer__hint">
+        It arrives as a short word of chizuk from you. Add a line if you have one — that is usually the part that lands.
+      </p>
       <input
         className="nudge-composer__input"
         autoFocus
@@ -63,8 +68,9 @@ function NudgeComposer({
 
 /** One chevrusa or chabura's member list and actions — shared by both
     the Chevrusa and Chabura screens, since a pairing and a group are
-    rendered identically once you have the Group data: same avatar-dot
-    member row, same invite/leave actions, same class-visibility note. */
+    rendered identically once you have the Group data. "navy is what you
+    act on, cream is what already exists" (§2b) — this card is the cream
+    side: it sits quietly once you already have one. */
 export function GroupCard({
   group,
   meId,
@@ -77,7 +83,7 @@ export function GroupCard({
   onAddMembers: (groupId: string, email: string) => Promise<string | null>;
 }) {
   const today = todayStr();
-  const [addOpen, setAddOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [addEmail, setAddEmail] = useState("");
   const [addBusy, setAddBusy] = useState(false);
   const [addError, setAddError] = useState<string | null>(null);
@@ -93,6 +99,9 @@ export function GroupCard({
   }
 
   const me = group.members.find((m) => m.userId === meId);
+  const iAmTeacher = me?.role === "teacher";
+  const canInviteMore = group.isChabura && (!group.isClass || iAmTeacher);
+
   // Class chabura: only the teacher nudges, and only talmidim — matches
   // the brief's "a rebbe can nudge any talmid; talmidim do not nudge
   // each other there." Friends chabura or chevrusa: anyone nudges anyone.
@@ -101,7 +110,7 @@ export function GroupCard({
     if (m.lastLearnedDate === today) return false;
     if (nudgedTodayIds.has(m.userId)) return false;
     if (!group.isClass) return true;
-    return me?.role === "teacher" && m.role !== "teacher";
+    return iAmTeacher && m.role !== "teacher";
   }
 
   async function handleAdd() {
@@ -113,7 +122,6 @@ export function GroupCard({
       setAddError(result);
     } else {
       setAddEmail("");
-      setAddOpen(false);
     }
   }
 
@@ -129,24 +137,65 @@ export function GroupCard({
     }
   }
 
+  const subParts = [group.name, `${group.members.length} people`, PACE_LABEL[group.pace]].filter(
+    (p): p is string => Boolean(p),
+  );
+
+  const partnerName = !group.isChabura ? group.members.find((m) => m.userId !== meId) : undefined;
+
   return (
     <div className="group-card">
       <div className="group-card__head">
-        <span className="group-card__title">{group.name || group.masechetEn}</span>
-        {group.name && <span className="group-card__masechet">{group.masechetEn}</span>}
-        {group.isClass && <span className="group-card__class-badge">Class</span>}
+        <div className="group-card__head-text">
+          <p className="group-card__masechet">{group.masechetEn}</p>
+          <p className="group-card__sub">
+            {group.isChabura ? subParts.join(" · ") : [partnerName ? `With ${memberLabel(partnerName)}` : null, PACE_LABEL[group.pace]].filter(Boolean).join(" · ")}
+          </p>
+        </div>
+        <div className="group-card__head-actions">
+          {group.isClass && <span className="group-card__class-badge">Class</span>}
+          {group.joinCode && <span className="group-card__code-pill">{group.joinCode}</span>}
+          <div className="group-card__menu">
+            <button className="group-card__menu-btn" aria-label="More" onClick={() => setMenuOpen((v) => !v)}>
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+                <circle cx="5" cy="12" r="1.8" />
+                <circle cx="12" cy="12" r="1.8" />
+                <circle cx="19" cy="12" r="1.8" />
+              </svg>
+            </button>
+            {menuOpen && (
+              <div className="group-card__menu-popover" onMouseLeave={() => setMenuOpen(false)}>
+                <button
+                  className="group-card__menu-item group-card__menu-item--danger"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    onLeave(group.id);
+                  }}
+                >
+                  Leave
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
+
       <div className="group-card__members">
         {group.members.map((m) => (
           <div key={m.userId} className="group-member-wrap">
-            <span className="group-member">
+            <div className="group-member">
               <span
                 className={"group-member__dot" + (m.lastLearnedDate === today ? " group-member__dot--done" : "")}
                 role="img"
                 aria-label={m.lastLearnedDate === today ? "learned today" : "not yet today"}
               />
-              {m.userId === meId ? "You" : memberLabel(m)}
-              {m.role === "teacher" && <span className="group-member__role"> (Rebbe)</span>}
+              <span className="group-member__name">
+                {m.userId === meId ? "You" : memberLabel(m)}
+                {m.role === "teacher" && <span className="group-member__role"> (Rebbe)</span>}
+              </span>
+              <span className={"group-member__state" + (m.lastLearnedDate === today ? " group-member__state--done" : "")}>
+                {m.lastLearnedDate === today ? "learned today" : "not yet today"}
+              </span>
               {justNudged === m.userId ? (
                 <span className="group-member__nudged">Nudging</span>
               ) : (
@@ -166,7 +215,7 @@ export function GroupCard({
                   </button>
                 )
               )}
-            </span>
+            </div>
             {nudgeOpenFor === m.userId && (
               <NudgeComposer
                 name={memberLabel(m)}
@@ -177,47 +226,35 @@ export function GroupCard({
           </div>
         ))}
       </div>
+
       {nudgeError && (
         <p className="login-error" dir="ltr">
           {nudgeError}
         </p>
       )}
-      {group.isClass && group.members.some((m) => m.userId === meId && m.role === "member") && (
+      {group.isClass && !iAmTeacher && (
         <p className="group-card__class-note">Only you and the Rebbe can see your progress here.</p>
       )}
 
-      <div className="group-card__actions">
-        {group.isChabura &&
-          (!group.isClass || group.members.some((m) => m.userId === meId && m.role === "teacher")) &&
-          (addOpen ? (
-            <div className="group-card__add-row">
-              <input
-                type="email"
-                value={addEmail}
-                onChange={(e) => setAddEmail(e.target.value)}
-                placeholder="new.member@example.com"
-              />
-              <button className="group-card__add-confirm" disabled={addBusy || !addEmail} onClick={handleAdd}>
-                {addBusy ? "…" : "Invite"}
-              </button>
-              <button className="group-card__link" onClick={() => setAddOpen(false)}>
-                Cancel
-              </button>
-            </div>
-          ) : (
-            <button className="group-card__link" onClick={() => setAddOpen(true)}>
-              + Invite more
-            </button>
-          ))}
-        <button className="group-card__link group-card__link--leave" onClick={() => onLeave(group.id)}>
-          Leave
-        </button>
-      </div>
+      {canInviteMore && (
+        <div className="group-card__add-row">
+          <input
+            type="email"
+            value={addEmail}
+            onChange={(e) => setAddEmail(e.target.value)}
+            placeholder="Add another by email…"
+          />
+          <button className="group-card__add-confirm" disabled={addBusy || !addEmail} onClick={handleAdd}>
+            {addBusy ? "…" : "Invite"}
+          </button>
+        </div>
+      )}
       {addError && (
         <p className="login-error" dir="ltr">
           {addError}
         </p>
       )}
+
       <GroupNotes
         groupId={group.id}
         masechetEn={group.masechetEn}
