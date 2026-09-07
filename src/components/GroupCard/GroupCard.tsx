@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import type { Group, GroupMember } from "../../utils/useChevrusa";
 import { useGroupNudges } from "../../utils/useGroupNudges";
 import { useEscapeKey } from "../../utils/useEscapeKey";
+import { GroupNotes } from "./GroupNotes";
 import "./GroupCard.css";
 
 function todayStr(): string {
@@ -217,6 +218,11 @@ export function GroupCard({
           {addError}
         </p>
       )}
+      <GroupNotes
+        groupId={group.id}
+        masechetEn={group.masechetEn}
+        subtitle={group.isChabura ? "anyone writes, everyone can reply" : "either of you writes, both can reply"}
+      />
     </div>
   );
 }
