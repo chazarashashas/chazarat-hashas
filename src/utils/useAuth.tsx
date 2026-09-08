@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase, supabaseConfigured } from "./supabase";
 
@@ -50,7 +50,39 @@ async function fetchProfile(userId: string): Promise<Profile> {
   };
 }
 
-export function useAuth() {
+interface AuthContextValue extends AuthState {
+  isLoggedIn: boolean;
+  checkUsernameAvailable(username: string): Promise<boolean>;
+  signUp(email: string, password: string, username: string, firstName: string, lastName: string): Promise<string | null>;
+  signIn(email: string, password: string): Promise<string | null>;
+  signInWithGoogle(): Promise<string | null>;
+  signOut(): Promise<void>;
+  updateProfile(fields: {
+    firstName?: string;
+    lastName?: string;
+    username?: string;
+    city?: string;
+    country?: string;
+  }): Promise<string | null>;
+  deleteAccount(): Promise<string | null>;
+}
+
+const AuthContext = createContext<AuthContextValue | null>(null);
+
+/**
+ * One session fetch and one onAuthStateChange listener for the whole app,
+ * not one per screen. useAuth() is called from ~18 places (every gated
+ * screen, plus several hooks); before this, each of those was its own
+ * independent useState/useEffect pair, so every fresh screen mount
+ * started from session:null and had to re-await its own getSession()
+ * call before it knew you were signed in — a flash of the signed-out
+ * gate on effectively every navigation, which read as "keeps making me
+ * log in again". Supabase's own session cache made this fast, but not
+ * instant, and "not instant" was enough to be visible constantly. This
+ * provider computes the auth state once at the top of the tree; useAuth()
+ * below just reads it.
+ */
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AuthState>({
     session: null,
     ...EMPTY_PROFILE,
@@ -171,15 +203,8 @@ export function useAuth() {
     return null;
   }
 
-  return {
-    session: state.session,
-    username: state.username,
-    firstName: state.firstName,
-    lastName: state.lastName,
-    city: state.city,
-    country: state.country,
-    isAdmin: state.isAdmin,
-    loading: state.loading,
+  const value: AuthContextValue = {
+    ...state,
     isLoggedIn: Boolean(state.session),
     checkUsernameAvailable,
     signUp,
@@ -189,4 +214,12 @@ export function useAuth() {
     updateProfile,
     deleteAccount,
   };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+export function useAuth(): AuthContextValue {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error("useAuth() must be called within an AuthProvider");
+  return ctx;
 }
