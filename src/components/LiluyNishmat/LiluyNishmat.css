@@ -57,6 +57,85 @@
   margin-top: 8px;
 }
 
+/* ---------- Signed-out gate ---------- */
+
+.nishmat-gate .gate2-title,
+.nishmat-gate .gate2-subtitle {
+  text-align: left;
+}
+
+.nishmat-gate-board {
+  margin-top: 15px;
+  background: var(--ink);
+  border-radius: var(--radius-hero);
+  padding: 20px;
+  color: #f0eee6;
+}
+
+.nishmat-gate-board__head {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 17px;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+
+.nishmat-gate-board__body {
+  margin: 5px 0 0;
+  font-size: 12px;
+  line-height: 1.65;
+  color: rgba(240, 238, 230, 0.7);
+}
+
+.nishmat-gate-board .siyum-card__mosaic {
+  margin: 14px 0 0;
+}
+
+.nishmat-gate-board__stat {
+  margin: 8px 0 0;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 11.5px;
+  color: #d9a63d;
+}
+
+.nishmat-gate-lead {
+  margin: 16px 0 9px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.nishmat-gate-fact {
+  display: flex;
+  gap: 12px;
+  padding: 13px 15px;
+  background: var(--surface-hi);
+  border-radius: var(--radius-control);
+}
+
+.nishmat-gate-fact__rule {
+  width: 4px;
+  align-self: stretch;
+  border-radius: var(--radius-pill);
+  flex-shrink: 0;
+}
+
+.nishmat-gate-fact__head {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 12.5px;
+  color: var(--ink);
+}
+
+.nishmat-gate-fact__body {
+  margin: 2px 0 0;
+  font-size: 11.5px;
+  line-height: 1.65;
+  color: var(--ink-soft);
+}
+
 .siyum-card {
   position: relative;
   background: var(--surface);

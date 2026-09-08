@@ -185,3 +185,38 @@ export function GateCTA({
     </div>
   );
 }
+
+/** The two-button variant — a first-timer and a returning user want
+    different buttons, and a single CTA makes one of them guess. Carried
+    over from GateCard, whose only caller (L'Iluy Nishmat) now uses this
+    instead; see AUDIT.md §D. */
+export function GateCTATwoButton({
+  heading,
+  body,
+  createLabel = "Create an account",
+  onCreateAccount,
+  signInLabel = "I already have one",
+  onSignIn,
+}: {
+  heading: string;
+  body: string;
+  createLabel?: string;
+  onCreateAccount: () => void;
+  signInLabel?: string;
+  onSignIn: () => void;
+}) {
+  return (
+    <div className="gate2-cta gate2-cta--stacked">
+      <p className="gate2-cta__heading">{heading}</p>
+      <p className="gate2-cta__body">{body}</p>
+      <div className="gate2-cta__actions">
+        <button className="gate2-cta__btn gate2-cta__btn--primary" onClick={onCreateAccount}>
+          {createLabel}
+        </button>
+        <button className="gate2-cta__btn gate2-cta__btn--secondary" onClick={onSignIn}>
+          {signInLabel}
+        </button>
+      </div>
+    </div>
+  );
+}

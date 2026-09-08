@@ -5,7 +5,7 @@ import { ALL_PEREK_SLOTS } from "../../utils/nishmatMosaic";
 import { useLocalStorageState } from "../../utils/useLocalStorageState";
 import { useEscapeKey } from "../../utils/useEscapeKey";
 import { SiyumDetail } from "./SiyumDetail";
-import { GateCard } from "../GateCard/GateCard";
+import { GateCTATwoButton } from "../SignedOutGate/SignedOutGate";
 import "./LiluyNishmat.css";
 
 type Tab = "managing" | "helping";
@@ -134,6 +134,10 @@ export function LiluyNishmatScreen({ onOpenLogin, initialSlug }: LiluyNishmatScr
   const [openSiyum, setOpenSiyum] = useState<Siyum | null>(null);
   const [deepLinkTried, setDeepLinkTried] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
+  // Signed-out visitors land on a dedicated gate (see the !session return
+  // below) rather than the tabbed view — "look through the open siyumim"
+  // switches them into it, same as if they'd always had an account.
+  const [browsing, setBrowsing] = useState(false);
   useEscapeKey(() => setCreateOpen(false));
 
   const [dedication, setDedication] = useState("");
@@ -181,6 +185,18 @@ export function LiluyNishmatScreen({ onOpenLogin, initialSlug }: LiluyNishmatScr
     loadStats(list);
   }
 
+  // The gate below previews two real public siyumim regardless of tab —
+  // load their stats independently of the tab-driven loading above.
+  const featured = siyumim.publicList.slice(0, 2);
+  const featuredKey = featured.map((s) => s.id).join(",");
+  const [featuredLoadedFor, setFeaturedLoadedFor] = useState("");
+  if (!session && featuredKey !== featuredLoadedFor && featured.length > 0) {
+    setFeaturedLoadedFor(featuredKey);
+    loadStats(featured);
+  }
+  const statsFor = (id: string) => allStats[id] ?? { learned: 0, taken: 0, open: siyumim.TOTAL_PERAKIM };
+  const claimsFor = (id: string) => allClaims[id] ?? [];
+
   async function handleCreate() {
     setError(null);
     setBusy(true);
@@ -210,6 +226,112 @@ export function LiluyNishmatScreen({ onOpenLogin, initialSlug }: LiluyNishmatScr
     );
   }
 
+  if (!session && !browsing && onOpenLogin) {
+    const boardSiyum = featured[0];
+    const boardStats = boardSiyum ? statsFor(boardSiyum.id) : null;
+    const boardTaken = boardStats ? boardStats.learned + boardStats.taken : 0;
+
+    return (
+      <div className="stage">
+        <div className="panel nishmat-gate">
+          <h1 className="gate2-title">L'Iluy Nishmat</h1>
+          <p className="gate2-subtitle">
+            A siyum haShas is {siyumim.TOTAL_PERAKIM} perakim. Split among enough people, it comes to
+            one perek each.
+          </p>
+
+          {boardSiyum && boardStats && (
+            <div className="nishmat-gate-board">
+              <p className="nishmat-gate-board__head">All of Shas, one square per perek</p>
+              <p className="nishmat-gate-board__body">
+                Someone opens a siyum. Each square is one perek. People take the ones they can learn,
+                and when the board fills the siyum is made.
+              </p>
+              <MiniMosaic claims={claimsFor(boardSiyum.id)} />
+              <p className="nishmat-gate-board__stat">
+                {boardTaken} of {siyumim.TOTAL_PERAKIM} taken
+              </p>
+            </div>
+          )}
+
+          {featured.length > 0 && (
+            <>
+              <p className="nishmat-gate-lead">
+                {featured.length === 1 ? "One is open right now" : "Two are open right now"}. Anyone
+                can look through them:
+              </p>
+              <div className="nishmat-list">
+                {featured.map((s) => (
+                  <SiyumCard
+                    key={s.id}
+                    siyum={s}
+                    stats={statsFor(s.id)}
+                    claims={claimsFor(s.id)}
+                    mine={false}
+                    onOpen={() => setOpenSiyum(s)}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+
+          <div className="gate2-facts">
+            <div className="nishmat-gate-fact">
+              <span className="nishmat-gate-fact__rule" style={{ background: "#b8862b" }} />
+              <div>
+                <p className="nishmat-gate-fact__head">One perek is the whole ask</p>
+                <p className="nishmat-gate-fact__body">
+                  {siyumim.TOTAL_PERAKIM} perakim across six sedarim. At forty people that's thirteen
+                  each; at five hundred it's one.
+                </p>
+              </div>
+            </div>
+            <div className="nishmat-gate-fact">
+              <span className="nishmat-gate-fact__rule" style={{ background: "#4f7a3f" }} />
+              <div>
+                <p className="nishmat-gate-fact__head">It appears in your daily limmud</p>
+                <p className="nishmat-gate-fact__body">
+                  A perek you take arrives in Daily Limmud with the dedication on it, so it's learned
+                  in the ordinary run of things rather than remembered separately.
+                </p>
+              </div>
+            </div>
+            <div className="nishmat-gate-fact">
+              <span className="nishmat-gate-fact__rule" style={{ background: "#2f4470" }} />
+              <div>
+                <p className="nishmat-gate-fact__head">A perek can be released</p>
+                <p className="nishmat-gate-fact__body">
+                  If life gets in the way, hand it back and it returns to the board for someone else.
+                  Nobody is chased.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <GateCTATwoButton
+            heading="Taking a perek needs an account"
+            body="A perek you take is a commitment other people are counting on, so it has to belong to someone. Looking through a siyum needs nothing at all."
+            onCreateAccount={() => onOpenLogin("signUp")}
+            onSignIn={() => onOpenLogin("signIn")}
+          />
+
+          <p className="gate2-footer">
+            Nothing else here is closed —{" "}
+            <button
+              onClick={() => {
+                setTab("helping");
+                setBrowsing(true);
+              }}
+            >
+              look through the open siyumim
+            </button>
+            , or carry on with your own learning.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="stage">
       <div className="panel nishmat-panel">
@@ -228,8 +350,8 @@ export function LiluyNishmatScreen({ onOpenLogin, initialSlug }: LiluyNishmatScr
         </div>
 
         {!session && onOpenLogin && tab === "managing" && (
-          <GateCard
-            title="Starting a siyum needs an account"
+          <GateCTATwoButton
+            heading="Starting a siyum needs an account"
             body="A siyum tracks who's taken which perek and who's already learned it — that only works if it's tied to your account, not just this device."
             onCreateAccount={() => onOpenLogin("signUp")}
             onSignIn={() => onOpenLogin("signIn")}
