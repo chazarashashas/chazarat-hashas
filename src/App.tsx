@@ -110,9 +110,31 @@ function initialNishmatSlug(): string | null {
   return new URLSearchParams(window.location.search).get("siyum");
 }
 
+/** Google's consent screen can finish successfully while the handoff
+    back to Supabase still fails (a redirect-URL mismatch between Google
+    Cloud Console and Supabase's Auth settings is the usual cause) — with
+    nothing checking for it, that failure was completely invisible: no
+    session gets created, but nothing said why, so a tester glancing at
+    the screen could believe it worked. Supabase appends the failure as
+    #error=...&error_description=... (or ?error=... under some flows) to
+    the redirect it sends back, so this reads it once at startup — same
+    pattern as initialNishmatSlug — and the URL is cleaned up right after
+    so a refresh doesn't keep re-showing a stale error. */
+function initialOAuthError(): string | null {
+  const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+  const search = new URLSearchParams(window.location.search);
+  const description = hash.get("error_description") ?? search.get("error_description");
+  const code = hash.get("error") ?? search.get("error");
+  if (!description && !code) return null;
+  const message = description ? description.replace(/\+/g, " ") : `Google sign-in failed (${code}).`;
+  window.history.replaceState(null, "", window.location.pathname + window.location.search.replace(/[?&]error[^&]*/g, ""));
+  return message;
+}
+
 function App() {
   const deepLinkSlug = useState(initialNishmatSlug)[0];
-  const [section, setSection] = useState(() => (deepLinkSlug ? "liluy" : "home"));
+  const oauthError = useState(initialOAuthError)[0];
+  const [section, setSection] = useState(() => (deepLinkSlug ? "liluy" : oauthError ? "login" : "home"));
   // Where to send the user back to once they log in — set by any screen
   // that gates an action behind an account (see requestLogin), so "Log
   // in first" never dead-ends: it returns you to what you were doing.
@@ -222,13 +244,14 @@ function App() {
           ) : section === "limmud" ? (
             <DailyLimmudScreen onOpenNotes={() => setSection("perek")} onOpenLogin={() => requestLogin("limmud")} />
           ) : section === "review" ? (
-            <ReviewScreen />
+            <ReviewScreen onOpenLimmud={() => handleSelect("limmud")} />
           ) : section === "progress" ? (
             <ProgressScreen onOpenNishmat={() => handleSelect("liluy")} onOpenLogin={() => requestLogin("progress")} />
           ) : section === "login" ? (
             <LoginScreen
               initialMode={loginMode}
               initialEmailOpen={loginEmailOpen}
+              initialError={oauthError}
               onLoggedIn={() => {
                 setSection(loginReturnTo ?? "home");
                 setLoginReturnTo(null);

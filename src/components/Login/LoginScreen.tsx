@@ -284,6 +284,16 @@ interface LoginScreenProps {
       set when the first-open prompt's "Use an email address" sent the
       user here, so that choice isn't thrown away on arrival. */
   initialEmailOpen?: boolean;
+  /** Set when App.tsx finds an error/error_description in the URL after
+      a Google redirect returns — the OAuth handshake can fail on the way
+      back (a redirect-URL mismatch between Google Cloud Console and
+      Supabase's Auth settings is the usual cause) with nothing else in
+      the app able to see or show it, since signInWithGoogle's own error
+      handling only covers a failure to even start the redirect. Without
+      this, that failure is invisible: the tester lands back on the app
+      with no session and no explanation, and can easily believe it
+      worked. */
+  initialError?: string | null;
 }
 
 function AccountDashboard({
@@ -593,6 +603,7 @@ export function LoginScreen({
   isRebbe,
   initialMode,
   initialEmailOpen,
+  initialError,
 }: LoginScreenProps) {
   const auth = useAuth();
   const progress = useLearningProgress();
@@ -605,7 +616,7 @@ export function LoginScreen({
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(initialError ?? null);
   const [message, setMessage] = useState<string | null>(null);
 
   const onThisDeviceNoteCount = Object.values(perekNotes).reduce(
@@ -699,6 +710,12 @@ export function LoginScreen({
                 </div>
               </div>
             </div>
+
+            {error && (
+              <p className="login-error" dir="ltr">
+                {error}
+              </p>
+            )}
 
             <GoogleButton onClick={handleGoogleSignIn} disabled={!supabaseConfigured || busy} />
 
