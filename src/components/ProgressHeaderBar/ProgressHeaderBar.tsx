@@ -2,18 +2,12 @@ import { useState } from "react";
 import { useLearningProgress } from "../../utils/useLearningProgress";
 import { buildJourneyScopes, findNextMasechet } from "../../utils/shasJourney";
 import { NavIcon } from "../Icon/NavIcon";
+import { ProgressTracks } from "../ProgressTracks/ProgressTracks";
 import "./ProgressHeaderBar.css";
 
 interface ProgressHeaderBarProps {
   progress: ReturnType<typeof useLearningProgress>;
   onGoToLimmud: () => void;
-}
-
-/** A genuinely tiny but nonzero fraction (e.g. 4 of 4,192 mishnayot, 0.1%)
-    still needs to render as a visible sliver, or it reads as a bug rather
-    than as a beginning. A true zero stays empty. */
-function fillWidth(pct: number): number {
-  return pct <= 0 ? 0 : Math.max(pct, 1.4);
 }
 
 /**
@@ -41,70 +35,15 @@ export function ProgressHeaderBar({ progress, onGoToLimmud }: ProgressHeaderBarP
     <div className="progress-header-bar">
       <div className="phb-row">
         <div className="phb-tracks">
-          <div className="phb-track-row">
-            <span className="phb-track-label">
-              {masechetScope.title}
-              {previewIndex < maxIndex && (
-                <button className="phb-step" aria-label="Next masechet" onClick={() => setStepIndex((i) => i + 1)}>
-                  ›
-                </button>
-              )}
-            </span>
-            <div
-              className="phb-track"
-              role="progressbar"
-              aria-valuenow={masechetScope.percent}
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-label={`${masechetScope.title}, ${masechetScope.percent} percent`}
-            >
-              <div
-                className="phb-track-fill phb-track-fill--masechet"
-                style={{ width: `${fillWidth(masechetScope.percent)}%` }}
-              />
-            </div>
-          </div>
-
-          <div className="phb-track-row">
-            <span className="phb-track-label">{sederScope.title}</span>
-            <div
-              className="phb-track"
-              role="progressbar"
-              aria-valuenow={sederScope.percent}
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-label={`${sederScope.title}, ${sederScope.percent} percent`}
-            >
-              <div
-                className="phb-track-fill phb-track-fill--seder"
-                style={{ width: `${fillWidth(sederScope.percent)}%` }}
-              />
-            </div>
-          </div>
-
-          <div className="phb-track-row">
-            <span className="phb-track-label">Shas</span>
-            <div
-              className="phb-track"
-              role="progressbar"
-              aria-valuenow={shasScope.percent}
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-label={`Shas, ${shasScope.percent} percent`}
-            >
-              <div
-                className="phb-track-fill phb-track-fill--shas"
-                style={{ width: `${fillWidth(shasScope.percent)}%` }}
-              />
-            </div>
-          </div>
-
-          <div className="phb-streak">
-            {progress.streak.current > 0 && <span className="phb-streak-dot" aria-hidden="true" />}
-            <span className="phb-streak-text">
-              {progress.streak.current > 0 ? `${progress.streak.current}-day streak` : "Learn today to start a streak"}
-            </span>
-          </div>
+          <ProgressTracks
+            bare
+            masechet={{ title: masechetScope.title, percent: masechetScope.percent }}
+            seder={{ title: sederScope.title, percent: sederScope.percent }}
+            shas={{ percent: shasScope.percent }}
+            onStepMasechet={() => setStepIndex((i) => i + 1)}
+            canStepMasechet={previewIndex < maxIndex}
+            streakCurrent={progress.streak.current}
+          />
         </div>
 
         <div className="phb-rule" aria-hidden="true" />

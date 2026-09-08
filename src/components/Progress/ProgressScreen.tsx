@@ -3,8 +3,8 @@ import { SEDARIM } from "../../data/shas";
 import { getPerekName, getMishnayotCount } from "../../data/perekInfo";
 import { useLearningProgress } from "../../utils/useLearningProgress";
 import { useAuth } from "../../utils/useAuth";
-import { FlipCounter, type FlipScope } from "../FlipCounter/FlipCounter";
-import { SEDER_HUE, getSederHue } from "../../utils/sederHue";
+import { ProgressTracks } from "../ProgressTracks/ProgressTracks";
+import { SEDER_HUE } from "../../utils/sederHue";
 import { LogLearningModal } from "./LogLearningModal";
 import { PrintNotesView } from "../PrintNotes/PrintNotesView";
 import { CertificateView } from "../Certificate/CertificateView";
@@ -85,69 +85,6 @@ export function ProgressScreen({ onOpenNishmat, onOpenLogin }: ProgressScreenPro
   const masechetPct = progress.masechetPercent(nextMasechet.en, nextMasechet.perakim);
   const sederPct = progress.sederPercent(nextSeder.id);
   const shasPct = progress.shasPercent();
-  const hue = getSederHue(nextSeder.id);
-
-  let mDone = 0;
-  let mTotal = 0;
-  let perakimDoneInMasechet = 0;
-  for (let p = 1; p <= nextMasechet.perakim; p++) {
-    const c = getMishnayotCount(nextMasechet.en, p);
-    mTotal += c;
-    let pDone = 0;
-    for (let mi = 1; mi <= c; mi++) {
-      if (progress.isCompleted({ masechetEn: nextMasechet.en, perek: p, mishnah: mi })) {
-        pDone++;
-        mDone++;
-      }
-    }
-    if (pDone === c && c > 0) perakimDoneInMasechet++;
-  }
-  const perakimLeftInMasechet = nextMasechet.perakim - perakimDoneInMasechet;
-
-  let sDone = 0;
-  let sTotal = 0;
-  for (const m of nextSeder.masechtot) {
-    for (let p = 1; p <= m.perakim; p++) {
-      const c = getMishnayotCount(m.en, p);
-      sTotal += c;
-      for (let mi = 1; mi <= c; mi++) {
-        if (progress.isCompleted({ masechetEn: m.en, perek: p, mishnah: mi })) sDone++;
-      }
-    }
-  }
-
-  const scopes: FlipScope[] = [
-    {
-      key: "Masechet",
-      title: nextMasechet.en,
-      context: `${nextSeder.en} · ${perakimLeftInMasechet} perek${perakimLeftInMasechet === 1 ? "" : "im"} left`,
-      percent: masechetPct,
-      doneCount: mDone,
-      totalCount: mTotal,
-      unit: "mishnayot",
-      hue,
-    },
-    {
-      key: "Seder",
-      title: nextSeder.en,
-      context: `${nextSeder.masechtot.length} masechtot`,
-      percent: sederPct,
-      doneCount: sDone,
-      totalCount: sTotal,
-      unit: "mishnayot",
-      hue,
-    },
-    {
-      key: "Shas",
-      title: "Kol HaShas",
-      context: "all six sedarim",
-      percent: shasPct,
-      doneCount: mishnayotLearned,
-      totalCount: totalMishnayot,
-      unit: "mishnayot",
-      hue: "var(--gold)",
-    },
-  ];
 
   return (
     <div className="stage">
@@ -198,7 +135,12 @@ export function ProgressScreen({ onOpenNishmat, onOpenLogin }: ProgressScreenPro
         )}
 
         <p className="siyumim-next-label">Next siyum</p>
-        <FlipCounter large scopes={scopes} />
+        <ProgressTracks
+          masechet={{ title: nextMasechet.en, percent: masechetPct }}
+          seder={{ title: nextSeder.en, percent: sederPct }}
+          shas={{ percent: shasPct }}
+          streakCurrent={progress.streak.current}
+        />
 
         <div className="progress-actions">
           <button className="restart progress-log-btn" onClick={() => setLogOpen(true)}>
