@@ -3,6 +3,114 @@
   width: 100%;
 }
 
+/* ---------- Next-siyum countdown ---------- */
+
+.siyum-countdown {
+  margin: 4px 0 16px;
+  background: var(--ink);
+  border-radius: var(--radius-hero);
+  padding: 18px;
+  color: #f0eee6;
+  text-align: left;
+}
+
+.siyum-countdown__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.siyum-countdown__label {
+  margin: 0;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: rgba(240, 238, 230, 0.6);
+}
+
+.siyum-countdown__seder {
+  margin: 2px 0 0;
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+
+.siyum-countdown__eta {
+  flex-shrink: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+}
+
+.siyum-countdown__days {
+  font-family: var(--font-heading);
+  font-size: 34px;
+  font-weight: 800;
+  color: #d9a63d;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.siyum-countdown__days-unit {
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: 700;
+  color: #d9a63d;
+}
+
+.siyum-countdown__date {
+  margin-top: 2px;
+  text-align: right;
+  font-size: 11px;
+  color: rgba(240, 238, 230, 0.66);
+}
+
+.siyum-countdown__bar {
+  margin-top: 12px;
+  height: 7px;
+  border-radius: var(--radius-pill);
+  background: rgba(240, 238, 230, 0.16);
+  overflow: hidden;
+}
+
+.siyum-countdown__bar-fill {
+  height: 100%;
+  background: var(--good);
+  border-radius: var(--radius-pill);
+}
+
+.siyum-countdown__meta {
+  margin-top: 7px;
+  font-size: 11px;
+  color: rgba(240, 238, 230, 0.66);
+}
+
+.siyum-countdown__next-masechet {
+  margin-top: 11px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(240, 238, 230, 0.16);
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.siyum-countdown__next-dot {
+  flex-shrink: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  background: var(--good);
+}
+
+.siyum-countdown__next-masechet span:last-child {
+  font-size: 11px;
+  line-height: 1.5;
+  color: rgba(240, 238, 230, 0.7);
+}
+
 .siyumim-stats {
   display: flex;
   justify-content: space-between;

@@ -45,23 +45,31 @@ export function ProgressScreen({ onOpenNishmat, onOpenLogin }: ProgressScreenPro
 
   // Totals for the journey-to-a-siyum framing (HANDOFF30 §2).
   let perakimFinished = 0;
+  let totalPerakim = 0;
   let masechtotCompleted = 0;
   let mishnayotLearned = 0;
   let totalMishnayot = 0;
 
   // The masechet you'd finish next: the first one, in Shas order, that
-  // isn't 100% done yet.
+  // isn't 100% done yet — and the seder it belongs to is the next siyum,
+  // since completion happens in Shas order.
   let nextSeder = SEDARIM[SEDARIM.length - 1];
   let nextMasechet = nextSeder.masechtot[nextSeder.masechtot.length - 1];
   let nextFound = false;
+  let nextMasechetRemaining = 0;
+  let nextSederDone = 0;
+  let nextSederTotal = 0;
 
   for (const seder of SEDARIM) {
+    let sDone = 0;
+    let sTotal = 0;
     for (const m of seder.masechtot) {
       let mDone = 0;
       let mTotal = 0;
       for (let p = 1; p <= m.perakim; p++) {
         const c = getMishnayotCount(m.en, p);
         mTotal += c;
+        totalPerakim++;
         let pDone = 0;
         for (let mi = 1; mi <= c; mi++) {
           if (progress.isCompleted({ masechetEn: m.en, perek: p, mishnah: mi })) {
@@ -73,18 +81,54 @@ export function ProgressScreen({ onOpenNishmat, onOpenLogin }: ProgressScreenPro
       }
       mishnayotLearned += mDone;
       totalMishnayot += mTotal;
+      sDone += mDone;
+      sTotal += mTotal;
       if (mDone === mTotal && mTotal > 0) masechtotCompleted++;
       else if (!nextFound) {
         nextSeder = seder;
         nextMasechet = m;
+        nextMasechetRemaining = mTotal - mDone;
         nextFound = true;
       }
+    }
+    if (seder.id === nextSeder.id) {
+      nextSederDone = sDone;
+      nextSederTotal = sTotal;
     }
   }
 
   const masechetPct = progress.masechetPercent(nextMasechet.en, nextMasechet.perakim);
   const sederPct = progress.sederPercent(nextSeder.id);
   const shasPct = progress.shasPercent();
+
+  // Days-per-mishnah at the current Daily Limmud pace — "perek" uses the
+  // Shas-wide average mishnayot-per-perek, since a perek's actual length
+  // varies. Rounds the remaining-days figure up, never down: an optimistic
+  // estimate that quietly slips is worse than a plain one that holds.
+  const avgMishnayotPerPerek = totalPerakim > 0 ? totalMishnayot / totalPerakim : 1;
+  const perDay = progress.pace === "2" ? 2 : progress.pace === "perek" ? avgMishnayotPerPerek : 1;
+  const sederRemaining = nextSederTotal - nextSederDone;
+  const sederDaysLeft = perDay > 0 ? Math.ceil(sederRemaining / perDay) : 0;
+  const masechetDaysLeft = perDay > 0 ? Math.ceil(nextMasechetRemaining / perDay) : 0;
+
+  // One ladder for any day count — day/week/month/year, each switching
+  // before its own unit stops being meaningful (a 291-day span reads
+  // better as "about 10 months" than "291 days" or "0.8 years").
+  function spanFromDays(days: number): string {
+    const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
+    if (days < 14) return plural(Math.max(1, Math.round(days)), "day");
+    if (days < 70) return plural(Math.round(days / 7), "week");
+    if (days < 730) return plural(Math.round(days / 30.44), "month");
+    return plural(Math.round(days / 365.25), "year");
+  }
+
+  function estimatedDate(daysFromNow: number): string {
+    const d = new Date(Date.now() + daysFromNow * 86400000);
+    return d.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+  }
+
+  const paceLabel =
+    progress.pace === "2" ? "2 a day" : progress.pace === "perek" ? "1 perek a day" : "1 a day";
 
   return (
     <div className="stage">
@@ -108,6 +152,41 @@ export function ProgressScreen({ onOpenNishmat, onOpenLogin }: ProgressScreenPro
             actionLabel="Keep them →"
             onAction={onOpenLogin}
           />
+        )}
+
+        {sederRemaining > 0 && (
+          <div className="siyum-countdown">
+            <div className="siyum-countdown__head">
+              <div className="siyum-countdown__text">
+                <p className="siyum-countdown__label">Your next siyum</p>
+                <p className="siyum-countdown__seder">Seder {nextSeder.en}</p>
+              </div>
+              <div className="siyum-countdown__eta">
+                <span className="siyum-countdown__days">{sederDaysLeft}</span>
+                <span className="siyum-countdown__days-unit">days</span>
+              </div>
+            </div>
+            <div className="siyum-countdown__date">around {estimatedDate(sederDaysLeft)}</div>
+            <div className="siyum-countdown__bar">
+              <div
+                className="siyum-countdown__bar-fill"
+                style={{ width: `${Math.max(nextSederTotal ? (nextSederDone / nextSederTotal) * 100 : 0, nextSederDone > 0 ? 2 : 0)}%` }}
+              />
+            </div>
+            <div className="siyum-countdown__meta">
+              <span>
+                {nextSederDone.toLocaleString()} of {nextSederTotal.toLocaleString()} mishnayot ·{" "}
+                {sederRemaining.toLocaleString()} to go at {paceLabel}
+              </span>
+            </div>
+            <div className="siyum-countdown__next-masechet">
+              <span className="siyum-countdown__next-dot" aria-hidden="true" />
+              <span>
+                {nextMasechet.en} finishes first — {nextMasechetRemaining} mishnayot away, about{" "}
+                {spanFromDays(masechetDaysLeft)}.
+              </span>
+            </div>
+          </div>
         )}
 
         <div className="siyumim-stats">
@@ -134,7 +213,7 @@ export function ProgressScreen({ onOpenNishmat, onOpenLogin }: ProgressScreenPro
           </div>
         )}
 
-        <p className="siyumim-next-label">Next siyum</p>
+        <p className="siyumim-next-label">Where each level stands</p>
         <ProgressTracks
           masechet={{ title: nextMasechet.en, percent: masechetPct }}
           seder={{ title: nextSeder.en, percent: sederPct }}
