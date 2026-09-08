@@ -3,6 +3,8 @@
   border-radius: 0;
   background: rgba(22, 35, 63, 0.55);
   z-index: 60;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .first-open-popup {

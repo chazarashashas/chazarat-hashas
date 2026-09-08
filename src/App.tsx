@@ -27,6 +27,7 @@ import { useCloudSync } from "./utils/useCloudSync";
 import { useLearningProgress } from "./utils/useLearningProgress";
 import { usePerekNotes } from "./utils/usePerekNotes";
 import { useFirstOpenPrompt } from "./utils/useFirstOpenPrompt";
+import { useNativeApp } from "./utils/useNativeApp";
 import { useGameStats } from "./utils/useGameStats";
 import { countCompletedMasechtot } from "./utils/shasJourney";
 import { shuffle } from "./utils/shuffle";
@@ -169,6 +170,8 @@ function App() {
     if (next !== "login") setLoginReturnTo(null);
     setSection(next);
   }
+
+  useNativeApp("home", section, () => handleSelect("home"));
 
   return (
     <div className="app">

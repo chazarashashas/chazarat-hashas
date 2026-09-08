@@ -4,7 +4,8 @@
   background: #fff;
   z-index: 100;
   overflow-y: auto;
-  padding: 24px;
+  padding: calc(24px + env(safe-area-inset-top)) calc(24px + env(safe-area-inset-right))
+    calc(24px + env(safe-area-inset-bottom)) calc(24px + env(safe-area-inset-left));
 }
 
 .print-controls {

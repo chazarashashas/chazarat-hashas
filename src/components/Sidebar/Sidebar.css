@@ -118,7 +118,7 @@
     align-items: stretch;
     justify-content: flex-start;
     gap: 0;
-    padding: 0;
+    padding: 0 0 env(safe-area-inset-bottom);
     overflow-x: auto;
     overflow-y: visible;
     z-index: 20;
