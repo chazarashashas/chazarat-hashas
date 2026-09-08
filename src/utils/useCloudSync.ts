@@ -193,6 +193,26 @@ function mergeBlobs(local: SyncBlob, cloud: SyncBlob): SyncBlob {
 }
 
 /**
+ * Pushes whatever's in localStorage to the account right now, instead of
+ * waiting for useCloudSync's own 10s poll to notice a change. Call this
+ * before signing out: useCloudSync wipes this device's local cache the
+ * instant the session goes away (see its "Clears this device's local
+ * cache" effect below), on the assumption that everything was already
+ * pushed — true only if the poll happened to run since the last change.
+ * Anything edited in the last <10s before an unflushed sign-out had no
+ * cloud copy and, the moment the wipe ran, no local copy either: gone
+ * for good. This closes that gap by making the push happen synchronously
+ * as part of signing out, not on a timer.
+ */
+export async function flushLocalDataToCloud(session: Session) {
+  if (!supabase) return;
+  const blob = readLocalBlob();
+  await supabase
+    .from("user_data")
+    .upsert({ user_id: session.user.id, data: blob, updated_at: new Date().toISOString() });
+}
+
+/**
  * Clears specific trackers to an explicit "fresh" value (never removes a
  * key — an absent key wouldn't overwrite a stale cached one locally on
  * another device, an empty one does) and, when signed in, pushes the

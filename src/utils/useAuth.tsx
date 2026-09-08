@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase, supabaseConfigured } from "./supabase";
+import { flushLocalDataToCloud } from "./useCloudSync";
 
 interface Profile {
   username: string | null;
@@ -154,6 +155,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function signOut() {
     if (!supabase) return;
+    // Push this device's latest local changes to the account before the
+    // session goes away — useCloudSync otherwise only pushes on a 10s
+    // poll and wipes local storage the instant it sees no session, so
+    // anything changed in the last few seconds before sign-out could
+    // have no cloud copy and, right after, no local copy either.
+    if (state.session) await flushLocalDataToCloud(state.session);
     await supabase.auth.signOut();
   }
 
