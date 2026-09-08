@@ -7,19 +7,88 @@
   width: 100%;
 }
 
-.limmud-welcome {
-  margin: 0 0 8px;
-  text-align: center;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--good);
+.limmud-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.limmud-head__text {
+  min-width: 0;
+}
+
+.limmud-head__title {
+  text-align: left;
+  margin: 0;
+}
+
+.limmud-head__sub {
+  text-align: left;
+  margin: 4px 0 0;
+}
+
+.limmud-settings-summary {
+  margin-top: 14px;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 14px;
+  border-radius: var(--radius-control);
+  background: var(--surface);
+  transition: background 0.12s ease;
+}
+
+.limmud-settings-summary:hover,
+.limmud-settings-summary:active {
+  background: var(--surface-hi);
+}
+
+.limmud-settings-summary__dot {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 3px;
+  background: var(--brand);
+}
+
+.limmud-settings-summary__text {
+  flex: 1;
+  min-width: 0;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.limmud-settings-summary__chevron {
+  flex-shrink: 0;
+  display: flex;
+  color: var(--ink-soft);
+  transition: transform 0.15s ease;
+}
+
+.limmud-settings-summary__chevron--open {
+  transform: rotate(180deg);
 }
 
 .limmud-settings {
-  margin-top: 18px;
+  margin-top: 8px;
   padding: 15px 16px;
   background: var(--surface);
   border-radius: var(--radius-card);
+  animation: limmud-confirm-rise 0.2s ease;
+}
+
+.limmud-settings__fixed-note {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--muted);
 }
 
 .limmud-control {
@@ -68,14 +137,19 @@
 }
 
 .limmud-streak {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   gap: 7px;
+  padding: 8px 13px;
+  border-radius: var(--radius-pill);
+  background: rgba(184, 134, 43, 0.14);
+  white-space: nowrap;
 }
 
 .limmud-streak__dot {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: var(--gold);
   flex-shrink: 0;
@@ -83,15 +157,16 @@
 
 .limmud-streak__num {
   font-family: var(--font-heading);
-  font-size: 15px;
-  font-weight: 800;
-  color: var(--ink);
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--brass-text);
 }
 
 .limmud-streak__label {
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 500;
-  color: var(--muted);
+  color: var(--brass-text);
+  opacity: 0.75;
 }
 
 .limmud-finished {
@@ -156,21 +231,23 @@
   text-align: center;
 }
 
+.limmud-card {
+  background: var(--surface-hi);
+  border-radius: var(--radius-card);
+  padding: 20px 20px 18px;
+}
+
 .limmud-breadcrumb {
-  font-size: 10.5px;
-  font-weight: 700;
-  line-height: 1.4;
-  color: var(--gold);
-  text-align: center;
-  margin: 0 0 10px;
-  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--muted);
+  text-align: left;
+  margin: 0 0 6px;
+  font-family: var(--font-body);
 }
 
 .limmud-perek-block {
-  background: var(--surface-hi);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-control);
-  padding: 14px 16px;
   margin-bottom: 12px;
   max-height: 320px;
   overflow-y: auto;
@@ -391,84 +468,80 @@
 }
 
 .limmud-confirm__text {
-  font-size: 12.5px;
-  font-weight: 600;
-  line-height: 1.4;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
-.limmud-notes__label {
-  font-family: var(--font-heading);
-  font-size: 15px;
+.limmud-confirm__head {
+  font-size: 13.5px;
   font-weight: 700;
-  color: var(--ink);
-  margin: 0 0 8px;
 }
 
-.limmud-notes__label--concepts {
-  margin-top: 18px;
+.limmud-confirm__sub {
+  font-size: 11.5px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.limmud-notes__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .limmud-notes__open {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--surface);
+  border: none;
+  border-radius: var(--radius-control);
+  padding: 12px 14px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s ease;
+}
+
+.limmud-notes__open:hover,
+.limmud-notes__open:active {
+  background: var(--surface-hi);
+}
+
+.limmud-notes__open-dot {
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 2px;
+  background: var(--hue-notes);
+}
+
+.limmud-notes__open-dot--concept {
+  background: var(--hue-resources);
+}
+
+.limmud-notes__open-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.limmud-notes__open-title {
   display: block;
-  width: 100%;
-  background: var(--surface-hi);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-small);
-  padding: 10px;
-  font-family: var(--font-body);
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--brand);
-  cursor: pointer;
-  margin-bottom: 4px;
-}
-
-.limmud-concept__input {
-  width: 100%;
-  box-sizing: border-box;
-  height: 34px;
-  border-radius: var(--radius-small);
-  border: 1.5px solid var(--border);
-  background: var(--surface-hi);
-  padding: 0 10px;
-  font-size: 12px;
-  font-family: var(--font-body);
-  color: var(--ink);
-  margin-bottom: 6px;
-}
-
-.limmud-concept__textarea {
-  width: 100%;
-  box-sizing: border-box;
-  height: 60px;
-  resize: none;
-  border-radius: var(--radius-small);
-  border: 1.5px solid var(--border);
-  background: var(--surface-hi);
-  padding: 8px 10px;
-  font-size: 12px;
-  font-family: var(--font-body);
-  color: var(--ink);
-  margin-bottom: 6px;
-}
-
-.limmud-concept__input:focus,
-.limmud-concept__textarea:focus {
-  outline: none;
-  border-color: var(--brand);
-}
-
-.limmud-concept__save {
-  width: 100%;
-  background: var(--surface-hi);
-  border: 1.5px solid var(--gold);
-  color: var(--gold);
-  border-radius: var(--radius-small);
-  padding: 8px;
   font-family: var(--font-heading);
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: 700;
-  cursor: pointer;
+  color: var(--ink);
+}
+
+.limmud-notes__open-sub {
+  display: block;
+  margin-top: 1px;
+  font-size: 10.5px;
+  color: var(--muted);
 }
 
 .limmud-concept__open-all {

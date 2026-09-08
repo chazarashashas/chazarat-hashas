@@ -11,6 +11,8 @@ import { useAuth } from "../../utils/useAuth";
 import { useChevrusa, recordGroupActivityForMasechet } from "../../utils/useChevrusa";
 import { useSiyumim } from "../../utils/useSiyumim";
 import { PerekNoteModal } from "../PerekNoteModal/PerekNoteModal";
+import { ConceptModal } from "../ConceptModal/ConceptModal";
+import { NavIcon } from "../Icon/NavIcon";
 import { hebrewNumeral } from "../../utils/hebrewNumeral";
 import { FlipCounter } from "../FlipCounter/FlipCounter";
 import { buildJourneyScopes } from "../../utils/shasJourney";
@@ -164,9 +166,8 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
   const [justMarked, setJustMarked] = useState(false);
   const [confirmPerek, setConfirmPerek] = useState<{ perek: number; remaining: number } | null>(null);
   const [noteOpen, setNoteOpen] = useState(false);
-  const [conceptTitle, setConceptTitle] = useState("");
-  const [conceptNote, setConceptNote] = useState("");
-  const [conceptSaved, setConceptSaved] = useState(false);
+  const [conceptOpen, setConceptOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const isSelf = activeContext === "self";
   const groupFinished = !isSelf && progress.getMasechetPosition(activeContext).perek > findPerakim(activeContext);
@@ -318,13 +319,9 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
     setContext(newMasechetEn);
   }
 
-  function handleSaveConcept() {
-    if (!conceptTitle.trim() || firstItem == null) return;
-    progress.addConcept(conceptTitle.trim(), conceptNote.trim(), firstItem.masechetEn, firstItem.perek, firstItem.mishnah);
-    setConceptTitle("");
-    setConceptNote("");
-    setConceptSaved(true);
-    window.setTimeout(() => setConceptSaved(false), 1800);
+  function handleSaveConcept(title: string, note: string) {
+    if (firstItem == null) return;
+    progress.addConcept(title, note, firstItem.masechetEn, firstItem.perek, firstItem.mishnah);
   }
 
   const firstItem = items[0];
@@ -335,6 +332,19 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
 
   const activeChabura = !isSelf ? groups.find((g) => g.masechetEn === activeContext && g.isChabura) : undefined;
   const today = new Date().toISOString().slice(0, 10);
+
+  // The collapsed settings line — "Learning for" and "Pace" used to be two
+  // pill rows shown above the mishnah every day, for a choice most people
+  // set once. One line states the current setting; tapping it opens the
+  // pickers below instead.
+  const paceShort: Record<Pace, string> = { "1": "1 mishnah/day", "2": "2/day", perek: "1 perek/day" };
+  const settingsSummary = [
+    isSelf ? "Your own learning" : (activeLabel ?? activeContext),
+    firstItem?.masechetEn,
+    paceShort[isSelf ? pace : groupPace],
+  ]
+    .filter(Boolean)
+    .join(" · ");
   const journeyScopes = buildJourneyScopes(progress, isSelf ? undefined : activeContext);
 
   // Group contents by perek for display — almost always one group, except
@@ -355,11 +365,107 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
   return (
     <div className="stage limmud-stage">
       <div className="panel limmud-panel">
-        <h1 className="panel__title">Daily Limmud</h1>
-        {(firstName || username) && <p className="limmud-welcome">Welcome back, {firstName ?? username}!</p>}
-        <p className="panel__subtitle">
-          Your next portion of Mishnayot, straight through Shas in order — Berachot to Uktzin.
-        </p>
+        <div className="limmud-head">
+          <div className="limmud-head__text">
+            <h1 className="panel__title limmud-head__title">Today's limmud</h1>
+            {(firstName || username) ? (
+              <p className="panel__subtitle limmud-head__sub">Welcome back, {firstName ?? username}.</p>
+            ) : (
+              <p className="panel__subtitle limmud-head__sub">
+                Your next portion of Mishnayot, straight through Shas in order.
+              </p>
+            )}
+          </div>
+          <div className="limmud-streak">
+            <span className="limmud-streak__dot" aria-hidden="true" />
+            <span className="limmud-streak__num">{streak.current} days</span>
+            <span className="limmud-streak__label">best {streak.longest}</span>
+          </div>
+        </div>
+
+        {(groupContexts.length > 0 || isSelf) && !finished && (
+          <>
+            <button
+              className="limmud-settings-summary"
+              onClick={() => setSettingsOpen((v) => !v)}
+              aria-expanded={settingsOpen}
+            >
+              <span className="limmud-settings-summary__dot" aria-hidden="true" />
+              <span className="limmud-settings-summary__text">{settingsSummary}</span>
+              <span className={"limmud-settings-summary__chevron" + (settingsOpen ? " limmud-settings-summary__chevron--open" : "")}>
+                <NavIcon id="chevron" size={15} weight={2.2} />
+              </span>
+            </button>
+
+            {settingsOpen && (
+              <div className="limmud-settings">
+                {groupContexts.length > 0 && (
+                  <div className="limmud-control">
+                    <p className="mishna-control__label">Learning for</p>
+                    <div className="pill-row">
+                      <button
+                        className={"pill" + (activeContext === "self" ? " pill--active" : "")}
+                        onClick={() => setContext("self")}
+                      >
+                        My own learning
+                      </button>
+                      {groupContexts.map((g) => (
+                        <button
+                          key={g.masechetEn}
+                          className={"pill" + (activeContext === g.masechetEn ? " pill--active" : "")}
+                          onClick={() => setContext(g.masechetEn)}
+                        >
+                          {g.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {activeChabura && (
+                  <div className="limmud-chabura-members">
+                    {activeChabura.members.map((m) => (
+                      <span key={m.userId} className="limmud-chabura-member">
+                        <span
+                          className={
+                            "limmud-chabura-member__dot" +
+                            (m.lastLearnedDate === today ? " limmud-chabura-member__dot--done" : "")
+                          }
+                        />
+                        {m.userId === session?.user.id ? "You" : (m.firstName ?? m.username ?? "Someone")}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {isSelf && (
+                  <div className="limmud-control">
+                    <p className="mishna-control__label">Pace</p>
+                    <div className="pill-row">
+                      {PACE_OPTIONS.map((opt) => (
+                        <button
+                          key={opt.value}
+                          className={"pill" + (pace === opt.value ? " pill--active" : "")}
+                          onClick={() => handlePaceChange(opt.value)}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {!isSelf && (
+                  <p className="limmud-settings__fixed-note">
+                    {activeChabura
+                      ? "The shiur sets its own pace — the same for everyone in it."
+                      : "A chevrusa's pace was agreed when it started."}
+                  </p>
+                )}
+              </div>
+            )}
+          </>
+        )}
+
         {finished ? (
           <div className="note-banner note-banner--good limmud-finished">
             {isSelf ? (
@@ -406,72 +512,74 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
         ) : (
           <div className="limmud-body">
             <div className="limmud-reader">
-              {seder && firstItem && (
-                <p className="limmud-breadcrumb">
-                  {!isSelf && activeLabel && <span dir="ltr">{activeLabel} ▸ </span>}
-                  {seder.en} ▸ {firstItem.masechetEn} ▸ Perek {hebrewNumeral(firstItem.perek)}
-                  {perekName ? ` (${perekName})` : ""}
-                  {items.length === 1 ? ` ▸ Mishnah ${firstItem.mishnah}` : ""}
-                </p>
-              )}
-
-              {perekGroups.map((g) => (
-                <div key={`${g.masechetEn}-${g.perek}`} className="limmud-perek-block">
-                  {g.items.map((item) => {
-                    const en = englishByKey[englishKey(item)];
-                    return (
-                      <div key={item.mishnah} className="limmud-mishna">
-                        <p className="limmud-mishna__title" dir="rtl">
-                          משנה {hebrewNumeral(item.mishnah)}
-                        </p>
-                        {item.status === "loading" ? (
-                          <span className="limmud-mishna__loading">Loading…</span>
-                        ) : item.status === "error" ? (
-                          <span className="limmud-mishna__error" dir="ltr">
-                            {item.error}
-                          </span>
-                        ) : (
-                          <p className="limmud-mishna__text" dir="rtl">
-                            {item.textHe}
-                          </p>
-                        )}
-
-                        {showEnglish && item.status === "loaded" && en && en.status !== "unavailable" && (
-                          <>
-                            <div className="limmud-mishna__hairline" />
-                            {en.status === "loading" && (
-                              <div className="limmud-english-skeleton" aria-hidden="true">
-                                <span className="limmud-english-skeleton__bar" style={{ width: "100%" }} />
-                                <span className="limmud-english-skeleton__bar" style={{ width: "92%" }} />
-                                <span className="limmud-english-skeleton__bar" style={{ width: "64%" }} />
-                              </div>
-                            )}
-                            {en.status === "error" && (
-                              <p className="limmud-english-error">
-                                English is not loading right now.
-                                <button className="limmud-english-retry" onClick={() => retryEnglish(item)}>
-                                  Try again
-                                </button>
-                              </p>
-                            )}
-                            {en.status === "ok" && (
-                              <p className="limmud-mishna__english" dir="ltr">
-                                {en.text}
-                              </p>
-                            )}
-                          </>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              ))}
-
-              <div className="limmud-english-row">
-                <EnglishSwitch on={showEnglish} onToggle={() => setShowEnglish((v) => !v)} />
-                {showEnglish && sharedEnglishAttribution && (
-                  <TranslationAttributionLine attribution={sharedEnglishAttribution} variant="short" />
+              <div className="limmud-card">
+                {seder && firstItem && (
+                  <p className="limmud-breadcrumb">
+                    {!isSelf && activeLabel && <span dir="ltr">{activeLabel} ▸ </span>}
+                    {seder.en} ▸ {firstItem.masechetEn} ▸ Perek {hebrewNumeral(firstItem.perek)}
+                    {perekName ? ` (${perekName})` : ""}
+                    {items.length === 1 ? ` ▸ Mishnah ${firstItem.mishnah}` : ""}
+                  </p>
                 )}
+
+                {perekGroups.map((g) => (
+                  <div key={`${g.masechetEn}-${g.perek}`} className="limmud-perek-block">
+                    {g.items.map((item) => {
+                      const en = englishByKey[englishKey(item)];
+                      return (
+                        <div key={item.mishnah} className="limmud-mishna">
+                          <p className="limmud-mishna__title" dir="rtl">
+                            משנה {hebrewNumeral(item.mishnah)}
+                          </p>
+                          {item.status === "loading" ? (
+                            <span className="limmud-mishna__loading">Loading…</span>
+                          ) : item.status === "error" ? (
+                            <span className="limmud-mishna__error" dir="ltr">
+                              {item.error}
+                            </span>
+                          ) : (
+                            <p className="limmud-mishna__text" dir="rtl">
+                              {item.textHe}
+                            </p>
+                          )}
+
+                          {showEnglish && item.status === "loaded" && en && en.status !== "unavailable" && (
+                            <>
+                              <div className="limmud-mishna__hairline" />
+                              {en.status === "loading" && (
+                                <div className="limmud-english-skeleton" aria-hidden="true">
+                                  <span className="limmud-english-skeleton__bar" style={{ width: "100%" }} />
+                                  <span className="limmud-english-skeleton__bar" style={{ width: "92%" }} />
+                                  <span className="limmud-english-skeleton__bar" style={{ width: "64%" }} />
+                                </div>
+                              )}
+                              {en.status === "error" && (
+                                <p className="limmud-english-error">
+                                  English is not loading right now.
+                                  <button className="limmud-english-retry" onClick={() => retryEnglish(item)}>
+                                    Try again
+                                  </button>
+                                </p>
+                              )}
+                              {en.status === "ok" && (
+                                <p className="limmud-mishna__english" dir="ltr">
+                                  {en.text}
+                                </p>
+                              )}
+                            </>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                ))}
+
+                <div className="limmud-english-row">
+                  <EnglishSwitch on={showEnglish} onToggle={() => setShowEnglish((v) => !v)} />
+                  {showEnglish && sharedEnglishAttribution && (
+                    <TranslationAttributionLine attribution={sharedEnglishAttribution} variant="short" />
+                  )}
+                </div>
               </div>
 
               <button
@@ -488,10 +596,12 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
                     {hebrewNumeral(confirmPerek.perek)}
                   </span>
                   <span className="limmud-confirm__text">
-                    Streak day {streak.current} —{" "}
-                    {confirmPerek.remaining === 0
-                      ? "Perek complete!"
-                      : `${confirmPerek.remaining} mishnah${confirmPerek.remaining === 1 ? "" : "s"} left in this perek`}
+                    <span className="limmud-confirm__head">Streak day {streak.current}</span>
+                    <span className="limmud-confirm__sub">
+                      {confirmPerek.remaining === 0
+                        ? `Perek ${hebrewNumeral(confirmPerek.perek)} of ${firstItem?.masechetEn ?? ""} complete. Comes back in Review tomorrow.`
+                        : `${confirmPerek.remaining} mishnah${confirmPerek.remaining === 1 ? "" : "s"} left in this perek. Comes back in Review tomorrow.`}
+                    </span>
                   </span>
                 </div>
               )}
@@ -514,102 +624,31 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
             <div className="limmud-notes">
               <FlipCounter scopes={journeyScopes} />
 
-              <p className="limmud-notes__label">Notes for this perek</p>
-              <button className="limmud-notes__open" onClick={() => setNoteOpen(true)}>
-                {firstItem && getPerekNote(firstItem.masechetEn, firstItem.perek) ? "View note" : "Add note"}
-              </button>
+              <div className="limmud-notes__actions">
+                <button className="limmud-notes__open" onClick={() => setNoteOpen(true)}>
+                  <span className="limmud-notes__open-dot" aria-hidden="true" />
+                  <span className="limmud-notes__open-text">
+                    <span className="limmud-notes__open-title">Name this perek</span>
+                    <span className="limmud-notes__open-sub">
+                      {firstItem && getPerekNote(firstItem.masechetEn, firstItem.perek) ? "View note" : "Add note"}
+                    </span>
+                  </span>
+                </button>
+                <button className="limmud-notes__open limmud-notes__open--concept" onClick={() => setConceptOpen(true)}>
+                  <span className="limmud-notes__open-dot limmud-notes__open-dot--concept" aria-hidden="true" />
+                  <span className="limmud-notes__open-text">
+                    <span className="limmud-notes__open-title">Flag a concept</span>
+                    <span className="limmud-notes__open-sub">
+                      {progress.concepts.length} saved to review
+                    </span>
+                  </span>
+                </button>
+              </div>
               {onOpenNotes && (
                 <button className="limmud-concept__open-all" onClick={onOpenNotes}>
                   → View or print all your notes in Mishna Notes
                 </button>
               )}
-
-              <p className="limmud-notes__label limmud-notes__label--concepts">Concepts to review</p>
-              <input
-                className="limmud-concept__input"
-                value={conceptTitle}
-                onChange={(e) => setConceptTitle(e.target.value)}
-                placeholder="Concept name"
-              />
-              <textarea
-                className="limmud-concept__textarea"
-                value={conceptNote}
-                onChange={(e) => setConceptNote(e.target.value)}
-                placeholder="What to remember about it"
-              />
-              <button className="limmud-concept__save" onClick={handleSaveConcept}>
-                {conceptSaved ? "✓ Saved" : "Save concept"}
-              </button>
-              {onOpenNotes && (
-                <button className="limmud-concept__open-all" onClick={onOpenNotes}>
-                  → View all concepts in Mishna Notes
-                </button>
-              )}
-            </div>
-          </div>
-        )}
-
-        {(groupContexts.length > 0 || isSelf) && (
-          <div className="limmud-settings">
-            {groupContexts.length > 0 && (
-              <div className="limmud-control">
-                <p className="mishna-control__label">Learning for</p>
-                <div className="pill-row">
-                  <button
-                    className={"pill" + (activeContext === "self" ? " pill--active" : "")}
-                    onClick={() => setContext("self")}
-                  >
-                    My own learning
-                  </button>
-                  {groupContexts.map((g) => (
-                    <button
-                      key={g.masechetEn}
-                      className={"pill" + (activeContext === g.masechetEn ? " pill--active" : "")}
-                      onClick={() => setContext(g.masechetEn)}
-                    >
-                      {g.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {activeChabura && (
-              <div className="limmud-chabura-members">
-                {activeChabura.members.map((m) => (
-                  <span key={m.userId} className="limmud-chabura-member">
-                    <span
-                      className={
-                        "limmud-chabura-member__dot" + (m.lastLearnedDate === today ? " limmud-chabura-member__dot--done" : "")
-                      }
-                    />
-                    {m.userId === session?.user.id ? "You" : (m.firstName ?? m.username ?? "Someone")}
-                  </span>
-                ))}
-              </div>
-            )}
-
-            {isSelf && (
-              <div className="limmud-control">
-                <p className="mishna-control__label">Pace</p>
-                <div className="pill-row">
-                  {PACE_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.value}
-                      className={"pill" + (pace === opt.value ? " pill--active" : "")}
-                      onClick={() => handlePaceChange(opt.value)}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <div className="limmud-streak">
-              <span className="limmud-streak__dot" aria-hidden="true" />
-              <span className="limmud-streak__num">{streak.current}</span>
-              <span className="limmud-streak__label">day streak · best {streak.longest}</span>
             </div>
           </div>
         )}
@@ -622,6 +661,15 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
           initialValue={getPerekNote(firstItem.masechetEn, firstItem.perek)}
           onSave={(value) => setPerekNote(firstItem.masechetEn, firstItem.perek, value)}
           onClose={() => setNoteOpen(false)}
+          onOpenNotes={onOpenNotes}
+        />
+      )}
+      {conceptOpen && firstItem && (
+        <ConceptModal
+          masechetEn={firstItem.masechetEn}
+          perek={firstItem.perek}
+          onSave={handleSaveConcept}
+          onClose={() => setConceptOpen(false)}
           onOpenNotes={onOpenNotes}
         />
       )}
