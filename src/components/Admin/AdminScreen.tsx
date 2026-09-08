@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAdmin } from "../../utils/useAdmin";
 import { useAdminActivityGrid } from "../../utils/useAdminActivityGrid";
+import { useAuth } from "../../utils/useAuth";
 import { supabase } from "../../utils/supabase";
 import { RebbeGrid } from "../RebbeDashboard/RebbeDashboardScreen";
 import { ConfirmModal } from "../ConfirmModal/ConfirmModal";
@@ -64,7 +65,59 @@ function AdminResetCell({ userId, email }: { userId: string; email: string }) {
   );
 }
 
+/** One user row's delete control — permanent, so it gets the same
+    typeToConfirm treatment as the self-service "Delete account" on My
+    Account. Calls the same delete-account Edge Function, which
+    independently verifies the caller is an admin server-side before
+    honoring a target other than their own account. */
+function AdminDeleteCell({ userId, email, onDeleted }: { userId: string; email: string; onDeleted: () => void }) {
+  const auth = useAuth();
+  const [confirming, setConfirming] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleConfirm() {
+    setBusy(true);
+    setError(null);
+    const err = await auth.adminDeleteUser(userId);
+    setBusy(false);
+    if (err) {
+      setError(err);
+      return;
+    }
+    setConfirming(false);
+    onDeleted();
+  }
+
+  return (
+    <>
+      <button className="admin-delete__btn" onClick={() => setConfirming(true)}>
+        Delete
+      </button>
+      {confirming && (
+        <ConfirmModal
+          title={`Permanently delete ${email}'s account?`}
+          body="This can't be undone. Type DELETE to confirm."
+          icon="⚠"
+          confirmLabel="Delete account"
+          busyLabel="Deleting…"
+          busy={busy}
+          destructive
+          typeToConfirm="DELETE"
+          error={error}
+          onConfirm={handleConfirm}
+          onCancel={() => {
+            setError(null);
+            setConfirming(false);
+          }}
+        />
+      )}
+    </>
+  );
+}
+
 export function AdminScreen() {
+  const auth = useAuth();
   const { overview, users, loading, error, refresh } = useAdmin(true);
   const activityGrid = useAdminActivityGrid(true);
 
@@ -74,7 +127,7 @@ export function AdminScreen() {
         <div className="admin-head">
           <div>
             <h1 className="panel__title">Admin</h1>
-            <p className="panel__subtitle">Everything across every account, read-only except Reset below.</p>
+            <p className="panel__subtitle">Everything across every account, read-only except Reset and Delete below.</p>
           </div>
           <button className="admin-refresh" onClick={refresh} disabled={loading}>
             {loading ? "Refreshing…" : "Refresh"}
@@ -149,6 +202,7 @@ export function AdminScreen() {
                 <th>Mishnayot</th>
                 <th>Admin</th>
                 <th>Reset trackers</th>
+                <th>Delete</th>
               </tr>
             </thead>
             <tbody>
@@ -168,6 +222,13 @@ export function AdminScreen() {
                   <td>{u.isAdmin ? "Yes" : ""}</td>
                   <td>
                     <AdminResetCell userId={u.id} email={u.email} />
+                  </td>
+                  <td>
+                    {u.id === auth.session?.user.id ? (
+                      <span className="admin-delete__self">Use My Account →</span>
+                    ) : (
+                      <AdminDeleteCell userId={u.id} email={u.email} onDeleted={refresh} />
+                    )}
                   </td>
                 </tr>
               ))}

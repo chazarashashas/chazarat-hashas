@@ -66,6 +66,7 @@ interface AuthContextValue extends AuthState {
     country?: string;
   }): Promise<string | null>;
   deleteAccount(): Promise<string | null>;
+  adminDeleteUser(userId: string): Promise<string | null>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -210,6 +211,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return null;
   }
 
+  /** Admin-only: permanently deletes someone else's account. The same
+      delete-account Edge Function handles this — it independently checks
+      the caller's own is_admin flag server-side before honoring a
+      target_user_id, so this call only succeeds when state.session
+      actually belongs to an admin, regardless of what isAdmin says
+      client-side. */
+  async function adminDeleteUser(userId: string): Promise<string | null> {
+    if (!supabase) return "Accounts aren't connected yet.";
+    const { error } = await supabase.functions.invoke("delete-account", {
+      body: { target_user_id: userId },
+    });
+    return error ? error.message : null;
+  }
+
   const value: AuthContextValue = {
     ...state,
     isLoggedIn: Boolean(state.session),
@@ -220,6 +235,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signOut,
     updateProfile,
     deleteAccount,
+    adminDeleteUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

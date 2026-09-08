@@ -1,11 +1,19 @@
-// Supabase Edge Function: deletes the calling user's own account.
+// Supabase Edge Function: deletes an account — the caller's own by
+// default, or (only for an admin) a target account passed in the body.
 //
 // This can't be done from the browser — deleting an auth user needs the
 // service-role key, which must never reach client code. This function
 // runs server-side (in Supabase's own infrastructure), verifies the
 // caller's identity from their own session token, and only then uses the
 // service-role key (available to it automatically as an environment
-// variable, never sent to the browser) to delete exactly that user.
+// variable, never sent to the browser) to delete the right user.
+//
+// A request body of { target_user_id } asks to delete someone else's
+// account — that's only honored once this function has independently
+// checked, server-side, that the CALLER's own profiles.is_admin is true.
+// The client can send whatever it wants in the body; it can never claim
+// admin status for itself, since that check reads the caller's own row
+// under the service-role key, not anything the request asserts.
 //
 // Deploy via the Supabase dashboard: Edge Functions -> Create a function
 // named "delete-account" -> paste this file's contents -> Deploy.
@@ -52,7 +60,30 @@ Deno.serve(async (req) => {
   }
 
   const adminClient = createClient(supabaseUrl, serviceRoleKey);
-  const { error: deleteError } = await adminClient.auth.admin.deleteUser(userData.user.id);
+
+  // Default: delete your own account. A target_user_id in the body asks
+  // to delete someone else's — only ever honored after an independent
+  // is_admin check below, never on the request's say-so.
+  let userIdToDelete = userData.user.id;
+  const body = await req.json().catch(() => ({}) as { target_user_id?: string });
+  const targetUserId = typeof body?.target_user_id === "string" ? body.target_user_id : null;
+
+  if (targetUserId && targetUserId !== userData.user.id) {
+    const { data: callerProfile, error: profileError } = await adminClient
+      .from("profiles")
+      .select("is_admin")
+      .eq("id", userData.user.id)
+      .single();
+    if (profileError || !callerProfile?.is_admin) {
+      return new Response(JSON.stringify({ error: "Not authorized to delete another account." }), {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    userIdToDelete = targetUserId;
+  }
+
+  const { error: deleteError } = await adminClient.auth.admin.deleteUser(userIdToDelete);
   if (deleteError) {
     return new Response(JSON.stringify({ error: deleteError.message }), {
       status: 500,

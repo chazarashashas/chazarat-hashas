@@ -162,3 +162,26 @@
   font-weight: 600;
   color: var(--good);
 }
+
+.admin-delete__btn {
+  height: 28px;
+  padding: 0 10px;
+  border: 1.5px solid var(--bad);
+  border-radius: var(--radius-small);
+  background: var(--bad);
+  color: #fff;
+  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.admin-delete__btn:hover {
+  background: #96422f;
+  border-color: #96422f;
+}
+
+.admin-delete__self {
+  font-size: 10.5px;
+  color: var(--muted);
+}
