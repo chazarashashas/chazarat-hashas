@@ -159,7 +159,6 @@ export function SederSortScreen() {
         <button className="restart-icon" title="Restart" onClick={handleReset}>
           ↺
         </button>
-        <p className="app-title">Chazarat Hashas</p>
         <h1 className="panel__title">Seder Sort</h1>
         <p className="panel__subtitle">
           Drag each masechet into the seder it belongs to, or tap one then tap the seder — order doesn't

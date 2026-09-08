@@ -355,7 +355,6 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
   return (
     <div className="stage limmud-stage">
       <div className="panel limmud-panel">
-        <p className="app-title">Chazarat Hashas</p>
         <h1 className="panel__title">Daily Limmud</h1>
         {(firstName || username) && <p className="limmud-welcome">Welcome back, {firstName ?? username}!</p>}
         <p className="panel__subtitle">

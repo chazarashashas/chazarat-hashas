@@ -182,7 +182,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
     <div className="stage">
       <div className="panel home-panel">
         <BrandMark variant="outline" className="home-brand-mark" />
-        <p className="app-title">Chazarat Hashas</p>
+        <p className="home-brand-name">Chazarat Hashas</p>
         <h1 className="home-title" dir="rtl">
           חזרת הש״ס
         </h1>

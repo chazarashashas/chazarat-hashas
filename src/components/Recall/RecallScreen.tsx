@@ -151,7 +151,6 @@ export function RecallScreen() {
         <button className="restart-icon" title="Restart" onClick={handleRestartIcon}>
           ↺
         </button>
-        <p className="app-title">Chazarat Hashas</p>
         <h1 className="panel__title">Mishna Chazara</h1>
         <p className="panel__subtitle">Type every masechet you can remember before time runs out.</p>
 

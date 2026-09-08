@@ -82,7 +82,6 @@ export function ReviewScreen() {
   return (
     <div className="stage">
       <div className="panel review-panel">
-        <p className="app-title">Chazarat Hashas</p>
         <h1 className="panel__title">Review</h1>
         <p className="panel__subtitle">
           Mishnayot you've learned before, resurfaced before you forget them — {totalTracked} tracked in

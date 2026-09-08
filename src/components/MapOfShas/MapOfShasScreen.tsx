@@ -112,7 +112,6 @@ export function MapOfShasScreen({ onOpenNotes }: MapOfShasScreenProps) {
   return (
     <div className="stage">
       <div className="panel map-panel">
-        <p className="app-title">Chazarat Hashas</p>
         <h1 className="panel__title">Explore Shas</h1>
         <p className="panel__subtitle">
           Explore Shas from the top down — every seder, masechet, perek, and mishnah, with your

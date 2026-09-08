@@ -372,7 +372,6 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
             ↺
           </button>
         </div>
-        <p className="app-title">Chazarat Hashas</p>
         <h1 className="panel__title">Mishna Quiz</h1>
         <p className="panel__subtitle">
           {scopeType === "masechta"

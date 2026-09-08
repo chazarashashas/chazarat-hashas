@@ -36,7 +36,6 @@ export function ResourcesScreen() {
   return (
     <div className="stage">
       <div className="panel">
-        <p className="app-title">Chazarat Hashas</p>
         <h1 className="panel__title">Resources</h1>
         <p className="panel__subtitle">
           Study away from the screen. Print these and fill them in from memory, then check yourself

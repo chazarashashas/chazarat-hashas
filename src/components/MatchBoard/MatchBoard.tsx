@@ -128,7 +128,6 @@ export function MatchBoard({ view, state, onPlace, onReset, clearedSederIds }: M
         <button className="restart-icon" title="Restart" onClick={onReset}>
           ↺
         </button>
-        <p className="app-title">Chazarat Hashas</p>
         <h2 className="panel__title">{view.title}</h2>
         <p className="panel__subtitle">
           Drag each {view.id === "sedarim" ? "seder" : "masechet"} into its correct spot — or tap one,

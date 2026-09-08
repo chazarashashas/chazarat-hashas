@@ -290,7 +290,6 @@ export function ChaburaScreen({ onOpenLogin }: ChaburaScreenProps) {
     return (
       <div className="stage">
         <div className="panel">
-          <p className="app-title">Chazarat Hashas</p>
           <h1 className="gate2-title">Chabura</h1>
           <p className="gate2-subtitle">{k.standfirst}</p>
 
@@ -358,7 +357,6 @@ export function ChaburaScreen({ onOpenLogin }: ChaburaScreenProps) {
   return (
     <div className="stage">
       <div className="panel">
-        <p className="app-title">Chazarat Hashas</p>
         <h1 className="panel__title">Chabura</h1>
         <p className="panel__subtitle">
           Start or join a group learning together, one masechet at a time. Know when the group has

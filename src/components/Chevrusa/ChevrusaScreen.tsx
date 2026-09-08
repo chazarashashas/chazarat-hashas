@@ -121,7 +121,6 @@ export function ChevrusaScreen({ onOpenLogin }: ChevrusaScreenProps) {
     return (
       <div className="stage">
         <div className="panel">
-          <p className="app-title">Chazarat Hashas</p>
           <h1 className="gate2-title">Chevrusa</h1>
           <p className="gate2-subtitle">One partner, one masechet, each of you learning when the day allows.</p>
 
@@ -168,7 +167,6 @@ export function ChevrusaScreen({ onOpenLogin }: ChevrusaScreenProps) {
   return (
     <div className="stage">
       <div className="panel">
-        <p className="app-title">Chazarat Hashas</p>
         <h1 className="panel__title">Chevrusa</h1>
         <p className="panel__subtitle">
           Pair one-on-one with a study partner, one masechet at a time, so you can be in several,

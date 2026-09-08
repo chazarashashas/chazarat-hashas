@@ -515,7 +515,6 @@ export function LoginScreen({ onLoggedIn, onNavigate, initialMode, initialEmailO
     return (
       <div className="stage">
         <div className="panel login-panel">
-          <p className="app-title">Chazarat Hashas</p>
           <h1 className="panel__title">My Account</h1>
           <AccountDashboard onNavigate={onNavigate} />
         </div>

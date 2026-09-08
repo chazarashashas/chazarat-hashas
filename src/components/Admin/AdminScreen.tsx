@@ -71,7 +71,6 @@ export function AdminScreen() {
   return (
     <div className="stage">
       <div className="panel admin-panel">
-        <p className="app-title">Chazarat Hashas</p>
         <h1 className="panel__title">Admin</h1>
         <p className="panel__subtitle">Everything across every account, read-only except Reset below.</p>
 

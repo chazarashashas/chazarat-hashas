@@ -352,7 +352,6 @@ export function ShasDashScreen() {
             ↺
           </button>
         </div>
-        <p className="app-title">Chazarat Hashas</p>
         <h1 className="panel__title">Shas Dash</h1>
         <p className="dash-story">The road to the Beit Hamikdash — steer each masechet into its seder</p>
 

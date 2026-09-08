@@ -111,7 +111,6 @@ export function PerekNamesScreen({ onOpenLogin, onOpenText }: PerekNamesScreenPr
         <button className="restart-icon" title="Clear this masechet's notes" onClick={handleClear}>
           ↺
         </button>
-        <p className="app-title">Chazarat Hashas</p>
 
         <div className="notes-header">
           <div className="notes-header__left">
