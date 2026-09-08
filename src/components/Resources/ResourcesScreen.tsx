@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { PrintNotesView } from "../PrintNotes/PrintNotesView";
+import { NavIcon } from "../Icon/NavIcon";
 import "./ResourcesScreen.css";
 
 interface Resource {
@@ -50,6 +51,7 @@ export function ResourcesScreen() {
                 <p className="resource-card__desc">{r.desc}</p>
               </div>
               <a className="resource-card__download" href={r.file} download>
+                <NavIcon id="download" size={15} weight={2.2} />
                 Download
               </a>
             </div>
@@ -62,7 +64,8 @@ export function ResourcesScreen() {
                 Print your own notes and concepts — pick one masechet, one seder, or all of Shas.
               </p>
             </div>
-            <button className="resource-card__download" onClick={() => setPrintOpen(true)}>
+            <button className="resource-card__download resource-card__download--print" onClick={() => setPrintOpen(true)}>
+              <NavIcon id="print" size={15} weight={2} />
               Print
             </button>
           </div>
@@ -74,7 +77,8 @@ export function ResourcesScreen() {
                 Found a bug, or have an idea for the app? We'd love to hear from you.
               </p>
             </div>
-            <a className="resource-card__download" href="mailto:chazarashashas@gmail.com">
+            <a className="resource-card__download resource-card__download--mail" href="mailto:chazarashashas@gmail.com">
+              <NavIcon id="mail" size={15} weight={2} />
               Email us
             </a>
           </div>

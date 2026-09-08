@@ -32,6 +32,9 @@ const PATHS: Record<string, string> = {
   chevron: "M6 9l6 6 6-6",
   close: "M6 6l12 12M18 6L6 18",
   more: "M5 12h.01M12 12h.01M19 12h.01",
+  download: "M12 3v12M8 11l4 4 4-4M5 19h14",
+  print: "M7 8V4h10v4M5 8h14v8h-4v3H9v-3H5zM9 14h6",
+  mail: "M4 6h16v12H4zM4 7l8 6 8-6",
 };
 
 export function NavIcon({ id, size = 20, weight = 1.6 }: { id: string; size?: number; weight?: number }) {
