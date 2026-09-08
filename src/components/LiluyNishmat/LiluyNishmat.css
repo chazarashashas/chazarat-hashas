@@ -566,14 +566,11 @@
 }
 
 .nishmat-next-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
   background: var(--surface);
   border-radius: var(--radius-card);
-  padding: 14px 16px;
+  padding: 15px 16px;
   margin-bottom: 14px;
+  text-align: left;
 }
 
 .nishmat-next-card__label {
@@ -583,25 +580,40 @@
 }
 
 .nishmat-next-card__value {
-  margin: 2px 0 0;
+  margin: 3px 0 0;
   font-family: var(--font-heading);
-  font-size: 13px;
+  font-size: 14.5px;
   font-weight: 700;
   color: var(--ink);
 }
 
+.nishmat-next-card__desc {
+  margin: 4px 0 0;
+  font-size: 11.5px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
 .nishmat-next-card__btn {
-  flex-shrink: 0;
+  width: 100%;
   min-height: 48px;
+  margin-top: 12px;
   padding: 0 18px;
   background: var(--hue-chevrusa);
   color: #fff;
   border: none;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-control);
   font-family: var(--font-heading);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   cursor: pointer;
+}
+
+.nishmat-next-card__promise {
+  margin: 8px 0 0;
+  text-align: center;
+  font-size: 10px;
+  color: var(--muted);
 }
 
 .nishmat-share-row {

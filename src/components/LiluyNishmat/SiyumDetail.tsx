@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { SEDARIM } from "../../data/shas";
-import { getPerekName } from "../../data/perekInfo";
+import { getPerekName, getMishnayotCount } from "../../data/perekInfo";
 import { hebrewNumeral } from "../../utils/hebrewNumeral";
 import { getSederHue } from "../../utils/sederHue";
 import { useLearningProgress } from "../../utils/useLearningProgress";
@@ -267,18 +267,21 @@ export function SiyumDetail({ siyum, siyumim, isOwner, onBack, onOpenLogin }: Pr
 
         {firstOpen && (
           <div className="nishmat-next-card">
-            <div>
-              <p className="nishmat-next-card__label">Take whichever comes next</p>
-              <p className="nishmat-next-card__value">
-                {firstOpen.masechetEn} — Perek {hebrewNumeral(firstOpen.perek)}
-              </p>
-            </div>
+            <p className="nishmat-next-card__label">Take whichever comes next</p>
+            <p className="nishmat-next-card__value">
+              {firstOpen.masechetEn}, perek {hebrewNumeral(firstOpen.perek)}
+            </p>
+            <p className="nishmat-next-card__desc">
+              {getMishnayotCount(firstOpen.masechetEn, firstOpen.perek)} mishnayot. It arrives in your Daily Limmud
+              with the dedication on it.
+            </p>
             <button
               className="nishmat-next-card__btn"
               onClick={() => setClaimTarget({ masechetEn: firstOpen.masechetEn, perek: firstOpen.perek })}
             >
-              Take it
+              Take this perek
             </button>
+            <p className="nishmat-next-card__promise">You can hand it back any time and it returns to the board.</p>
           </div>
         )}
 
@@ -499,6 +502,7 @@ function ClaimModal({
         <button className="restart" disabled={busy} onClick={submit}>
           {busy ? "Taking it…" : "Take this perek"}
         </button>
+        <p className="nishmat-next-card__promise">You can hand it back any time and it returns to the board.</p>
         <button className="nishmat-modal-cancel" onClick={onCancel}>
           Cancel
         </button>
