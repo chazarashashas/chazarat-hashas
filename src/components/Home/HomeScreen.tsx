@@ -3,7 +3,7 @@ import { useLearningProgress } from "../../utils/useLearningProgress";
 import { usePerekNotes } from "../../utils/usePerekNotes";
 import { useAuth } from "../../utils/useAuth";
 import { useChevrusa } from "../../utils/useChevrusa";
-import { NavIcon } from "../Sidebar/NavIcon";
+import { NavIcon } from "../Icon/NavIcon";
 import { BrandMark } from "../BrandMark";
 import { ProgressHeaderBar } from "../ProgressHeaderBar/ProgressHeaderBar";
 import { useEscapeKey } from "../../utils/useEscapeKey";

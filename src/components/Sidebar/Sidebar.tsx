@@ -1,4 +1,4 @@
-import { NavIcon } from "./NavIcon";
+import { NavIcon } from "../Icon/NavIcon";
 import { BrandMark } from "../BrandMark";
 import "./Sidebar.css";
 

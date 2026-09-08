@@ -3,7 +3,7 @@ import type { Group } from "../../utils/useChevrusa";
 import type { TodaySnapshot, SubmissionActivity } from "../../utils/useDailySubmission";
 import { useSendDailySubmission, fetchMyWeek, type WeekDay } from "../../utils/useDailySubmission";
 import { useAuth } from "../../utils/useAuth";
-import { NavIcon } from "../Sidebar/NavIcon";
+import { NavIcon } from "../Icon/NavIcon";
 import "./TodayLearningCard.css";
 
 const ICON_BY_KEY: Record<SubmissionActivity["key"], string> = {

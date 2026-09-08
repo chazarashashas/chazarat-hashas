@@ -3,6 +3,7 @@ import type { Group, GroupMember } from "../../utils/useChevrusa";
 import type { Pace } from "../../utils/useLearningProgress";
 import { useGroupNudges } from "../../utils/useGroupNudges";
 import { useEscapeKey } from "../../utils/useEscapeKey";
+import { DotsIcon } from "../Icon/NavIcon";
 import { GroupNotes } from "./GroupNotes";
 import "./GroupCard.css";
 
@@ -157,11 +158,7 @@ export function GroupCard({
           {group.joinCode && <span className="group-card__code-pill">{group.joinCode}</span>}
           <div className="group-card__menu">
             <button className="group-card__menu-btn" aria-label="More" onClick={() => setMenuOpen((v) => !v)}>
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
-                <circle cx="5" cy="12" r="1.8" />
-                <circle cx="12" cy="12" r="1.8" />
-                <circle cx="19" cy="12" r="1.8" />
-              </svg>
+              <DotsIcon />
             </button>
             {menuOpen && (
               <div className="group-card__menu-popover" onMouseLeave={() => setMenuOpen(false)}>

@@ -1,16 +1,6 @@
 import type { ReactNode } from "react";
+import { NavIcon } from "../Icon/NavIcon";
 import "./SignedOutGate.css";
-
-/** The right-arrow line-art glyph used by every primary CTA in this
-    file — inline, matching the sidebar icons, never an emoji. */
-function ArrowIcon() {
-  return (
-    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M4 12h15" />
-      <path d="M13 6l6 6-6 6" />
-    </svg>
-  );
-}
 
 interface KindOption<T extends string> {
   value: T;
@@ -190,7 +180,7 @@ export function GateCTA({
       </div>
       <button className="gate2-cta__btn" onClick={onAction}>
         <span>Log in or sign up</span>
-        <ArrowIcon />
+        <NavIcon id="arrow" size={15} weight={2.2} />
       </button>
     </div>
   );

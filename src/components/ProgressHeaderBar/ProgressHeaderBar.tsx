@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useLearningProgress } from "../../utils/useLearningProgress";
 import { buildJourneyScopes, findNextMasechet } from "../../utils/shasJourney";
+import { NavIcon } from "../Icon/NavIcon";
 import "./ProgressHeaderBar.css";
 
 interface ProgressHeaderBarProps {
@@ -126,19 +127,7 @@ export function ProgressHeaderBar({ progress, onGoToLimmud }: ProgressHeaderBarP
               </span>
               <button className="phb-next-btn" onClick={onGoToLimmud}>
                 <span>Go to My Limmud</span>
-                <svg
-                  viewBox="0 0 24 24"
-                  width="15"
-                  height="15"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M4 12h15" />
-                  <path d="M13 6l6 6-6 6" />
-                </svg>
+                <NavIcon id="arrow" size={15} weight={2.2} />
               </button>
             </>
           )}

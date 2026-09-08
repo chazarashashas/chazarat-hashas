@@ -1,5 +1,8 @@
 /** One set, one style: 24x24 viewBox, stroke-only monoline icons — no
-    fills, no emoji, no platform-dependent glyphs (see HANDOFF30 4b). */
+    fills, no emoji, no platform-dependent glyphs (see HANDOFF30 4b).
+    This is the app's whole icon set, not just the sidebar's — anything
+    that used to draw its own inline arrow/chevron/close SVG belongs
+    here instead. */
 const PATHS: Record<string, string> = {
   home: "M4 11.5L12 4l8 7.5M6 10.5V19h4.5v-5.5h3V19H18v-8.5",
   limmud: "M12 4.5a7.5 7.5 0 100 15 7.5 7.5 0 000-15zM12 8v4.2l3 2",
@@ -25,21 +28,37 @@ const PATHS: Record<string, string> = {
   rebbe: "M8 4h8v2a1 1 0 01-1 1H9a1 1 0 01-1-1V4zM6 6h12v14a1 1 0 01-1 1H7a1 1 0 01-1-1V6zM9 13l2 2 4-4",
   chabura:
     "M12 9a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM7 20c0-3 2.2-4.9 5-4.9s5 1.9 5 4.9M5 11a2 2 0 100-4 2 2 0 000 4zM2 17.5c.2-2.2 1.5-3.6 3.3-3.6M19 11a2 2 0 100-4 2 2 0 000 4zM22 17.5c-.2-2.2-1.5-3.6-3.3-3.6",
+  arrow: "M4 12h15M13 6l6 6-6 6",
+  chevron: "M6 9l6 6 6-6",
+  close: "M6 6l12 12M18 6L6 18",
 };
 
-export function NavIcon({ id }: { id: string }) {
+export function NavIcon({ id, size = 20, weight = 1.6 }: { id: string; size?: number; weight?: number }) {
   const d = PATHS[id];
   if (!d) return null;
   return (
-    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+    <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden="true">
       <path
         d={d}
         fill="none"
         stroke="currentColor"
-        strokeWidth={1.6}
+        strokeWidth={weight}
         strokeLinecap="round"
         strokeLinejoin="round"
       />
+    </svg>
+  );
+}
+
+/** The one icon in the set that isn't a stroked line — a filled
+    three-dot "more" glyph (group-card overflow menu). Kept alongside
+    NavIcon rather than forced into its stroke-path model. */
+export function DotsIcon({ size = 16 }: { size?: number }) {
+  return (
+    <svg viewBox="0 0 24 24" width={size} height={size} fill="currentColor" aria-hidden="true">
+      <circle cx="5" cy="12" r="1.8" />
+      <circle cx="12" cy="12" r="1.8" />
+      <circle cx="19" cy="12" r="1.8" />
     </svg>
   );
 }

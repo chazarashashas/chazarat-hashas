@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { NavIcon } from "../Icon/NavIcon";
 import "./GroupCreateCard.css";
 
 /** The navy card that holds the whole create-a-group form —
@@ -42,11 +43,7 @@ export function FieldInset({
       <p className="create-field__label">{label}</p>
       <div className="create-field__inset">
         {children}
-        {select && (
-          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#6b6350" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M6 9l6 6 6-6" />
-          </svg>
-        )}
+        {select && <NavIcon id="chevron" size={15} weight={2.2} />}
       </div>
       {hint && <p className="create-field__hint">{hint}</p>}
     </div>
@@ -113,9 +110,7 @@ export function InviteRepeaterRow({
       </div>
       {onRemove && (
         <button className="invite-repeater-row__remove" onClick={onRemove} aria-label="Remove this address">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round">
-            <path d="M6 6l12 12M18 6L6 18" />
-          </svg>
+          <NavIcon id="close" size={14} weight={2.3} />
         </button>
       )}
     </div>
