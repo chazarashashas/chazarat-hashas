@@ -486,7 +486,8 @@
   padding: 4px 0;
 }
 
-@media (max-width: 760px) {
+/* Phone: ≤599px, per ANDROID-BRIEF.md §6. */
+@media (max-width: 599px) {
   .limmud-body {
     flex-direction: column;
   }

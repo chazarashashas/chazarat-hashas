@@ -31,6 +31,7 @@ const PATHS: Record<string, string> = {
   arrow: "M4 12h15M13 6l6 6-6 6",
   chevron: "M6 9l6 6 6-6",
   close: "M6 6l12 12M18 6L6 18",
+  more: "M5 12h.01M12 12h.01M19 12h.01",
 };
 
 export function NavIcon({ id, size = 20, weight = 1.6 }: { id: string; size?: number; weight?: number }) {

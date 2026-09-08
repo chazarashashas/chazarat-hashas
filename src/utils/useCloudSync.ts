@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "./supabase";
 import { STORAGE_SYNC_EVENT } from "./useLocalStorageState";
+import { DEFAULT_BOTTOM_BAR_IDS } from "./navItems";
 
 export const PREFIX = "chazarat-hashas:";
 /** This device's own marker of the last reset it has already applied —
@@ -25,6 +26,7 @@ export const SYNC_KEYS = [
   "reviewState",
   "showEnglish",
   "nishmatHiddenSiyumim",
+  "bottomBarIds",
 ] as const;
 
 export type SyncBlob = Partial<Record<(typeof SYNC_KEYS)[number], unknown>>;
@@ -180,6 +182,13 @@ function mergeBlobs(local: SyncBlob, cloud: SyncBlob): SyncBlob {
     // this merge's own outcome.
     showEnglish: typeof cloud.showEnglish === "boolean" ? cloud.showEnglish : (local.showEnglish ?? false),
     nishmatHiddenSiyumim: mergeUniqueBy(local.nishmatHiddenSiyumim, cloud.nishmatHiddenSiyumim, (item) => item as string),
+    // Same "local wins when it has a real value" rule as dailyLimmudPace —
+    // someone who set this up on one device should find it everywhere,
+    // but this device's own choice (if it's made one) isn't overwritten
+    // by an account default from before the setting existed.
+    bottomBarIds: isEmptyValue(local.bottomBarIds)
+      ? ((cloud.bottomBarIds as string[] | undefined) ?? DEFAULT_BOTTOM_BAR_IDS)
+      : (local.bottomBarIds as string[]),
   };
 }
 

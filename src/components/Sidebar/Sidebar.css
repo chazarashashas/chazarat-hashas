@@ -68,14 +68,10 @@
   font-weight: 700;
 }
 
-.nav-item:not(.nav-item--active):not(.nav-item--disabled):hover {
+.nav-item:not(.nav-item--active):hover,
+.nav-item:not(.nav-item--active):active {
   background: rgba(255, 255, 255, 0.1);
   color: #fff;
-}
-
-.nav-item--disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
 }
 
 .nav-group {
@@ -105,36 +101,10 @@
   color: var(--gold);
 }
 
-/* Below phone width the left rail becomes a fixed bottom tab bar instead —
-   a permanent ~108px-wide side column left almost no room for content on
-   a narrow screen. */
-@media (max-width: 760px) {
+/* Phone: ≤599px, per ANDROID-BRIEF.md §6 — the rail gives way to
+   ../BottomBar/BottomBar.tsx instead, so it just hides here. */
+@media (max-width: 599px) {
   .sidebar {
-    position: fixed;
-    inset: auto 0 0 0;
-    width: 100%;
-    height: auto;
-    flex-direction: row;
-    align-items: stretch;
-    justify-content: flex-start;
-    gap: 0;
-    padding: 0 0 env(safe-area-inset-bottom);
-    overflow-x: auto;
-    overflow-y: visible;
-    z-index: 20;
-    box-shadow: 0 -8px 24px rgba(22, 35, 63, 0.22);
-  }
-
-  .sidebar__brand,
-  .nav-group__label {
     display: none;
-  }
-
-  .nav-group {
-    display: contents;
-  }
-
-  .nav-item {
-    min-height: 44px;
   }
 }

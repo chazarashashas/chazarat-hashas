@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Sidebar } from "./components/Sidebar/Sidebar";
+import { BottomBar } from "./components/BottomBar/BottomBar";
 import { MATCH_VIEWS } from "./data/matchViews";
 import { MatchBoard } from "./components/MatchBoard/MatchBoard";
 import { TabBar } from "./components/TabBar/TabBar";
@@ -28,6 +29,8 @@ import { useLearningProgress } from "./utils/useLearningProgress";
 import { usePerekNotes } from "./utils/usePerekNotes";
 import { useFirstOpenPrompt } from "./utils/useFirstOpenPrompt";
 import { useNativeApp } from "./utils/useNativeApp";
+import { useLocalStorageState } from "./utils/useLocalStorageState";
+import { DEFAULT_BOTTOM_BAR_IDS } from "./utils/navItems";
 import { useGameStats } from "./utils/useGameStats";
 import { countCompletedMasechtot } from "./utils/shasJourney";
 import { shuffle } from "./utils/shuffle";
@@ -131,6 +134,14 @@ function App() {
   );
   const amRebbe = isRebbe(groups, session?.user.id);
 
+  // "Your bottom bar" in My Account — synced via useCloudSync like every
+  // other per-person setting. Drop a conditional item (rebbe/admin) this
+  // account no longer holds rather than showing a dead tab.
+  const [bottomBarIds, setBottomBarIds] = useLocalStorageState<string[]>("bottomBarIds", DEFAULT_BOTTOM_BAR_IDS);
+  const effectiveBottomBarIds = bottomBarIds.filter(
+    (id) => (id !== "rebbe" || amRebbe) && (id !== "admin" || isAdmin),
+  );
+
   const progress = useLearningProgress();
   const { perekNotes } = usePerekNotes();
   const noteCount = Object.values(perekNotes).reduce(
@@ -176,6 +187,13 @@ function App() {
   return (
     <div className="app">
       <Sidebar activeId={section} onSelect={handleSelect} isAdmin={isAdmin} isRebbe={amRebbe} />
+      <BottomBar
+        activeId={section}
+        onSelect={handleSelect}
+        barIds={effectiveBottomBarIds}
+        isAdmin={isAdmin}
+        isRebbe={amRebbe}
+      />
       <main className="main">
         <div
           className={
@@ -216,6 +234,10 @@ function App() {
                 setLoginReturnTo(null);
               }}
               onNavigate={setSection}
+              bottomBarIds={bottomBarIds}
+              onBottomBarIdsChange={setBottomBarIds}
+              isAdmin={isAdmin}
+              isRebbe={amRebbe}
             />
           ) : section === "chevrusa" ? (
             <ChevrusaScreen onOpenLogin={(mode) => requestLogin("chevrusa", mode)} />

@@ -200,14 +200,15 @@
   background: var(--good);
 }
 
-@media (max-width: 420px) {
+/* Phone: ≤599px, per ANDROID-BRIEF.md §6. */
+@media (max-width: 599px) {
   .rebbe-row__week-cell {
     width: 10px;
     height: 10px;
   }
 }
 
-@media (max-width: 420px) {
+@media (max-width: 599px) {
   .rebbe-row {
     flex-wrap: wrap;
   }
@@ -488,7 +489,8 @@
   display: none;
 }
 
-@media (max-width: 640px) {
+/* Phone: ≤599px, per ANDROID-BRIEF.md §6. */
+@media (max-width: 599px) {
   .rebbe-grid-wrap--desktop {
     display: none;
   }

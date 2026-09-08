@@ -509,6 +509,104 @@
   text-align: right;
 }
 
+/* ---------- Your bottom bar (ANDROID-BRIEF.md §7) ---------- */
+
+.bottom-bar-picker__current {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bottom-bar-picker__slot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--surface-hi);
+  border-radius: var(--radius-small);
+}
+
+.bottom-bar-picker__slot-icon {
+  flex-shrink: 0;
+  display: flex;
+  color: var(--ink-soft);
+}
+
+.bottom-bar-picker__slot-label {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 12.5px;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bottom-bar-picker__slot-actions {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.bottom-bar-picker__slot-actions button {
+  min-width: 30px;
+  min-height: 30px;
+  border: none;
+  border-radius: var(--radius-small);
+  background: none;
+  color: var(--ink-soft);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.bottom-bar-picker__slot-actions button:not(:disabled):hover {
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.bottom-bar-picker__slot-actions button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.bottom-bar-picker__remove {
+  color: var(--bad) !important;
+}
+
+.bottom-bar-picker__pool {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.bottom-bar-picker__chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 6px 12px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--surface-hi);
+  color: var(--ink-soft);
+  font-family: var(--font-body);
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.bottom-bar-picker__chip:hover {
+  border-color: var(--gold);
+  color: var(--ink);
+}
+
 .account-view-link {
   display: block;
   width: 100%;

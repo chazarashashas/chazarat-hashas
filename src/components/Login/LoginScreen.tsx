@@ -10,6 +10,8 @@ import { SEDARIM } from "../../data/shas";
 import { getSederHue } from "../../utils/sederHue";
 import { supabaseConfigured } from "../../utils/supabase";
 import { ConfirmModal } from "../ConfirmModal/ConfirmModal";
+import { NavIcon } from "../Icon/NavIcon";
+import { ALL_NAV_ITEMS } from "../../utils/navItems";
 import "./LoginScreen.css";
 
 const RESET_ITEMS = [
@@ -162,6 +164,105 @@ function letterGrade(percent: number): string {
   return "F";
 }
 
+/** "Your bottom bar" — the four destinations the phone nav shows plus
+    More (see ANDROID-BRIEF.md §7). Reorder with ‹ ›, remove with ×; tap a
+    chip below to add it, which fills an empty slot or swaps into the
+    last one once there are already four. */
+function BottomBarPicker({
+  barIds,
+  onChange,
+  isAdmin,
+  isRebbe,
+}: {
+  barIds: string[];
+  onChange: (ids: string[]) => void;
+  isAdmin?: boolean;
+  isRebbe?: boolean;
+}) {
+  const availableIds = ALL_NAV_ITEMS.filter((i) => i.id !== "admin" || isAdmin)
+    .filter((i) => i.id !== "rebbe" || isRebbe)
+    .map((i) => i.id);
+  const barSet = new Set(barIds);
+  const poolIds = availableIds.filter((id) => !barSet.has(id));
+
+  function moveItem(index: number, dir: -1 | 1) {
+    const j = index + dir;
+    if (j < 0 || j >= barIds.length) return;
+    const next = [...barIds];
+    [next[index], next[j]] = [next[j], next[index]];
+    onChange(next);
+  }
+
+  function removeItem(index: number) {
+    if (barIds.length <= 1) return;
+    onChange(barIds.filter((_, i) => i !== index));
+  }
+
+  function addFromPool(id: string) {
+    if (barIds.length < 4) onChange([...barIds, id]);
+    else onChange([...barIds.slice(0, -1), id]);
+  }
+
+  return (
+    <div className="account-card bottom-bar-picker">
+      <div className="bottom-bar-picker__current">
+        {barIds.map((id, i) => {
+          const item = ALL_NAV_ITEMS.find((x) => x.id === id);
+          if (!item) return null;
+          return (
+            <div className="bottom-bar-picker__slot" key={id}>
+              <span className="bottom-bar-picker__slot-icon">
+                <NavIcon id={id} size={17} />
+              </span>
+              <span className="bottom-bar-picker__slot-label">{item.label}</span>
+              <div className="bottom-bar-picker__slot-actions">
+                <button
+                  type="button"
+                  aria-label={`Move ${item.label} earlier`}
+                  disabled={i === 0}
+                  onClick={() => moveItem(i, -1)}
+                >
+                  ‹
+                </button>
+                <button
+                  type="button"
+                  aria-label={`Move ${item.label} later`}
+                  disabled={i === barIds.length - 1}
+                  onClick={() => moveItem(i, 1)}
+                >
+                  ›
+                </button>
+                <button
+                  type="button"
+                  className="bottom-bar-picker__remove"
+                  aria-label={`Remove ${item.label} from your bottom bar`}
+                  disabled={barIds.length <= 1}
+                  onClick={() => removeItem(i)}
+                >
+                  ×
+                </button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      {poolIds.length > 0 && (
+        <div className="bottom-bar-picker__pool">
+          {poolIds.map((id) => {
+            const item = ALL_NAV_ITEMS.find((x) => x.id === id)!;
+            return (
+              <button type="button" key={id} className="bottom-bar-picker__chip" onClick={() => addFromPool(id)}>
+                <NavIcon id={id} size={14} />
+                {item.label}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
 interface LoginScreenProps {
   /** Fired after a successful sign-in only (not sign-up, which requires
       email confirmation first and doesn't log the user in immediately)
@@ -169,6 +270,12 @@ interface LoginScreenProps {
       what they were doing instead of stranding them on this screen. */
   onLoggedIn?: () => void;
   onNavigate?: (id: string) => void;
+  /** "Your bottom bar" — the phone nav's four destinations, synced via
+      useCloudSync in App.tsx like every other per-person setting. */
+  bottomBarIds: string[];
+  onBottomBarIdsChange: (ids: string[]) => void;
+  isAdmin?: boolean;
+  isRebbe?: boolean;
   /** Which pill this screen opens on — set by a gate card's "Create an
       account" vs. "I already have one" so a returning user doesn't land
       on the sign-up form by default. */
@@ -179,7 +286,19 @@ interface LoginScreenProps {
   initialEmailOpen?: boolean;
 }
 
-function AccountDashboard({ onNavigate }: { onNavigate?: (id: string) => void }) {
+function AccountDashboard({
+  onNavigate,
+  bottomBarIds,
+  onBottomBarIdsChange,
+  isAdmin,
+  isRebbe,
+}: {
+  onNavigate?: (id: string) => void;
+  bottomBarIds: string[];
+  onBottomBarIdsChange: (ids: string[]) => void;
+  isAdmin?: boolean;
+  isRebbe?: boolean;
+}) {
   const auth = useAuth();
   const progress = useLearningProgress();
   const { perekNotes, masechetSentences } = usePerekNotes();
@@ -428,6 +547,14 @@ function AccountDashboard({ onNavigate }: { onNavigate?: (id: string) => void })
         </>
       )}
 
+      <h2 className="account-section-title">Your bottom bar</h2>
+      <BottomBarPicker
+        barIds={bottomBarIds}
+        onChange={onBottomBarIdsChange}
+        isAdmin={isAdmin}
+        isRebbe={isRebbe}
+      />
+
       <ResetProgressSection />
 
       <div className="delete-account">
@@ -457,7 +584,16 @@ function AccountDashboard({ onNavigate }: { onNavigate?: (id: string) => void })
   );
 }
 
-export function LoginScreen({ onLoggedIn, onNavigate, initialMode, initialEmailOpen }: LoginScreenProps) {
+export function LoginScreen({
+  onLoggedIn,
+  onNavigate,
+  bottomBarIds,
+  onBottomBarIdsChange,
+  isAdmin,
+  isRebbe,
+  initialMode,
+  initialEmailOpen,
+}: LoginScreenProps) {
   const auth = useAuth();
   const progress = useLearningProgress();
   const { perekNotes } = usePerekNotes();
@@ -516,7 +652,13 @@ export function LoginScreen({ onLoggedIn, onNavigate, initialMode, initialEmailO
       <div className="stage">
         <div className="panel login-panel">
           <h1 className="panel__title">My Account</h1>
-          <AccountDashboard onNavigate={onNavigate} />
+          <AccountDashboard
+            onNavigate={onNavigate}
+            bottomBarIds={bottomBarIds}
+            onBottomBarIdsChange={onBottomBarIdsChange}
+            isAdmin={isAdmin}
+            isRebbe={isRebbe}
+          />
         </div>
       </div>
     );

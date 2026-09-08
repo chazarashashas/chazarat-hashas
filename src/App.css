@@ -24,7 +24,8 @@
   max-width: 760px;
 }
 
-@media (max-width: 760px) {
+/* Phone: ≤599px, per ANDROID-BRIEF.md §6. */
+@media (max-width: 599px) {
   .main {
     padding: 18px max(15px, env(safe-area-inset-right)) calc(92px + env(safe-area-inset-bottom))
       max(15px, env(safe-area-inset-left));

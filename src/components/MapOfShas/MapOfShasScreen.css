@@ -126,7 +126,8 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-@media (max-width: 640px) {
+/* Phone: ≤599px, per ANDROID-BRIEF.md §6. */
+@media (max-width: 599px) {
   .map-grid--sedarim {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }

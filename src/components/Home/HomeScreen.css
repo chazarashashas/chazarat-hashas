@@ -160,7 +160,8 @@
   margin-top: 12px;
 }
 
-@media (max-width: 640px) {
+/* Phone: ≤599px, per ANDROID-BRIEF.md §6. */
+@media (max-width: 599px) {
   .home-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
