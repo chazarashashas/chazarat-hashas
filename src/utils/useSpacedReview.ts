@@ -6,7 +6,7 @@ import type { CompletionRecord } from "./useLearningProgress";
     A correct ("Got it") review promotes to the next box; a miss ("Need
     practice") drops back to box 1. No content authoring required — it
     schedules review of mishnayot the user has already marked learned. */
-const BOX_INTERVAL_DAYS = [1, 3, 7, 14, 30];
+export const BOX_INTERVAL_DAYS = [1, 3, 7, 14, 30];
 const MAX_BOX = BOX_INTERVAL_DAYS.length;
 
 export interface ReviewState {
@@ -26,6 +26,7 @@ export interface ReviewItem {
   /** The date this mishnah was originally marked learned — lets the
       review card show "learned 12 days ago" for context. */
   learnedDate: string;
+  timesReviewed: number;
 }
 
 function todayStr(): string {
@@ -76,6 +77,7 @@ export function useSpacedReview(completions: CompletionRecord[]) {
         box: state.box,
         nextReview: state.nextReview,
         learnedDate: record.date,
+        timesReviewed: state.timesReviewed,
       });
     }
   }
