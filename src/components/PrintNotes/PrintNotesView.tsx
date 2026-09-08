@@ -117,13 +117,15 @@ export function PrintNotesView({ initialMasechetEn, onClose }: PrintNotesViewPro
                       <p className="print-perek__title">
                         Perek <span dir="rtl">{hebrewNumeral(perek)}</span>
                       </p>
-                      {note && <p className="print-note">{note}</p>}
-                      {perekConcepts.map((c) => (
-                        <div key={c.id} className="print-concept">
-                          <span className="print-concept__title">{c.title}</span>
-                          {c.note && <span className="print-concept__note"> — {c.note}</span>}
-                        </div>
-                      ))}
+                      <div className="print-perek__content">
+                        {note && <p className="print-note">{note}</p>}
+                        {perekConcepts.map((c) => (
+                          <div key={c.id} className="print-concept">
+                            <span className="print-concept__title">{c.title}</span>
+                            {c.note && <span className="print-concept__note"> — {c.note}</span>}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   ))}
                 </div>

@@ -129,16 +129,26 @@
 }
 
 .print-perek {
-  margin: 0 0 10px 12px;
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  margin: 0 0 8px;
   break-inside: avoid;
 }
 
 .print-perek__title {
+  flex-shrink: 0;
+  width: 52px;
   font-family: var(--font-heading);
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 10px;
+  font-weight: 600;
   color: var(--ink-soft);
-  margin: 0 0 3px;
+  margin: 0;
+}
+
+.print-perek__content {
+  flex: 1;
+  min-width: 0;
 }
 
 .print-note {
