@@ -1,6 +1,6 @@
 .rebbe-panel {
   background: var(--paper);
-  border-radius: 20px;
+  border-radius: var(--radius-card);
 }
 
 .rebbe-head {
@@ -26,7 +26,7 @@
 
 .rebbe-shiur-select {
   height: 38px;
-  border-radius: 10px;
+  border-radius: var(--radius-small);
   border: 1.5px solid var(--line);
   background: var(--surface-hi);
   padding: 0 10px;
@@ -48,7 +48,7 @@
 }
 
 .rebbe-summary__figure {
-  border-radius: 15px;
+  border-radius: var(--radius-control);
   padding: 14px 10px;
   text-align: center;
   background: var(--surface-hi);
@@ -121,7 +121,7 @@
   background: var(--surface-hi);
   border: none;
   border-left: 3px solid var(--line);
-  border-radius: 14px;
+  border-radius: var(--radius-control);
   padding: 10px 14px;
   cursor: pointer;
   text-align: left;
@@ -132,7 +132,7 @@
   flex-shrink: 0;
   width: 34px;
   height: 34px;
-  border-radius: 10px;
+  border-radius: var(--radius-small);
   background: var(--track);
   color: var(--ink);
   display: flex;
@@ -237,7 +237,7 @@
   margin-top: 14px;
   background: var(--surface);
   border-left: 3px solid var(--gold);
-  border-radius: 12px;
+  border-radius: var(--radius-control);
   padding: 14px 16px;
   text-align: center;
 }
@@ -307,7 +307,7 @@
 .rebbe-detail__avatar {
   width: 44px;
   height: 44px;
-  border-radius: 13px;
+  border-radius: var(--radius-control);
   background: var(--ink);
   color: var(--gold);
   display: flex;
@@ -340,7 +340,7 @@
 
 .rebbe-day-card {
   background: var(--surface-hi);
-  border-radius: 13px;
+  border-radius: var(--radius-control);
   padding: 12px 14px;
 }
 
@@ -366,7 +366,7 @@
   width: 100%;
   border-collapse: collapse;
   background: var(--surface-hi);
-  border-radius: 16px;
+  border-radius: var(--radius-card);
   overflow: hidden;
   font-size: 12px;
 }
@@ -410,7 +410,7 @@
   display: inline-flex;
   width: 27px;
   height: 27px;
-  border-radius: 8px;
+  border-radius: var(--radius-small);
   background: var(--track);
   align-items: center;
   justify-content: center;
@@ -513,7 +513,7 @@
   align-items: center;
   gap: 10px;
   background: var(--surface-hi);
-  border-radius: 12px;
+  border-radius: var(--radius-control);
   padding: 9px 12px;
 }
 

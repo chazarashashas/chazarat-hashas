@@ -98,7 +98,7 @@
 
 .admin-reset__select {
   height: 28px;
-  border-radius: 8px;
+  border-radius: var(--radius-small);
   border: 1.5px solid var(--line);
   background: var(--surface-hi);
   color: var(--ink);
@@ -110,7 +110,7 @@
   height: 28px;
   padding: 0 10px;
   border: 1.5px solid var(--bad);
-  border-radius: 8px;
+  border-radius: var(--radius-small);
   background: none;
   color: var(--bad);
   font-family: var(--font-heading);

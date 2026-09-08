@@ -29,7 +29,7 @@
   margin-top: 18px;
   background: var(--surface-hi);
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: var(--radius-control);
   padding: 15px 18px;
   font-family: var(--font-heading);
   font-size: 14px;
@@ -74,7 +74,7 @@
 .onthis-panel {
   background: var(--surface);
   border-left: 3px solid var(--gold);
-  border-radius: 16px;
+  border-radius: var(--radius-card);
   padding: 16px 18px;
   margin-top: 4px;
 }
@@ -119,7 +119,7 @@
   min-height: 44px;
   background: #f0e9d7;
   border: none;
-  border-radius: 14px;
+  border-radius: var(--radius-control);
   font-family: var(--font-heading);
   font-weight: 600;
   font-size: 13px;
@@ -342,7 +342,7 @@
   justify-content: center;
   background: var(--gold);
   color: var(--ink);
-  border-radius: 13px;
+  border-radius: var(--radius-control);
   font-family: var(--font-heading);
   font-size: 17px;
   font-weight: 800;
@@ -491,7 +491,7 @@
 
 .account-seder-bar__track {
   height: 6px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--track);
   overflow: hidden;
 }
@@ -499,7 +499,7 @@
 .account-seder-bar__fill {
   height: 100%;
   background: var(--tile-hue, var(--gold));
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
 }
 
 .account-seder-bar__pct {

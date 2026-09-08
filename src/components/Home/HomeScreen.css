@@ -35,7 +35,7 @@
   padding: 12px 16px;
   border-left: 3px solid var(--gold);
   background: #fbf1d6;
-  border-radius: 8px;
+  border-radius: var(--radius-small);
   text-align: center;
 }
 

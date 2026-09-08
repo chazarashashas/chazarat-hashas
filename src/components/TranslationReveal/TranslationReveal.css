@@ -35,7 +35,7 @@
 .translation-reveal-panel {
   margin-top: 8px;
   background: #faf7ef;
-  border-radius: 13px;
+  border-radius: var(--radius-control);
   border-left: 3px solid var(--gold);
   padding: 15px 16px;
   text-align: left;

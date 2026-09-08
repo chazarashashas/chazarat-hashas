@@ -60,10 +60,10 @@
 
   /* Radii vary by weight of content. */
   --radius-hero: 22px;
-  --radius-card: 17px;
-  --radius-control: 12px;
+  --radius-card: 18px;
+  --radius-control: 13px;
+  --radius-small: 10px;
   --radius-pill: 999px;
-  --radius-page: 18px;
 
   --shadow-hero: 0 12px 28px rgba(22, 35, 63, 0.18);
   --shadow-hover: 0 8px 18px rgba(22, 35, 63, 0.1);

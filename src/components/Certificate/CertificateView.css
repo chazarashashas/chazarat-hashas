@@ -60,7 +60,7 @@
 
 .cert-border {
   border: 3px solid var(--gold);
-  border-radius: 22px;
+  border-radius: var(--radius-hero);
   padding: 48px 32px;
   text-align: center;
   background: var(--paper);

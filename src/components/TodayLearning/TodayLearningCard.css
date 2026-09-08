@@ -1,6 +1,6 @@
 .today-learning-card {
   background: var(--paper);
-  border-radius: 20px;
+  border-radius: var(--radius-card);
   padding: 22px;
   margin-top: 18px;
 }
@@ -40,7 +40,7 @@
   align-items: center;
   gap: 12px;
   background: var(--surface-hi);
-  border-radius: 13px;
+  border-radius: var(--radius-control);
   padding: 10px 12px;
   margin-bottom: 8px;
 }
@@ -94,7 +94,7 @@
   margin: 0 0 10px;
   padding: 14px 12px;
   background: var(--surface-hi);
-  border-radius: 13px;
+  border-radius: var(--radius-control);
   font-size: 12px;
   color: var(--muted);
   text-align: center;
@@ -109,7 +109,7 @@
   background: var(--ink);
   color: #fff;
   border: none;
-  border-radius: 14px;
+  border-radius: var(--radius-control);
   font-family: var(--font-heading);
   font-weight: 700;
   font-size: 13.5px;
@@ -135,7 +135,7 @@
 
 .today-learning-card--sent {
   background: var(--seder-zeraim);
-  border-radius: 18px;
+  border-radius: var(--radius-card);
   text-align: center;
   color: #fff;
 }
@@ -170,7 +170,7 @@
   width: 40px;
   height: 40px;
   margin: 0 auto 10px;
-  border-radius: 12px;
+  border-radius: var(--radius-control);
   background: rgba(255, 255, 255, 0.2);
   color: #fff;
   display: flex;
@@ -229,7 +229,7 @@
 .today-week-strip__cell {
   width: 28px;
   height: 28px;
-  border-radius: 8px;
+  border-radius: var(--radius-small);
   display: flex;
   align-items: center;
   justify-content: center;

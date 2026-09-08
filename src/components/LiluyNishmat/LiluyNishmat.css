@@ -377,7 +377,7 @@
 
 .nishmat-mosaic {
   background: var(--surface-hi);
-  border-radius: var(--radius-page);
+  border-radius: var(--radius-card);
   padding: 16px;
   margin-bottom: 16px;
 }
@@ -708,7 +708,7 @@
 
 .nishmat-perek-tile {
   min-height: 58px;
-  border-radius: 13px;
+  border-radius: var(--radius-control);
   border: none;
   border-left: 3px dashed var(--faint);
   background: var(--surface-hi);

@@ -7,7 +7,7 @@
 
 .received-nudge {
   padding: 12px 14px;
-  border-radius: 14px;
+  border-radius: var(--radius-control);
   background: var(--gold);
   color: var(--ink);
 }
