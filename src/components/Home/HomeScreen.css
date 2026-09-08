@@ -10,16 +10,6 @@
   margin: 0 auto 14px;
 }
 
-.home-brand-name {
-  display: block;
-  margin: 0 0 6px;
-  font-family: var(--font-heading);
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--muted);
-  text-align: center;
-}
-
 .home-title {
   margin: 0 0 4px;
   font-family: var(--font-hebrew);
@@ -186,13 +176,35 @@
     box-shadow 0.15s ease;
 }
 
-.home-card:hover {
+.home-card:hover,
+.home-card:active {
   transform: translateY(-2px);
   box-shadow: var(--shadow-hover);
 }
 
+/* Daily Limmud alone gets the heavier treatment — it's a decision, not
+   a destination, the one card on this screen that moves progress. */
 .home-card--limmud {
   --card-hue: var(--hue-limmud);
+  background: var(--ink);
+  border-top-color: var(--gold);
+}
+
+.home-card--limmud .home-card__icon {
+  color: var(--gold);
+}
+
+.home-card--limmud .home-card__title {
+  color: #fff;
+}
+
+.home-card--limmud .home-card__desc {
+  color: rgba(240, 238, 230, 0.7);
+}
+
+.home-card--limmud .home-card__status {
+  color: var(--ink);
+  background: var(--gold);
 }
 .home-card--map {
   --card-hue: var(--hue-explore);
@@ -226,16 +238,6 @@
 }
 .home-card--resources {
   --card-hue: var(--hue-resources);
-}
-
-.home-card--disabled {
-  opacity: 0.45;
-  cursor: default;
-}
-
-.home-card--disabled:hover {
-  transform: none;
-  box-shadow: none;
 }
 
 .home-card__icon {
@@ -273,13 +275,4 @@
   background: #eaf0f8;
   border-radius: var(--radius-pill);
   padding: 3px 9px;
-}
-
-.home-card__soon {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  font-size: 9.5px;
-  font-weight: 700;
-  color: var(--gold);
 }

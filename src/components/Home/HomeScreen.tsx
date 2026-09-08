@@ -3,6 +3,7 @@ import { useLearningProgress } from "../../utils/useLearningProgress";
 import { usePerekNotes } from "../../utils/usePerekNotes";
 import { useAuth } from "../../utils/useAuth";
 import { useChevrusa } from "../../utils/useChevrusa";
+import { useGameStats } from "../../utils/useGameStats";
 import { NavIcon } from "../Icon/NavIcon";
 import { BrandMark } from "../BrandMark";
 import { ProgressHeaderBar } from "../ProgressHeaderBar/ProgressHeaderBar";
@@ -17,49 +18,42 @@ interface Feature {
   id: string;
   title: string;
   desc: string;
-  built: boolean;
   status?: string;
 }
 
 /** My Mishna: personal, tracked things — tied to your notes, progress, or
-    account. Learning Tools: the games/drills that don't track anything
+    account. Practice: the games/drills that don't track anything
     personal, just practice. */
 const MY_MISHNA: Feature[] = [
   {
     id: "limmud",
     title: "Daily Limmud",
     desc: "Your next portion of Mishnayot, straight through Shas in order.",
-    built: true,
   },
   {
     id: "map",
     title: "Explore Shas",
     desc: "Explore every seder, masechet, perek, and mishnah, with your progress along the way.",
-    built: true,
   },
   {
     id: "perek",
     title: "Mishna Notes",
     desc: "Make Shas yours — your own names, notes, and memory cues for every perek.",
-    built: true,
   },
   {
     id: "progress",
     title: "My Siyumim",
     desc: "Track your streak and how much of Shas you've learned so far.",
-    built: true,
   },
   {
     id: "chevrusa",
     title: "Chevrusa",
     desc: "Pair up one-on-one with a study partner.",
-    built: true,
   },
   {
     id: "chabura",
     title: "Chabura",
     desc: "Start or join a group learning together, with or without a rebbe.",
-    built: true,
   },
 ];
 
@@ -68,57 +62,53 @@ const LEARNING_TOOLS: Feature[] = [
     id: "sedarim",
     title: "Sidrei Hamishna",
     desc: "Drag the six sedarim — or one seder's masechtot — into their correct order.",
-    built: true,
   },
   {
     id: "mishna",
     title: "Mishna Quiz",
     desc: "Read a real mishnah and locate it: seder and masechet, with perek as bonus.",
-    built: true,
   },
   {
     id: "sort",
     title: "Seder Sort",
     desc: "Sort all 63 masechtot into the seder each one belongs to.",
-    built: true,
   },
   {
     id: "recall",
     title: "Mishna Chazara",
     desc: "Type every masechet you can remember, by seder or by all of Shas.",
-    built: true,
   },
   {
     id: "dash",
     title: "Shas Dash",
     desc: "Steer each masechet into its seder before it reaches the end of the road.",
-    built: true,
   },
   {
     id: "resources",
     title: "Resources",
     desc: "Printable worksheets for practicing Shas structure away from the screen.",
-    built: true,
   },
 ];
+
+function letterGrade(percent: number): string {
+  if (percent >= 90) return "A";
+  if (percent >= 80) return "B";
+  if (percent >= 70) return "C";
+  if (percent >= 60) return "D";
+  return "F";
+}
 
 function FeatureGrid({ features, onNavigate }: { features: Feature[]; onNavigate: (id: string) => void }) {
   return (
     <div className="home-grid">
       {features.map((f) => (
-        <button
-          key={f.id}
-          className={`home-card home-card--${f.id}` + (f.built ? "" : " home-card--disabled")}
-          disabled={!f.built}
-          onClick={() => onNavigate(f.id)}
-        >
+        <button key={f.id} className={`home-card home-card--${f.id}`} onClick={() => onNavigate(f.id)}>
           <span className="home-card__icon">
             <NavIcon id={f.id} />
           </span>
           <span className="home-card__title">{f.title}</span>
           <span className="home-card__desc">{f.desc}</span>
           {f.status && <span className="home-card__status">{f.status}</span>}
-          {!f.built && <span className="home-card__soon">Coming soon</span>}
         </button>
       ))}
     </div>
@@ -140,6 +130,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
   const { perekNotes } = usePerekNotes();
   const { isLoggedIn, session } = useAuth();
   const { groups } = useChevrusa();
+  const { stats } = useGameStats();
   const todaySnapshot = useTodaySnapshot();
   // Only chaburot where *this* account is a student — the teacher of a
   // class has no business seeing a card offering to send activity to
@@ -178,11 +169,32 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
     return f;
   });
 
+  const learningToolsWithStatus = LEARNING_TOOLS.map((f) => {
+    if (f.id === "sedarim" && stats.sidrei.timesCompleted > 0) {
+      return { ...f, status: `${stats.sidrei.timesCompleted} completed` };
+    }
+    if (f.id === "mishna" && stats.quiz.timesPlayed > 0) {
+      return {
+        ...f,
+        status: `${stats.quiz.bestScore}/${stats.quiz.bestOutOf} best (${letterGrade((stats.quiz.bestScore / stats.quiz.bestOutOf) * 100)})`,
+      };
+    }
+    if (f.id === "sort" && stats.sort.timesCompleted > 0) {
+      return { ...f, status: `${stats.sort.timesCompleted} completed` };
+    }
+    if (f.id === "recall" && stats.chazara.timesPlayed > 0) {
+      return { ...f, status: `${stats.chazara.bestCount} best` };
+    }
+    if (f.id === "dash" && stats.dash.timesPlayed > 0) {
+      return { ...f, status: `${stats.dash.bestScore} best` };
+    }
+    return f;
+  });
+
   return (
     <div className="stage">
       <div className="panel home-panel">
         <BrandMark variant="outline" className="home-brand-mark" />
-        <p className="home-brand-name">Chazarat Hashas</p>
         <h1 className="home-title" dir="rtl">
           חזרת הש״ס
         </h1>
@@ -196,9 +208,9 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
           <cite className="home-quote__source">— תענית ז׳ ב׳–ח׳ א׳</cite>
         </blockquote>
 
-        <ReceivedNudges />
-
         <ProgressHeaderBar progress={progress} onGoToLimmud={() => onNavigate("limmud")} />
+
+        <ReceivedNudges />
 
         <button className="home-new-here" onClick={() => setShowIntro(true)}>
           <span className="home-new-here__title">How this app works</span>
@@ -213,7 +225,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
         <FeatureGrid features={myMishnaWithStatus} onNavigate={onNavigate} />
 
         <h2 className="home-section-title">Practice</h2>
-        <FeatureGrid features={LEARNING_TOOLS} onNavigate={onNavigate} />
+        <FeatureGrid features={learningToolsWithStatus} onNavigate={onNavigate} />
       </div>
 
       {showIntro && (
@@ -262,10 +274,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
             <h3 className="intro-popup__subtitle">Learning and remembering are two jobs</h3>
             <div className="intro-job">
               <p className="intro-job__title">Daily Limmud moves you forward</p>
-              <p className="intro-job__text">
-                Your next mishnah, in order, from Berachot to Uktzin. Marking it learned is the only
-                thing that moves your progress.
-              </p>
+              <p className="intro-job__text">Your next mishnah, in order, from Berachot to Uktzin.</p>
             </div>
             <div className="intro-job intro-job--gold">
               <p className="intro-job__title">Practice keeps it from slipping</p>
