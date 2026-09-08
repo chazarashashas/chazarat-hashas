@@ -156,6 +156,15 @@ function GoogleButton({
   );
 }
 
+/** The signup trigger fills `username` with `user_<uuid>` for anyone who
+    hasn't chosen a real one (Google never collects one) — that's a
+    database-level placeholder, not something to show as if it were a
+    real handle. */
+const PLACEHOLDER_USERNAME = /^user_[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i;
+function realUsername(username: string | null): string | null {
+  return username && !PLACEHOLDER_USERNAME.test(username) ? username : null;
+}
+
 function letterGrade(percent: number): string {
   if (percent >= 90) return "A";
   if (percent >= 80) return "B";
@@ -319,7 +328,7 @@ function AccountDashboard({
   const [editing, setEditing] = useState(false);
   const [firstName, setFirstName] = useState(auth.firstName ?? "");
   const [lastName, setLastName] = useState(auth.lastName ?? "");
-  const [username, setUsername] = useState(auth.username ?? "");
+  const [username, setUsername] = useState(realUsername(auth.username) ?? "");
   const [city, setCity] = useState(auth.city ?? "");
   const [country, setCountry] = useState(auth.country ?? "");
   const [saving, setSaving] = useState(false);
@@ -353,9 +362,10 @@ function AccountDashboard({
     else setDeleteOpen(false);
   }
 
+  const handle = realUsername(auth.username);
   const displayName = auth.firstName
     ? `${auth.firstName}${auth.lastName ? ` ${auth.lastName}` : ""}`
-    : (auth.username ?? auth.session?.user.email);
+    : (handle ?? auth.session?.user.email);
 
   const initials = (auth.firstName ? `${auth.firstName[0]}${auth.lastName?.[0] ?? ""}` : (displayName ?? "?")[0]).toUpperCase();
 
@@ -370,9 +380,9 @@ function AccountDashboard({
               {initials}
             </div>
             <p className="account-card__name">{displayName}</p>
-            {(auth.username || viaGoogle) && (
+            {(handle || viaGoogle) && (
               <p className="account-card__username">
-                {auth.username ? `@${auth.username}` : auth.session?.user.email}
+                {handle ? `@${handle}` : auth.session?.user.email}
                 {viaGoogle ? " · via Google" : ""}
               </p>
             )}
@@ -432,7 +442,7 @@ function AccountDashboard({
                   setSaveError(null);
                   setFirstName(auth.firstName ?? "");
                   setLastName(auth.lastName ?? "");
-                  setUsername(auth.username ?? "");
+                  setUsername(realUsername(auth.username) ?? "");
                   setCity(auth.city ?? "");
                   setCountry(auth.country ?? "");
                 }}
