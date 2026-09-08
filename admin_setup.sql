@@ -68,7 +68,11 @@ grant execute on function admin_overview() to authenticated;
 
 -- Per-user list: email/name/signup date plus a rough progress figure
 -- read from user_data's synced "completions" array, where present.
-create or replace function admin_list_users()
+-- Return columns changed (added signed_up_via) — create or replace can't
+-- change a function's return shape, so this drops the old one first.
+-- Safe to re-run.
+drop function if exists admin_list_users();
+create function admin_list_users()
 returns table (
   id uuid,
   email text,
@@ -79,7 +83,8 @@ returns table (
   country text,
   is_admin boolean,
   created_at timestamptz,
-  mishnayot_learned bigint
+  mishnayot_learned bigint,
+  signed_up_via text
 )
 language plpgsql security definer set search_path = public as $$
 begin
@@ -101,7 +106,12 @@ begin
     p.country,
     coalesce(p.is_admin, false),
     u.created_at,
-    coalesce(jsonb_array_length(ud.data->'completions'), 0)::bigint
+    coalesce(jsonb_array_length(ud.data->'completions'), 0)::bigint,
+    -- Google sign-ups were already included here (this reads auth.users,
+    -- not a Google-specific table) but had no way to tell them apart from
+    -- email sign-ups in the list — this makes that visible instead of
+    -- assumed.
+    coalesce(u.raw_app_meta_data->>'provider', 'email')
   from auth.users u
   left join profiles p on p.id = u.id
   left join user_data ud on ud.user_id = u.id

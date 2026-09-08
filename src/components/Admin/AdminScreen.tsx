@@ -65,14 +65,21 @@ function AdminResetCell({ userId, email }: { userId: string; email: string }) {
 }
 
 export function AdminScreen() {
-  const { overview, users, loading, error } = useAdmin(true);
+  const { overview, users, loading, error, refresh } = useAdmin(true);
   const activityGrid = useAdminActivityGrid(true);
 
   return (
     <div className="stage">
       <div className="panel admin-panel">
-        <h1 className="panel__title">Admin</h1>
-        <p className="panel__subtitle">Everything across every account, read-only except Reset below.</p>
+        <div className="admin-head">
+          <div>
+            <h1 className="panel__title">Admin</h1>
+            <p className="panel__subtitle">Everything across every account, read-only except Reset below.</p>
+          </div>
+          <button className="admin-refresh" onClick={refresh} disabled={loading}>
+            {loading ? "Refreshing…" : "Refresh"}
+          </button>
+        </div>
 
         {error && (
           <p className="login-error" dir="ltr">
@@ -135,6 +142,7 @@ export function AdminScreen() {
               <tr>
                 <th>Name</th>
                 <th>Username</th>
+                <th>Via</th>
                 <th>Location</th>
                 <th>Contact</th>
                 <th>Joined</th>
@@ -148,6 +156,7 @@ export function AdminScreen() {
                 <tr key={u.id}>
                   <td>{u.firstName ? `${u.firstName} ${u.lastName ?? ""}`.trim() : "—"}</td>
                   <td>{u.username ?? "—"}</td>
+                  <td>{u.signedUpVia === "google" ? "Google" : "Email"}</td>
                   <td>{[u.city, u.country].filter(Boolean).join(", ") || "—"}</td>
                   <td>
                     <a className="admin-table__mailto" href={`mailto:${u.email}`}>

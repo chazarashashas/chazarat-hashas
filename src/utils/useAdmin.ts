@@ -23,6 +23,9 @@ export interface AdminUserRow {
   isAdmin: boolean;
   createdAt: string;
   mishnayotLearned: number;
+  /** "google" or "email" — from auth.users' own provider field, not a
+      guess (see admin_setup.sql). */
+  signedUpVia: string;
 }
 
 /** Reads the two admin-only SECURITY DEFINER functions (see
@@ -34,6 +37,11 @@ export function useAdmin(isAdmin: boolean) {
   const [users, setUsers] = useState<AdminUserRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Bumped by refresh() to re-run the effect below — this screen otherwise
+  // only ever fetches once, on mount, so anyone who signs up while an
+  // admin already has the tab open just doesn't appear until they leave
+  // and come back.
+  const [refreshTick, setRefreshTick] = useState(0);
 
   useEffect(() => {
     if (!isAdmin || !supabase) return;
@@ -73,6 +81,7 @@ export function useAdmin(isAdmin: boolean) {
           isAdmin: Boolean(r.is_admin),
           createdAt: r.created_at as string,
           mishnayotLearned: Number(r.mishnayot_learned),
+          signedUpVia: (r.signed_up_via as string) ?? "email",
         })),
       );
       setLoading(false);
@@ -80,7 +89,11 @@ export function useAdmin(isAdmin: boolean) {
     return () => {
       cancelled = true;
     };
-  }, [isAdmin]);
+  }, [isAdmin, refreshTick]);
 
-  return { overview, users, loading, error };
+  function refresh() {
+    setRefreshTick((n) => n + 1);
+  }
+
+  return { overview, users, loading, error, refresh };
 }
