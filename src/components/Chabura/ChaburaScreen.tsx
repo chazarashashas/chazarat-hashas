@@ -184,10 +184,9 @@ function ErrorRow({ message }: { message: string }) {
  */
 interface ChaburaScreenProps {
   onOpenLogin?: (mode?: "signIn" | "signUp") => void;
-  onNavigate?: (id: string) => void;
 }
 
-export function ChaburaScreen({ onOpenLogin, onNavigate }: ChaburaScreenProps) {
+export function ChaburaScreen({ onOpenLogin }: ChaburaScreenProps) {
   const { session } = useAuth();
   const {
     groups,
@@ -346,10 +345,6 @@ export function ChaburaScreen({ onOpenLogin, onNavigate }: ChaburaScreenProps) {
           {onOpenLogin && (
             <GateCTA heading={k.gateHeading} body={k.gateBody} onAction={() => onOpenLogin("signUp")} />
           )}
-          <p className="gate2-footer">
-            Everything else is open already —{" "}
-            <button onClick={() => onNavigate?.("limmud")}>carry on learning on your own</button>.
-          </p>
         </div>
         {aboutOpen && <AboutChaburaModal onClose={() => setAboutOpen(false)} />}
       </div>

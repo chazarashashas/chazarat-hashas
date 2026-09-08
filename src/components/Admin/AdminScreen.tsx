@@ -3,6 +3,7 @@ import { useAdmin } from "../../utils/useAdmin";
 import { useAdminActivityGrid } from "../../utils/useAdminActivityGrid";
 import { supabase } from "../../utils/supabase";
 import { RebbeGrid } from "../RebbeDashboard/RebbeDashboardScreen";
+import { ConfirmModal } from "../ConfirmModal/ConfirmModal";
 import "../RebbeDashboard/RebbeDashboardScreen.css";
 import "./AdminScreen.css";
 
@@ -13,43 +14,6 @@ const RESET_SCOPES = [
   { value: "game_stats", label: "Practice game stats" },
   { value: "everything", label: "Everything" },
 ] as const;
-
-/** A real modal, not an inline swap — the same deliberate-second-click
-    guard as the self-service reset (see LoginScreen's ResetConfirmModal),
-    since this one acts on someone else's account. */
-function AdminResetConfirmModal({
-  scopeLabel,
-  email,
-  busy,
-  onConfirm,
-  onCancel,
-}: {
-  scopeLabel: string;
-  email: string;
-  busy: boolean;
-  onConfirm: () => void;
-  onCancel: () => void;
-}) {
-  return (
-    <div className="scrim" onClick={busy ? undefined : onCancel}>
-      <div className="popup reset-confirm-popup" onClick={(e) => e.stopPropagation()}>
-        <p className="popup__mark" aria-hidden="true">
-          ↺
-        </p>
-        <p className="popup__text">
-          Reset {scopeLabel} for {email}?
-        </p>
-        <p className="reset-confirm-popup__hint">This can't be undone.</p>
-        <button className="restart reset-confirm-popup__confirm" disabled={busy} onClick={onConfirm}>
-          {busy ? "Resetting…" : "Yes, reset"}
-        </button>
-        <button className="reset-confirm-popup__cancel" disabled={busy} onClick={onCancel}>
-          Cancel
-        </button>
-      </div>
-    </div>
-  );
-}
 
 /** One user row's reset control — a scope picker plus its own modal
     confirm, since this calls admin_reset_user_data (see
@@ -85,10 +49,13 @@ function AdminResetCell({ userId, email }: { userId: string; email: string }) {
         Reset
       </button>
       {confirming && (
-        <AdminResetConfirmModal
-          scopeLabel={RESET_SCOPES.find((s) => s.value === scope)?.label ?? scope}
-          email={email}
+        <ConfirmModal
+          title={`Reset ${RESET_SCOPES.find((s) => s.value === scope)?.label ?? scope} for ${email}?`}
+          body="This can't be undone."
+          confirmLabel="Yes, reset"
+          busyLabel="Resetting…"
           busy={busy}
+          destructive
           onConfirm={handleConfirm}
           onCancel={() => setConfirming(false)}
         />

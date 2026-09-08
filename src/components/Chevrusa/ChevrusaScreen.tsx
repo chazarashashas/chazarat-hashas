@@ -61,10 +61,9 @@ function ErrorRow({ message }: { message: string }) {
  */
 interface ChevrusaScreenProps {
   onOpenLogin?: (mode?: "signIn" | "signUp") => void;
-  onNavigate?: (id: string) => void;
 }
 
-export function ChevrusaScreen({ onOpenLogin, onNavigate }: ChevrusaScreenProps) {
+export function ChevrusaScreen({ onOpenLogin }: ChevrusaScreenProps) {
   const { session } = useAuth();
   const { groups, pendingInvites, sentInvites, createGroup, addMembers, acceptInvite, declineInvite, cancelInvite, leaveGroup } =
     useChevrusa();
@@ -157,10 +156,6 @@ export function ChevrusaScreen({ onOpenLogin, onNavigate }: ChevrusaScreenProps)
               onAction={() => onOpenLogin("signUp")}
             />
           )}
-          <p className="gate2-footer">
-            Everything else is open already —{" "}
-            <button onClick={() => onNavigate?.("limmud")}>carry on learning on your own</button>.
-          </p>
         </div>
       </div>
     );
