@@ -46,26 +46,19 @@ export function CertificateView({ masechetEn, masechetHe, defaultName, onClose }
       <div className="cert-page">
         <div className="cert-border">
           <img src="/logo/lockup-stacked.svg" alt="Chazarat Hashas" className="cert-logo" />
-          <p className="cert-eyebrow">Certificate of Siyum</p>
-          <p className="cert-lead">This certifies that</p>
+          <p className={"cert-subject" + (isFullShas ? " cert-subject--shas" : "")} dir="rtl">
+            {isFullShas ? "סיום כל הש״ס" : `סיום מסכת ${masechetHe}`}
+          </p>
+          {!isFullShas && <p className="cert-subject-en">{masechetEn}</p>}
+          <p className="cert-lead">completed by</p>
           <p className="cert-name">{name || "—"}</p>
-          <p className="cert-lead">has completed</p>
-          {isFullShas ? (
-            <p className="cert-subject cert-subject--shas">כל הש״ס</p>
-          ) : (
-            <>
-              <p className="cert-subject" dir="rtl">
-                {masechetHe}
-              </p>
-              <p className="cert-subject-en">{masechetEn}</p>
-            </>
-          )}
-          <p className="cert-date">{todayFormatted()}</p>
+          <span className="cert-rule" aria-hidden="true" />
           {!isFullShas && (
             <p className="cert-quote" dir="rtl">
               הַדְרָן עֲלָךְ {masechetHe}
             </p>
           )}
+          <p className="cert-date">{todayFormatted()}</p>
         </div>
       </div>
     </div>
