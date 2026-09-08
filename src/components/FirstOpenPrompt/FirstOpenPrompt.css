@@ -47,7 +47,7 @@
   gap: 10px;
   width: 100%;
   box-sizing: border-box;
-  min-height: 44px;
+  min-height: 48px;
   background: var(--surface-hi);
   border: 1px solid var(--line);
   border-radius: var(--radius-control);
@@ -67,7 +67,7 @@
   display: block;
   width: 100%;
   box-sizing: border-box;
-  min-height: 44px;
+  min-height: 48px;
   margin-top: 10px;
   background: #f0e9d7;
   border: none;

@@ -45,7 +45,7 @@
 .confirm-modal__cancel {
   margin-top: 8px;
   width: 100%;
-  min-height: 44px;
+  min-height: 48px;
   border: 1.5px solid var(--line);
   border-radius: var(--radius-control);
   background: none;

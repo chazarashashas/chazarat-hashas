@@ -105,7 +105,7 @@
 
 .review-card__rate-btn {
   flex: 1;
-  min-height: 44px;
+  min-height: 48px;
   border: none;
   border-radius: var(--radius-pill);
   font-family: var(--font-heading);

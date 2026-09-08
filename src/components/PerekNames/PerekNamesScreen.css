@@ -154,7 +154,7 @@
 
 .masechet-chip {
   position: relative;
-  min-height: 44px;
+  min-height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -500,7 +500,7 @@
 
 .notes-row__more {
   flex-shrink: 0;
-  min-height: 44px;
+  min-height: 48px;
   padding: 0 6px;
   display: flex;
   align-items: center;

@@ -16,7 +16,7 @@
   flex-shrink: 0;
   width: 30px;
   height: 30px;
-  min-width: 44px;
+  min-width: 48px;
   min-height: 30px;
   border-radius: 50%;
   border: 1.5px solid var(--line);

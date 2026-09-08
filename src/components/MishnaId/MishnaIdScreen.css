@@ -164,12 +164,11 @@
   border: none;
   border-radius: var(--radius-card);
   padding: 20px 18px;
-  height: 170px;
+  min-height: 170px;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  overflow: hidden;
   transition: filter 0.2s ease;
 }
 
