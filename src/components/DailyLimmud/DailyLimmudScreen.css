@@ -314,7 +314,7 @@
 
 .limmud-english-skeleton__bar {
   height: 11px;
-  border-radius: 6px;
+  border-radius: var(--radius-pill);
   background: #f0e9d7;
 }
 
