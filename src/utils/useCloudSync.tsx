@@ -172,7 +172,7 @@ function mergeReviewState(local: unknown, cloud: unknown): Record<string, Review
 /** Merges this device's local data with whatever's already saved to the
     account — local edits always win on a direct conflict, cloud fills in
     anything local is missing, nothing is silently discarded. */
-function mergeBlobs(local: SyncBlob, cloud: SyncBlob): SyncBlob {
+export function mergeBlobs(local: SyncBlob, cloud: SyncBlob): SyncBlob {
   return {
     perekNotes: mergeRecordPreferLocal(local.perekNotes, cloud.perekNotes),
     perekNotebook: mergeRecordPreferLocal(local.perekNotebook, cloud.perekNotebook),
@@ -367,7 +367,13 @@ export function SyncStatusProvider({
   const retryTimeoutRef = useRef<number | null>(null);
   const debounceTimeoutRef = useRef<number | null>(null);
   const sessionRef = useRef(session);
-  sessionRef.current = session;
+  // Mutating a ref during render (rather than in an effect) risks React
+  // discarding the write if this render gets interrupted or retried —
+  // an effect is the actual right place for it, even though the update
+  // itself is trivial.
+  useEffect(() => {
+    sessionRef.current = session;
+  }, [session]);
 
   const [status, setStatus] = useState<SyncStatus>("idle");
   const [lastSavedAt, setLastSavedAt] = useState<number | null>(null);
@@ -378,7 +384,11 @@ export function SyncStatusProvider({
       whatever's in localStorage *right now*, not a stale snapshot, so a
       retry after a failure still sends the latest state rather than
       replaying an old one. */
-  const pushNow = useCallback(() => {
+  // Named (not just assigned to a const) so the retry below can call
+  // itself directly — closing over the outer `pushNow` binding instead
+  // works at runtime (the closure isn't invoked until well after the
+  // const is initialized) but reads as though it might not be.
+  const pushNow = useCallback(function pushNowImpl() {
     const activeSession = sessionRef.current;
     if (!activeSession || !supabase) return;
     if (retryTimeoutRef.current) {
@@ -400,7 +410,7 @@ export function SyncStatusProvider({
           failureCountRef.current += 1;
           setStatus(failureCountRef.current >= ERROR_AFTER_FAILURES ? "error" : "retrying");
           const delay = Math.min(RETRY_BASE_MS * 2 ** (failureCountRef.current - 1), RETRY_MAX_MS);
-          retryTimeoutRef.current = window.setTimeout(pushNow, delay);
+          retryTimeoutRef.current = window.setTimeout(pushNowImpl, delay);
           return;
         }
         failureCountRef.current = 0;
@@ -450,11 +460,13 @@ export function SyncStatusProvider({
       // been run — fall back to the column that's always been there so
       // sync never breaks outright in the gap between deploying this and
       // running that SQL (same pattern as useAuth's fetchProfile).
-      let { data, error } = await supabase!
+      const first = await supabase!
         .from("user_data")
         .select("data, reset_requested_at")
         .eq("user_id", session.user.id)
         .maybeSingle();
+      let data = first.data;
+      const error = first.error;
       if (!cancelled && error) {
         ({ data } = await supabase!
           .from("user_data")

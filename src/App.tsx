@@ -162,6 +162,11 @@ function App() {
   // be instead of the one screen that can actually do anything with a
   // recovery session: My Account's set-new-password form.
   useEffect(() => {
+    // Reacting to an external event (Supabase's auth listener flipping
+    // this flag once the recovery link's session lands), not deriving
+    // it from props/state available at render time — a route change
+    // like this belongs in an effect.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (isPasswordRecovery) setSection("login");
   }, [isPasswordRecovery]);
 

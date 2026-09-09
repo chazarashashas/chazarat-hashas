@@ -41,6 +41,9 @@ export function useGroupNudges(groupId: string) {
   }, [groupId, session]);
 
   useEffect(() => {
+    // refresh() sets nudgedTodayIds as a legitimate reaction to
+    // groupId/session changing, not a render-time derivation.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     refresh();
   }, [refresh]);
 
@@ -96,6 +99,9 @@ export function useMyNudgesToday() {
   }, [session]);
 
   useEffect(() => {
+    // refresh() sets nudges as a legitimate reaction to session
+    // changing, not a render-time derivation.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     refresh();
   }, [refresh]);
 

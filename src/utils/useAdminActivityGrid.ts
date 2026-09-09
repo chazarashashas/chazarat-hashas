@@ -35,6 +35,9 @@ export function useAdminActivityGrid(isAdmin: boolean) {
   useEffect(() => {
     if (!isAdmin || !supabase) return;
     let cancelled = false;
+    // Marking the fetch as in-flight is a legitimate reaction to
+    // isAdmin changing, not something derivable at render time.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true);
     supabase.rpc("admin_activity_today").then(({ data, error: err }) => {
       if (cancelled) return;

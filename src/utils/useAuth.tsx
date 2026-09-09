@@ -34,11 +34,13 @@ const EMPTY_PROFILE: Profile = {
 
 async function fetchProfile(userId: string): Promise<Profile> {
   if (!supabase) return EMPTY_PROFILE;
-  let { data, error } = await supabase
+  const first = await supabase
     .from("profiles")
     .select("username, first_name, last_name, city, country, is_admin")
     .eq("id", userId)
     .single();
+  let data = first.data;
+  const error = first.error;
   // is_admin/city/country only exist once admin_setup.sql has been run —
   // fall back to the columns that are always there so profile loading
   // never breaks in the gap between deploying this and running that SQL.

@@ -239,6 +239,9 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
     for (const item of items) {
       const key = englishKey(item);
       if (englishByKey[key]) continue;
+      // Marking this item as loading is a legitimate reaction to
+      // showEnglish/items changing, not a render-time derivation.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setEnglishByKey((prev) => ({ ...prev, [key]: { status: "loading" } }));
       fetchMishnaTranslation(item.masechetEn, item.perek, item.mishnah).then((result) => {
         if (cancelled) return;

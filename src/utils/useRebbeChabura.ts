@@ -72,6 +72,9 @@ export function useRebbeChabura(groupId: string | null) {
   }, [groupId]);
 
   useEffect(() => {
+    // refresh() sets students/submissions/loading as a legitimate
+    // reaction to groupId changing, not a render-time derivation.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     refresh();
   }, [refresh]);
 

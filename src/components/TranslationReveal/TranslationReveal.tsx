@@ -45,6 +45,10 @@ export function TranslationReveal({ masechetEn, perek, mishnah }: TranslationRev
   }
 
   useEffect(() => {
+    // check() sets "checking" synchronously before its fetch resolves —
+    // legitimately reacting to the ref changing, not a value derivable
+    // from props/state at render time.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     check();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [masechetEn, perek, mishnah]);

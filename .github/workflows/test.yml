@@ -1,0 +1,29 @@
+name: Test
+
+# Runs on every push and every pull request. This does not, on its own,
+# block the Vercel deploy that already happens on push to main — Vercel
+# deploys independently of this workflow's result. It reports pass/fail
+# on every push (visible on GitHub) and blocks merging a PR once branch
+# protection requires it, but blocking a direct push to main from
+# actually deploying would need switching this repo to a PR-only
+# workflow with that branch protection turned on, which is a bigger
+# process change than adding CI itself.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npx tsc -b --noEmit
+      - run: npm test
+      - run: npm run build

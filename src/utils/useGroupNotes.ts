@@ -90,6 +90,9 @@ export function useGroupNotes(groupId: string, masechetEn: string) {
   }, [groupId, masechetEn, session]);
 
   useEffect(() => {
+    // refresh() sets loading/data state as a legitimate reaction to
+    // groupId/masechetEn/session changing, not a render-time derivation.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     refresh();
   }, [refresh]);
 

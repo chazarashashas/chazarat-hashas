@@ -160,6 +160,10 @@ export function ProgressScreen({ onOpenNishmat, onOpenLogin }: ProgressScreenPro
   }
 
   function estimatedDate(daysFromNow: number): string {
+    // A month-and-year estimate doesn't need a stable "now" across
+    // render attempts the way a value feeding logic or a key would —
+    // being off by however long a render takes is invisible here.
+    // eslint-disable-next-line react-hooks/purity
     const d = new Date(Date.now() + daysFromNow * 86400000);
     return d.toLocaleDateString("en-US", { month: "long", year: "numeric" });
   }
