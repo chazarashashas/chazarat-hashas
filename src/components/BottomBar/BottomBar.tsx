@@ -7,6 +7,7 @@ import {
   ADMIN_ITEM,
   REBBE_ITEM,
   LOGIN_ITEM,
+  GUIDE_ITEM,
   type NavItemDef,
 } from "../../utils/navItems";
 import { useEscapeKey } from "../../utils/useEscapeKey";
@@ -34,6 +35,7 @@ function MoreSheet({ activeId, barIds, isAdmin, isRebbe, onSelect, onClose }: Mo
   const accountItems: NavItemDef[] = [
     ...(isRebbe ? [REBBE_ITEM] : []),
     ...(isAdmin ? [ADMIN_ITEM] : []),
+    GUIDE_ITEM,
     LOGIN_ITEM,
   ].filter((i) => !barSet.has(i.id));
 

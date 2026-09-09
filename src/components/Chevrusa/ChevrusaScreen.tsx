@@ -167,11 +167,6 @@ export function ChevrusaScreen({ onOpenLogin }: ChevrusaScreenProps) {
     <div className="stage">
       <div className="panel">
         <h1 className="panel__title">Chevrusa</h1>
-        <p className="panel__subtitle">
-          Pair one-on-one with a study partner, one masechet at a time, so you can be in several,
-          each on something different. Know when they've learned today — no streaks compared, no
-          ranking, just "they showed up."
-        </p>
 
         <ReceivedNudges />
 

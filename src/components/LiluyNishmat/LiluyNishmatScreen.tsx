@@ -338,9 +338,6 @@ export function LiluyNishmatScreen({ onOpenLogin, initialSlug }: LiluyNishmatScr
         <div className="nishmat-head">
           <div>
             <h1 className="panel__title nishmat-title">L'Iluy Nishmat</h1>
-            <p className="panel__subtitle nishmat-subtitle">
-              Dedicate a full siyum on Shas to a neshama — others take perakim to help finish it.
-            </p>
           </div>
           {session && (
             <button className="nishmat-start-btn" onClick={() => setCreateOpen(true)}>

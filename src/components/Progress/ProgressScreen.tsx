@@ -174,9 +174,6 @@ export function ProgressScreen({ onOpenNishmat, onOpenLogin }: ProgressScreenPro
     <div className="stage">
       <div className="panel">
         <h1 className="panel__title">My Siyumim</h1>
-        <p className="panel__subtitle">
-          The journey to a siyum — Daily Limmud and anything you've logged, together.
-        </p>
 
         {!auth.isLoggedIn && onOpenLogin && (
           <NudgeStrip
@@ -295,12 +292,11 @@ export function ProgressScreen({ onOpenNishmat, onOpenLogin }: ProgressScreenPro
               )}
 
               <p className="pace-control__note">
-                Daily Limmud serves {paceLabel} — starting tomorrow.
+                {paceLabel}
                 {shasMishnayotRemaining > 0 && (
                   <>
                     {" "}
-                    Siyum haShas around {estimatedDate(shasDaysLeft)}, a seder siyum roughly every{" "}
-                    {spanFromDays(sederFrequencyDays)}.
+                    · Siyum haShas {estimatedDate(shasDaysLeft)} · seder every {spanFromDays(sederFrequencyDays)}
                   </>
                 )}
               </p>

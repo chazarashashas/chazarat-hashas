@@ -120,7 +120,7 @@ interface DailyLimmudScreenProps {
 }
 
 export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScreenProps) {
-  const { firstName, username, session } = useAuth();
+  const { session } = useAuth();
   const progress = useLearningProgress();
   const { pace, setPace, streak } = progress;
   useOfflinePrefetch(progress.position, pace, progress.finishedShas);
@@ -376,13 +376,6 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
         <div className="limmud-head">
           <div className="limmud-head__text">
             <h1 className="panel__title limmud-head__title">Today's limmud</h1>
-            {(firstName || username) ? (
-              <p className="panel__subtitle limmud-head__sub">Welcome back, {firstName ?? username}.</p>
-            ) : (
-              <p className="panel__subtitle limmud-head__sub">
-                Your next portion of Mishnayot, straight through Shas in order.
-              </p>
-            )}
           </div>
           <div className="limmud-streak">
             <span className="limmud-streak__dot" aria-hidden="true" />

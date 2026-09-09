@@ -25,6 +25,7 @@ export const HUE: Record<string, string> = {
   resources: "var(--hue-resources)",
   admin: "var(--hue-login)",
   rebbe: "var(--hue-login)",
+  guide: "var(--hue-guide)",
 };
 
 /** Mirrors Home's own "My Mishna" / "Practice" split — a student who's
@@ -64,9 +65,14 @@ export const NAV_GROUPS: { label: string; items: NavItemDef[] }[] = [
 export const LOGIN_ITEM: NavItemDef = { id: "login", label: "My Account" };
 export const ADMIN_ITEM: NavItemDef = { id: "admin", label: "Admin" };
 export const REBBE_ITEM: NavItemDef = { id: "rebbe", label: "Dashboard" };
+/** Whole-app reference material, not scoped to either "My Mishna" or
+    "Practice" — sits with My Account rather than inside either group,
+    same reasoning as Login's own placement. */
+export const GUIDE_ITEM: NavItemDef = { id: "guide", label: "Guide" };
 
 export const ALL_NAV_ITEMS: NavItemDef[] = [
   ...NAV_GROUPS.flatMap((g) => g.items),
+  GUIDE_ITEM,
   LOGIN_ITEM,
   ADMIN_ITEM,
   REBBE_ITEM,

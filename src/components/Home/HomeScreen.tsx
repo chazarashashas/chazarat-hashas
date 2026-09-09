@@ -117,11 +117,34 @@ function FeatureGrid({ features, onNavigate }: { features: Feature[]; onNavigate
   );
 }
 
+const GUIDE_TEASER_SEEN_KEY = "chazarat-hashas:hasSeenGuideTeaser";
+
+/** GUIDEBRIEF2.md's "cheapest onboarding": a single strip naming Step 1,
+    on a true first visit only — reuses NudgeStrip rather than a new
+    component, and reads/marks its own localStorage flag directly
+    (deliberately not one of the synced SYNC_KEYS: whether a specific
+    device has already seen this onboarding hint isn't meaningful data
+    to carry to another device). Marked seen the moment it mounts, not
+    only when clicked — it's "shown once," not "shown until acted on". */
+function useGuideTeaserVisible(): boolean {
+  const [visible] = useState(() => {
+    try {
+      if (localStorage.getItem(GUIDE_TEASER_SEEN_KEY)) return false;
+      localStorage.setItem(GUIDE_TEASER_SEEN_KEY, "1");
+      return true;
+    } catch {
+      return false;
+    }
+  });
+  return visible;
+}
+
 interface HomeScreenProps {
   onNavigate: (id: string) => void;
 }
 
 export function HomeScreen({ onNavigate }: HomeScreenProps) {
+  const showGuideTeaser = useGuideTeaserVisible();
   const [showIntro, setShowIntro] = useState(false);
   useEscapeKey(() => setShowIntro(false));
   // Read fresh each time the popup opens rather than kept in state — this
@@ -202,14 +225,6 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
         </h1>
         <p className="panel__subtitle">let's learn shas, together</p>
 
-        <blockquote className="home-quote" dir="rtl">
-          <p className="home-quote__text">
-            "רֵישׁ לָקִישׁ אָמַר: אִם רָאִיתָ תַּלְמִיד שֶׁתַּלְמוּדוֹ קָשֶׁה עָלָיו כַּבַּרְזֶל — בִּשְׁבִיל מִשְׁנָתוֹ
-            שֶׁאֵינָהּ סְדוּרָה עָלָיו"
-          </p>
-          <cite className="home-quote__source">— תענית ז׳ ב׳–ח׳ א׳</cite>
-        </blockquote>
-
         {!isLoggedIn && (
           <NudgeStrip
             text={nudgeCopy(
@@ -221,6 +236,15 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
             )}
             actionLabel="Keep them →"
             onAction={() => onNavigate("login")}
+          />
+        )}
+
+        {showGuideTeaser && (
+          <NudgeStrip
+            text="New here? Start with Step 1 — Learn the Sedarim."
+            actionLabel="Read the whole guide →"
+            onAction={() => onNavigate("guide")}
+            accentColor="var(--hue-guide)"
           />
         )}
 
@@ -287,19 +311,15 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
               </div>
             </div>
 
-            <h3 className="intro-popup__subtitle">Learning and remembering are two jobs</h3>
-            <div className="intro-job">
-              <p className="intro-job__title">Daily Limmud moves you forward</p>
-              <p className="intro-job__text">Your next mishnah, in order, from Berachot to Uktzin.</p>
-            </div>
-            <div className="intro-job intro-job--gold">
-              <p className="intro-job__title">Practice keeps it from slipping</p>
-              <p className="intro-job__text">
-                Six drills for remembering the shape of Shas — the order of the sedarim, which masechet
-                belongs where, and recalling every masechet from nothing, whether you're doing chazara
-                on one seder or on all of Shas.
-              </p>
-            </div>
+            <button
+              className="intro-popup__guide-link"
+              onClick={() => {
+                setShowIntro(false);
+                onNavigate("guide");
+              }}
+            >
+              Read the full guide to using this app →
+            </button>
 
             {versionsInUse.length > 0 && (
               <p className="translation-notice">

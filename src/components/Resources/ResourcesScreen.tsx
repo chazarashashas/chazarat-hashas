@@ -31,19 +31,33 @@ const RESOURCES: Resource[] = [
   },
 ];
 
-export function ResourcesScreen() {
+interface ResourcesScreenProps {
+  onOpenGuide?: (anchor?: string) => void;
+}
+
+export function ResourcesScreen({ onOpenGuide }: ResourcesScreenProps) {
   const [printOpen, setPrintOpen] = useState(false);
 
   return (
     <div className="stage">
       <div className="panel">
         <h1 className="panel__title">Resources</h1>
-        <p className="panel__subtitle">
-          Study away from the screen. Print these and fill them in from memory, then check yourself
-          against the app.
-        </p>
 
         <div className="resources-list">
+          {onOpenGuide && (
+            <div className="resource-card">
+              <div className="resource-card__body">
+                <p className="resource-card__title">How to Use Chazarat Hashas</p>
+                <p className="resource-card__desc">
+                  The full guide to the method behind the app, step by step.
+                </p>
+              </div>
+              <button className="resource-card__download resource-card__download--print" onClick={() => onOpenGuide()}>
+                Read
+              </button>
+            </div>
+          )}
+
           {RESOURCES.map((r) => (
             <div key={r.id} className="resource-card">
               <div className="resource-card__body">

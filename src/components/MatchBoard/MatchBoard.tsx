@@ -131,10 +131,6 @@ export function MatchBoard({ view, state, onPlace, onReset, clearedSederIds }: M
           ↺
         </button>
         <h2 className="panel__title">{view.title}</h2>
-        <p className="panel__subtitle">
-          Drag each {view.id === "sedarim" ? "seder" : "masechet"} into its correct spot — or tap one,
-          then tap where it goes. You can alternate between sedarim using the navigation bar below.
-        </p>
 
         <GameHud doing={view.title} progress={placedCount / placed.length} worth={`${placedCount} / ${placed.length}`} />
 

@@ -127,7 +127,6 @@ export function AdminScreen() {
         <div className="admin-head">
           <div>
             <h1 className="panel__title">Admin</h1>
-            <p className="panel__subtitle">Everything across every account, read-only except Reset and Delete below.</p>
           </div>
           <button className="admin-refresh" onClick={refresh} disabled={loading}>
             {loading ? "Refreshing…" : "Refresh"}
@@ -174,9 +173,6 @@ export function AdminScreen() {
         )}
 
         <h2 className="account-section-title">Today's activity — everyone, live</h2>
-        <p className="panel__subtitle" style={{ marginBottom: 12 }}>
-          Same figures the rebbe dashboard grid shows, read directly — nothing needs to be sent to you first.
-        </p>
         {activityGrid.error && (
           <p className="login-error" dir="ltr">
             {activityGrid.error}

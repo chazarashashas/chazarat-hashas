@@ -374,11 +374,6 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
           </button>
         </div>
         <h1 className="panel__title">Mishna Quiz</h1>
-        <p className="panel__subtitle">
-          {scopeType === "masechta"
-            ? "Seder and masechet are given — name the perek."
-            : "Read the mishnah and locate it. Seder and masechet are the goal — perek is bonus."}
-        </p>
 
         <div className="mishna-controls-row">
           <div className="mishna-control">

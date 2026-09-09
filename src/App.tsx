@@ -22,6 +22,7 @@ import { AdminScreen } from "./components/Admin/AdminScreen";
 import { ReviewScreen } from "./components/Review/ReviewScreen";
 import { FirstOpenPrompt } from "./components/FirstOpenPrompt/FirstOpenPrompt";
 import { RebbeDashboardScreen } from "./components/RebbeDashboard/RebbeDashboardScreen";
+import { GuideScreen } from "./components/Guide/GuideScreen";
 import { useAuth, OAUTH_PENDING_KEY } from "./utils/useAuth";
 import { reportSilentSignInFailure } from "./utils/monitoring";
 import { useChevrusa, isRebbe } from "./utils/useChevrusa";
@@ -155,7 +156,16 @@ function App() {
   // user here, so that choice lands on the email form, not the
   // Google-first default.
   const [loginEmailOpen, setLoginEmailOpen] = useState(false);
+  // Which step the Guide opens scrolled to — set only when something
+  // links to a specific step (Home's popup, Resources); a plain visit
+  // via the sidebar/bottom bar opens at the top instead.
+  const [guideAnchor, setGuideAnchor] = useState<string | null>(null);
   const { session, isAdmin, isLoggedIn, isPasswordRecovery, loading: authLoading, signInWithGoogle } = useAuth();
+
+  function openGuide(anchor?: string) {
+    setGuideAnchor(anchor ?? null);
+    setSection("guide");
+  }
 
   // A password-reset email link lands here already signed in (Supabase
   // sets the session before this app code ever runs) — without this,
@@ -292,7 +302,7 @@ function App() {
             ) : section === "dash" ? (
               <ShasDashScreen />
             ) : section === "resources" ? (
-              <ResourcesScreen />
+              <ResourcesScreen onOpenGuide={openGuide} />
             ) : section === "limmud" ? (
               <DailyLimmudScreen
                 onOpenNotes={() => setSection("perek")}
@@ -341,6 +351,8 @@ function App() {
               ) : (
                 <HomeScreen onNavigate={setSection} />
               )
+            ) : section === "guide" ? (
+              <GuideScreen onNavigate={setSection} initialAnchor={guideAnchor} />
             ) : (
               <RecallScreen />
             )}

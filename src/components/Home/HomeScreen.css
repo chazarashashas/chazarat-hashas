@@ -20,38 +20,30 @@
   text-align: center;
 }
 
-.home-quote {
-  margin: 18px 0 0;
-  padding: 12px 16px;
-  border-left: 3px solid var(--gold);
-  background: #fbf1d6;
-  border-radius: var(--radius-small);
-  text-align: center;
-}
-
-.home-quote__text {
-  margin: 0 0 6px;
-  font-family: var(--font-hebrew);
-  font-size: 14.5px;
-  color: var(--ink);
-  line-height: 1.75;
-  text-wrap: balance;
-}
-
-.home-quote__source {
-  display: block;
-  font-family: var(--font-body);
-  font-style: normal;
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--ink-soft);
-}
-
 .intro-levels {
   display: flex;
   flex-direction: column;
   gap: 6px;
   margin-bottom: 18px;
+}
+
+.intro-popup__guide-link {
+  display: block;
+  width: 100%;
+  background: var(--ink);
+  border: none;
+  border-radius: var(--radius-control);
+  padding: 13px 16px;
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  text-align: center;
+}
+
+.intro-popup__guide-link:hover {
+  background: var(--ink-2);
 }
 
 .intro-level {

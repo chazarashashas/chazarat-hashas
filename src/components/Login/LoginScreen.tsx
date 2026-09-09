@@ -865,10 +865,6 @@ export function LoginScreen({
     <div className="stage">
       <div className="panel login-panel">
         <h1 className="panel__title">My Account</h1>
-        <p className="panel__subtitle">
-          Sign in to keep your notes, progress, and streak with your account instead of just this
-          device.
-        </p>
 
         {!supabaseConfigured && (
           <div className="note-banner login-notice">

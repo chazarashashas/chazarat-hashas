@@ -357,10 +357,6 @@ export function ChaburaScreen({ onOpenLogin }: ChaburaScreenProps) {
     <div className="stage">
       <div className="panel">
         <h1 className="panel__title">Chabura</h1>
-        <p className="panel__subtitle">
-          Start or join a group learning together, one masechet at a time. Know when the group has
-          learned today — no streaks compared, no ranking, just "they showed up."
-        </p>
 
         <button className="chabura-about-link" onClick={() => setAboutOpen(true)}>
           How rebbe &amp; talmid works →
