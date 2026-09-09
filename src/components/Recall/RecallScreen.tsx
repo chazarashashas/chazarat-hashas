@@ -4,6 +4,7 @@ import { SEDER_TABS } from "../../data/sederTabs";
 import { TabBar } from "../TabBar/TabBar";
 import { useGameStats } from "../../utils/useGameStats";
 import { getSederHue } from "../../utils/sederHue";
+import { GameHud } from "../GameHud/GameHud";
 import "./RecallScreen.css";
 
 function flatList(): Masechet[] {
@@ -157,12 +158,12 @@ export function RecallScreen() {
 
         {phase !== "ended" && (
           <>
-            <div className="recall-hud">
-              <span className="recall-timer">{formatTime(phase === "playing" ? timeLeft : durationSec)}</span>
-              <span className="recall-progress">
-                {found.size} / {targetList.length}
-              </span>
-            </div>
+            <GameHud
+              doing={scopeLabel}
+              progress={phase === "playing" ? 1 - timeLeft / durationSec : 0}
+              worth={phase === "playing" ? formatTime(timeLeft) : `${found.size} / ${targetList.length}`}
+              urgent={phase === "playing" && timeLeft <= 10}
+            />
 
             <div className="recall-board-wrap">
               <div className={"recall-board" + (phase !== "playing" ? " recall-board--blurred" : "")}>
