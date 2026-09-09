@@ -19,6 +19,12 @@ dev-dist
 android/app/src/main/assets/public
 android/app/src/main/assets/capacitor.config.json
 
+# Android release signing — the keystore is the one file that can never
+# be regenerated or recovered if lost, and it must never be public.
+android/keystore.properties
+*.keystore
+*.jks
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

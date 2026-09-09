@@ -1,5 +1,16 @@
 apply plugin: 'com.android.application'
 
+// Release signing lives in keystore.properties (gitignored, never
+// committed — see keystore.properties.example for the template). Its
+// absence must not break a debug build, so this only loads it, never
+// requires it; the release signingConfig below is the thing that
+// actually needs it, and only when you run a release build.
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+def keystoreProperties = new Properties()
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
 android {
     namespace = "org.chazarashashas.app"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -16,10 +27,26 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        release {
+            if (keystorePropertiesFile.exists()) {
+                storeFile file(keystoreProperties['storeFile'])
+                storePassword keystoreProperties['storePassword']
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+            }
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            // Falls back to the (unsigned) debug key only when no
+            // keystore.properties exists yet, so the project still
+            // builds before you've generated one — that output is not
+            // something you can upload to Play, only a real signed
+            // build (with keystore.properties present) is.
+            signingConfig keystorePropertiesFile.exists() ? signingConfigs.release : signingConfigs.debug
         }
     }
 }
