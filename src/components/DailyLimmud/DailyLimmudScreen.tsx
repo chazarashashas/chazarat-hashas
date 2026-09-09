@@ -4,11 +4,11 @@ import { getPerekName, getMishnayotCount } from "../../data/perekInfo";
 import { fetchMishna } from "../../utils/sefaria";
 import { fetchMishnaTranslation, type TranslationAttribution } from "../../utils/translation";
 import { usePerekNotes } from "../../utils/usePerekNotes";
-import { useLearningProgress, type Pace } from "../../utils/useLearningProgress";
+import { useLearningProgress, type Pace, paceEquals, paceLabel } from "../../utils/useLearningProgress";
 import { useLocalStorageState } from "../../utils/useLocalStorageState";
 import { useOfflinePrefetch } from "../../utils/useOfflinePrefetch";
 import { useAuth } from "../../utils/useAuth";
-import { useChevrusa, recordGroupActivityForMasechet } from "../../utils/useChevrusa";
+import { useChevrusa, recordGroupActivityForMasechet, type GroupPace } from "../../utils/useChevrusa";
 import { useSiyumim } from "../../utils/useSiyumim";
 import { PerekNoteModal } from "../PerekNoteModal/PerekNoteModal";
 import { ConceptModal } from "../ConceptModal/ConceptModal";
@@ -58,10 +58,14 @@ interface MishnaContent extends MishnaItem {
   error?: string;
 }
 
+// The quick-set shortcut lives here; the fuller by-amount/by-frequency
+// control lives on My Siyumim (ProgressScreen) — both write the exact
+// same progress.pace, so a choice made either place shows up as the
+// active pill here and vice versa.
 const PACE_OPTIONS: { value: Pace; label: string }[] = [
-  { value: "1", label: "1 Mishnah/day" },
-  { value: "2", label: "2 Mishnayot/day" },
-  { value: "perek", label: "1 Perek/day" },
+  { value: { unit: "mishnayot", amount: 1 }, label: "1 Mishnah/day" },
+  { value: { unit: "mishnayot", amount: 2 }, label: "2 Mishnayot/day" },
+  { value: { unit: "perakim", amount: 1 }, label: "1 Perek/day" },
 ];
 
 const ALL_MASECHTOT = SEDARIM.flatMap((s) => s.masechtot.map((m) => ({ ...m, sederId: s.id })));
@@ -89,7 +93,7 @@ function nextMasechet(masechetEn: string): string | null {
     (chosen once when the chevrusa/chabura was created) rather than a
     hardcoded single mishnah, so switching context in Daily Limmud
     "automatically" reflects however that group decided to pace itself. */
-function buildMasechetRange(masechetEn: string, start: MishnaItem, pace: Pace, totalPerakim: number): MishnaItem[] {
+function buildMasechetRange(masechetEn: string, start: MishnaItem, pace: GroupPace, totalPerakim: number): MishnaItem[] {
   if (start.perek > totalPerakim) return [];
   const items: MishnaItem[] = [{ masechetEn, perek: start.perek, mishnah: start.mishnah }];
   if (pace === "1") return items;
@@ -136,9 +140,9 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
   // it. Only offered once logged in, since groups require an account.
   // Named by who you're learning it with, so it reads like "Chevrusa
   // with Dovid" rather than an anonymous masechet name.
-  const groupContexts: { masechetEn: string; label: string; pace: Pace }[] = [];
+  const groupContexts: { masechetEn: string; label: string; pace: GroupPace }[] = [];
   {
-    const byMasechet = new Map<string, { descriptor: string; pace: Pace }[]>();
+    const byMasechet = new Map<string, { descriptor: string; pace: GroupPace }[]>();
     for (const g of groups) {
       let descriptor: string;
       if (!g.isChabura) {
@@ -338,11 +342,11 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
   // pill rows shown above the mishnah every day, for a choice most people
   // set once. One line states the current setting; tapping it opens the
   // pickers below instead.
-  const paceShort: Record<Pace, string> = { "1": "1 mishnah/day", "2": "2/day", perek: "1 perek/day" };
+  const groupPaceShort: Record<GroupPace, string> = { "1": "1 mishnah/day", "2": "2/day", perek: "1 perek/day" };
   const settingsSummary = [
     isSelf ? "Your own learning" : (activeLabel ?? activeContext),
     firstItem?.masechetEn,
-    paceShort[isSelf ? pace : groupPace],
+    isSelf ? paceLabel(pace) : groupPaceShort[groupPace],
   ]
     .filter(Boolean)
     .join(" · ");
@@ -445,8 +449,8 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
                     <div className="pill-row">
                       {PACE_OPTIONS.map((opt) => (
                         <button
-                          key={opt.value}
-                          className={"pill" + (pace === opt.value ? " pill--active" : "")}
+                          key={`${opt.value.unit}-${opt.value.amount}`}
+                          className={"pill" + (paceEquals(pace, opt.value) ? " pill--active" : "")}
                           onClick={() => handlePaceChange(opt.value)}
                         >
                           {opt.label}

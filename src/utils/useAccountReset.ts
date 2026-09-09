@@ -1,5 +1,6 @@
 import { useAuth } from "./useAuth";
 import { applyReset, type SyncBlob } from "./useCloudSync";
+import { DEFAULT_PACE } from "./useLearningProgress";
 
 /** One named, reviewable group per resettable feature — never an
     arbitrary key list, so "reset everything" can't silently grow to
@@ -7,7 +8,7 @@ import { applyReset, type SyncBlob } from "./useCloudSync";
 const DAILY_LIMMUD_PATCH: SyncBlob = {
   completions: [],
   dailyLimmudPosition: 0,
-  dailyLimmudPace: "1",
+  dailyLimmudPace: DEFAULT_PACE,
   streakFreezes: 2,
   frozenDates: [],
   lastFreezeMilestone: 0,

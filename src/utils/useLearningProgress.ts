@@ -22,7 +22,53 @@ export interface CompletionRecord {
   source: CompletionSource;
 }
 
-export type Pace = "1" | "2" | "perek";
+/** How fast Daily Limmud moves forward, in one of two units. Chosen
+    either directly (My Siyumim's "by daily amount") or derived from a
+    target siyum frequency (My Siyumim's "by how often you finish") —
+    both write this same shape, since Daily Limmud only ever needs to
+    know the resulting amount-per-day, not which direction picked it.
+    Unrelated to a chevrusa/chabura's own GroupPace (useChevrusa.ts) —
+    that's a fixed 3-value setting chosen once when the group is
+    created, not a personal, changeable-anytime preference. */
+export interface Pace {
+  unit: "mishnayot" | "perakim";
+  amount: number;
+}
+
+export const DEFAULT_PACE: Pace = { unit: "mishnayot", amount: 1 };
+
+/** Reads either the current {unit, amount} shape or one of the three
+    literal strings ("1" | "2" | "perek") every pace was stored as
+    before this type existed — real devices and accounts already have
+    those values saved, and there's no migration script that touches
+    them, so every read has to keep understanding them. */
+function normalizePace(raw: unknown): Pace {
+  if (raw && typeof raw === "object") {
+    const p = raw as { unit?: unknown; amount?: unknown };
+    if ((p.unit === "mishnayot" || p.unit === "perakim") && typeof p.amount === "number" && p.amount > 0) {
+      return { unit: p.unit, amount: p.amount };
+    }
+  }
+  if (raw === "2") return { unit: "mishnayot", amount: 2 };
+  if (raw === "perek") return { unit: "perakim", amount: 1 };
+  return DEFAULT_PACE;
+}
+
+export function paceEquals(a: Pace, b: Pace): boolean {
+  return a.unit === b.unit && a.amount === b.amount;
+}
+
+export function paceLabel(p: Pace): string {
+  if (p.unit === "mishnayot") return p.amount === 1 ? "1 mishnah/day" : `${p.amount} mishnayot/day`;
+  return p.amount === 1 ? "1 perek/day" : `${p.amount} perakim/day`;
+}
+
+/** A perek's real length varies, so a perakim-based pace is converted to
+    an estimated mishnayot-per-day using the Shas-wide average — good
+    enough for an ETA, never displayed as if it were exact. */
+export function paceToMishnayotPerDay(pace: Pace, avgMishnayotPerPerek: number): number {
+  return pace.unit === "mishnayot" ? pace.amount : pace.amount * avgMishnayotPerPerek;
+}
 
 /** Where you personally are within one masechet — used when learning
     for a chevrusa/chabura, which is scoped to a masechet that could be
@@ -72,7 +118,9 @@ function addDaysStr(date: string, delta: number): string {
 export function useLearningProgress() {
   const [completions, setCompletions] = useLocalStorageState<CompletionRecord[]>("completions", []);
   const [position, setPosition] = useLocalStorageState<number>("dailyLimmudPosition", 0);
-  const [pace, setPace] = useLocalStorageState<Pace>("dailyLimmudPace", "1");
+  const [rawPace, setRawPace] = useLocalStorageState<unknown>("dailyLimmudPace", DEFAULT_PACE);
+  const pace = normalizePace(rawPace);
+  const setPace = (next: Pace) => setRawPace(next);
   const [concepts, setConcepts] = useLocalStorageState<ConceptNote[]>("conceptNotes", []);
   // Streak freeze: bridges exactly one missed day so a single off day
   // doesn't zero out an otherwise-real streak. Starts with two freezes as
@@ -92,8 +140,20 @@ export function useLearningProgress() {
   const finishedShas = position >= MISHNA_SEQUENCE.length;
   let rangeEnd = rangeStart;
   if (!finishedShas) {
-    if (pace === "2") rangeEnd = Math.min(rangeStart + 1, MISHNA_SEQUENCE.length - 1);
-    else if (pace === "perek") rangeEnd = endOfPerekIndex(rangeStart);
+    if (pace.unit === "mishnayot") {
+      rangeEnd = Math.min(rangeStart + pace.amount - 1, MISHNA_SEQUENCE.length - 1);
+    } else {
+      // Walk forward `amount` perakim from rangeStart, one at a time —
+      // endOfPerekIndex only ever finds the end of the perek containing
+      // the index it's given, so reaching perek N+1 means stepping past
+      // perek N's last mishnah first.
+      let end = rangeStart;
+      for (let i = 0; i < pace.amount; i++) {
+        end = endOfPerekIndex(end);
+        if (i < pace.amount - 1 && end + 1 < MISHNA_SEQUENCE.length) end += 1;
+      }
+      rangeEnd = Math.min(end, MISHNA_SEQUENCE.length - 1);
+    }
   }
   const todaysItems = finishedShas ? [] : MISHNA_SEQUENCE.slice(rangeStart, rangeEnd + 1);
 

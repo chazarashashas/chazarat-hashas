@@ -3,6 +3,7 @@ import type { Session } from "@supabase/supabase-js";
 import { supabase } from "./supabase";
 import { STORAGE_SYNC_EVENT } from "./useLocalStorageState";
 import { DEFAULT_BOTTOM_BAR_IDS } from "./navItems";
+import { DEFAULT_PACE } from "./useLearningProgress";
 
 export const PREFIX = "chazarat-hashas:";
 /** This device's own marker of the last reset it has already applied —
@@ -168,7 +169,7 @@ function mergeBlobs(local: SyncBlob, cloud: SyncBlob): SyncBlob {
     ),
     conceptNotes: mergeUniqueBy(local.conceptNotes, cloud.conceptNotes, (item) => (item as { id: string }).id),
     dailyLimmudPosition: Math.max(Number(local.dailyLimmudPosition) || 0, Number(cloud.dailyLimmudPosition) || 0),
-    dailyLimmudPace: local.dailyLimmudPace ?? cloud.dailyLimmudPace ?? "1",
+    dailyLimmudPace: local.dailyLimmudPace ?? cloud.dailyLimmudPace ?? DEFAULT_PACE,
     nishmatMyClaims: mergeUniqueBy(local.nishmatMyClaims, cloud.nishmatMyClaims, (item) => (item as { id: string }).id),
     gameStats: mergeGameStats(local.gameStats, cloud.gameStats),
     streakFreezes: Math.max(Number(local.streakFreezes) || 0, Number(cloud.streakFreezes) || 0),

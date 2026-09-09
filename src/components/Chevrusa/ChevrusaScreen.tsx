@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { SEDARIM } from "../../data/shas";
 import { useAuth } from "../../utils/useAuth";
-import { useChevrusa, type PendingInvite, type SentInvite } from "../../utils/useChevrusa";
-import type { Pace } from "../../utils/useLearningProgress";
+import { useChevrusa, type PendingInvite, type SentInvite, type GroupPace } from "../../utils/useChevrusa";
 import { GroupCard } from "../GroupCard/GroupCard";
 import { ReceivedNudges } from "../GroupCard/ReceivedNudges";
 import {
@@ -16,7 +15,7 @@ import {
 import { CreateCard, FieldInset, PaceSegment, CreateCta, InviteQueueRow } from "../GroupCreateCard/GroupCreateCard";
 import "./ChevrusaScreen.css";
 
-const PACE_OPTIONS: { value: Pace; label: string }[] = [
+const PACE_OPTIONS: { value: GroupPace; label: string }[] = [
   { value: "1", label: "1 Mishnah/day" },
   { value: "2", label: "2/day" },
   { value: "perek", label: "1 Perek/day" },
@@ -70,7 +69,7 @@ export function ChevrusaScreen({ onOpenLogin }: ChevrusaScreenProps) {
 
   const [inviteValue, setInviteValue] = useState("");
   const [masechetValue, setMasechetValue] = useState("");
-  const [invitePace, setInvitePace] = useState<Pace>("1");
+  const [invitePace, setInvitePace] = useState<GroupPace>("1");
 
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);

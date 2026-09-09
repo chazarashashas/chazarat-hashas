@@ -1,7 +1,13 @@
 import { useState } from "react";
 import { SEDARIM } from "../../data/shas";
 import { getPerekName, getMishnayotCount } from "../../data/perekInfo";
-import { useLearningProgress } from "../../utils/useLearningProgress";
+import {
+  useLearningProgress,
+  paceToMishnayotPerDay,
+  paceEquals,
+  paceLabel as formatPaceLabel,
+  type Pace,
+} from "../../utils/useLearningProgress";
 import { useAuth } from "../../utils/useAuth";
 import { ProgressTracks } from "../ProgressTracks/ProgressTracks";
 import { SEDER_HUE } from "../../utils/sederHue";
@@ -11,6 +17,29 @@ import { CertificateView } from "../Certificate/CertificateView";
 import { NudgeStrip } from "../NudgeStrip/NudgeStrip";
 import { nudgeCopy, pluralize } from "../../utils/nudgeCopy";
 import "./ProgressScreen.css";
+
+const MISHNAYOT_AMOUNTS = [1, 2, 3, 5, 10];
+const PEREK_AMOUNTS = [1, 2, 3, 4];
+
+const FREQUENCY_OPTIONS: { key: string; label: string; days: number }[] = [
+  { key: "month", label: "Every month", days: 30.44 },
+  { key: "half-year", label: "Twice a year", days: 182.625 },
+  { key: "year", label: "Every year", days: 365.25 },
+  { key: "2-years", label: "Every 2 years", days: 730.5 },
+  { key: "5-years", label: "Every 5 years", days: 1826.25 },
+];
+
+/** The daily pace a target siyum-haShas frequency implies, rounded up —
+    17.2 perakim a day finishes late, so the honest figure is 18. Uses
+    perakim when that stays a legible few-a-day figure (≥2/day
+    unrounded); falls back to mishnayot once perakim/day would round to
+    a barely-there 1 or less (a 5-year pace is closer to "3 mishnayot a
+    day" than "1 perek a day," which understates it by roughly half). */
+function paceForFrequency(days: number, totalPerakim: number, totalMishnayotAll: number): Pace {
+  const perakimPerDay = totalPerakim / days;
+  if (perakimPerDay >= 2) return { unit: "perakim", amount: Math.ceil(perakimPerDay) };
+  return { unit: "mishnayot", amount: Math.ceil(totalMishnayotAll / days) };
+}
 
 function ProgressBar({ pct }: { pct: number }) {
   return (
@@ -33,6 +62,7 @@ interface ProgressScreenProps {
 export function ProgressScreen({ onOpenNishmat, onOpenLogin }: ProgressScreenProps) {
   const progress = useLearningProgress();
   const auth = useAuth();
+  const [paceDirection, setPaceDirection] = useState<"amount" | "frequency">("amount");
   const [expanded, setExpanded] = useState<string | null>(null);
   const [logOpen, setLogOpen] = useState(false);
   const [printOpen, setPrintOpen] = useState(false);
@@ -106,10 +136,17 @@ export function ProgressScreen({ onOpenNishmat, onOpenLogin }: ProgressScreenPro
   // varies. Rounds the remaining-days figure up, never down: an optimistic
   // estimate that quietly slips is worse than a plain one that holds.
   const avgMishnayotPerPerek = totalPerakim > 0 ? totalMishnayot / totalPerakim : 1;
-  const perDay = progress.pace === "2" ? 2 : progress.pace === "perek" ? avgMishnayotPerPerek : 1;
+  const perDay = paceToMishnayotPerDay(progress.pace, avgMishnayotPerPerek);
   const sederRemaining = nextSederTotal - nextSederDone;
   const sederDaysLeft = perDay > 0 ? Math.ceil(sederRemaining / perDay) : 0;
   const masechetDaysLeft = perDay > 0 ? Math.ceil(nextMasechetRemaining / perDay) : 0;
+  const shasMishnayotRemaining = totalMishnayot - mishnayotLearned;
+  const shasDaysLeft = perDay > 0 ? Math.ceil(shasMishnayotRemaining / perDay) : 0;
+  // Steady-state average, not "however big the seder you're mid-way
+  // through happens to be" — the frequency this pace settles into once
+  // it isn't just finishing off whatever's already in progress.
+  const avgSederMishnayot = totalMishnayot / SEDARIM.length;
+  const sederFrequencyDays = perDay > 0 ? Math.ceil(avgSederMishnayot / perDay) : 0;
 
   // One ladder for any day count — day/week/month/year, each switching
   // before its own unit stops being meaningful (a 291-day span reads
@@ -127,8 +164,7 @@ export function ProgressScreen({ onOpenNishmat, onOpenLogin }: ProgressScreenPro
     return d.toLocaleDateString("en-US", { month: "long", year: "numeric" });
   }
 
-  const paceLabel =
-    progress.pace === "2" ? "2 a day" : progress.pace === "perek" ? "1 perek a day" : "1 a day";
+  const paceLabel = formatPaceLabel(progress.pace);
 
   return (
     <div className="stage">
@@ -185,6 +221,85 @@ export function ProgressScreen({ onOpenNishmat, onOpenLogin }: ProgressScreenPro
                 {nextMasechet.en} finishes first — {nextMasechetRemaining} mishnayot away, about{" "}
                 {spanFromDays(masechetDaysLeft)}.
               </span>
+            </div>
+
+            <div className="pace-control">
+              <div className="pace-control__tabs">
+                <button
+                  className={"pace-tab" + (paceDirection === "amount" ? " pace-tab--active" : "")}
+                  onClick={() => setPaceDirection("amount")}
+                >
+                  By daily amount
+                </button>
+                <button
+                  className={"pace-tab" + (paceDirection === "frequency" ? " pace-tab--active" : "")}
+                  onClick={() => setPaceDirection("frequency")}
+                >
+                  By how often you finish
+                </button>
+              </div>
+
+              {paceDirection === "amount" ? (
+                <>
+                  <div className="pace-pill-row">
+                    <button
+                      className={"pace-pill" + (progress.pace.unit === "mishnayot" ? " pace-pill--active" : "")}
+                      onClick={() => progress.setPace({ unit: "mishnayot", amount: 1 })}
+                    >
+                      Mishnayot
+                    </button>
+                    <button
+                      className={"pace-pill" + (progress.pace.unit === "perakim" ? " pace-pill--active" : "")}
+                      onClick={() => progress.setPace({ unit: "perakim", amount: 1 })}
+                    >
+                      Perakim
+                    </button>
+                  </div>
+                  <div className="pace-pill-row">
+                    {(progress.pace.unit === "perakim" ? PEREK_AMOUNTS : MISHNAYOT_AMOUNTS).map((amount) => {
+                      const optionPace: Pace = { unit: progress.pace.unit, amount };
+                      return (
+                        <button
+                          key={amount}
+                          className={"pace-pill" + (paceEquals(progress.pace, optionPace) ? " pace-pill--active" : "")}
+                          onClick={() => progress.setPace(optionPace)}
+                        >
+                          {amount}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </>
+              ) : (
+                <div className="pace-pill-row pace-pill-row--frequency">
+                  {FREQUENCY_OPTIONS.map((f) => {
+                    const optionPace = paceForFrequency(f.days, totalPerakim, totalMishnayot);
+                    return (
+                      <button
+                        key={f.key}
+                        className={
+                          "pace-pill pace-pill--freq" + (paceEquals(progress.pace, optionPace) ? " pace-pill--active" : "")
+                        }
+                        onClick={() => progress.setPace(optionPace)}
+                      >
+                        <span className="pace-pill__freq-label">{f.label}</span>
+                        <span className="pace-pill__freq-figure">{formatPaceLabel(optionPace)}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+
+              <p className="pace-control__note">
+                Daily Limmud serves {paceLabel} — starting tomorrow.
+                {shasMishnayotRemaining > 0 && (
+                  <>
+                    {" "}
+                    Siyum haShas around {estimatedDate(shasDaysLeft)}, a seder siyum roughly every{" "}
+                    {spanFromDays(sederFrequencyDays)}.
+                  </>
+                )}
+              </p>
             </div>
           </div>
         )}

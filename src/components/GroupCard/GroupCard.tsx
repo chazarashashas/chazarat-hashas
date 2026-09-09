@@ -1,6 +1,5 @@
 import { useRef, useState } from "react";
-import type { Group, GroupMember } from "../../utils/useChevrusa";
-import type { Pace } from "../../utils/useLearningProgress";
+import type { Group, GroupMember, GroupPace } from "../../utils/useChevrusa";
 import { useGroupNudges } from "../../utils/useGroupNudges";
 import { useEscapeKey } from "../../utils/useEscapeKey";
 import { DotsIcon } from "../Icon/NavIcon";
@@ -8,7 +7,7 @@ import { GroupNotes } from "./GroupNotes";
 import { localDateStr } from "../../utils/localDate";
 import "./GroupCard.css";
 
-const PACE_LABEL: Record<Pace, string> = { "1": "1 a day", "2": "2 a day", perek: "1 perek a day" };
+const PACE_LABEL: Record<GroupPace, string> = { "1": "1 a day", "2": "2 a day", perek: "1 perek a day" };
 
 function todayStr(): string {
   return localDateStr();

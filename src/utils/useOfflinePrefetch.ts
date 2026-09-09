@@ -15,8 +15,14 @@ function upcomingDayRanges(position: number, pace: Pace, days: number): [number,
   for (let day = 0; day < days; day++) {
     if (start >= MISHNA_SEQUENCE.length) break;
     let end = start;
-    if (pace === "2") end = Math.min(start + 1, MISHNA_SEQUENCE.length - 1);
-    else if (pace === "perek") end = endOfPerekIndex(start);
+    if (pace.unit === "mishnayot") {
+      end = Math.min(start + pace.amount - 1, MISHNA_SEQUENCE.length - 1);
+    } else {
+      for (let i = 0; i < pace.amount; i++) {
+        end = endOfPerekIndex(end);
+        if (i < pace.amount - 1 && end + 1 < MISHNA_SEQUENCE.length) end += 1;
+      }
+    }
     ranges.push([start, end]);
     start = end + 1;
   }

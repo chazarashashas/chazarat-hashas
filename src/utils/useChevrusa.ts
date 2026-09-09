@@ -1,10 +1,17 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "./supabase";
 import { useAuth } from "./useAuth";
-import type { Pace } from "./useLearningProgress";
 import { localDateStr } from "./localDate";
 
 export type GroupRole = "member" | "teacher";
+
+/** A chevrusa/chabura's own agreed pace — fixed once at creation, the
+    same three options this always offered. Unrelated to useLearningProgress's
+    Pace: that one is a personal, changeable-anytime Daily Limmud setting
+    with its own richer {unit, amount} shape (My Siyumim's pace control).
+    Keeping these as two separate types means changing one never risks
+    silently reshaping the other. */
+export type GroupPace = "1" | "2" | "perek";
 
 export interface GroupMember {
   userId: string;
@@ -27,7 +34,7 @@ export interface Group {
   /** The agreed pace this group learns its masechet at — set once when
       the group is created, so everyone in it (and Daily Limmud's group
       context) stays consistent without re-choosing it each time. */
-  pace: Pace;
+  pace: GroupPace;
   members: GroupMember[];
   /** Faster than emailing eighteen addresses — a student who has the
       code joins directly (see joinGroupByCode). Only ever set for a
@@ -146,7 +153,7 @@ export function useChevrusa() {
         masechetEn: g.masechet_en,
         isChabura: g.is_chabura,
         isClass: g.is_class,
-        pace: (g.pace as Pace) ?? "1",
+        pace: (g.pace as GroupPace) ?? "1",
         joinCode: (g.join_code as string | null) ?? null,
         members: (membersData ?? [])
           .filter((m) => m.group_id === g.id)
@@ -235,7 +242,7 @@ export function useChevrusa() {
     isChabura: boolean,
     name: string | null,
     inviteEmails: string[],
-    pace: Pace = "1",
+    pace: GroupPace = "1",
     isClass = false,
   ): Promise<string | null> {
     if (!supabase || !session) return "Accounts aren't connected yet.";
