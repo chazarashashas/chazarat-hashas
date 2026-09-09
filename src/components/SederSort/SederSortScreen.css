@@ -63,13 +63,25 @@
   cursor: pointer;
 }
 
+.sort-bin__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 5px;
+  margin-bottom: 5px;
+}
+
 .sort-bin__title {
   font-family: var(--font-heading);
   font-size: 11px;
   font-weight: 700;
   color: var(--bin-hue, var(--ink));
-  margin-bottom: 5px;
-  text-align: center;
+}
+
+.sort-bin__tally {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--muted);
 }
 
 .sort-bin__items {

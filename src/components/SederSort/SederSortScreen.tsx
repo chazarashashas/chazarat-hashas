@@ -186,7 +186,12 @@ export function SederSortScreen() {
               style={{ ["--bin-hue" as string]: getSederHue(seder.id) }}
               onClick={() => handleBinTap(seder.id)}
             >
-              <div className="sort-bin__title">{seder.en}</div>
+              <div className="sort-bin__head">
+                <span className="sort-bin__title">{seder.en}</span>
+                <span className="sort-bin__tally">
+                  {placed[seder.id].length}/{seder.masechtot.length}
+                </span>
+              </div>
               <div className="sort-bin__items">
                 {placed[seder.id].map((name) => (
                   <span key={name} className="sort-bin__tag">
