@@ -3,6 +3,17 @@ import type { Session } from "@supabase/supabase-js";
 import { supabase, supabaseConfigured } from "./supabase";
 import { flushLocalDataToCloud } from "./useCloudSync";
 
+/** Set right before redirecting to Google, cleared on return whether
+    sign-in worked or not (see App.tsx's silent-failure check). The one
+    error case already handled (initialOAuthError) only catches a
+    failure Supabase's own redirect chose to report as a URL param —
+    real gap: a failure in the client-side token exchange that happens
+    *after* a clean redirect back, with no param to read, previously
+    landed with no session and no explanation, indistinguishable from
+    never having tried. sessionStorage (not localStorage) so a stale
+    flag from an abandoned attempt can't outlive this browser tab. */
+export const OAUTH_PENDING_KEY = "chazarat-hashas:oauthPending";
+
 interface Profile {
   username: string | null;
   firstName: string | null;
@@ -164,13 +175,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       session creation on return, so there's no callback code to write
       here. A first-time Google sign-in may land without a username set
       (Google doesn't collect one), same as any profile field left
-      blank — My Account's editor already covers filling that in. */
+      blank — My Account's editor already covers filling that in.
+      Marks OAUTH_PENDING_KEY right before leaving — see its own doc
+      comment for why. */
   async function signInWithGoogle(): Promise<string | null> {
     if (!supabase) return "Accounts aren't connected yet.";
+    sessionStorage.setItem(OAUTH_PENDING_KEY, "1");
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: { redirectTo: window.location.origin },
     });
+    if (error) sessionStorage.removeItem(OAUTH_PENDING_KEY);
     return error ? error.message : null;
   }
 

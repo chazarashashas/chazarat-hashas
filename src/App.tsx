@@ -22,7 +22,8 @@ import { AdminScreen } from "./components/Admin/AdminScreen";
 import { ReviewScreen } from "./components/Review/ReviewScreen";
 import { FirstOpenPrompt } from "./components/FirstOpenPrompt/FirstOpenPrompt";
 import { RebbeDashboardScreen } from "./components/RebbeDashboard/RebbeDashboardScreen";
-import { useAuth } from "./utils/useAuth";
+import { useAuth, OAUTH_PENDING_KEY } from "./utils/useAuth";
+import { reportSilentSignInFailure } from "./utils/monitoring";
 import { useChevrusa, isRebbe } from "./utils/useChevrusa";
 import { SyncStatusProvider } from "./utils/useCloudSync";
 import { useLearningProgress } from "./utils/useLearningProgress";
@@ -154,7 +155,7 @@ function App() {
   // user here, so that choice lands on the email form, not the
   // Google-first default.
   const [loginEmailOpen, setLoginEmailOpen] = useState(false);
-  const { session, isAdmin, isLoggedIn, isPasswordRecovery, signInWithGoogle } = useAuth();
+  const { session, isAdmin, isLoggedIn, isPasswordRecovery, loading: authLoading, signInWithGoogle } = useAuth();
 
   // A password-reset email link lands here already signed in (Supabase
   // sets the session before this app code ever runs) — without this,
@@ -169,6 +170,24 @@ function App() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     if (isPasswordRecovery) setSection("login");
   }, [isPasswordRecovery]);
+
+  // The one case initialOAuthError doesn't cover: a Google redirect
+  // that comes back with no error param (a clean redirect) but the
+  // client-side token exchange itself then fails, so no session ever
+  // materializes either. Previously indistinguishable from never having
+  // tried — see OAUTH_PENDING_KEY's own doc comment.
+  const [silentSignInError, setSilentSignInError] = useState<string | null>(null);
+  useEffect(() => {
+    if (authLoading) return;
+    if (!sessionStorage.getItem(OAUTH_PENDING_KEY)) return;
+    sessionStorage.removeItem(OAUTH_PENDING_KEY);
+    if (session || oauthError) return; // either it worked, or the other handler already has this covered
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSilentSignInError("Sign-in didn't complete. Try again or use email.");
+    reportSilentSignInFailure();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSection("login");
+  }, [authLoading, session]);
 
   const { groups } = useChevrusa();
   const myShiurimToTeach = groups.filter(
@@ -290,7 +309,7 @@ function App() {
               <LoginScreen
                 initialMode={loginMode}
                 initialEmailOpen={loginEmailOpen}
-                initialError={oauthError}
+                initialError={oauthError ?? silentSignInError}
                 onLoggedIn={() => {
                   setSection(loginReturnTo ?? "home");
                   setLoginReturnTo(null);

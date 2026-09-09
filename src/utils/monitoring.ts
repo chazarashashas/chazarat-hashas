@@ -32,6 +32,17 @@ export function reportSyncFailure(consecutiveFailures: number) {
   Sentry.captureMessage(`Cloud sync failing repeatedly (${consecutiveFailures} attempts in a row)`, "warning");
 }
 
+/** Fable audit #7: a sign-in that ends with no session and no error
+    message read as identical to never having tried, with nothing
+    anywhere to say what actually happened. Called from App.tsx when a
+    Google redirect comes back clean (no error param) but no session
+    ever materializes — a failure in the client-side token exchange
+    itself, which the one error case already handled doesn't cover. */
+export function reportSilentSignInFailure() {
+  if (!monitoringConfigured) return;
+  Sentry.captureMessage("Sign-in redirect returned with no session and no error", "warning");
+}
+
 /** For the "Report a problem" link in My Account — attaches whatever
     the student typed to the current error/session context, if
     monitoring is configured, in addition to the mailto fallback that
