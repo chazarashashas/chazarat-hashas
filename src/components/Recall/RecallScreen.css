@@ -121,6 +121,36 @@
   align-content: flex-start;
 }
 
+/* "All of Shas" groups the same chips under a heading per seder, so
+   progress reads by seder as guesses land, not as one undifferentiated
+   grid — the outer wrap owns the scroll, each seder's own grid doesn't. */
+.recall-grid-groups {
+  height: 220px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.recall-group {
+  margin-bottom: 10px;
+}
+
+.recall-group:last-child {
+  margin-bottom: 0;
+}
+
+.recall-group__label {
+  font-family: var(--font-heading);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--group-hue, var(--ink));
+  margin-bottom: 5px;
+}
+
+.recall-group .recall-grid {
+  height: auto;
+  overflow-y: visible;
+}
+
 .recall-chip {
   height: 30px;
   border-radius: var(--radius-small);

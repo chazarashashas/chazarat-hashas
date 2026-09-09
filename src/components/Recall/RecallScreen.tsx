@@ -3,6 +3,7 @@ import { SEDARIM, type Masechet } from "../../data/shas";
 import { SEDER_TABS } from "../../data/sederTabs";
 import { TabBar } from "../TabBar/TabBar";
 import { useGameStats } from "../../utils/useGameStats";
+import { getSederHue } from "../../utils/sederHue";
 import "./RecallScreen.css";
 
 function flatList(): Masechet[] {
@@ -177,18 +178,45 @@ export function RecallScreen() {
                   autoCapitalize="off"
                   spellCheck={false}
                 />
-                <div className="recall-grid">
-                  {targetList.map((m) => (
-                    <div
-                      key={m.en}
-                      className={
-                        "recall-chip" + (found.has(m.en) ? " recall-chip--found" : " recall-chip--pending")
-                      }
-                    >
-                      {found.has(m.en) ? m.en : ""}
-                    </div>
-                  ))}
-                </div>
+                {sederTab === "all" ? (
+                  <div className="recall-grid-groups">
+                    {SEDARIM.map((seder) => (
+                      <div key={seder.id} className="recall-group">
+                        <div
+                          className="recall-group__label"
+                          style={{ ["--group-hue" as string]: getSederHue(seder.id) }}
+                        >
+                          {seder.en}
+                        </div>
+                        <div className="recall-grid">
+                          {seder.masechtot.map((m) => (
+                            <div
+                              key={m.en}
+                              className={
+                                "recall-chip" + (found.has(m.en) ? " recall-chip--found" : " recall-chip--pending")
+                              }
+                            >
+                              {found.has(m.en) ? m.en : ""}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="recall-grid">
+                    {targetList.map((m) => (
+                      <div
+                        key={m.en}
+                        className={
+                          "recall-chip" + (found.has(m.en) ? " recall-chip--found" : " recall-chip--pending")
+                        }
+                      >
+                        {found.has(m.en) ? m.en : ""}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {phase === "ready" && (
