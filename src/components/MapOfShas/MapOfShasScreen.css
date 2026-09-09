@@ -116,21 +116,71 @@
   font-size: 11px;
 }
 
+.map-sedarim-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  text-align: left;
+}
+
+.map-seder-group__label {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--tile-hue, var(--ink));
+}
+
+.map-seder-group__label span:first-child {
+  font-family: var(--font-hebrew);
+  font-size: 14px;
+}
+
 .map-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   gap: 10px;
 }
 
-.map-grid--sedarim {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+/* Masechet tiles size themselves to their own perek count — a rough
+   step, not a precise treemap — so Kelim (30 perakim) and Tamid (3)
+   don't read as the same-sized fact. Explore Shas opens straight into
+   all 63 at once (BUILD-BRIEF.md), so this is the only signal telling
+   them apart before you tap one. */
+.map-grid--masechtot {
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
 }
 
-/* Phone: ≤599px, per ANDROID-BRIEF.md §6. */
-@media (max-width: 599px) {
-  .map-grid--sedarim {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+.map-tile--size-1 {
+  padding: 8px 6px;
+}
+
+.map-tile--size-1 .map-tile__he {
+  font-size: 12.5px;
+}
+
+.map-tile--size-2 {
+  padding: 11px 7px;
+}
+
+.map-tile--size-3 {
+  padding: 15px 9px;
+}
+
+.map-tile--size-3 .map-tile__he {
+  font-size: 16.5px;
+}
+
+.map-tile--size-4 {
+  padding: 19px 10px;
+  grid-column: span 2;
+}
+
+.map-tile--size-4 .map-tile__he {
+  font-size: 18px;
 }
 
 .map-grid--perakim {
@@ -166,12 +216,10 @@
   box-shadow: var(--shadow-hover);
 }
 
-.map-tile--seder,
 .map-tile--masechet {
   border-top: 3px solid var(--tile-hue, var(--line));
 }
 
-.map-tile--seder .map-tile__he,
 .map-tile--masechet .map-tile__he {
   color: var(--tile-hue, var(--ink));
 }

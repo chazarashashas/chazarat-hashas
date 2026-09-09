@@ -10,7 +10,19 @@ import { PerekNoteModal } from "../PerekNoteModal/PerekNoteModal";
 import { TranslationReveal } from "../TranslationReveal/TranslationReveal";
 import "./MapOfShasScreen.css";
 
-type Level = "sedarim" | "masechtot" | "perakim" | "mishnayot" | "text";
+type Level = "masechtot" | "perakim" | "mishnayot" | "text";
+
+/** A rough size step from a masechet's perek count — not a precise
+    quartile, just enough of a gradient that Kelim (30 perakim) and
+    Tamid (3) visibly aren't the same size tile. BUILD-BRIEF.md: opens
+    on all 63 masechtot "sized by perek count" instead of six seder
+    tiles you'd have to pick through first. */
+function tileSizeStep(perakim: number): 1 | 2 | 3 | 4 {
+  if (perakim <= 5) return 1;
+  if (perakim <= 8) return 2;
+  if (perakim <= 11) return 3;
+  return 4;
+}
 
 interface TextState {
   status: "idle" | "loading" | "loaded" | "error";
@@ -35,7 +47,7 @@ export function MapOfShasScreen({ onOpenNotes }: MapOfShasScreenProps) {
   const progress = useLearningProgress();
   const { getPerekNote, setPerekNote } = usePerekNotes();
 
-  const [level, setLevel] = useState<Level>("sedarim");
+  const [level, setLevel] = useState<Level>("masechtot");
   const [sederId, setSederId] = useState<string | null>(null);
   const [masechet, setMasechet] = useState<Masechet | null>(null);
   const [perek, setPerek] = useState<number | null>(null);
@@ -51,24 +63,20 @@ export function MapOfShasScreen({ onOpenNotes }: MapOfShasScreenProps) {
       ? ALL_MASECHTOT_FLAT.filter((m) => m.en.toLowerCase().includes(search.trim().toLowerCase())).slice(0, 8)
       : [];
 
-  function openSeder(id: string) {
-    setSederId(id);
-    setLevel("masechtot");
-  }
-
-  function openMasechet(m: Masechet) {
+  /** Opens straight into a masechet's perakim from the all-masechtot
+      grid — there's no separate seder-picking step to pass through
+      first, but the owning seder is still tracked (breadcrumb, and the
+      perek tiles' hue). */
+  function openMasechet(m: Masechet & { sederId: string }) {
+    setSederId(m.sederId);
     setMasechet(m);
     setLevel("perakim");
   }
 
   /** Jumps straight from a search result to that masechet's perakim,
-      regardless of which seder it's in or what level you started on —
-      finds and sets the owning seder too, so the breadcrumb and "back"
-      trail stay correct. */
+      regardless of what level you started on. */
   function jumpToMasechet(m: Masechet & { sederId: string }) {
-    setSederId(m.sederId);
-    setMasechet(m);
-    setLevel("perakim");
+    openMasechet(m);
     setSearch("");
   }
 
@@ -91,12 +99,8 @@ export function MapOfShasScreen({ onOpenNotes }: MapOfShasScreenProps) {
   }
 
   function goTo(target: Level) {
-    if (target === "sedarim") {
+    if (target === "masechtot") {
       setSederId(null);
-      setMasechet(null);
-      setPerek(null);
-      setMishnah(null);
-    } else if (target === "masechtot") {
       setMasechet(null);
       setPerek(null);
       setMishnah(null);
@@ -140,19 +144,11 @@ export function MapOfShasScreen({ onOpenNotes }: MapOfShasScreenProps) {
         </div>
 
         <div className="map-breadcrumb" dir="ltr">
-          {seder && (
-            <>
-              <button className="map-crumb" onClick={() => goTo("sedarim")}>
-                Shas
-              </button>
-              <span className="map-crumb-sep">‹</span>
-              <button className="map-crumb" onClick={() => goTo("masechtot")}>
-                {seder.en}
-              </button>
-            </>
-          )}
           {masechet && (
             <>
+              <button className="map-crumb" onClick={() => goTo("masechtot")}>
+                Shas
+              </button>
               <span className="map-crumb-sep">‹</span>
               <button className="map-crumb" onClick={() => goTo("perakim")}>
                 {masechet.en}
@@ -175,34 +171,30 @@ export function MapOfShasScreen({ onOpenNotes }: MapOfShasScreenProps) {
           )}
         </div>
 
-        {level === "sedarim" && (
-          <div className="map-grid map-grid--sedarim">
+        {level === "masechtot" && (
+          <div className="map-sedarim-groups">
             {SEDARIM.map((s) => (
-              <button
-                key={s.id}
-                className="map-tile map-tile--seder"
-                style={{ ["--tile-hue" as string]: getSederHue(s.id) }}
-                onClick={() => openSeder(s.id)}
-              >
-                <span className="map-tile__he" dir="rtl">
-                  {s.he}
-                </span>
-                <span className="map-tile__en">{s.en}</span>
-              </button>
-            ))}
-          </div>
-        )}
-
-        {level === "masechtot" && seder && (
-          <div className="map-grid" style={{ ["--tile-hue" as string]: getSederHue(seder.id) }}>
-            {seder.masechtot.map((m) => (
-              <button key={m.en} className="map-tile map-tile--masechet" onClick={() => openMasechet(m)}>
-                <span className="map-tile__he" dir="rtl">
-                  {m.he}
-                </span>
-                <span className="map-tile__en">{m.en}</span>
-                <span className="map-tile__sub">{m.perakim} perakim</span>
-              </button>
+              <div key={s.id} className="map-seder-group">
+                <div className="map-seder-group__label" style={{ ["--tile-hue" as string]: getSederHue(s.id) }}>
+                  <span dir="rtl">{s.he}</span>
+                  <span>{s.en}</span>
+                </div>
+                <div className="map-grid map-grid--masechtot" style={{ ["--tile-hue" as string]: getSederHue(s.id) }}>
+                  {s.masechtot.map((m) => (
+                    <button
+                      key={m.en}
+                      className={`map-tile map-tile--masechet map-tile--size-${tileSizeStep(m.perakim)}`}
+                      onClick={() => openMasechet({ ...m, sederId: s.id })}
+                    >
+                      <span className="map-tile__he" dir="rtl">
+                        {m.he}
+                      </span>
+                      <span className="map-tile__en">{m.en}</span>
+                      <span className="map-tile__sub">{m.perakim} perakim</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
         )}
