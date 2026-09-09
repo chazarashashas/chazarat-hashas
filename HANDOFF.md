@@ -1,7 +1,14 @@
 # Chazarat Hashas — Status Handoff
 
-Written 2026-09-04 as a session-handoff note. If you're a fresh Claude session picking
-this up, read this first, then look at the actual code — it's the source of truth.
+Written 2026-09-04 as a session-handoff note, back when this was a 3-screen game with
+no backend. **Badly out of date** — there's now a full Supabase backend (auth, cloud
+sync, Row Level Security), a test suite, and roughly triple the screens described
+below. For an accurate snapshot, read `LEARNING-AUDIT.md` (2026-09-09) instead; this
+file is kept for the "conventions that came out of real back-and-forth" section below,
+which is still true, not for the "what's built" section, which isn't.
+
+If you're a fresh Claude session picking this up: read `LEARNING-AUDIT.md` first, then
+look at the actual code — it's the source of truth either way.
 
 ## Run it
 
