@@ -8,6 +8,7 @@ import "./ProgressHeaderBar.css";
 interface ProgressHeaderBarProps {
   progress: ReturnType<typeof useLearningProgress>;
   onGoToLimmud: () => void;
+  onOpenGuide: () => void;
 }
 
 /**
@@ -20,7 +21,7 @@ interface ProgressHeaderBarProps {
  * card's actual width is set by its host screen's own column, which can
  * stay well under 640px regardless of the browser window's width.
  */
-export function ProgressHeaderBar({ progress, onGoToLimmud }: ProgressHeaderBarProps) {
+export function ProgressHeaderBar({ progress, onGoToLimmud, onOpenGuide }: ProgressHeaderBarProps) {
   const { seder: actualSeder, masechet: actualMasechet } = findNextMasechet(progress);
   const [stepIndex, setStepIndex] = useState(0);
   const maxIndex = actualSeder.masechtot.length - 1;
@@ -37,7 +38,7 @@ export function ProgressHeaderBar({ progress, onGoToLimmud }: ProgressHeaderBarP
         <div className="phb-tracks">
           <ProgressTracks
             bare
-            hideEmptyRows
+            masechetOnly
             masechet={{ title: masechetScope.title, percent: masechetScope.percent }}
             seder={{ title: sederScope.title, percent: sederScope.percent }}
             shas={{ percent: shasScope.percent }}
@@ -49,9 +50,11 @@ export function ProgressHeaderBar({ progress, onGoToLimmud }: ProgressHeaderBarP
 
         <div className="phb-rule" aria-hidden="true" />
 
-        <div className="phb-passuk" lang="he" dir="rtl">
-          <p className="phb-passuk-text">וְהָגִיתָ בּוֹ יוֹמָם וָלַיְלָה</p>
-          <p className="phb-passuk-cite">יהושע א׳:ח׳</p>
+        <div className="phb-guide">
+          <button className="phb-guide-btn" onClick={onOpenGuide}>
+            <NavIcon id="guide" size={17} weight={2} />
+            <span>How to use this app</span>
+          </button>
         </div>
 
         <div className="phb-rule" aria-hidden="true" />

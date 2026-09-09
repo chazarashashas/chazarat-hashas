@@ -33,29 +33,33 @@
   background: rgba(240, 238, 230, 0.16);
 }
 
-/* ---------- 2. The passuk ---------- */
+/* ---------- 2. How to use this app ---------- */
 
-.phb-passuk {
+.phb-guide {
   flex: 1 1 auto;
   min-width: 0;
-  text-align: center;
+  display: flex;
+  justify-content: center;
 }
 
-.phb-passuk-text {
-  margin: 0;
-  font-family: var(--font-hebrew);
-  font-weight: 400;
-  font-size: 19px;
-  line-height: 1.6;
+.phb-guide-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1.5px solid rgba(240, 238, 230, 0.24);
+  border-radius: var(--radius-pill);
+  background: none;
   color: #f0eee6;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 12.5px;
+  cursor: pointer;
+  transition: border-color 0.12s ease;
 }
 
-.phb-passuk-cite {
-  margin: 3px 0 0;
-  font-family: var(--font-hebrew);
-  font-weight: 400;
-  font-size: 11px;
-  color: rgba(240, 238, 230, 0.5);
+.phb-guide-btn:hover {
+  border-color: rgba(240, 238, 230, 0.5);
 }
 
 /* ---------- 3. Up next, over the action ---------- */
@@ -121,8 +125,8 @@
   }
 
   /* Stacked, "up next" leads (it's the actionable part) and the tracks
-     fall to the bottom — the passuk stays put in the middle. Targeted by
-     position since the row's two rule divs share one class. */
+     fall to the bottom — the guide button stays put in the middle.
+     Targeted by position since the row's two rule divs share one class. */
   .phb-row > *:nth-child(1) {
     order: 5;
   }
@@ -150,7 +154,7 @@
     height: 1px;
   }
 
-  .phb-passuk {
+  .phb-guide {
     flex: none;
   }
 

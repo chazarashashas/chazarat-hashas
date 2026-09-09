@@ -96,7 +96,7 @@ function SederPills() {
  * are in-page scroll targets, not real URLs. Revisit this the moment a
  * real router lands.
  */
-export function GuideScreen({ onNavigate, initialAnchor }: GuideScreenProps) {
+export function GuideScreen({ onNavigate, initialAnchor, bare }: GuideScreenProps) {
   useEffect(() => {
     if (!initialAnchor) return;
     const el = document.getElementById(initialAnchor);
@@ -107,8 +107,8 @@ export function GuideScreen({ onNavigate, initialAnchor }: GuideScreenProps) {
   }, []);
 
   return (
-    <div className="stage">
-      <div className="panel guide-panel">
+    <div className={bare ? "guide-bare" : "stage"}>
+      <div className={"panel guide-panel" + (bare ? " guide-panel--bare" : "")}>
         <header className="guide-header">
           <h1 className="guide-header__title">How to Use Chazarat Hashas</h1>
           <p className="guide-header__subtitle">A guide for the talmid</p>
@@ -319,6 +319,7 @@ export function GuideScreen({ onNavigate, initialAnchor }: GuideScreenProps) {
 
         <div className="guide-rule" aria-hidden="true" />
         <p className="guide-closing">Stay consistent, and keep on learning!</p>
+        <p className="guide-revisit">You can always find this guide again from the navigation.</p>
       </div>
     </div>
   );

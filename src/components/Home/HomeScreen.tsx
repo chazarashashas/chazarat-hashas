@@ -7,12 +7,11 @@ import { useGameStats } from "../../utils/useGameStats";
 import { NavIcon } from "../Icon/NavIcon";
 import { BrandMark } from "../BrandMark";
 import { ProgressHeaderBar } from "../ProgressHeaderBar/ProgressHeaderBar";
-import { useEscapeKey } from "../../utils/useEscapeKey";
-import { readVersionsSeen, licenseDeedUrl } from "../../utils/translation";
 import { useTodaySnapshot } from "../../utils/useDailySubmission";
 import { TodayLearningCard } from "../TodayLearning/TodayLearningCard";
 import { ReceivedNudges } from "../GroupCard/ReceivedNudges";
 import { NudgeStrip } from "../NudgeStrip/NudgeStrip";
+import { GuidePopup } from "../Guide/GuidePopup";
 import "./HomeScreen.css";
 
 interface Feature {
@@ -144,12 +143,7 @@ interface HomeScreenProps {
 
 export function HomeScreen({ onNavigate }: HomeScreenProps) {
   const showGuideTeaser = useGuideTeaserVisible();
-  const [showIntro, setShowIntro] = useState(false);
-  useEscapeKey(() => setShowIntro(false));
-  // Read fresh each time the popup opens rather than kept in state — this
-  // list only ever grows while the popup is closed (a translation fetched
-  // elsewhere in the app), so there's nothing to react to while it's shut.
-  const versionsInUse = showIntro ? readVersionsSeen() : [];
+  const [showGuidePopup, setShowGuidePopup] = useState(false);
   const progress = useLearningProgress();
   const { perekNotes } = usePerekNotes();
   const { isLoggedIn, session } = useAuth();
@@ -233,14 +227,13 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
           />
         )}
 
-        <ProgressHeaderBar progress={progress} onGoToLimmud={() => onNavigate("limmud")} />
+        <ProgressHeaderBar
+          progress={progress}
+          onGoToLimmud={() => onNavigate("limmud")}
+          onOpenGuide={() => setShowGuidePopup(true)}
+        />
 
         <ReceivedNudges />
-
-        <button className="home-new-here" onClick={() => setShowIntro(true)}>
-          <span className="home-new-here__title">How this app works</span>
-          <span className="home-new-here__sub">See how Shas is put together, and how this app tracks it.</span>
-        </button>
 
         {myShiurim.map((g) => (
           <TodayLearningCard key={g.id} group={g} snapshot={todaySnapshot} />
@@ -253,90 +246,8 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
         <FeatureGrid features={learningToolsWithStatus} onNavigate={onNavigate} />
       </div>
 
-      {showIntro && (
-        <div className="scrim intro-scrim" onClick={() => setShowIntro(false)}>
-          <div className="popup intro-popup" onClick={(e) => e.stopPropagation()}>
-            <button
-              className="intro-popup__close"
-              onClick={() => setShowIntro(false)}
-              title="Close"
-              aria-label="Close"
-            >
-              ✕
-            </button>
-            <h2 className="intro-popup__title">How this app works</h2>
-            <p className="intro-popup__lead">
-              Shas has a shape. Once you know the shape, every mishnah you learn has somewhere to sit.
-            </p>
-
-            <div className="intro-levels">
-              <div className="intro-level intro-level--zeraim">
-                <span className="intro-level__he" dir="rtl">
-                  סדר
-                </span>
-                <span className="intro-level__text">Six sedarim divide the whole</span>
-              </div>
-              <div className="intro-level">
-                <span className="intro-level__he" dir="rtl">
-                  מסכת
-                </span>
-                <span className="intro-level__text">63 masechtot sit inside them</span>
-              </div>
-              <div className="intro-level">
-                <span className="intro-level__he" dir="rtl">
-                  פרק
-                </span>
-                <span className="intro-level__text">524 perakim, each with a name you can learn</span>
-              </div>
-              <div className="intro-level">
-                <span className="intro-level__he" dir="rtl">
-                  משנה
-                </span>
-                <span className="intro-level__text">One mishnah a day is the whole habit</span>
-              </div>
-            </div>
-
-            <button
-              className="intro-popup__guide-link"
-              onClick={() => {
-                setShowIntro(false);
-                onNavigate("guide");
-              }}
-            >
-              Read the full guide to using this app →
-            </button>
-
-            {versionsInUse.length > 0 && (
-              <p className="translation-notice">
-                English translations, where shown, are pulled live from{" "}
-                <a href="https://www.sefaria.org" target="_blank" rel="noopener noreferrer">
-                  Sefaria
-                </a>{" "}
-                and belong to their own translators, each under their own license — English is
-                always optional and off by default. So far on this device:{" "}
-                {versionsInUse.map((v, i) => (
-                  <span key={v.versionTitle}>
-                    {i > 0 && ", "}
-                    {v.versionTitle} (
-                    {licenseDeedUrl(v.license) ? (
-                      <a href={licenseDeedUrl(v.license)!} target="_blank" rel="noopener noreferrer">
-                        {v.license}
-                      </a>
-                    ) : (
-                      v.license
-                    )}
-                    )
-                  </span>
-                ))}
-                .
-              </p>
-            )}
-
-            <button className="restart" onClick={() => setShowIntro(false)}>
-              Got it
-            </button>
-          </div>
-        </div>
+      {showGuidePopup && (
+        <GuidePopup onClose={() => setShowGuidePopup(false)} onNavigate={onNavigate} />
       )}
     </div>
   );
