@@ -1,7 +1,15 @@
-import { useEffect, useRef } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "./supabase";
-import { STORAGE_SYNC_EVENT } from "./useLocalStorageState";
+import { STORAGE_SYNC_EVENT, LOCAL_WRITE_EVENT } from "./useLocalStorageState";
 import { DEFAULT_BOTTOM_BAR_IDS } from "./navItems";
 import { DEFAULT_PACE } from "./useLearningProgress";
 
@@ -74,7 +82,11 @@ function mergeRecordPreferLocal(local: unknown, cloud: unknown): Record<string, 
   return merged;
 }
 
-function mergeUniqueBy(local: unknown, cloud: unknown, keyOf: (item: unknown) => string): unknown[] {
+function mergeUniqueBy(
+  local: unknown,
+  cloud: unknown,
+  keyOf: (item: unknown) => string,
+): unknown[] {
   const l = Array.isArray(local) ? local : [];
   const c = Array.isArray(cloud) ? cloud : [];
   const seen = new Set<string>();
@@ -113,8 +125,14 @@ function mergeGameStat(
 }
 
 function mergeGameStats(local: unknown, cloud: unknown): Record<string, unknown> {
-  const l = (local && typeof local === "object" ? local : {}) as Record<string, Record<string, number>>;
-  const c = (cloud && typeof cloud === "object" ? cloud : {}) as Record<string, Record<string, number>>;
+  const l = (local && typeof local === "object" ? local : {}) as Record<
+    string,
+    Record<string, number>
+  >;
+  const c = (cloud && typeof cloud === "object" ? cloud : {}) as Record<
+    string,
+    Record<string, number>
+  >;
   const games = new Set([...Object.keys(l), ...Object.keys(c)]);
   const merged: Record<string, unknown> = {};
   for (const game of games) {
@@ -159,30 +177,45 @@ function mergeBlobs(local: SyncBlob, cloud: SyncBlob): SyncBlob {
     perekNotes: mergeRecordPreferLocal(local.perekNotes, cloud.perekNotes),
     perekNotebook: mergeRecordPreferLocal(local.perekNotebook, cloud.perekNotebook),
     masechetSentences: mergeRecordPreferLocal(local.masechetSentences, cloud.masechetSentences),
-    completions: mergeUniqueBy(
-      local.completions,
-      cloud.completions,
-      (item) => {
-        const r = item as { masechetEn: string; perek: number; mishnah: number };
-        return `${r.masechetEn}.${r.perek}.${r.mishnah}`;
-      },
+    completions: mergeUniqueBy(local.completions, cloud.completions, (item) => {
+      const r = item as { masechetEn: string; perek: number; mishnah: number };
+      return `${r.masechetEn}.${r.perek}.${r.mishnah}`;
+    }),
+    conceptNotes: mergeUniqueBy(
+      local.conceptNotes,
+      cloud.conceptNotes,
+      (item) => (item as { id: string }).id,
     ),
-    conceptNotes: mergeUniqueBy(local.conceptNotes, cloud.conceptNotes, (item) => (item as { id: string }).id),
-    dailyLimmudPosition: Math.max(Number(local.dailyLimmudPosition) || 0, Number(cloud.dailyLimmudPosition) || 0),
+    dailyLimmudPosition: Math.max(
+      Number(local.dailyLimmudPosition) || 0,
+      Number(cloud.dailyLimmudPosition) || 0,
+    ),
     dailyLimmudPace: local.dailyLimmudPace ?? cloud.dailyLimmudPace ?? DEFAULT_PACE,
-    nishmatMyClaims: mergeUniqueBy(local.nishmatMyClaims, cloud.nishmatMyClaims, (item) => (item as { id: string }).id),
+    nishmatMyClaims: mergeUniqueBy(
+      local.nishmatMyClaims,
+      cloud.nishmatMyClaims,
+      (item) => (item as { id: string }).id,
+    ),
     gameStats: mergeGameStats(local.gameStats, cloud.gameStats),
     streakFreezes: Math.max(Number(local.streakFreezes) || 0, Number(cloud.streakFreezes) || 0),
     frozenDates: mergeUniqueBy(local.frozenDates, cloud.frozenDates, (item) => item as string),
-    lastFreezeMilestone: Math.max(Number(local.lastFreezeMilestone) || 0, Number(cloud.lastFreezeMilestone) || 0),
+    lastFreezeMilestone: Math.max(
+      Number(local.lastFreezeMilestone) || 0,
+      Number(cloud.lastFreezeMilestone) || 0,
+    ),
     reviewState: mergeReviewState(local.reviewState, cloud.reviewState),
     // Cloud wins when present, so "phone and laptop agree" (a device that
     // never touched the switch shouldn't keep a stale local false once the
     // account's real answer is known) — the brief's "local wins on first
     // load" is about not flickering before this merge runs, not about
     // this merge's own outcome.
-    showEnglish: typeof cloud.showEnglish === "boolean" ? cloud.showEnglish : (local.showEnglish ?? false),
-    nishmatHiddenSiyumim: mergeUniqueBy(local.nishmatHiddenSiyumim, cloud.nishmatHiddenSiyumim, (item) => item as string),
+    showEnglish:
+      typeof cloud.showEnglish === "boolean" ? cloud.showEnglish : (local.showEnglish ?? false),
+    nishmatHiddenSiyumim: mergeUniqueBy(
+      local.nishmatHiddenSiyumim,
+      cloud.nishmatHiddenSiyumim,
+      (item) => item as string,
+    ),
     // Same "local wins when it has a real value" rule as dailyLimmudPace —
     // someone who set this up on one device should find it everywhere,
     // but this device's own choice (if it's made one) isn't overwritten
@@ -243,16 +276,61 @@ export function applyReset(session: Session | null, patch: SyncBlob) {
   localStorage.setItem(RESET_SEEN_KEY, resetAt);
   supabase
     .from("user_data")
-    .upsert({ user_id: session.user.id, data: fullBlob, reset_requested_at: resetAt, updated_at: resetAt })
+    .upsert({
+      user_id: session.user.id,
+      data: fullBlob,
+      reset_requested_at: resetAt,
+      updated_at: resetAt,
+    })
     .then(() => {});
 }
+
+/** What My Account (or anywhere else) shows about the state of the
+    background sync: "idle" before any account is involved, "saving"
+    for a push in flight, "saved" once it lands, "retrying" for the
+    first couple of failures in a row, "error" once repeated failures
+    suggest something's actually wrong rather than a blip. Retrying
+    keeps happening in the background even in the "error" state — it
+    only ever stops on success or on sign-out. */
+export type SyncStatus = "idle" | "saving" | "saved" | "retrying" | "error";
+
+interface SyncStatusValue {
+  status: SyncStatus;
+  /** Epoch ms of the last push that actually succeeded, or null if none
+      has yet this session — the caller formats this however it likes
+      ("Saved 1 min ago"). */
+  lastSavedAt: number | null;
+}
+
+const SyncStatusContext = createContext<SyncStatusValue>({ status: "idle", lastSavedAt: null });
+
+export function useSyncStatus(): SyncStatusValue {
+  return useContext(SyncStatusContext);
+}
+
+const RETRY_BASE_MS = 5000;
+const RETRY_MAX_MS = 60000;
+/** Below this many consecutive failures, the status stays "retrying" —
+    a single dropped request is normal network noise, not yet worth
+    telling the student something's wrong. */
+const ERROR_AFTER_FAILURES = 3;
+/** How long to wait after a local change before pushing, so five fields
+    edited in the same few seconds become one push instead of five. */
+const PUSH_DEBOUNCE_MS = 2500;
+/** Safety-net poll, way down from the old 10s now that pushes are
+    triggered by the actual change (LOCAL_WRITE_EVENT below) — this only
+    exists to catch a write that reached localStorage some other way. */
+const SAFETY_POLL_MS = 30000;
 
 /**
  * Ties the app's localStorage-backed notes/progress/concepts to the
  * signed-in account, without touching the hooks that already read and
  * write those keys (usePerekNotes, useLearningProgress) — this is a
  * single, isolated addition on top rather than a rewrite of how state
- * works everywhere.
+ * works everywhere. Wrap the app in this (see App.tsx) rather than
+ * calling a bare hook, so any nested screen (My Account, in particular)
+ * can read useSyncStatus() without session having to be threaded down
+ * to it separately.
  *
  * On login: merges this device's local data with whatever's already on
  * the account (see mergeBlobs), writes the merged result back to
@@ -263,17 +341,73 @@ export function applyReset(session: Session | null, patch: SyncBlob) {
  * a brand-new account with nothing local yet either), the merge is a
  * no-op and no event fires.
  *
- * While signed in: polls localStorage every 10s and pushes up whatever
- * changed. A poll, not a hook into every individual setState call,
- * keeps this addition isolated — the tradeoff is up to a ~10s delay
- * before a change reaches the account, which is fine for notes/progress
- * that aren't time-critical. Pulling live updates from *other* devices
- * while this tab stays open isn't handled — out of scope for now.
+ * While signed in: a change to any synced key (LOCAL_WRITE_EVENT) pushes
+ * shortly after, debounced so a burst of edits becomes one request; a
+ * 30s safety-net poll catches anything that slipped through some other
+ * path; and hiding the tab (switching apps, the phone sleeping, closing
+ * it) flushes immediately rather than waiting on either — closing the
+ * same "last few seconds unsaved" gap the sign-out flush already closes,
+ * for every other way a session ends. A push that fails is retried with
+ * increasing delay rather than silently dropped and forgotten until the
+ * next scheduled push — see pushNow below. Pulling live updates from
+ * *other* devices while this tab stays open isn't handled — out of
+ * scope for now.
  */
-export function useCloudSync(session: Session | null) {
+export function SyncStatusProvider({
+  session,
+  children,
+}: {
+  session: Session | null;
+  children: ReactNode;
+}) {
   const hasMergedRef = useRef(false);
   const lastPushedRef = useRef<string | null>(null);
   const wasSignedInRef = useRef(false);
+  const failureCountRef = useRef(0);
+  const retryTimeoutRef = useRef<number | null>(null);
+  const debounceTimeoutRef = useRef<number | null>(null);
+  const sessionRef = useRef(session);
+  sessionRef.current = session;
+
+  const [status, setStatus] = useState<SyncStatus>("idle");
+  const [lastSavedAt, setLastSavedAt] = useState<number | null>(null);
+
+  /** The one place that actually talks to Supabase for the ongoing
+      background sync (separate from the one-off login-merge push and
+      the fire-and-forget hide/sign-out flush below). Always pushes
+      whatever's in localStorage *right now*, not a stale snapshot, so a
+      retry after a failure still sends the latest state rather than
+      replaying an old one. */
+  const pushNow = useCallback(() => {
+    const activeSession = sessionRef.current;
+    if (!activeSession || !supabase) return;
+    if (retryTimeoutRef.current) {
+      window.clearTimeout(retryTimeoutRef.current);
+      retryTimeoutRef.current = null;
+    }
+
+    const blob = readLocalBlob();
+    const serialized = JSON.stringify(blob);
+    lastPushedRef.current = serialized;
+    setStatus("saving");
+
+    supabase
+      .from("user_data")
+      .upsert({ user_id: activeSession.user.id, data: blob, updated_at: new Date().toISOString() })
+      .then(({ error }) => {
+        if (sessionRef.current !== activeSession) return; // signed out mid-request
+        if (error) {
+          failureCountRef.current += 1;
+          setStatus(failureCountRef.current >= ERROR_AFTER_FAILURES ? "error" : "retrying");
+          const delay = Math.min(RETRY_BASE_MS * 2 ** (failureCountRef.current - 1), RETRY_MAX_MS);
+          retryTimeoutRef.current = window.setTimeout(pushNow, delay);
+          return;
+        }
+        failureCountRef.current = 0;
+        setStatus("saved");
+        setLastSavedAt(Date.now());
+      });
+  }, []);
 
   // Clears this device's local cache on an actual sign-out (had a
   // session, now don't) — not on first load while merely browsing
@@ -287,6 +421,11 @@ export function useCloudSync(session: Session | null) {
       wasSignedInRef.current = true;
       return;
     }
+    if (retryTimeoutRef.current) window.clearTimeout(retryTimeoutRef.current);
+    if (debounceTimeoutRef.current) window.clearTimeout(debounceTimeoutRef.current);
+    failureCountRef.current = 0;
+    setStatus("idle");
+    setLastSavedAt(null);
     if (!wasSignedInRef.current) return;
     wasSignedInRef.current = false;
     for (const key of SYNC_KEYS) {
@@ -305,6 +444,7 @@ export function useCloudSync(session: Session | null) {
     hasMergedRef.current = true;
 
     let cancelled = false;
+    setStatus("saving");
     (async () => {
       // reset_requested_at only exists once account_reset_schema.sql has
       // been run — fall back to the column that's always been there so
@@ -316,12 +456,17 @@ export function useCloudSync(session: Session | null) {
         .eq("user_id", session.user.id)
         .maybeSingle();
       if (!cancelled && error) {
-        ({ data } = await supabase!.from("user_data").select("data").eq("user_id", session.user.id).maybeSingle());
+        ({ data } = await supabase!
+          .from("user_data")
+          .select("data")
+          .eq("user_id", session.user.id)
+          .maybeSingle());
       }
       if (cancelled) return;
 
       const cloudBlob = (data?.data ?? {}) as SyncBlob;
-      const cloudResetAt = (data as { reset_requested_at?: string | null } | null)?.reset_requested_at ?? null;
+      const cloudResetAt =
+        (data as { reset_requested_at?: string | null } | null)?.reset_requested_at ?? null;
       const seenResetAt = localStorage.getItem(RESET_SEEN_KEY);
       const localBlob = readLocalBlob();
       // A reset (this device's own, or another device's / an admin's) has
@@ -337,9 +482,18 @@ export function useCloudSync(session: Session | null) {
       writeLocalBlob(merged);
       if (cloudResetAt) localStorage.setItem(RESET_SEEN_KEY, cloudResetAt);
       lastPushedRef.current = mergedSerialized;
-      await supabase!
+      const { error: upsertError } = await supabase!
         .from("user_data")
         .upsert({ user_id: session.user.id, data: merged, updated_at: new Date().toISOString() });
+      if (cancelled) return;
+      if (upsertError) {
+        failureCountRef.current += 1;
+        setStatus("retrying");
+        retryTimeoutRef.current = window.setTimeout(pushNow, RETRY_BASE_MS);
+      } else {
+        setStatus("saved");
+        setLastSavedAt(Date.now());
+      }
 
       if (mergedSerialized !== localSerialized) {
         window.dispatchEvent(new Event(STORAGE_SYNC_EVENT));
@@ -349,20 +503,61 @@ export function useCloudSync(session: Session | null) {
     return () => {
       cancelled = true;
     };
+  }, [session, pushNow]);
+
+  // Debounced push on every local change to a synced key, replacing the
+  // old flat 10s poll as the primary trigger — a change reaches the
+  // account shortly after it happens, not whenever the next tick lands.
+  useEffect(() => {
+    if (!session) return;
+    function handleLocalWrite() {
+      if (debounceTimeoutRef.current) window.clearTimeout(debounceTimeoutRef.current);
+      debounceTimeoutRef.current = window.setTimeout(pushNow, PUSH_DEBOUNCE_MS);
+    }
+    window.addEventListener(LOCAL_WRITE_EVENT, handleLocalWrite);
+    return () => window.removeEventListener(LOCAL_WRITE_EVENT, handleLocalWrite);
+  }, [session, pushNow]);
+
+  // Safety net for any change that reached localStorage without going
+  // through useLocalStorageState's own write effect (there isn't one
+  // today, but this is cheap insurance against a future one being added
+  // silently) — a much longer interval than the old poll now that it's
+  // a backstop, not the primary mechanism.
+  useEffect(() => {
+    if (!session) return;
+    const interval = window.setInterval(() => {
+      const serialized = JSON.stringify(readLocalBlob());
+      if (serialized !== lastPushedRef.current) pushNow();
+    }, SAFETY_POLL_MS);
+    return () => window.clearInterval(interval);
+  }, [session, pushNow]);
+
+  // Closes the same gap the sign-out flush closes, for every other way
+  // a session ends without an explicit sign-out: switching apps, the
+  // phone sleeping, or closing the tab. "visibilitychange" fires
+  // reliably on both mobile and desktop when a tab is hidden; "pagehide"
+  // catches the rest (some mobile back-navigation cases skip the former).
+  useEffect(() => {
+    if (!session) return;
+    function flush() {
+      const activeSession = sessionRef.current;
+      if (!activeSession) return;
+      flushLocalDataToCloud(activeSession);
+    }
+    function handleVisibility() {
+      if (document.visibilityState === "hidden") flush();
+    }
+    document.addEventListener("visibilitychange", handleVisibility);
+    window.addEventListener("pagehide", flush);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibility);
+      window.removeEventListener("pagehide", flush);
+    };
   }, [session]);
 
-  useEffect(() => {
-    if (!session || !supabase) return;
-    const interval = window.setInterval(() => {
-      const blob = readLocalBlob();
-      const serialized = JSON.stringify(blob);
-      if (serialized === lastPushedRef.current) return;
-      lastPushedRef.current = serialized;
-      supabase!
-        .from("user_data")
-        .upsert({ user_id: session.user.id, data: blob, updated_at: new Date().toISOString() })
-        .then(() => {});
-    }, 10000);
-    return () => window.clearInterval(interval);
-  }, [session]);
+  return (
+    <SyncStatusContext.Provider value={{ status, lastSavedAt }}>
+      {children}
+    </SyncStatusContext.Provider>
+  );
 }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../../utils/useAuth";
 import { useLearningProgress } from "../../utils/useLearningProgress";
 import { usePerekNotes } from "../../utils/usePerekNotes";
@@ -6,6 +6,7 @@ import { useChevrusa } from "../../utils/useChevrusa";
 import { useSiyumim } from "../../utils/useSiyumim";
 import { useGameStats } from "../../utils/useGameStats";
 import { useAccountReset } from "../../utils/useAccountReset";
+import { useSyncStatus } from "../../utils/useCloudSync";
 import { SEDARIM } from "../../data/shas";
 import { getSederHue } from "../../utils/sederHue";
 import { supabaseConfigured } from "../../utils/supabase";
@@ -305,6 +306,45 @@ interface LoginScreenProps {
   initialError?: string | null;
 }
 
+function formatSavedAgo(epochMs: number): string {
+  const seconds = Math.floor((Date.now() - epochMs) / 1000);
+  if (seconds < 10) return "Saved just now";
+  if (seconds < 60) return `Saved ${seconds}s ago`;
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `Saved ${minutes} min ago`;
+  const hours = Math.floor(minutes / 60);
+  return `Saved ${hours} hr ago`;
+}
+
+/** A quiet line under the account card naming the state of the
+    background sync (Fable audit #1) — most of the time this just says
+    when the last save landed, so a failure reads as a break from the
+    ordinary rather than something that needs its own banner. */
+function SyncStatusLine() {
+  const { status, lastSavedAt } = useSyncStatus();
+  // Re-renders periodically so "Saved 1 min ago" keeps advancing on its
+  // own, not just each time a new sync actually happens.
+  const [, forceTick] = useState(0);
+  useEffect(() => {
+    const interval = window.setInterval(() => forceTick((n) => n + 1), 15000);
+    return () => window.clearInterval(interval);
+  }, []);
+
+  if (status === "retrying") {
+    return <p className="account-sync-status account-sync-status--warn">Not saved yet — retrying…</p>;
+  }
+  if (status === "error") {
+    return <p className="account-sync-status account-sync-status--error">Couldn't save — check your connection</p>;
+  }
+  if (status === "saving" && !lastSavedAt) {
+    return <p className="account-sync-status">Saving…</p>;
+  }
+  if (lastSavedAt) {
+    return <p className="account-sync-status">{formatSavedAgo(lastSavedAt)}</p>;
+  }
+  return null;
+}
+
 function AccountDashboard({
   onNavigate,
   bottomBarIds,
@@ -389,6 +429,7 @@ function AccountDashboard({
             {(auth.city || auth.country) && (
               <p className="account-card__location">{[auth.city, auth.country].filter(Boolean).join(", ")}</p>
             )}
+            <SyncStatusLine />
             <div className="account-card__actions">
               <button className="account-edit-btn" onClick={() => setEditing(true)}>
                 Edit profile

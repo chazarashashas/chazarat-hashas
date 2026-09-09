@@ -24,7 +24,7 @@ import { FirstOpenPrompt } from "./components/FirstOpenPrompt/FirstOpenPrompt";
 import { RebbeDashboardScreen } from "./components/RebbeDashboard/RebbeDashboardScreen";
 import { useAuth } from "./utils/useAuth";
 import { useChevrusa, isRebbe } from "./utils/useChevrusa";
-import { useCloudSync } from "./utils/useCloudSync";
+import { SyncStatusProvider } from "./utils/useCloudSync";
 import { useLearningProgress } from "./utils/useLearningProgress";
 import { usePerekNotes } from "./utils/usePerekNotes";
 import { useFirstOpenPrompt } from "./utils/useFirstOpenPrompt";
@@ -125,15 +125,23 @@ function initialOAuthError(): string | null {
   const description = hash.get("error_description") ?? search.get("error_description");
   const code = hash.get("error") ?? search.get("error");
   if (!description && !code) return null;
-  const message = description ? description.replace(/\+/g, " ") : `Google sign-in failed (${code}).`;
-  window.history.replaceState(null, "", window.location.pathname + window.location.search.replace(/[?&]error[^&]*/g, ""));
+  const message = description
+    ? description.replace(/\+/g, " ")
+    : `Google sign-in failed (${code}).`;
+  window.history.replaceState(
+    null,
+    "",
+    window.location.pathname + window.location.search.replace(/[?&]error[^&]*/g, ""),
+  );
   return message;
 }
 
 function App() {
   const deepLinkSlug = useState(initialNishmatSlug)[0];
   const oauthError = useState(initialOAuthError)[0];
-  const [section, setSection] = useState(() => (deepLinkSlug ? "liluy" : oauthError ? "login" : "home"));
+  const [section, setSection] = useState(() =>
+    deepLinkSlug ? "liluy" : oauthError ? "login" : "home",
+  );
   // Where to send the user back to once they log in — set by any screen
   // that gates an action behind an account (see requestLogin), so "Log
   // in first" never dead-ends: it returns you to what you were doing.
@@ -147,7 +155,6 @@ function App() {
   // Google-first default.
   const [loginEmailOpen, setLoginEmailOpen] = useState(false);
   const { session, isAdmin, isLoggedIn, isPasswordRecovery, signInWithGoogle } = useAuth();
-  useCloudSync(session);
 
   // A password-reset email link lands here already signed in (Supabase
   // sets the session before this app code ever runs) — without this,
@@ -160,14 +167,19 @@ function App() {
 
   const { groups } = useChevrusa();
   const myShiurimToTeach = groups.filter(
-    (g) => g.isClass && g.members.some((m) => m.userId === session?.user.id && m.role === "teacher"),
+    (g) =>
+      g.isClass && g.members.some((m) => m.userId === session?.user.id && m.role === "teacher"),
   );
   const amRebbe = isRebbe(groups, session?.user.id);
 
-  // "Your bottom bar" in My Account — synced via useCloudSync like every
-  // other per-person setting. Drop a conditional item (rebbe/admin) this
-  // account no longer holds rather than showing a dead tab.
-  const [bottomBarIds, setBottomBarIds] = useLocalStorageState<string[]>("bottomBarIds", DEFAULT_BOTTOM_BAR_IDS);
+  // "Your bottom bar" in My Account — synced like every other
+  // per-person setting via SyncStatusProvider. Drop a conditional item
+  // (rebbe/admin) this account no longer holds rather than showing a
+  // dead tab.
+  const [bottomBarIds, setBottomBarIds] = useLocalStorageState<string[]>(
+    "bottomBarIds",
+    DEFAULT_BOTTOM_BAR_IDS,
+  );
   const effectiveBottomBarIds = bottomBarIds.filter(
     (id) => (id !== "rebbe" || amRebbe) && (id !== "admin" || isAdmin),
   );
@@ -215,88 +227,114 @@ function App() {
   useNativeApp("home", section, () => handleSelect("home"));
 
   return (
-    <div className="app">
-      <Sidebar activeId={section} onSelect={handleSelect} isAdmin={isAdmin} isRebbe={amRebbe} />
-      <BottomBar
-        activeId={section}
-        onSelect={handleSelect}
-        barIds={effectiveBottomBarIds}
-        isAdmin={isAdmin}
-        isRebbe={amRebbe}
-      />
-      <main className="main">
-        <div
-          className={
-            "main__content" +
-            (section === "dash" || section === "limmud" || section === "map" || section === "liluy" || section === "perek"
-              ? " main__content--wide"
-              : "")
-          }
-        >
-          {section === "home" ? (
-            <HomeScreen onNavigate={setSection} />
-          ) : section === "map" ? (
-            <MapOfShasScreen onOpenNotes={() => setSection("perek")} />
-          ) : section === "sedarim" ? (
-            <SedarimSection />
-          ) : section === "mishna" ? (
-            <MishnaIdScreen onOpenNotes={() => setSection("perek")} />
-          ) : section === "perek" ? (
-            <PerekNamesScreen onOpenLogin={() => requestLogin("perek")} onOpenText={() => setSection("map")} />
-          ) : section === "sort" ? (
-            <SederSortScreen />
-          ) : section === "dash" ? (
-            <ShasDashScreen />
-          ) : section === "resources" ? (
-            <ResourcesScreen />
-          ) : section === "limmud" ? (
-            <DailyLimmudScreen onOpenNotes={() => setSection("perek")} onOpenLogin={() => requestLogin("limmud")} />
-          ) : section === "review" ? (
-            <ReviewScreen onOpenLimmud={() => handleSelect("limmud")} />
-          ) : section === "progress" ? (
-            <ProgressScreen onOpenNishmat={() => handleSelect("liluy")} onOpenLogin={() => requestLogin("progress")} />
-          ) : section === "login" ? (
-            <LoginScreen
-              initialMode={loginMode}
-              initialEmailOpen={loginEmailOpen}
-              initialError={oauthError}
-              onLoggedIn={() => {
-                setSection(loginReturnTo ?? "home");
-                setLoginReturnTo(null);
-              }}
-              onNavigate={setSection}
-              bottomBarIds={bottomBarIds}
-              onBottomBarIdsChange={setBottomBarIds}
-              isAdmin={isAdmin}
-              isRebbe={amRebbe}
-            />
-          ) : section === "chevrusa" ? (
-            <ChevrusaScreen onOpenLogin={(mode) => requestLogin("chevrusa", mode)} />
-          ) : section === "chabura" ? (
-            <ChaburaScreen onOpenLogin={(mode) => requestLogin("chabura", mode)} />
-          ) : section === "liluy" ? (
-            <LiluyNishmatScreen onOpenLogin={(mode) => requestLogin("liluy", mode)} initialSlug={deepLinkSlug} />
-          ) : section === "admin" ? (
-            isAdmin ? <AdminScreen /> : <HomeScreen onNavigate={setSection} />
-          ) : section === "rebbe" ? (
-            amRebbe ? <RebbeDashboardScreen shiurim={myShiurimToTeach} /> : <HomeScreen onNavigate={setSection} />
-          ) : (
-            <RecallScreen />
-          )}
-        </div>
-      </main>
-      {firstOpen.variant && (
-        <FirstOpenPrompt
-          variant={firstOpen.variant}
-          streakCurrent={progress.streak.current}
-          mishnayotCount={progress.completions.length}
-          noteCount={noteCount}
-          onGoogle={handlePromptGoogle}
-          onEmail={handlePromptEmail}
-          onDismiss={firstOpen.dismiss}
+    <SyncStatusProvider session={session}>
+      <div className="app">
+        <Sidebar activeId={section} onSelect={handleSelect} isAdmin={isAdmin} isRebbe={amRebbe} />
+        <BottomBar
+          activeId={section}
+          onSelect={handleSelect}
+          barIds={effectiveBottomBarIds}
+          isAdmin={isAdmin}
+          isRebbe={amRebbe}
         />
-      )}
-    </div>
+        <main className="main">
+          <div
+            className={
+              "main__content" +
+              (section === "dash" ||
+              section === "limmud" ||
+              section === "map" ||
+              section === "liluy" ||
+              section === "perek"
+                ? " main__content--wide"
+                : "")
+            }
+          >
+            {section === "home" ? (
+              <HomeScreen onNavigate={setSection} />
+            ) : section === "map" ? (
+              <MapOfShasScreen onOpenNotes={() => setSection("perek")} />
+            ) : section === "sedarim" ? (
+              <SedarimSection />
+            ) : section === "mishna" ? (
+              <MishnaIdScreen onOpenNotes={() => setSection("perek")} />
+            ) : section === "perek" ? (
+              <PerekNamesScreen
+                onOpenLogin={() => requestLogin("perek")}
+                onOpenText={() => setSection("map")}
+              />
+            ) : section === "sort" ? (
+              <SederSortScreen />
+            ) : section === "dash" ? (
+              <ShasDashScreen />
+            ) : section === "resources" ? (
+              <ResourcesScreen />
+            ) : section === "limmud" ? (
+              <DailyLimmudScreen
+                onOpenNotes={() => setSection("perek")}
+                onOpenLogin={() => requestLogin("limmud")}
+              />
+            ) : section === "review" ? (
+              <ReviewScreen onOpenLimmud={() => handleSelect("limmud")} />
+            ) : section === "progress" ? (
+              <ProgressScreen
+                onOpenNishmat={() => handleSelect("liluy")}
+                onOpenLogin={() => requestLogin("progress")}
+              />
+            ) : section === "login" ? (
+              <LoginScreen
+                initialMode={loginMode}
+                initialEmailOpen={loginEmailOpen}
+                initialError={oauthError}
+                onLoggedIn={() => {
+                  setSection(loginReturnTo ?? "home");
+                  setLoginReturnTo(null);
+                }}
+                onNavigate={setSection}
+                bottomBarIds={bottomBarIds}
+                onBottomBarIdsChange={setBottomBarIds}
+                isAdmin={isAdmin}
+                isRebbe={amRebbe}
+              />
+            ) : section === "chevrusa" ? (
+              <ChevrusaScreen onOpenLogin={(mode) => requestLogin("chevrusa", mode)} />
+            ) : section === "chabura" ? (
+              <ChaburaScreen onOpenLogin={(mode) => requestLogin("chabura", mode)} />
+            ) : section === "liluy" ? (
+              <LiluyNishmatScreen
+                onOpenLogin={(mode) => requestLogin("liluy", mode)}
+                initialSlug={deepLinkSlug}
+              />
+            ) : section === "admin" ? (
+              isAdmin ? (
+                <AdminScreen />
+              ) : (
+                <HomeScreen onNavigate={setSection} />
+              )
+            ) : section === "rebbe" ? (
+              amRebbe ? (
+                <RebbeDashboardScreen shiurim={myShiurimToTeach} />
+              ) : (
+                <HomeScreen onNavigate={setSection} />
+              )
+            ) : (
+              <RecallScreen />
+            )}
+          </div>
+        </main>
+        {firstOpen.variant && (
+          <FirstOpenPrompt
+            variant={firstOpen.variant}
+            streakCurrent={progress.streak.current}
+            mishnayotCount={progress.completions.length}
+            noteCount={noteCount}
+            onGoogle={handlePromptGoogle}
+            onEmail={handlePromptEmail}
+            onDismiss={firstOpen.dismiss}
+          />
+        )}
+      </div>
+    </SyncStatusProvider>
   );
 }
 
