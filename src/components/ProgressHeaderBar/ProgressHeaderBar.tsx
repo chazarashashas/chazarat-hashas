@@ -37,6 +37,7 @@ export function ProgressHeaderBar({ progress, onGoToLimmud }: ProgressHeaderBarP
         <div className="phb-tracks">
           <ProgressTracks
             bare
+            hideEmptyRows
             masechet={{ title: masechetScope.title, percent: masechetScope.percent }}
             seder={{ title: sederScope.title, percent: sederScope.percent }}
             shas={{ percent: shasScope.percent }}

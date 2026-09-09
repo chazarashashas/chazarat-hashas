@@ -14,8 +14,6 @@ import { SEDER_HUE } from "../../utils/sederHue";
 import { LogLearningModal } from "./LogLearningModal";
 import { PrintNotesView } from "../PrintNotes/PrintNotesView";
 import { CertificateView } from "../Certificate/CertificateView";
-import { NudgeStrip } from "../NudgeStrip/NudgeStrip";
-import { nudgeCopy, pluralize } from "../../utils/nudgeCopy";
 import "./ProgressScreen.css";
 
 const MISHNAYOT_AMOUNTS = [1, 2, 3, 5, 10];
@@ -56,10 +54,9 @@ function ProgressBar({ pct }: { pct: number }) {
  */
 interface ProgressScreenProps {
   onOpenNishmat?: () => void;
-  onOpenLogin?: () => void;
 }
 
-export function ProgressScreen({ onOpenNishmat, onOpenLogin }: ProgressScreenProps) {
+export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
   const progress = useLearningProgress();
   const auth = useAuth();
   const [paceDirection, setPaceDirection] = useState<"amount" | "frequency">("amount");
@@ -174,22 +171,6 @@ export function ProgressScreen({ onOpenNishmat, onOpenLogin }: ProgressScreenPro
     <div className="stage">
       <div className="panel">
         <h1 className="panel__title">My Siyumim</h1>
-
-        {!auth.isLoggedIn && onOpenLogin && (
-          <NudgeStrip
-            text={nudgeCopy(
-              [
-                perakimFinished > 0 ? pluralize(perakimFinished, "perek finished", "perakim finished") : null,
-                masechtotCompleted > 0
-                  ? pluralize(masechtotCompleted, "masechet completed", "masechtot completed")
-                  : null,
-              ],
-              "Sign in to keep your progress.",
-            )}
-            actionLabel="Keep them →"
-            onAction={onOpenLogin}
-          />
-        )}
 
         {sederRemaining > 0 && (
           <div className="siyum-countdown">

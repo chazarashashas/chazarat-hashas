@@ -16,6 +16,12 @@ interface ProgressTracksProps {
       on Home) — otherwise this renders its own navy hero card, matching
       the Progress screen's use as a standalone block. */
   bare?: boolean;
+  /** Skips a seder/Shas row entirely when its own percent is still 0,
+      rather than drawing an empty track — Home's compact header uses this
+      so a brand-new masechet doesn't show two empty bars under the real
+      one; the Progress screen keeps all three always, since that screen's
+      whole purpose is showing where every level stands. */
+  hideEmptyRows?: boolean;
 }
 
 /** A genuinely tiny but nonzero fraction (e.g. 4 of 4,192 mishnayot, 0.1%)
@@ -38,6 +44,7 @@ export function ProgressTracks({
   canStepMasechet,
   streakCurrent,
   bare,
+  hideEmptyRows,
 }: ProgressTracksProps) {
   return (
     <div className={"progress-tracks" + (bare ? "" : " progress-tracks--card")}>
@@ -65,39 +72,43 @@ export function ProgressTracks({
         </div>
       </div>
 
-      <div className="progress-tracks__row">
-        <span className="progress-tracks__label">{seder.title}</span>
-        <div
-          className="progress-tracks__track"
-          role="progressbar"
-          aria-valuenow={seder.percent}
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-label={`${seder.title}, ${seder.percent} percent`}
-        >
+      {!(hideEmptyRows && seder.percent <= 0) && (
+        <div className="progress-tracks__row">
+          <span className="progress-tracks__label">{seder.title}</span>
           <div
-            className="progress-tracks__fill progress-tracks__fill--seder"
-            style={{ width: `${fillWidth(seder.percent)}%` }}
-          />
+            className="progress-tracks__track"
+            role="progressbar"
+            aria-valuenow={seder.percent}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label={`${seder.title}, ${seder.percent} percent`}
+          >
+            <div
+              className="progress-tracks__fill progress-tracks__fill--seder"
+              style={{ width: `${fillWidth(seder.percent)}%` }}
+            />
+          </div>
         </div>
-      </div>
+      )}
 
-      <div className="progress-tracks__row">
-        <span className="progress-tracks__label">Shas</span>
-        <div
-          className="progress-tracks__track"
-          role="progressbar"
-          aria-valuenow={shas.percent}
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-label={`Shas, ${shas.percent} percent`}
-        >
+      {!(hideEmptyRows && shas.percent <= 0) && (
+        <div className="progress-tracks__row">
+          <span className="progress-tracks__label">Shas</span>
           <div
-            className="progress-tracks__fill progress-tracks__fill--shas"
-            style={{ width: `${fillWidth(shas.percent)}%` }}
-          />
+            className="progress-tracks__track"
+            role="progressbar"
+            aria-valuenow={shas.percent}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label={`Shas, ${shas.percent} percent`}
+          >
+            <div
+              className="progress-tracks__fill progress-tracks__fill--shas"
+              style={{ width: `${fillWidth(shas.percent)}%` }}
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       {streakCurrent !== undefined && (
         <div className="progress-tracks__streak">

@@ -5,16 +5,13 @@ import { hebrewNumeral } from "../../utils/hebrewNumeral";
 import { getSederHue, getSederHueText } from "../../utils/sederHue";
 import { usePerekNotes } from "../../utils/usePerekNotes";
 import { useLearningProgress, type ConceptNote } from "../../utils/useLearningProgress";
-import { useAuth } from "../../utils/useAuth";
 import { PrintNotesView } from "../PrintNotes/PrintNotesView";
-import { NudgeStrip } from "../NudgeStrip/NudgeStrip";
-import { nudgeCopy, pluralize } from "../../utils/nudgeCopy";
+import { pluralize } from "../../utils/nudgeCopy";
 import "./PerekNamesScreen.css";
 
 type DocView = "notes" | "concepts";
 
 interface PerekNamesScreenProps {
-  onOpenLogin?: () => void;
   /** Jumps to Explore Shas, where the actual mishnah text lives — offered
       from a perek's open notebook ("Read the mishnayos →") so writing
       about a perek and reading it are one tap apart. */
@@ -36,7 +33,7 @@ function relativeDate(dateStr: string): string {
   return dateStr;
 }
 
-export function PerekNamesScreen({ onOpenLogin, onOpenText }: PerekNamesScreenProps) {
+export function PerekNamesScreen({ onOpenText }: PerekNamesScreenProps) {
   const [docView, setDocView] = useState<DocView>("notes");
   const [selectedSederId, setSelectedSederId] = useState<string>(SEDARIM[0].id);
   const [selectedMasechetEn, setSelectedMasechetEn] = useState<string>(SEDARIM[0].masechtot[0].en);
@@ -45,13 +42,7 @@ export function PerekNamesScreen({ onOpenLogin, onOpenText }: PerekNamesScreenPr
   const { perekNotes, setPerekNotes, masechetSentences, setMasechetSentences, getPerekNotebook, setPerekNotebookEntry } =
     usePerekNotes();
   const { concepts } = useLearningProgress();
-  const { isLoggedIn } = useAuth();
   const sortedConcepts = [...concepts].sort((a, b) => b.date.localeCompare(a.date));
-
-  const noteCount = Object.values(perekNotes).reduce(
-    (total, notes) => total + notes.filter((n) => n && n.trim()).length,
-    0,
-  );
 
   const selectedSeder = SEDARIM.find((s) => s.id === selectedSederId)!;
   const selectedMasechet =
@@ -140,20 +131,6 @@ export function PerekNamesScreen({ onOpenLogin, onOpenText }: PerekNamesScreenPr
             </div>
           </div>
         </div>
-
-        {!isLoggedIn && onOpenLogin && (
-          <NudgeStrip
-            text={nudgeCopy(
-              [
-                noteCount > 0 ? pluralize(noteCount, "perek name", "perek names") : null,
-                concepts.length > 0 ? pluralize(concepts.length, "concept", "concepts") : null,
-              ],
-              "Sign in to keep what you write.",
-            )}
-            actionLabel="Keep them →"
-            onAction={onOpenLogin}
-          />
-        )}
 
         {docView === "concepts" ? (
           <div className="concepts-tab">

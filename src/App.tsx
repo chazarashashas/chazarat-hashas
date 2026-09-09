@@ -293,10 +293,7 @@ function App() {
             ) : section === "mishna" ? (
               <MishnaIdScreen onOpenNotes={() => setSection("perek")} />
             ) : section === "perek" ? (
-              <PerekNamesScreen
-                onOpenLogin={() => requestLogin("perek")}
-                onOpenText={() => setSection("map")}
-              />
+              <PerekNamesScreen onOpenText={() => setSection("map")} />
             ) : section === "sort" ? (
               <SederSortScreen />
             ) : section === "dash" ? (
@@ -311,10 +308,8 @@ function App() {
             ) : section === "review" ? (
               <ReviewScreen onOpenLimmud={() => handleSelect("limmud")} />
             ) : section === "progress" ? (
-              <ProgressScreen
-                onOpenNishmat={() => handleSelect("liluy")}
-                onOpenLogin={() => requestLogin("progress")}
-              />
+              <ProgressScreen onOpenNishmat={() => handleSelect("liluy")} />
+
             ) : section === "login" ? (
               <LoginScreen
                 initialMode={loginMode}
