@@ -4,6 +4,7 @@ import { SEDARIM } from "../../data/shas";
 import { shuffle } from "../../utils/shuffle";
 import { getSederHue } from "../../utils/sederHue";
 import { useGameStats } from "../../utils/useGameStats";
+import { GameHud } from "../GameHud/GameHud";
 import "./SederSortScreen.css";
 
 interface FlatMasechet {
@@ -165,12 +166,7 @@ export function SederSortScreen() {
           matter here, just the family.
         </p>
 
-        <p className="sort-count">
-          {placedCount} / {TOTAL} placed
-        </p>
-        <div className="sort-progress">
-          <div className="sort-progress__fill" style={{ width: `${(placedCount / TOTAL) * 100}%` }} />
-        </div>
+        <GameHud doing="Seder Sort" progress={placedCount / TOTAL} worth={`${placedCount} / ${TOTAL}`} />
 
         <div className="sort-bins">
           {SEDARIM.map((seder) => (

@@ -1,0 +1,50 @@
+.game-hud {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--ink);
+  border-radius: var(--radius-control);
+  padding: 9px 13px;
+  margin-bottom: 12px;
+}
+
+.game-hud__doing {
+  flex-shrink: 0;
+  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 38%;
+}
+
+.game-hud__track {
+  flex: 1;
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: rgba(240, 238, 230, 0.22);
+  overflow: hidden;
+}
+
+.game-hud__track-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--gold);
+  transition: width 0.3s ease;
+}
+
+.game-hud__worth {
+  flex-shrink: 0;
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--gold);
+  white-space: nowrap;
+}
+
+.game-hud__worth--urgent {
+  color: #e07a5f;
+}
