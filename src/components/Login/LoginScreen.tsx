@@ -604,6 +604,80 @@ function AccountDashboard({
   );
 }
 
+/** Shown instead of the normal signed-in dashboard when the session came
+    from a password-recovery email link (auth.isPasswordRecovery) — the
+    account is authenticated, but what the visitor actually asked for was
+    a new password, not a tour of their account. */
+function SetNewPasswordSection() {
+  const auth = useAuth();
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [done, setDone] = useState(false);
+
+  async function handleSubmit() {
+    setError(null);
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters.");
+      return;
+    }
+    if (password !== confirm) {
+      setError("Passwords don't match.");
+      return;
+    }
+    setBusy(true);
+    const result = await auth.updatePassword(password);
+    setBusy(false);
+    if (result) setError(result);
+    else setDone(true);
+  }
+
+  if (done) {
+    return (
+      <div className="onthis-panel">
+        <p className="onthis-panel__label">Password set</p>
+        <p className="login-reassurance">
+          Your password has been updated. You're signed in as {auth.session?.user.email}.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <p className="panel__subtitle">Choose a new password for {auth.session?.user.email}.</p>
+      <label className="login-field">
+        <span className="login-field__label">New password</span>
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="••••••••"
+          autoFocus
+        />
+      </label>
+      <label className="login-field">
+        <span className="login-field__label">Confirm password</span>
+        <input
+          type="password"
+          value={confirm}
+          onChange={(e) => setConfirm(e.target.value)}
+          placeholder="••••••••"
+        />
+      </label>
+      {error && (
+        <p className="login-error" dir="ltr">
+          {error}
+        </p>
+      )}
+      <button className="restart" disabled={busy || !password || !confirm} onClick={handleSubmit}>
+        {busy ? "Please wait…" : "Set password"}
+      </button>
+    </>
+  );
+}
+
 export function LoginScreen({
   onLoggedIn,
   onNavigate,
@@ -628,6 +702,20 @@ export function LoginScreen({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(initialError ?? null);
   const [message, setMessage] = useState<string | null>(null);
+  // "Forgot it?" opens a third sub-view inside the email form — not a
+  // third pill next to Log in / Create account, since it isn't a mode
+  // you'd choose going in, only one you fall into.
+  const [forgotOpen, setForgotOpen] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
+
+  async function handleForgotSubmit() {
+    setError(null);
+    setBusy(true);
+    const result = await auth.resetPassword(email);
+    setBusy(false);
+    if (result) setError(result);
+    else setResetSent(true);
+  }
 
   const onThisDeviceNoteCount = Object.values(perekNotes).reduce(
     (total, notes) => total + notes.filter((n) => n && n.trim()).length,
@@ -666,6 +754,17 @@ export function LoginScreen({
       setBusy(false);
       setError(result);
     }
+  }
+
+  if (auth.isPasswordRecovery) {
+    return (
+      <div className="stage">
+        <div className="panel login-panel">
+          <h1 className="panel__title">Set a new password</h1>
+          <SetNewPasswordSection />
+        </div>
+      </div>
+    );
   }
 
   if (auth.isLoggedIn) {
@@ -744,6 +843,51 @@ export function LoginScreen({
 
             <ResetProgressSection />
           </>
+        ) : forgotOpen ? (
+          <>
+            <button
+              className="login-back-btn"
+              onClick={() => {
+                setForgotOpen(false);
+                setResetSent(false);
+                setError(null);
+              }}
+            >
+              ← Back
+            </button>
+
+            {resetSent ? (
+              <p className="login-message" dir="ltr">
+                Check your email for a reset link.
+              </p>
+            ) : (
+              <>
+                <label className="login-field">
+                  <span className="login-field__label">Email</span>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@example.com"
+                  />
+                </label>
+
+                {error && (
+                  <p className="login-error" dir="ltr">
+                    {error}
+                  </p>
+                )}
+
+                <button
+                  className="restart"
+                  disabled={!supabaseConfigured || busy || !email}
+                  onClick={handleForgotSubmit}
+                >
+                  {busy ? "Please wait…" : "Send reset link"}
+                </button>
+              </>
+            )}
+          </>
         ) : (
           <>
             <button className="login-back-btn" onClick={() => setEmailOpen(false)}>
@@ -808,7 +952,21 @@ export function LoginScreen({
             </label>
 
             <label className="login-field">
-              <span className="login-field__label">Password</span>
+              <span className={"login-field__label" + (mode === "signIn" ? " login-field__label--row" : "")}>
+                Password
+                {mode === "signIn" && (
+                  <button
+                    type="button"
+                    className="login-forgot-link"
+                    onClick={() => {
+                      setForgotOpen(true);
+                      setError(null);
+                    }}
+                  >
+                    Forgot it?
+                  </button>
+                )}
+              </span>
               <input
                 type="password"
                 value={password}

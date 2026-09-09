@@ -15,6 +15,12 @@ interface Profile {
 interface AuthState extends Profile {
   session: Session | null;
   loading: boolean;
+  /** Supabase set a session from a password-recovery email link, not a
+      normal sign-in — the account is authenticated but the intent was
+      "let me set a new password," not "take me to my account." The
+      screen that reads this shows a set-new-password form instead of
+      the signed-in dashboard until updatePassword succeeds. */
+  isPasswordRecovery: boolean;
 }
 
 const EMPTY_PROFILE: Profile = {
@@ -57,6 +63,8 @@ interface AuthContextValue extends AuthState {
   signUp(email: string, password: string, username: string, firstName: string, lastName: string): Promise<string | null>;
   signIn(email: string, password: string): Promise<string | null>;
   signInWithGoogle(): Promise<string | null>;
+  resetPassword(email: string): Promise<string | null>;
+  updatePassword(newPassword: string): Promise<string | null>;
   signOut(): Promise<void>;
   updateProfile(fields: {
     firstName?: string;
@@ -89,6 +97,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     session: null,
     ...EMPTY_PROFILE,
     loading: supabaseConfigured,
+    isPasswordRecovery: false,
   });
 
   useEffect(() => {
@@ -96,12 +105,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       const profile = session ? await fetchProfile(session.user.id) : EMPTY_PROFILE;
-      setState({ session, ...profile, loading: false });
+      setState((prev) => ({ session, ...profile, loading: false, isPasswordRecovery: prev.isPasswordRecovery }));
     });
 
-    const { data: listener } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    const { data: listener } = supabase.auth.onAuthStateChange(async (event, session) => {
       const profile = session ? await fetchProfile(session.user.id) : EMPTY_PROFILE;
-      setState({ session, ...profile, loading: false });
+      setState((prev) => ({
+        session,
+        ...profile,
+        loading: false,
+        // The recovery link's own click sets this true; only a fresh
+        // sign-in/out ever clears it — a token refresh or profile
+        // update firing this same listener must not silently bounce
+        // someone out of the set-new-password screen mid-use.
+        isPasswordRecovery: event === "PASSWORD_RECOVERY" ? true : event === "SIGNED_OUT" ? false : prev.isPasswordRecovery,
+      }));
     });
 
     return () => listener.subscription.unsubscribe();
@@ -152,6 +170,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       options: { redirectTo: window.location.origin },
     });
     return error ? error.message : null;
+  }
+
+  /** Sends a password-reset email via Supabase; the link it contains
+      brings the user back here already signed in, which the listener
+      above marks as isPasswordRecovery rather than a normal sign-in. */
+  async function resetPassword(email: string): Promise<string | null> {
+    if (!supabase) return "Accounts aren't connected yet.";
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin,
+    });
+    return error ? error.message : null;
+  }
+
+  /** Sets a new password for the session created by the recovery link.
+      Clears isPasswordRecovery on success so the screen that was
+      showing "set a new password" goes back to being a normal signed-in
+      session immediately, without waiting on another auth event. */
+  async function updatePassword(newPassword: string): Promise<string | null> {
+    if (!supabase) return "Accounts aren't connected yet.";
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) return error.message;
+    setState((prev) => ({ ...prev, isPasswordRecovery: false }));
+    return null;
   }
 
   async function signOut() {
@@ -232,6 +273,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signUp,
     signIn,
     signInWithGoogle,
+    resetPassword,
+    updatePassword,
     signOut,
     updateProfile,
     deleteAccount,

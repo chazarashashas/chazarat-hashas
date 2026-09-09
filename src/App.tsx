@@ -146,8 +146,17 @@ function App() {
   // user here, so that choice lands on the email form, not the
   // Google-first default.
   const [loginEmailOpen, setLoginEmailOpen] = useState(false);
-  const { session, isAdmin, isLoggedIn, signInWithGoogle } = useAuth();
+  const { session, isAdmin, isLoggedIn, isPasswordRecovery, signInWithGoogle } = useAuth();
   useCloudSync(session);
+
+  // A password-reset email link lands here already signed in (Supabase
+  // sets the session before this app code ever runs) — without this,
+  // that session would just silently open on whatever "home" happens to
+  // be instead of the one screen that can actually do anything with a
+  // recovery session: My Account's set-new-password form.
+  useEffect(() => {
+    if (isPasswordRecovery) setSection("login");
+  }, [isPasswordRecovery]);
 
   const { groups } = useChevrusa();
   const myShiurimToTeach = groups.filter(
