@@ -47,15 +47,6 @@ describe("mergeBlobs", () => {
     expect(merged.gameStats.dash).toEqual({ best: 7, plays: 1 });
   });
 
-  it("reviewState: the more recently reviewed side wins that item outright", () => {
-    const local = { reviewState: { "Berachot 1 1": { box: 2, nextReview: "2026-02-01", lastReviewed: "2026-01-01", timesReviewed: 2 } } };
-    const cloud = { reviewState: { "Berachot 1 1": { box: 4, nextReview: "2026-03-01", lastReviewed: "2026-01-15", timesReviewed: 4 } } };
-    const merged = mergeBlobs(local, cloud) as { reviewState: Record<string, { box: number }> };
-    // Cloud's lastReviewed (01-15) is more recent than local's (01-01),
-    // so cloud's box/schedule wins even though it's not the local device.
-    expect(merged.reviewState["Berachot 1 1"].box).toBe(4);
-  });
-
   it("showEnglish: cloud wins when present, so devices agree on the account's real answer", () => {
     expect(mergeBlobs({ showEnglish: false }, { showEnglish: true }).showEnglish).toBe(true);
     expect(mergeBlobs({ showEnglish: true }, { showEnglish: false }).showEnglish).toBe(false);

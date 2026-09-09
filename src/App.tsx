@@ -19,7 +19,6 @@ import { ChaburaScreen } from "./components/Chabura/ChaburaScreen";
 import { MapOfShasScreen } from "./components/MapOfShas/MapOfShasScreen";
 import { LiluyNishmatScreen } from "./components/LiluyNishmat/LiluyNishmatScreen";
 import { AdminScreen } from "./components/Admin/AdminScreen";
-import { ReviewScreen } from "./components/Review/ReviewScreen";
 import { FirstOpenPrompt } from "./components/FirstOpenPrompt/FirstOpenPrompt";
 import { RebbeDashboardScreen } from "./components/RebbeDashboard/RebbeDashboardScreen";
 import { GuideScreen } from "./components/Guide/GuideScreen";
@@ -305,8 +304,6 @@ function App() {
                 onOpenNotes={() => setSection("perek")}
                 onOpenLogin={() => requestLogin("limmud")}
               />
-            ) : section === "review" ? (
-              <ReviewScreen onOpenLimmud={() => handleSelect("limmud")} />
             ) : section === "progress" ? (
               <ProgressScreen onOpenNishmat={() => handleSelect("liluy")} />
 

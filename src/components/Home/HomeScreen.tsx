@@ -29,7 +29,7 @@ const MY_MISHNA: Feature[] = [
   {
     id: "limmud",
     title: "Daily Limmud",
-    desc: "Your next portion of Mishnayot, straight through Shas in order.",
+    desc: "Today's mishnayot, in order.",
   },
   {
     id: "map",

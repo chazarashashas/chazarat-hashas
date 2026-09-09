@@ -6,8 +6,6 @@
 const PATHS: Record<string, string> = {
   home: "M4 11.5L12 4l8 7.5M6 10.5V19h4.5v-5.5h3V19H18v-8.5",
   limmud: "M12 4.5a7.5 7.5 0 100 15 7.5 7.5 0 000-15zM12 8v4.2l3 2",
-  review:
-    "M23 4L23 10L17 10M1 20L1 14L7 14M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15",
   map: "M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z",
   perek: "M6 3h12v18l-6-4-6 4V3z",
   progress:

@@ -600,8 +600,8 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
                     <span className="limmud-confirm__head">Streak day {streak.current}</span>
                     <span className="limmud-confirm__sub">
                       {confirmPerek.remaining === 0
-                        ? `Perek ${hebrewNumeral(confirmPerek.perek)} of ${firstItem?.masechetEn ?? ""} complete. Comes back in Review tomorrow.`
-                        : `${confirmPerek.remaining} mishnah${confirmPerek.remaining === 1 ? "" : "s"} left in this perek. Comes back in Review tomorrow.`}
+                        ? `Perek ${hebrewNumeral(confirmPerek.perek)} of ${firstItem?.masechetEn ?? ""} complete.`
+                        : `${confirmPerek.remaining} mishnah${confirmPerek.remaining === 1 ? "" : "s"} left in this perek.`}
                     </span>
                   </span>
                 </div>

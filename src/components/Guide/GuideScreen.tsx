@@ -9,6 +9,9 @@ interface GuideScreenProps {
       Resources, or from the first-run "Read the whole guide" card. Null
       just opens at the top. */
   initialAnchor?: string | null;
+  /** Skips the outer .stage/.panel page chrome — GuidePopup supplies its
+      own popup chrome around this same content instead. */
+  bare?: boolean;
 }
 
 interface StepNavButton {

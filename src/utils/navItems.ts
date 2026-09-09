@@ -9,7 +9,6 @@ export interface NavItemDef {
 export const HUE: Record<string, string> = {
   home: "var(--hue-home)",
   limmud: "var(--hue-limmud)",
-  review: "var(--hue-review)",
   map: "var(--hue-explore)",
   perek: "var(--hue-notes)",
   progress: "var(--hue-siyumim)",
@@ -38,7 +37,6 @@ export const NAV_GROUPS: { label: string; items: NavItemDef[] }[] = [
       { id: "home", label: "Home" },
       { id: "limmud", label: "Daily Limmud" },
       { id: "map", label: "Explore Shas" },
-      { id: "review", label: "Review" },
       { id: "perek", label: "Mishna Notes" },
       { id: "progress", label: "My Siyumim" },
       { id: "chevrusa", label: "Chevrusa" },
@@ -84,4 +82,4 @@ export function navLabel(id: string): string {
 
 /** The daily loop — nobody is told which destinations matter more than
     theirs (ANDROID-BRIEF.md §7). */
-export const DEFAULT_BOTTOM_BAR_IDS = ["home", "limmud", "map", "review"];
+export const DEFAULT_BOTTOM_BAR_IDS = ["home", "limmud", "map", "progress"];
