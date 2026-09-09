@@ -4,6 +4,7 @@ import type { TodaySnapshot, SubmissionActivity } from "../../utils/useDailySubm
 import { useSendDailySubmission, fetchMyWeek, type WeekDay } from "../../utils/useDailySubmission";
 import { useAuth } from "../../utils/useAuth";
 import { NavIcon } from "../Icon/NavIcon";
+import { localDateStr } from "../../utils/localDate";
 import "./TodayLearningCard.css";
 
 const ICON_BY_KEY: Record<SubmissionActivity["key"], string> = {
@@ -29,7 +30,7 @@ function dateLabel(date: string): string {
 }
 
 function WeekStrip({ week }: { week: WeekDay[] }) {
-  const today = new Date().toISOString().slice(0, 10);
+  const today = localDateStr();
   return (
     <div className="today-week-strip">
       {week.map((d) => {

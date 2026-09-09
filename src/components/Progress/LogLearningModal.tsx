@@ -2,6 +2,7 @@ import { useState } from "react";
 import { SEDARIM } from "../../data/shas";
 import { getPerekName } from "../../data/perekInfo";
 import { useEscapeKey } from "../../utils/useEscapeKey";
+import { localDateStr } from "../../utils/localDate";
 import "./LogLearningModal.css";
 
 interface LogLearningModalProps {
@@ -10,7 +11,7 @@ interface LogLearningModalProps {
 }
 
 function todayStr(): string {
-  return new Date().toISOString().slice(0, 10);
+  return localDateStr();
 }
 
 /** For learning done off the app entirely — a shiur, a chavrusa, the

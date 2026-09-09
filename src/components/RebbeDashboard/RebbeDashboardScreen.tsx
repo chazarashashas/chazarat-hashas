@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useChevrusa, type Group } from "../../utils/useChevrusa";
 import { useRebbeChabura, standingsBySilence, historyFor, type StudentStanding } from "../../utils/useRebbeChabura";
 import type { SubmissionActivity } from "../../utils/useDailySubmission";
+import { localDateStr } from "../../utils/localDate";
 import "./RebbeDashboardScreen.css";
 
 type View = "today" | "week" | "grid";
@@ -169,7 +170,7 @@ export function RebbeDashboardScreen({ shiurim }: RebbeDashboardScreenProps) {
   for (let i = 6; i >= 0; i--) {
     const d = new Date();
     d.setDate(d.getDate() - i);
-    weekDays.push(d.toISOString().slice(0, 10));
+    weekDays.push(localDateStr(d));
   }
   const sentDatesByStudent = new Map<string, Set<string>>();
   for (const s of submissions) {
@@ -382,7 +383,7 @@ function downloadCsv(
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `shiur-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.download = `shiur-${localDateStr()}.csv`;
   a.click();
   URL.revokeObjectURL(url);
 }
@@ -395,7 +396,7 @@ export function RebbeGrid({
   submissions: ReturnType<typeof useRebbeChabura>["submissions"];
 }) {
   const [mobileActivity, setMobileActivity] = useState<SubmissionActivity["key"]>(GRID_ACTIVITIES[0].key);
-  const today = new Date().toISOString().slice(0, 10);
+  const today = localDateStr();
   const todaysByStudent = new Map<string, Map<string, SubmissionActivity>>();
   for (const s of submissions) {
     if (s.date !== today) continue;

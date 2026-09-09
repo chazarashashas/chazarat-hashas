@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "./supabase";
 import { useAuth } from "./useAuth";
+import { localDateStr } from "./localDate";
 
 export interface ReceivedNudge {
   id: string;
@@ -10,7 +11,7 @@ export interface ReceivedNudge {
 }
 
 function todayStr(): string {
-  return new Date().toISOString().slice(0, 10);
+  return localDateStr();
 }
 
 function friendlyNudgeError(message: string): string {

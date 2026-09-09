@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import { supabase } from "./supabase";
 import type { ChaburaStudent, Submission } from "./useRebbeChabura";
 import type { SubmissionActivity } from "./useDailySubmission";
+import { localDateStr } from "./localDate";
 
 function todayStr(): string {
-  return new Date().toISOString().slice(0, 10);
+  return localDateStr();
 }
 
 function activity(

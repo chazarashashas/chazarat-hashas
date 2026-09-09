@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { supabase } from "./supabase";
 import { useAuth } from "./useAuth";
 import type { Pace } from "./useLearningProgress";
+import { localDateStr } from "./localDate";
 
 export type GroupRole = "member" | "teacher";
 
@@ -63,7 +64,7 @@ export interface SentInvite {
 }
 
 function todayStr(): string {
-  return new Date().toISOString().slice(0, 10);
+  return localDateStr();
 }
 
 /** Translates raw Postgres/Supabase error text into something a student

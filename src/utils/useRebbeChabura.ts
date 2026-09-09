@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "./supabase";
 import type { SubmissionActivity } from "./useDailySubmission";
+import { localDateStr } from "./localDate";
 
 export interface ChaburaStudent {
   userId: string;
@@ -16,7 +17,7 @@ export interface Submission {
 }
 
 function todayStr(): string {
-  return new Date().toISOString().slice(0, 10);
+  return localDateStr();
 }
 
 function daysAgo(dateStr: string): number {
@@ -56,7 +57,7 @@ export function useRebbeChabura(groupId: string | null) {
       .from("group_submissions")
       .select("user_id, submission_date, sent_at, payload")
       .eq("group_id", groupId)
-      .gte("submission_date", since.toISOString().slice(0, 10))
+      .gte("submission_date", localDateStr(since))
       .order("submission_date", { ascending: false });
 
     setSubmissions(

@@ -20,6 +20,7 @@ import { QueuedSiyumPerek } from "./QueuedSiyumPerek";
 import { NudgeStrip } from "../NudgeStrip/NudgeStrip";
 import { TranslationAttributionLine } from "../TranslationAttribution/TranslationAttribution";
 import { getSederHueText } from "../../utils/sederHue";
+import { localDateStr } from "../../utils/localDate";
 import "./DailyLimmudScreen.css";
 
 type EnglishItemState =
@@ -331,7 +332,7 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
   const nextMasechetName = !isSelf && groupFinished ? nextMasechet(activeContext) : null;
 
   const activeChabura = !isSelf ? groups.find((g) => g.masechetEn === activeContext && g.isChabura) : undefined;
-  const today = new Date().toISOString().slice(0, 10);
+  const today = localDateStr();
 
   // The collapsed settings line — "Learning for" and "Pace" used to be two
   // pill rows shown above the mishnah every day, for a choice most people

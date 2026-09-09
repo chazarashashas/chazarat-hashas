@@ -5,12 +5,13 @@ import { useGroupNudges } from "../../utils/useGroupNudges";
 import { useEscapeKey } from "../../utils/useEscapeKey";
 import { DotsIcon } from "../Icon/NavIcon";
 import { GroupNotes } from "./GroupNotes";
+import { localDateStr } from "../../utils/localDate";
 import "./GroupCard.css";
 
 const PACE_LABEL: Record<Pace, string> = { "1": "1 a day", "2": "2 a day", perek: "1 perek a day" };
 
 function todayStr(): string {
-  return new Date().toISOString().slice(0, 10);
+  return localDateStr();
 }
 
 function memberLabel(m: { firstName: string | null; username: string | null }): string {

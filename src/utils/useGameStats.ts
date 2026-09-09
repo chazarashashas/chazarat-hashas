@@ -1,7 +1,8 @@
 import { useLocalStorageState } from "./useLocalStorageState";
+import { localDateStr } from "./localDate";
 
 function todayStr(): string {
-  return new Date().toISOString().slice(0, 10);
+  return localDateStr();
 }
 
 interface DailyQuiz {

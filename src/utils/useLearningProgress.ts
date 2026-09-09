@@ -3,6 +3,7 @@ import { useLocalStorageState } from "./useLocalStorageState";
 import { MISHNA_SEQUENCE, mishnaKey, endOfPerekIndex } from "../data/mishnaSequence";
 import { SEDARIM } from "../data/shas";
 import { getMishnayotCount } from "../data/perekInfo";
+import { localDateStr } from "./localDate";
 
 export type CompletionSource = "app" | "logged";
 
@@ -51,7 +52,7 @@ export interface ConceptNote {
 }
 
 function todayStr(): string {
-  return new Date().toISOString().slice(0, 10);
+  return localDateStr();
 }
 
 function addDaysStr(date: string, delta: number): string {

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { supabase } from "./supabase";
 import { useAuth } from "./useAuth";
 import { useLocalStorageState } from "./useLocalStorageState";
+import { localDateStr } from "./localDate";
 
 export type Visibility = "public" | "private";
 
@@ -52,7 +53,7 @@ const PUBLIC_CLAIM_COLUMNS =
   "id, siyum_id, masechet_en, perek, claimed_by_user_id, claimed_by_name, anonymous, learned, queued_in_daily_limmud, claimed_at, learned_at";
 
 function todayStr(): string {
-  return new Date().toISOString().slice(0, 10);
+  return localDateStr();
 }
 
 function slug(): string {

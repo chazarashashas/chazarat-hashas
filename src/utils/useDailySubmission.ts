@@ -4,9 +4,10 @@ import { useAuth } from "./useAuth";
 import { useLearningProgress } from "./useLearningProgress";
 import { useGameStats } from "./useGameStats";
 import { hebrewNumeral } from "./hebrewNumeral";
+import { localDateStr } from "./localDate";
 
 function todayStr(): string {
-  return new Date().toISOString().slice(0, 10);
+  return localDateStr();
 }
 
 export interface SubmissionActivity {
@@ -181,7 +182,7 @@ export async function fetchMyWeek(groupId: string, userId: string): Promise<Week
   for (let i = 6; i >= 0; i--) {
     const d = new Date();
     d.setDate(d.getDate() - i);
-    days.push(d.toISOString().slice(0, 10));
+    days.push(localDateStr(d));
   }
   if (!supabase) return days.map((date) => ({ date, sent: false }));
   const { data } = await supabase
