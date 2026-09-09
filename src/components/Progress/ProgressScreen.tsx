@@ -147,7 +147,7 @@ export function ProgressScreen({ onOpenNishmat, onOpenLogin }: ProgressScreenPro
                   ? pluralize(masechtotCompleted, "masechet completed", "masechtot completed")
                   : null,
               ],
-              "on this device only.",
+              "Sign in to keep your progress.",
             )}
             actionLabel="Keep them →"
             onAction={onOpenLogin}

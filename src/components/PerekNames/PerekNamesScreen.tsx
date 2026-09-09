@@ -148,7 +148,7 @@ export function PerekNamesScreen({ onOpenLogin, onOpenText }: PerekNamesScreenPr
                 noteCount > 0 ? pluralize(noteCount, "perek name", "perek names") : null,
                 concepts.length > 0 ? pluralize(concepts.length, "concept", "concepts") : null,
               ],
-              "on this device only.",
+              "Sign in to keep what you write.",
             )}
             actionLabel="Keep them →"
             onAction={onOpenLogin}

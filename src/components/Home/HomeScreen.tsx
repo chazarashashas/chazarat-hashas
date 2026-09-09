@@ -217,7 +217,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
                 progress.streak.current > 0 ? pluralize(progress.streak.current, "day streak", "day streak") : null,
                 progress.completions.length > 0 ? pluralize(progress.completions.length, "mishnah", "mishnayot") : null,
               ],
-              "saved on this device only.",
+              "Sign in to keep your progress.",
             )}
             actionLabel="Keep them →"
             onAction={() => onNavigate("login")}
