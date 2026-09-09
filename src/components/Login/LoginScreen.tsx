@@ -345,6 +345,41 @@ function SyncStatusLine() {
   return null;
 }
 
+const SUPPORT_EMAIL = "chazarashashas@gmail.com";
+
+/** A "Report a problem" link that pre-fills the debug context a report
+    actually needs to be useful — device, where the sync stood, which
+    account — so a student doesn't have to remember or describe any of
+    that themselves. Fable audit #6. Uses a plain mailto: link (works
+    with zero setup, no account needed) rather than routing through
+    Sentry's feedback API, which needs a configured DSN this app may
+    not have yet — see monitoring.ts. */
+function ReportProblemLink() {
+  const auth = useAuth();
+  const { status, lastSavedAt } = useSyncStatus();
+
+  function handleClick() {
+    const lines = [
+      "(Describe what happened here — the more detail, the easier this is to track down.)",
+      "",
+      "---",
+      "Debug info (auto-included):",
+      `Page: ${window.location.href}`,
+      `Signed in as: ${auth.session?.user.email ?? "not signed in"}`,
+      `Sync status: ${status}${lastSavedAt ? `, last saved ${new Date(lastSavedAt).toLocaleTimeString()}` : ""}`,
+      `Browser: ${navigator.userAgent}`,
+    ];
+    const url = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent("Chazarat Hashas — problem report")}&body=${encodeURIComponent(lines.join("\n"))}`;
+    window.location.href = url;
+  }
+
+  return (
+    <button type="button" className="account-report-link" onClick={handleClick}>
+      Report a problem
+    </button>
+  );
+}
+
 function AccountDashboard({
   onNavigate,
   bottomBarIds,
@@ -438,6 +473,7 @@ function AccountDashboard({
                 Sign out
               </button>
             </div>
+            <ReportProblemLink />
           </>
         ) : (
           <>

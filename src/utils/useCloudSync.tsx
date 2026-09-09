@@ -12,6 +12,7 @@ import { supabase } from "./supabase";
 import { STORAGE_SYNC_EVENT, LOCAL_WRITE_EVENT } from "./useLocalStorageState";
 import { DEFAULT_BOTTOM_BAR_IDS } from "./navItems";
 import { DEFAULT_PACE } from "./useLearningProgress";
+import { reportSyncFailure } from "./monitoring";
 
 export const PREFIX = "chazarat-hashas:";
 /** This device's own marker of the last reset it has already applied —
@@ -408,6 +409,7 @@ export function SyncStatusProvider({
         if (sessionRef.current !== activeSession) return; // signed out mid-request
         if (error) {
           failureCountRef.current += 1;
+          if (failureCountRef.current === ERROR_AFTER_FAILURES) reportSyncFailure(failureCountRef.current);
           setStatus(failureCountRef.current >= ERROR_AFTER_FAILURES ? "error" : "retrying");
           const delay = Math.min(RETRY_BASE_MS * 2 ** (failureCountRef.current - 1), RETRY_MAX_MS);
           retryTimeoutRef.current = window.setTimeout(pushNowImpl, delay);
