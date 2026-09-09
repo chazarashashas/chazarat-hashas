@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { SEDARIM } from "../../data/shas";
 import { getSederHue } from "../../utils/sederHue";
 import { useGameStats } from "../../utils/useGameStats";
+import { GameHud } from "../GameHud/GameHud";
 import "./ShasDashScreen.css";
 
 interface FlatMasechet {
@@ -377,19 +378,11 @@ export function ShasDashScreen() {
 
             <div className="dash-board-wrap">
               <div className={"dash-board" + (phase !== "playing" ? " dash-board--blurred" : "")}>
-                <div className="dash-hud">
-                  <div className="dash-lives">
-                    {[0, 1, 2].map((i) => (
-                      <span key={i} className={i < lives ? "" : "dash-lives__lost"}>
-                        ♥
-                      </span>
-                    ))}
-                  </div>
-                  <div className="dash-score-block">
-                    <div className="dash-score">{score}</div>
-                    <div className="dash-best">Best: {bestScore}</div>
-                  </div>
-                </div>
+                <GameHud
+                  doing={[0, 1, 2].map((i) => (i < lives ? "♥" : "♡")).join(" ")}
+                  progress={caught.size / ALL_MASECHTOT.length}
+                  worth={String(score)}
+                />
 
                 <div className="dash-combo-row">
                   <span className={"dash-combo" + (combo >= 2 ? " dash-combo--show" : "")}>

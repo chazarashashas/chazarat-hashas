@@ -45,32 +45,6 @@
   color: rgba(255, 255, 255, 0.75);
 }
 
-.dash-panel .dash-lives {
-  gap: 6px;
-  font-size: 0;
-}
-
-.dash-panel .dash-lives span {
-  display: inline-block;
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: var(--gold);
-  margin-right: 4px;
-}
-
-.dash-panel .dash-lives span.dash-lives__lost {
-  background: rgba(255, 255, 255, 0.15);
-}
-
-.dash-panel .dash-score {
-  color: #8fa3e3;
-}
-
-.dash-panel .dash-best {
-  color: rgba(255, 255, 255, 0.55);
-}
-
 .dash-panel .dash-combo {
   background: rgba(184, 134, 43, 0.25);
   color: var(--gold);
@@ -201,41 +175,6 @@
   border-radius: var(--radius-small);
   padding: 6px 10px;
   margin: 0 0 12px;
-}
-
-.dash-hud {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.dash-lives {
-  display: flex;
-  gap: 3px;
-  font-size: 16px;
-  color: var(--bad);
-}
-
-.dash-lives__lost {
-  opacity: 0.25;
-}
-
-.dash-score-block {
-  text-align: right;
-}
-
-.dash-score {
-  font-family: var(--font-heading);
-  font-size: 18px;
-  font-weight: 800;
-  color: var(--ink-2);
-}
-
-.dash-best {
-  font-size: 10.5px;
-  color: var(--ink-soft);
-  font-weight: 600;
 }
 
 .dash-combo-row {
