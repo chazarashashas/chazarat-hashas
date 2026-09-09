@@ -8,6 +8,7 @@ import { getSederHue } from "../../utils/sederHue";
 import { PerekNoteModal } from "../PerekNoteModal/PerekNoteModal";
 import { TranslationReveal } from "../TranslationReveal/TranslationReveal";
 import { TabBar } from "../TabBar/TabBar";
+import { GameHud } from "../GameHud/GameHud";
 import "./MishnaIdScreen.css";
 
 type ScopeType = "masechta" | "seder" | "all";
@@ -443,20 +444,13 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
           )}
         </div>
 
-        {mode === "streak" ? (
-          <p className="mishna-streak">Streak: {streak}</p>
-        ) : (
-          <p className="mishna-streak">
-            {started
-              ? `Card ${questionNumber} of ${QUIZ_LENGTH} · Score ${quizScore}${quizBonus ? ` · +${quizBonus} bonus` : ""}`
-              : `${QUIZ_LENGTH} questions`}
-          </p>
-        )}
-
-        {inPlay && (
-          <div className={"timer-pill" + (secondsLeft <= 10 ? " timer-pill--urgent" : "")}>
-            {secondsLeft}s
-          </div>
+        {!quizFinished && (
+          <GameHud
+            doing={mode === "streak" ? "Streak" : started ? `Card ${questionNumber} of ${QUIZ_LENGTH}` : "Quiz"}
+            progress={inPlay ? 1 - secondsLeft / CARD_SECONDS : 0}
+            worth={mode === "streak" ? `🔥 ${streak}` : `${quizScore}${quizBonus ? ` +${quizBonus}` : ""}`}
+            urgent={inPlay && secondsLeft <= 10}
+          />
         )}
 
         {quizFinished ? (

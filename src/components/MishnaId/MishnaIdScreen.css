@@ -98,15 +98,6 @@
   font-size: 9px;
 }
 
-.mishna-streak {
-  margin: 0 0 12px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--ink-soft);
-  text-align: center;
-  font-family: var(--font-heading);
-}
-
 .pill-row--nowrap {
   flex-wrap: nowrap;
   gap: 4px;
@@ -141,18 +132,6 @@
   color: var(--ink);
 }
 
-.timer-pill {
-  text-align: center;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--gold);
-  margin-bottom: 10px;
-  font-family: var(--font-heading);
-}
-
-.timer-pill--urgent {
-  color: var(--bad);
-}
 
 .mishna-card-wrap {
   position: relative;
