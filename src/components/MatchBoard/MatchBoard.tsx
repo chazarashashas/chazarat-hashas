@@ -4,6 +4,7 @@ import { SEDARIM } from "../../data/shas";
 import type { MatchView } from "../../data/matchViews";
 import type { ViewState } from "../../types/viewState";
 import { getSederHue } from "../../utils/sederHue";
+import { GameHud } from "../GameHud/GameHud";
 import "./MatchBoard.css";
 
 /** Which seder a slot/chip belongs to, found from the item name itself
@@ -49,6 +50,7 @@ export function MatchBoard({ view, state, onPlace, onReset, clearedSederIds }: M
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const completed = placed.every((p) => p !== null);
+  const placedCount = placed.filter((p) => p !== null).length;
 
   function attemptPlace(id: string, slotIndex: number) {
     if (placed[slotIndex] || view.items[slotIndex] !== id) {
@@ -133,6 +135,8 @@ export function MatchBoard({ view, state, onPlace, onReset, clearedSederIds }: M
           Drag each {view.id === "sedarim" ? "seder" : "masechet"} into its correct spot — or tap one,
           then tap where it goes. You can alternate between sedarim using the navigation bar below.
         </p>
+
+        <GameHud doing={view.title} progress={placedCount / placed.length} worth={`${placedCount} / ${placed.length}`} />
 
         <div className="board-progress">
           {SEDARIM.map((seder) => (
