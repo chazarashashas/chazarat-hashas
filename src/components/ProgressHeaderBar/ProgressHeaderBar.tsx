@@ -51,7 +51,7 @@ export function ProgressHeaderBar({ progress, onGoToLimmud, onOpenGuide }: Progr
         <div className="phb-rule" aria-hidden="true" />
 
         <div className="phb-guide">
-          <button className="phb-guide-btn" onClick={onOpenGuide}>
+          <button className="pill pill--compact phb-guide-btn" onClick={onOpenGuide}>
             <NavIcon id="guide" size={17} weight={2} />
             <span>How to use this app</span>
           </button>
@@ -68,8 +68,8 @@ export function ProgressHeaderBar({ progress, onGoToLimmud, onOpenGuide }: Progr
               <span className="phb-next-ref">
                 {upNext.masechetEn} {upNext.perek}:{upNext.mishnah}
               </span>
-              <button className="phb-next-btn" onClick={onGoToLimmud}>
-                <span>Go to My Limmud</span>
+              <button className="btn btn--accent btn--block" onClick={onGoToLimmud}>
+                <span>Go to Daily Limmud</span>
                 <NavIcon id="arrow" size={15} weight={2.2} />
               </button>
             </>

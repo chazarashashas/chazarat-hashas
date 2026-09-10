@@ -2,6 +2,22 @@
 
 One entry per PR, newest first.
 
+## Consistency pass PR 3 — Home
+
+- Every literal in Home, `ProgressHeaderBar`, `ProgressTracks`,
+  `NudgeStrip` and `TodayLearningCard` is now a token, and every
+  font-size is on the scale.
+- All twelve Home cards are cream. Daily Limmud's navy treatment made it
+  read as a different kind of thing from its neighbours; its hue rule is
+  enough.
+- `NudgeStrip` is a `.callout`; `ProgressTracks`' standalone block is a
+  `.hero-card`; `.home-section-title` becomes the shared `.section-title`;
+  the unused `.home-hero__btn` and the ruleless `.home-panel` are gone.
+- "Sent" on `TodayLearningCard` uses `--good` rather than Seder Zeraim's
+  green, and the card sits on `--surface-hi` like every other card.
+- Copy: "let's learn shas, together" → "Let's learn Shas, together";
+  "Go to My Limmud" → "Go to Daily Limmud".
+
 ## Consistency pass PR 2 — the shell
 
 - Sidebar and bottom bar drop their white/cream literals for the on-navy

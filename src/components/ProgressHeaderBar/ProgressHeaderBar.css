@@ -30,7 +30,7 @@
   flex-shrink: 0;
   align-self: stretch;
   width: 1px;
-  background: rgba(240, 238, 230, 0.16);
+  background: var(--on-navy-rule);
 }
 
 /* ---------- 2. How to use this app ---------- */
@@ -47,19 +47,19 @@
   align-items: center;
   gap: 8px;
   padding: 10px 16px;
-  border: 1.5px solid rgba(240, 238, 230, 0.24);
+  border: 1.5px solid var(--on-navy-rule);
   border-radius: var(--radius-pill);
   background: none;
-  color: #f0eee6;
+  color: var(--on-navy);
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: 12.5px;
+  font-size: var(--fs-13);
   cursor: pointer;
   transition: border-color 0.12s ease;
 }
 
 .phb-guide-btn:hover {
-  border-color: rgba(240, 238, 230, 0.5);
+  border-color: var(--on-navy);
 }
 
 /* ---------- 3. Up next, over the action ---------- */
@@ -77,8 +77,8 @@
 .phb-next-label {
   font-family: var(--font-body);
   font-weight: 400;
-  font-size: 11px;
-  color: rgba(240, 238, 230, 0.6);
+  font-size: var(--fs-12);
+  color: var(--on-navy-muted);
 }
 
 .phb-next-ref {
@@ -88,8 +88,8 @@
   white-space: nowrap;
   font-family: var(--font-heading);
   font-weight: 800;
-  font-size: 20px;
-  color: #fff;
+  font-size: var(--fs-20);
+  color: var(--on-navy);
   letter-spacing: -0.02em;
 }
 
@@ -106,13 +106,13 @@
   color: var(--ink);
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: 13.5px;
+  font-size: var(--fs-14);
   cursor: pointer;
   transition: background 0.12s ease;
 }
 
 .phb-next-btn:hover {
-  background: #d9a63d;
+  background: var(--gold-bright);
 }
 
 /* ---------- Below ~640px of the bar's own width: stack ---------- */

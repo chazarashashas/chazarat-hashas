@@ -16,9 +16,10 @@ interface NudgeStripProps {
     where the user's own data already is on screen. */
 export function NudgeStrip({ text, actionLabel, onAction, accentColor }: NudgeStripProps) {
   return (
-    <div className="nudge-strip" style={accentColor ? { ["--nudge-accent" as string]: accentColor } : undefined}>
+    <div className="callout callout--seder nudge-strip"
+      style={accentColor ? { ["--callout-hue" as string]: accentColor } : undefined}>
       <span className="nudge-strip__text">{text}</span>
-      <button className="nudge-strip__action" onClick={onAction}>
+      <button className="btn btn--quiet nudge-strip__action" onClick={onAction}>
         {actionLabel}
       </button>
     </div>

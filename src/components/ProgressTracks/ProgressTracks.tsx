@@ -46,7 +46,7 @@ export function ProgressTracks({
   masechetOnly,
 }: ProgressTracksProps) {
   return (
-    <div className={"progress-tracks" + (bare ? "" : " progress-tracks--card")}>
+    <div className={"progress-tracks" + (bare ? "" : " hero-card")}>
       <div className="progress-tracks__row">
         <span className="progress-tracks__label">
           {masechet.title}

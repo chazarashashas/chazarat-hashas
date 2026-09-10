@@ -211,12 +211,12 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
 
   return (
     <div className="stage">
-      <div className="panel home-panel">
+      <div className="panel">
         <BrandMark variant="outline" className="home-brand-mark" />
         <h1 className="home-title" dir="rtl">
           חזרת הש״ס
         </h1>
-        <p className="panel__subtitle">let's learn shas, together</p>
+        <p className="panel__subtitle">Let's learn Shas, together</p>
 
         {showGuideTeaser && (
           <NudgeStrip
@@ -239,10 +239,10 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
           <TodayLearningCard key={g.id} group={g} snapshot={todaySnapshot} />
         ))}
 
-        <h2 className="home-section-title">My Mishna</h2>
+        <h2 className="section-title">My Mishna</h2>
         <FeatureGrid features={myMishnaWithStatus} onNavigate={onNavigate} />
 
-        <h2 className="home-section-title">Practice</h2>
+        <h2 className="section-title">Practice</h2>
         <FeatureGrid features={learningToolsWithStatus} onNavigate={onNavigate} />
       </div>
 
