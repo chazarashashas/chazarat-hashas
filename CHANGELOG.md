@@ -2,6 +2,17 @@
 
 One entry per PR, newest first.
 
+## CI: run tests on Node 24
+
+The test job had never once passed. The cause was not our tests: jsdom
+loads undici, undici destructures markAsUncloneable out of
+node:worker_threads, and that only exists from Node 20.19 / 22.10 on. The
+workflow pinned node-version 20 and got an older 20.x, so every vitest
+worker died before loading a test file and the run reported
+"Test Files: 0 total" with exit code 1.
+
+CI now runs Node 24, which is what the project is developed on.
+
 ## Consistency pass: keyframe consolidation
 
 - The eight keyframes still defined in screen stylesheets were each

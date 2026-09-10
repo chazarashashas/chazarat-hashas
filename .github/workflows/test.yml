@@ -20,7 +20,14 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          # 24, not 20: jsdom loads undici, and undici destructures
+          # markAsUncloneable out of node:worker_threads, which only exists
+          # from Node 20.19 / 22.10 on. On an older 20.x it comes back
+          # undefined, every vitest worker dies before it loads a single
+          # test file, and the run reports "Test Files: 0" and fails. 24 is
+          # also what this project is developed on, so CI and the desk now
+          # run the same runtime.
+          node-version: 24
           cache: npm
       - run: npm ci
       - run: npm run lint
