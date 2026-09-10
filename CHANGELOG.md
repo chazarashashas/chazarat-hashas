@@ -2,6 +2,15 @@
 
 One entry per PR, newest first.
 
+## Consistency pass: keyframe consolidation
+
+- The eight keyframes still defined in screen stylesheets were each
+  panel-pop, screen-fade-up or panel-wobble written again with different
+  numbers. They map onto the shared three and their definitions are
+  deleted, so components.css owns all five and only five.
+- The only keyframes left outside it are dash-catch-pop and
+  dash-miss-fade, which the brief keeps as Shas Dash own.
+
 ## Admin dashboard
 
 Built per `ADMIN-PROPOSAL.md`'s scope and sequencing, on the audit's

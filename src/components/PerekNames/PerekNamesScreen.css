@@ -477,18 +477,7 @@
   border-radius: var(--radius-control);
   border-left: 3px solid var(--active-seder-hue);
   background: var(--surface-hi);
-  animation: notes-expand-pop 0.18s ease;
-}
-
-@keyframes notes-expand-pop {
-  from {
-    opacity: 0;
-    transform: scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+  animation: panel-pop 0.18s ease;
 }
 
 .notes-expand__head {

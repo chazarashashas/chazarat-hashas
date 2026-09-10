@@ -59,17 +59,6 @@
   white-space: nowrap;
 }
 
-@keyframes flip-counter-pop {
-  from {
-    transform: scale(0.86);
-    opacity: 0.4;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
 .flip-counter__pct {
   margin: 10px 0 6px;
   text-align: center;
@@ -77,7 +66,7 @@
   font-size: var(--fs-28);
   font-weight: 800;
   color: var(--flip-hue);
-  animation: flip-counter-pop 0.3s ease;
+  animation: panel-pop 0.3s ease;
 }
 
 .flip-counter__bar {

@@ -70,19 +70,6 @@
   margin-bottom: 4px;
 }
 
-@keyframes chevrusa-error-wobble {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  25% {
-    transform: translateX(-4px);
-  }
-  75% {
-    transform: translateX(4px);
-  }
-}
-
 .chevrusa-error {
   display: flex;
   align-items: center;
@@ -95,7 +82,7 @@
   font-weight: 600;
   text-align: left;
   margin-bottom: 12px;
-  animation: chevrusa-error-wobble 0.4s ease;
+  animation: panel-wobble 0.4s ease;
 }
 
 .chevrusa-error__dot {

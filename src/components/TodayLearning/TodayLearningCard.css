@@ -140,30 +140,8 @@
   color: var(--on-navy);
 }
 
-@keyframes today-sent-tick-pop {
-  0% {
-    transform: scale(0.4);
-    opacity: 0;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-@keyframes today-sent-rise {
-  from {
-    transform: translateY(-6px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
 .today-learning-card--sent {
-  animation: today-sent-rise 0.3s ease;
+  animation: screen-fade-up 0.3s ease;
 }
 
 .today-sent__tick {
@@ -178,7 +156,7 @@
   justify-content: center;
   font-size: var(--fs-20);
   font-weight: 800;
-  animation: today-sent-tick-pop 0.35s ease 0.1s both;
+  animation: panel-pop 0.35s ease 0.1s both;
 }
 
 .today-sent__title {
