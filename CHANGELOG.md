@@ -7,14 +7,17 @@ One entry per PR, newest first.
 - Sidebar and bottom bar drop their white/cream literals for the on-navy
   tokens; both label sizes go from 9.5px to 12px, and the sidebar tightens
   to the brief's item padding and group-label margins.
--  renders  —  is gone and
+- `TabBar` renders `.pill.pill--compact` — `.tab-bar__tab` is gone and
   TabBar.css is layout only.
-- The More sheet uses the shared , keeping only its
-  bottom-anchored layout, and its grid is fixed at four columns.
+- The More sheet uses the shared `.modal-scrim`, keeping only its
+  bottom-anchored layout, and its grid is fixed at four columns. Its own
+  rise keyframe is deleted in favour of `panel-pop`.
 - The More tile is now active whenever the open screen is not on the bar.
--  gains the third group, More: L'Iluy Nishmat, Resources,
+- `navItems.ts` gains the third group, More: L'Iluy Nishmat, Resources,
   Guide, My Account. Guide and My Account stop being rendered separately
   at the foot of the rail.
+- Known gap: the brief's sidebar metrics do not fit 17 items in 800px
+  (~1119px with the icon-above-label item), so the rail still scrolls.
 
 ## Consistency pass PR 1 — tokens and the shared layer
 
