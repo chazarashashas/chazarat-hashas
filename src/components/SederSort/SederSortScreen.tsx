@@ -156,7 +156,7 @@ export function SederSortScreen() {
 
   return (
     <div className="stage">
-      <div className="panel sort-panel">
+      <div className="panel">
         <button className="restart-icon" title="Restart" onClick={handleReset}>
           ↺
         </button>

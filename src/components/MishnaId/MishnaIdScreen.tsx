@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { SEDARIM, type Seder, type Masechet } from "../../data/shas";
 import { SEDER_TABS } from "../../data/sederTabs";
 import { fetchRandomMishna } from "../../utils/sefaria";
+import { friendlyError } from "../../utils/friendlyError";
 import { usePerekNotes } from "../../utils/usePerekNotes";
 import { useGameStats } from "../../utils/useGameStats";
 import { getSederHue } from "../../utils/sederHue";
@@ -166,7 +167,7 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
 
   const sederDone = Boolean(card.guessedSeder) || card.sederSkipped;
   const masechetDone = Boolean(card.guessedMasechet) || card.masechetSkipped;
-  // The core goal — you've located the mishnah's seder and masechet. Perek
+  // The core goal — you've located the mishna's seder and masechet. Perek
   // is never required to reach this; it's an optional bonus round on top.
   const coreSolved = sederDone && masechetDone;
   // Once the pool is narrowed to one masechet, seder+masechet are given
@@ -191,7 +192,7 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
         if (cancelled) return;
         setContent({
           status: "error",
-          message: err instanceof Error ? err.message : "Couldn't load this mishnah.",
+          message: friendlyError(err, "mishna-quiz"),
         });
       });
     return () => {
@@ -358,7 +359,7 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
 
   return (
     <div className="stage">
-      <div className="panel mishna-panel">
+      <div className="panel">
         <div className="mishna-panel-icons">
           {inPlay && (
             <button
@@ -406,7 +407,7 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
             <div className="mishna-control">
               <p className="mishna-control__label">Pool</p>
               <select
-                className="mishna-narrow-select"
+                className="field__input mishna-narrow-select"
                 value={narrowTo}
                 onChange={(e) => handleNarrowChange(e.target.value)}
               >
@@ -423,7 +424,7 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
               <div className="mishna-control">
                 <p className="mishna-control__label">Pool</p>
                 <select
-                  className="mishna-narrow-select"
+                  className="field__input mishna-narrow-select"
                   value={narrowTo}
                   onChange={(e) => handleNarrowChange(e.target.value)}
                 >
@@ -458,7 +459,7 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
             <p className="mishna-summary__grade">{letterGrade((quizScore / QUIZ_LENGTH) * 100)}</p>
             <p className="mishna-summary__label">Quiz complete</p>
             <button className="restart" onClick={() => prepareSession()}>
-              New quiz
+              Play again
             </button>
           </div>
         ) : (

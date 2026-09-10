@@ -27,7 +27,7 @@
 .sort-bin--reject {
   animation: panel-wobble 0.3s ease;
   border-color: var(--bad);
-  background: #fbeded;
+  background: var(--bad-bg);
 }
 
 .sort-bin--selectable {
@@ -45,13 +45,13 @@
 
 .sort-bin__title {
   font-family: var(--font-heading);
-  font-size: 11px;
+  font-size: var(--fs-12);
   font-weight: 700;
   color: var(--bin-hue, var(--ink));
 }
 
 .sort-bin__tally {
-  font-size: 10px;
+  font-size: var(--fs-12);
   font-weight: 600;
   color: var(--muted);
 }
@@ -64,9 +64,9 @@
 }
 
 .sort-bin__tag {
-  font-size: 9px;
+  font-size: var(--fs-12);
   font-weight: 700;
-  color: #fff;
+  color: var(--on-navy);
   background: var(--bin-hue, var(--ink));
   border-radius: var(--radius-pill);
   padding: 2px 7px;
@@ -92,14 +92,14 @@
   align-items: center;
   justify-content: center;
   background: var(--ink);
-  color: #fff;
+  color: var(--on-navy);
   font-weight: 700;
-  font-size: 11px;
+  font-size: var(--fs-12);
   cursor: grab;
   user-select: none;
   -webkit-user-select: none;
   touch-action: none;
-  box-shadow: 0 3px 8px rgba(22, 35, 63, 0.25);
+  box-shadow: var(--shadow-chip);
   padding: 0 10px;
   font-family: var(--font-body);
 }
@@ -124,11 +124,11 @@
   align-items: center;
   justify-content: center;
   background: var(--ink);
-  color: #fff;
+  color: var(--on-navy);
   font-weight: 700;
-  font-size: 11px;
+  font-size: var(--fs-12);
   padding: 0 10px;
   text-align: center;
-  box-shadow: 0 8px 18px rgba(22, 35, 63, 0.3);
+  box-shadow: var(--shadow-drag);
   font-family: var(--font-body);
 }

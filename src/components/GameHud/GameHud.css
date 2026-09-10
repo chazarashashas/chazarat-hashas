@@ -11,9 +11,9 @@
 .game-hud__doing {
   flex-shrink: 0;
   font-family: var(--font-heading);
-  font-size: 11px;
+  font-size: var(--fs-12);
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--on-navy);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -24,7 +24,7 @@
   flex: 1;
   height: 6px;
   border-radius: var(--radius-pill);
-  background: rgba(240, 238, 230, 0.22);
+  background: var(--on-navy-rule);
   overflow: hidden;
 }
 
@@ -39,12 +39,12 @@
 .game-hud__worth {
   flex-shrink: 0;
   font-family: var(--font-heading);
-  font-size: 13px;
+  font-size: var(--fs-13);
   font-weight: 800;
   color: var(--gold);
   white-space: nowrap;
 }
 
 .game-hud__worth--urgent {
-  color: #e07a5f;
+  color: var(--gold-bright);
 }

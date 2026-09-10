@@ -225,7 +225,7 @@ export function RecallScreen() {
                     {scopeLabel} — {targetList.length} masechtot
                   </div>
                   <button className="restart" onClick={handleStart}>
-                    Start chazara
+                    Start
                   </button>
                 </div>
               )}
@@ -234,7 +234,7 @@ export function RecallScreen() {
         )}
 
         {phase === "ended" && (
-          <div className="recall-center">
+          <div className="game__end recall-center">
             <div className="recall-center__big">
               {found.size === targetList.length ? "All of them!" : "Time's up"}
             </div>

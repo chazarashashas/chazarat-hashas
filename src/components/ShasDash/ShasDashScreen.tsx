@@ -483,7 +483,7 @@ export function ShasDashScreen() {
               {phase === "ready" && (
                 <div className="dash-board-overlay">
                   <button className="restart" onMouseDown={(e) => e.preventDefault()} onClick={handleStart}>
-                    Start the journey
+                    Start
                   </button>
                 </div>
               )}

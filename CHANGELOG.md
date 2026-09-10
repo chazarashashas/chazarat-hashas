@@ -2,6 +2,21 @@
 
 One entry per PR, newest first.
 
+## Consistency pass PR 8 — the five games
+
+- Every literal across all five games plus `GameHud` and
+  `TranslationReveal` is a token; the three drag/chip shadows are the
+  shared ones.
+- `board-wobble` and `dash-shake` are deleted — both were `panel-wobble`
+  under another name. `dash-catch-pop` and `dash-miss-fade` stay, as the
+  brief says: they are Shas Dash's own.
+- Mishna Quiz and Shas Dash stop defining their own `.icon-btn`.
+- The quiz's narrow selects are `.field__input`, and its load failure goes
+  through `friendlyError`.
+- Per-screen stage widths on Shas Dash are gone.
+- Copy: "New quiz" → "Play again"; "Start chazara" and "Start the
+  journey" → "Start".
+
 ## Consistency pass PR 7 — My Siyumim
 
 - All 24 literals to tokens; `LogLearningModal` stops killing its focus
