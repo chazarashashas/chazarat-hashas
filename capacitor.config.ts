@@ -13,7 +13,7 @@ const config: CapacitorConfig = {
       launchShowDuration: 0,
       launchAutoHide: true,
       backgroundColor: '#f5f0e4',
-      androidScaleType: 'CENTER_CROP',
+      androidScaleType: 'CENTER_INSIDE',
     },
   },
 };

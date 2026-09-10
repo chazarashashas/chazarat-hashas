@@ -17,7 +17,10 @@ import { closeTopOverlay } from "./useEscapeKey";
 export function useNativeApp(homeSection: string, section: string, goHome: () => void) {
   useEffect(() => {
     if (!Capacitor.isNativePlatform()) return;
-    Keyboard.setResizeMode({ mode: KeyboardResize.Body });
+    // Native, not Body: Body resizes the whole document when the keyboard
+    // opens, which drags the fixed bottom bar up with it. Native resizes
+    // the web view instead, so the bar stays where it is.
+    Keyboard.setResizeMode({ mode: KeyboardResize.Native });
     StatusBar.setStyle({ style: Style.Light });
     StatusBar.setBackgroundColor({ color: "#16233f" });
   }, []);

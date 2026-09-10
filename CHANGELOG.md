@@ -2,6 +2,20 @@
 
 One entry per PR, newest first.
 
+## Consistency pass PR 12 — Android (Phase 4)
+
+- **Behavioural:** the keyboard resize mode goes `Body` → `Native`, so the
+  fixed bottom bar stops being dragged up when the keyboard opens. This is
+  the only behaviour change in the entire pass and it needs verifying on a
+  real device — I can't test it here.
+- The 13 `drawable-*-night-*` splash variants are deleted so the light
+  splash is used at every density, as the brief allows.
+- `androidScaleType` `CENTER_CROP` → `CENTER_INSIDE`.
+- `ic_launcher_background` white → navy; new `colors.xml` with
+  `colorPrimary`/`colorPrimaryDark` navy and `colorAccent` gold.
+- `npx cap sync android` run; the generated `capacitor.config.json`
+  matches.
+
 ## Consistency pass PR 11 - the copy sweep
 
 - Text only, five lines. Most of the glossary was already applied by the
