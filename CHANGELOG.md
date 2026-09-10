@@ -2,6 +2,32 @@
 
 One entry per PR, newest first.
 
+## Admin dashboard
+
+Built per `ADMIN-PROPOSAL.md`'s scope and sequencing, on the audit's
+design layer. **Needs two SQL files run in Supabase before it works:**
+`admin_audit_log_schema.sql` and `admin_chaburot_schema.sql`.
+
+- **Audit log** (the proposal's step 2, the one item it calls
+  non-optional). Append-only table, no update or delete policy, writes go
+  through a security-definer function that takes the actor from
+  `auth.uid()` so it can't be forged. Every reset and every deletion now
+  writes an entry, and the panel lists them.
+- **Users with a drawer** (step 3): search, then one row per account
+  opening a drawer with the whole record and both privileged actions in
+  it, rather than two controls per table row.
+- **Chaburos with the rebbe view** (step 4): every group, and a roster
+  drawer, so "why is my talmid missing" is answerable.
+- The raw Postgres error the proposal opens with is gone — every admin
+  RPC failure goes through `friendlyError`, and Admin no longer borrows
+  `.login-error` from another screen.
+- Everything is a shared part: `.card` rows, `.field` inputs, `.pill`
+  section tabs, `.state` for all three states, the shared `ConfirmModal`.
+- **Not built, deliberately:** role management (the proposal assumes rebbe
+  is a database flag; it is derived from teaching a class, so there is
+  nothing to grant), admin-created chaburot, impersonation, support inbox
+  and system health.
+
 ## Consistency pass PR 12 — Android (Phase 4)
 
 - **Behavioural:** the keyboard resize mode goes `Body` → `Native`, so the
