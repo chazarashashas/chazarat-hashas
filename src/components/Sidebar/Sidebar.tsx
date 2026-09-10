@@ -1,6 +1,6 @@
 import { NavIcon } from "../Icon/NavIcon";
 import { BrandMark } from "../BrandMark";
-import { HUE, NAV_GROUPS, LOGIN_ITEM, ADMIN_ITEM, REBBE_ITEM, GUIDE_ITEM, type NavItemDef } from "../../utils/navItems";
+import { HUE, NAV_GROUPS, ADMIN_ITEM, REBBE_ITEM, type NavItemDef } from "../../utils/navItems";
 import "./Sidebar.css";
 
 interface SidebarProps {
@@ -49,10 +49,6 @@ export function Sidebar({ activeId, onSelect, isAdmin, isRebbe }: SidebarProps) 
           <NavButton item={REBBE_ITEM} active={activeId === REBBE_ITEM.id} onSelect={onSelect} />
         </div>
       )}
-      <div className="nav-group nav-group--login">
-        <NavButton item={GUIDE_ITEM} active={activeId === GUIDE_ITEM.id} onSelect={onSelect} />
-        <NavButton item={LOGIN_ITEM} active={activeId === LOGIN_ITEM.id} onSelect={onSelect} />
-      </div>
     </nav>
   );
 }

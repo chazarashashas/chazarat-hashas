@@ -2,6 +2,20 @@
 
 One entry per PR, newest first.
 
+## Consistency pass PR 2 — the shell
+
+- Sidebar and bottom bar drop their white/cream literals for the on-navy
+  tokens; both label sizes go from 9.5px to 12px, and the sidebar tightens
+  to the brief's item padding and group-label margins.
+-  renders  —  is gone and
+  TabBar.css is layout only.
+- The More sheet uses the shared , keeping only its
+  bottom-anchored layout, and its grid is fixed at four columns.
+- The More tile is now active whenever the open screen is not on the bar.
+-  gains the third group, More: L'Iluy Nishmat, Resources,
+  Guide, My Account. Guide and My Account stop being rendered separately
+  at the foot of the rail.
+
 ## Consistency pass PR 1 — tokens and the shared layer
 
 - `theme.css` gains the tokens the pass is built from: the five on-navy

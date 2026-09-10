@@ -1,3 +1,5 @@
+/* Layout only — the tabs themselves are .pill.pill--compact from
+   components.css. */
 .tab-bar {
   margin-top: 14px;
   display: flex;
@@ -6,35 +8,22 @@
   justify-content: center;
 }
 
-.tab-bar__tab {
+/* The default single-line set shares the row between its tabs; the
+   labels ellipsize rather than wrapping. */
+.tab-bar:not(.tab-bar--wrap) .pill {
   flex: 1;
   min-width: 0;
-  font-family: var(--font-heading);
-  font-size: 8.5px;
-  font-weight: 600;
-  padding: 8px 1px;
-  border-radius: var(--radius-pill);
-  border: 1.5px solid var(--border);
-  background: var(--surface);
-  color: var(--ink);
-  cursor: pointer;
+  padding-left: 4px;
+  padding-right: 4px;
+  display: block;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: center;
-}
-
-.tab-bar__tab--active {
-  background: var(--brand);
-  border-color: var(--brand);
-  color: #fff;
+  line-height: 26px;
 }
 
 .tab-bar--wrap {
   flex-wrap: wrap;
-}
-
-.tab-bar--wrap .tab-bar__tab {
-  flex: 0 1 auto;
-  padding: 8px 12px;
+  gap: 6px;
 }

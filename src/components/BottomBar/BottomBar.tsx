@@ -6,8 +6,6 @@ import {
   NAV_GROUPS,
   ADMIN_ITEM,
   REBBE_ITEM,
-  LOGIN_ITEM,
-  GUIDE_ITEM,
   type NavItemDef,
 } from "../../utils/navItems";
 import { useEscapeKey } from "../../utils/useEscapeKey";
@@ -32,15 +30,15 @@ function MoreSheet({ activeId, barIds, isAdmin, isRebbe, onSelect, onClose }: Mo
   const groups = NAV_GROUPS.map((g) => ({ label: g.label, items: g.items.filter((i) => !barSet.has(i.id)) })).filter(
     (g) => g.items.length > 0,
   );
+  // Guide and My Account live in the "More" group now, so only the two
+  // role-gated destinations are appended here.
   const accountItems: NavItemDef[] = [
     ...(isRebbe ? [REBBE_ITEM] : []),
     ...(isAdmin ? [ADMIN_ITEM] : []),
-    GUIDE_ITEM,
-    LOGIN_ITEM,
   ].filter((i) => !barSet.has(i.id));
 
   return (
-    <div className="more-sheet-scrim" onClick={onClose}>
+    <div className="modal-scrim modal-scrim--sheet" onClick={onClose}>
       <div className="more-sheet" role="dialog" aria-label="More" onClick={(e) => e.stopPropagation()}>
         <span className="more-sheet__handle" aria-hidden="true" />
         {groups.map((group) => (
@@ -106,6 +104,9 @@ interface BottomBarProps {
 export function BottomBar({ activeId, onSelect, barIds, isAdmin, isRebbe }: BottomBarProps) {
   const [moreOpen, setMoreOpen] = useState(false);
   const barItems = barIds.map(itemFor).filter((i): i is NavItemDef => !!i);
+  // Whatever is open but not on the bar was reached through More, so More
+  // is the tab you are on — without this the bar shows nothing active.
+  const onMoreScreen = !barIds.includes(activeId);
 
   function handleSelect(id: string) {
     setMoreOpen(false);
@@ -131,12 +132,15 @@ export function BottomBar({ activeId, onSelect, barIds, isAdmin, isRebbe }: Bott
           </button>
         ))}
         <button
-          className={"bottom-bar__item" + (moreOpen ? " bottom-bar__item--active" : "")}
+          className={"bottom-bar__item" + (moreOpen || onMoreScreen ? " bottom-bar__item--active" : "")}
           aria-haspopup="true"
           aria-expanded={moreOpen}
           onClick={() => setMoreOpen(true)}
         >
-          <span className="bottom-bar__tile" style={moreOpen ? { background: "var(--gold)" } : undefined}>
+          <span
+            className="bottom-bar__tile"
+            style={moreOpen || onMoreScreen ? { background: "var(--gold)" } : undefined}
+          >
             <NavIcon id="more" size={20} />
           </span>
           <span className="bottom-bar__label">More</span>

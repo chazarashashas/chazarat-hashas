@@ -21,7 +21,7 @@ export function TabBar({ tabs, activeId, onSelect, wrap }: TabBarProps) {
       {tabs.map((tab) => (
         <button
           key={tab.id}
-          className={"tab-bar__tab" + (tab.id === activeId ? " tab-bar__tab--active" : "")}
+          className={"pill pill--compact" + (tab.id === activeId ? " pill--active" : "")}
           onClick={() => onSelect(tab.id)}
         >
           {tab.label}

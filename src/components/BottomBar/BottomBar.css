@@ -14,7 +14,7 @@
     justify-content: space-around;
     background: var(--ink);
     padding: 6px 4px env(safe-area-inset-bottom);
-    box-shadow: 0 -8px 24px rgba(22, 35, 63, 0.22);
+    box-shadow: var(--shadow-hero);
   }
 }
 
@@ -29,15 +29,15 @@
   padding: 4px 2px;
   background: none;
   border: none;
-  color: rgba(245, 240, 228, 0.72);
+  color: var(--on-navy-muted);
   font-family: var(--font-heading);
-  font-size: 9.5px;
+  font-size: var(--fs-12);
   font-weight: 600;
   cursor: pointer;
 }
 
 .bottom-bar__item:active {
-  color: #fff;
+  color: var(--on-navy);
 }
 
 .bottom-bar__tile {
@@ -57,12 +57,12 @@
 }
 
 .bottom-bar__item--active {
-  color: #fbf8f1;
+  color: var(--on-navy);
   font-weight: 700;
 }
 
 .bottom-bar__item--active .bottom-bar__tile {
-  color: #fff;
+  color: var(--on-navy);
 }
 
 .bottom-bar__label {
@@ -74,16 +74,11 @@
 
 /* ---------- More sheet ---------- */
 
-.more-sheet-scrim {
-  position: fixed;
-  inset: 0;
-  z-index: 30;
-  background: rgba(22, 35, 63, 0.4);
-  display: flex;
+/* The sheet uses the shared .modal-scrim; the only thing left here is
+   that this one is anchored to the bottom rather than centred. */
+.modal-scrim--sheet {
   align-items: flex-end;
-  justify-content: center;
-  padding-top: env(safe-area-inset-top);
-  animation: panel-fade-in 0.15s ease;
+  padding-bottom: 0;
 }
 
 .more-sheet {
@@ -91,21 +86,10 @@
   max-width: 640px;
   max-height: calc(80vh - env(safe-area-inset-bottom));
   overflow-y: auto;
-  background: var(--paper);
+  background: var(--surface);
   border-radius: var(--radius-hero) var(--radius-hero) 0 0;
   padding: 10px 18px calc(20px + env(safe-area-inset-bottom));
-  animation: more-sheet-rise 0.18s ease;
-}
-
-@keyframes more-sheet-rise {
-  from {
-    transform: translateY(16px);
-    opacity: 0.4;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+  animation: panel-pop 0.18s ease;
 }
 
 .more-sheet__handle {
@@ -128,14 +112,16 @@
 .more-sheet__group-label {
   margin: 0 0 8px;
   font-family: var(--font-heading);
-  font-size: 11px;
+  font-size: var(--fs-12);
   font-weight: 700;
   color: var(--muted);
 }
 
 .more-sheet__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
+  /* Fixed at four so the tiles line up between groups rather than
+     reflowing to a different count per group. */
+  grid-template-columns: repeat(4, 1fr);
   gap: 6px;
 }
 
@@ -152,7 +138,7 @@
   border: none;
   color: var(--ink);
   font-family: var(--font-heading);
-  font-size: 10px;
+  font-size: var(--fs-12);
   font-weight: 600;
   text-align: center;
   cursor: pointer;

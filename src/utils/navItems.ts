@@ -51,27 +51,35 @@ export const NAV_GROUPS: { label: string; items: NavItemDef[] }[] = [
       { id: "sort", label: "Seder Sort" },
       { id: "recall", label: "Mishna Chazara" },
       { id: "dash", label: "Shas Dash" },
+    ],
+  },
+  /* Everything that is neither a tracked personal screen nor a drill:
+     reference material, the account, and the one feature that belongs to
+     other people's siyumim rather than your own practice. */
+  {
+    label: "More",
+    items: [
       { id: "liluy", label: "L'Iluy Nishmat" },
       { id: "resources", label: "Resources" },
+      { id: "guide", label: "Guide" },
+      { id: "login", label: "My Account" },
     ],
   },
 ];
 
-/** Login sits alone at the very bottom of the rail, separate from both
-    groups — account access is conventionally placed apart from feature
-    navigation, not buried mid-list (user feedback). */
+/** Both of these now live inside the "More" group above; the consts stay
+    because the phone's More sheet lists them separately from the groups
+    it renders. Login is last inside More, keeping account access at the
+    end of the list rather than buried mid-way (user feedback). */
 export const LOGIN_ITEM: NavItemDef = { id: "login", label: "My Account" };
+export const GUIDE_ITEM: NavItemDef = { id: "guide", label: "Guide" };
+/** Only ever shown to accounts that have the role, so these stay out of
+    NAV_GROUPS and are appended by the shell when they apply. */
 export const ADMIN_ITEM: NavItemDef = { id: "admin", label: "Admin" };
 export const REBBE_ITEM: NavItemDef = { id: "rebbe", label: "Dashboard" };
-/** Whole-app reference material, not scoped to either "My Mishna" or
-    "Practice" — sits with My Account rather than inside either group,
-    same reasoning as Login's own placement. */
-export const GUIDE_ITEM: NavItemDef = { id: "guide", label: "Guide" };
 
 export const ALL_NAV_ITEMS: NavItemDef[] = [
   ...NAV_GROUPS.flatMap((g) => g.items),
-  GUIDE_ITEM,
-  LOGIN_ITEM,
   ADMIN_ITEM,
   REBBE_ITEM,
 ];
