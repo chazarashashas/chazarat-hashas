@@ -15,23 +15,6 @@
   min-width: 0;
 }
 
-.notes-header__title {
-  margin: 0 0 4px;
-  font-family: var(--font-heading);
-  font-size: clamp(26px, 4vw, 34px);
-  font-weight: 800;
-  line-height: 1.15;
-  color: var(--ink);
-}
-
-.notes-header__subtitle {
-  margin: 0;
-  max-width: 420px;
-  font-size: 12.5px;
-  line-height: 1.5;
-  color: var(--muted);
-}
-
 .notes-header__right {
   flex-shrink: 0;
   display: flex;
@@ -50,7 +33,7 @@
   padding: 0;
   font-family: var(--font-body);
   font-weight: 700;
-  font-size: 11.5px;
+  font-size: var(--fs-12);
   color: var(--brass-text);
   text-decoration: underline;
   text-decoration-thickness: 1px;
@@ -65,28 +48,9 @@
 .docview-toggle {
   display: flex;
   gap: 2px;
-  background: #e5dcc4;
+  background: var(--tint);
   border-radius: var(--radius-pill);
   padding: 3px;
-}
-
-.docview-toggle__btn {
-  min-height: 32px;
-  padding: 0 14px;
-  border: none;
-  border-radius: var(--radius-pill);
-  background: none;
-  font-family: var(--font-heading);
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--muted);
-  cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
-}
-
-.docview-toggle__btn--active {
-  background: var(--ink);
-  color: #fff;
 }
 
 /* ---------- Seder pills ---------- */
@@ -113,7 +77,7 @@
 }
 
 .seder-pill--active {
-  color: #fff;
+  color: var(--on-navy);
 }
 
 .seder-pill:not(.seder-pill--active):hover {
@@ -122,13 +86,13 @@
 
 .seder-pill__he {
   font-family: var(--font-hebrew);
-  font-size: 13.5px;
+  font-size: var(--fs-14);
   line-height: 1;
 }
 
 .seder-pill__en {
   font-family: var(--font-body);
-  font-size: 11.5px;
+  font-size: var(--fs-12);
   font-weight: 700;
 }
 
@@ -171,14 +135,14 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   font-family: var(--font-body);
-  font-size: 11.5px;
+  font-size: var(--fs-12);
   font-weight: 600;
   color: var(--ink-2);
   text-align: center;
 }
 
 .masechet-chip--active .masechet-chip__label {
-  color: #fff;
+  color: var(--on-navy);
 }
 
 .masechet-chip__badge {
@@ -193,14 +157,14 @@
   justify-content: center;
   border-radius: var(--radius-pill);
   font-family: var(--font-heading);
-  font-size: 9px;
+  font-size: var(--fs-12);
   font-weight: 800;
   background: color-mix(in srgb, var(--active-seder-hue) 22%, var(--surface-hi));
   color: var(--active-seder-ink);
 }
 
 .masechet-chip--active .masechet-chip__badge {
-  background: rgba(251, 248, 241, 0.22);
+  background: var(--on-navy-fill);
   color: var(--surface);
 }
 
@@ -223,7 +187,7 @@
 
 .concepts-band__title {
   font-family: var(--font-heading);
-  font-size: 12.5px;
+  font-size: var(--fs-13);
   font-weight: 700;
   color: var(--brass-text);
 }
@@ -234,7 +198,7 @@
   border: none;
   padding: 0;
   font-family: var(--font-body);
-  font-size: 11px;
+  font-size: var(--fs-12);
   font-weight: 700;
   color: var(--muted);
   cursor: pointer;
@@ -247,7 +211,7 @@
 
 .concepts-band__empty {
   margin: 8px 0 0;
-  font-size: 11.5px;
+  font-size: var(--fs-12);
   line-height: 1.5;
   color: var(--muted);
 }
@@ -273,14 +237,14 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   font-family: var(--font-body);
-  font-size: 12px;
+  font-size: var(--fs-12);
   font-weight: 600;
   color: var(--ink);
 }
 
 .concepts-band__row-date {
   flex-shrink: 0;
-  font-size: 10px;
+  font-size: var(--fs-12);
   color: var(--muted);
 }
 
@@ -291,7 +255,7 @@
   padding: 2px 8px;
   border-radius: var(--radius-pill);
   font-family: var(--font-body);
-  font-size: 10px;
+  font-size: var(--fs-12);
   font-weight: 700;
   white-space: nowrap;
   background: color-mix(in srgb, var(--pill-hue) 16%, var(--surface-hi));
@@ -322,14 +286,14 @@
 .notes-page__masechet {
   margin: 0;
   font-family: var(--font-heading);
-  font-size: 24px;
+  font-size: var(--fs-20);
   font-weight: 800;
   color: var(--ink);
 }
 
 .notes-page__meta {
   margin: 3px 0 0;
-  font-size: 11.5px;
+  font-size: var(--fs-12);
   font-weight: 600;
   color: var(--muted);
 }
@@ -341,14 +305,14 @@
 }
 
 .notes-page__progress-text {
-  font-size: 11.5px;
+  font-size: var(--fs-12);
   font-weight: 600;
   color: var(--ink-2);
 }
 
 .notes-page__progress-text strong {
   font-family: var(--font-heading);
-  font-size: 14px;
+  font-size: var(--fs-14);
   color: var(--ink);
 }
 
@@ -378,7 +342,7 @@
   display: block;
   margin-bottom: 4px;
   font-family: var(--font-body);
-  font-size: 10.5px;
+  font-size: var(--fs-12);
   font-weight: 700;
   color: var(--muted);
 }
@@ -388,13 +352,9 @@
   border: none;
   background: transparent;
   font-family: var(--font-body);
-  font-size: 12.5px;
+  font-size: var(--fs-13);
   color: var(--ink);
   padding: 0;
-}
-
-.notes-page__sentence input:focus {
-  outline: none;
 }
 
 .notes-page__sentence input::placeholder {
@@ -433,7 +393,7 @@
   justify-content: center;
   border-radius: var(--radius-small);
   font-family: var(--font-hebrew);
-  font-size: 15px;
+  font-size: var(--fs-14);
   font-weight: 700;
   background: color-mix(in srgb, var(--active-seder-hue) 12%, var(--surface-hi));
   color: var(--active-seder-ink);
@@ -441,15 +401,14 @@
 
 .notes-row__tile--named {
   background: var(--active-seder-hue);
-  color: #fff;
+  color: var(--on-navy);
 }
 
 .notes-row__rule {
   flex-shrink: 0;
   align-self: stretch;
   width: 2px;
-  border-radius: 1px;
-  background: #eee8d9;
+  background: var(--line);
 }
 
 .notes-row__rule--named {
@@ -463,7 +422,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   font-family: var(--font-hebrew);
-  font-size: 15px;
+  font-size: var(--fs-14);
   color: var(--active-seder-ink);
   text-align: right;
 }
@@ -474,7 +433,7 @@
   border: none;
   background: transparent;
   font-family: var(--font-body);
-  font-size: 14.5px;
+  font-size: var(--fs-14);
   font-weight: 400;
   color: var(--ink);
   padding: 0 2px;
@@ -482,10 +441,6 @@
 
 .notes-row__input--filled {
   font-weight: 600;
-}
-
-.notes-row__input:focus {
-  outline: none;
 }
 
 .notes-row__input::placeholder {
@@ -502,7 +457,7 @@
   border: none;
   background: none;
   font-family: var(--font-body);
-  font-size: 10.5px;
+  font-size: var(--fs-12);
   font-weight: 700;
   color: var(--muted);
   cursor: pointer;
@@ -546,14 +501,14 @@
 
 .notes-expand__title {
   font-family: var(--font-heading);
-  font-size: 12.5px;
+  font-size: var(--fs-13);
   font-weight: 700;
   color: var(--ink);
 }
 
 .notes-expand__saves {
   flex-shrink: 0;
-  font-size: 10px;
+  font-size: var(--fs-12);
   font-style: italic;
   color: var(--muted);
   white-space: nowrap;
@@ -566,14 +521,10 @@
   background: transparent;
   resize: vertical;
   font-family: var(--font-body);
-  font-size: 14px;
+  font-size: var(--fs-14);
   line-height: 1.75;
   color: var(--ink);
   padding: 0;
-}
-
-.notes-expand__textarea:focus {
-  outline: none;
 }
 
 .notes-expand__textarea::placeholder {
@@ -594,7 +545,7 @@
   border: none;
   padding: 0;
   font-family: var(--font-body);
-  font-size: 11.5px;
+  font-size: var(--fs-12);
   font-weight: 700;
   color: var(--brass-text);
   text-decoration: underline;
@@ -614,9 +565,9 @@
   border: none;
   border-radius: var(--radius-pill);
   background: var(--ink);
-  color: #fff;
+  color: var(--on-navy);
   font-family: var(--font-heading);
-  font-size: 11px;
+  font-size: var(--fs-12);
   font-weight: 700;
   cursor: pointer;
   transition: background 0.15s ease, color 0.15s ease;
@@ -644,14 +595,14 @@
 .concepts-tab__title {
   margin: 0;
   font-family: var(--font-heading);
-  font-size: 15px;
+  font-size: var(--fs-14);
   font-weight: 700;
   color: var(--ink);
 }
 
 .concepts-tab__count {
   flex-shrink: 0;
-  font-size: 11px;
+  font-size: var(--fs-12);
   font-weight: 700;
   color: var(--brass-text);
 }
@@ -666,7 +617,7 @@
 }
 
 .concepts-doc__empty {
-  font-size: 12px;
+  font-size: var(--fs-12);
   color: var(--ink-soft);
   font-style: italic;
   text-align: center;
@@ -693,14 +644,14 @@
 .concept-card__title {
   margin: 0;
   font-family: var(--font-heading);
-  font-size: 15px;
+  font-size: var(--fs-14);
   font-weight: 700;
   color: var(--ink);
 }
 
 .concept-card__date {
   flex-shrink: 0;
-  font-size: 10.5px;
+  font-size: var(--fs-12);
   color: var(--muted);
   white-space: nowrap;
 }
@@ -708,7 +659,7 @@
 .concept-card__body {
   margin: 6px 0 0;
   font-family: var(--font-body);
-  font-size: 13px;
+  font-size: var(--fs-13);
   line-height: 1.7;
   color: var(--ink);
 }
@@ -727,7 +678,7 @@
   border: none;
   padding: 0;
   font-family: var(--font-body);
-  font-size: 11px;
+  font-size: var(--fs-12);
   font-weight: 700;
   color: var(--brass-text);
   text-decoration: underline;
@@ -741,7 +692,7 @@
   color: var(--ink);
 }
 
-/* ---------- Phone: ≤599px, per ANDROID-BRIEF.md §6 ---------- */
+/* phone */
 
 @media (max-width: 599px) {
   .notes-header {
@@ -774,7 +725,7 @@
 
   .notes-row__traditional {
     width: 74px;
-    font-size: 13px;
+    font-size: var(--fs-13);
   }
 
   .notes-expand {
@@ -782,22 +733,21 @@
   }
 }
 
-/* Below ~480px the row's own math stops working — tile + rule +
-   traditional name + "More notes" leaves the actual name field only a
-   few characters wide. The traditional name is the one purely decorative
-   piece here (the brief already treats it as optional when a masechet
-   has none), so it's what gives way — same principle, one more case. */
+/* phone — the row's own math stops working here: tile + rule +
+   traditional name + "More notes" leaves the name field only a few
+   characters wide. The traditional name shrinks rather than vanishing;
+   it is content, not decoration. */
 @media (max-width: 599px) {
   .notes-row {
     gap: 6px;
   }
 
   .notes-row__traditional {
-    display: none;
+    font-size: var(--fs-13);
   }
 
   .notes-row__more {
     padding: 0 4px;
-    font-size: 9.5px;
+    font-size: var(--fs-12);
   }
 }

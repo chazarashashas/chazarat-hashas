@@ -2,6 +2,20 @@
 
 One entry per PR, newest first.
 
+## Consistency pass PR 6 — Mishna Notes
+
+- Literals and sizes to tokens; the three `outline: none` rules are gone,
+  so the global keyboard ring works in every field on this screen.
+- Title is "Mishna Notes" in a `.screen-head`, not "Notes."; the subtitle
+  becomes `__sub` and the print link plus view toggle move into `__aside`.
+- View toggle, seder pills and masechet chips are all `.pill`; the notes
+  page and concept cards are `.card`; the concepts band is a `.callout`;
+  text links are `.btn--quiet`.
+- The two 599px blocks are one, and the traditional name now shrinks on a
+  phone rather than disappearing — it is content, not decoration.
+- Copy: "Read the mishnayos →" → "Read the Mishnayot →"; "Concepts to
+  Review" → "Concepts to review".
+
 ## Consistency pass PR 5 — Explore Shas
 
 - Literals and sizes to tokens; the per-screen focus ring becomes the

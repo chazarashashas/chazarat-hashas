@@ -13,7 +13,7 @@ type DocView = "notes" | "concepts";
 
 interface PerekNamesScreenProps {
   /** Jumps to Explore Shas, where the actual mishnah text lives — offered
-      from a perek's open notebook ("Read the mishnayos →") so writing
+      from a perek's open notebook ("Read the Mishnayot →") so writing
       about a perek and reading it are one tap apart. */
   onOpenText?: () => void;
 }
@@ -103,27 +103,27 @@ export function PerekNamesScreen({ onOpenText }: PerekNamesScreenProps) {
           ↺
         </button>
 
-        <div className="notes-header">
+        <div className="screen-head notes-header">
           <div className="notes-header__left">
-            <h1 className="notes-header__title">Notes.</h1>
-            <p className="notes-header__subtitle">
+            <h1 className="screen-head__title">Mishna Notes</h1>
+            <p className="screen-head__sub">
               Give each perek a name only you would think of, so it sticks — "the laws of Zimmun," "who
               is considered ne'eman."
             </p>
           </div>
-          <div className="notes-header__right">
-            <button className="notes-print-link" onClick={() => setPrintOpen(true)}>
+          <div className="screen-head__aside notes-header__right">
+            <button className="btn btn--quiet notes-print-link" onClick={() => setPrintOpen(true)}>
               Print
             </button>
             <div className="docview-toggle">
               <button
-                className={"docview-toggle__btn" + (docView === "notes" ? " docview-toggle__btn--active" : "")}
+                className={"pill pill--compact" + (docView === "notes" ? " pill--active" : "")}
                 onClick={() => setDocView("notes")}
               >
                 Perakim
               </button>
               <button
-                className={"docview-toggle__btn" + (docView === "concepts" ? " docview-toggle__btn--active" : "")}
+                className={"pill pill--compact" + (docView === "concepts" ? " pill--active" : "")}
                 onClick={() => setDocView("concepts")}
               >
                 Concepts
@@ -135,11 +135,11 @@ export function PerekNamesScreen({ onOpenText }: PerekNamesScreenProps) {
         {docView === "concepts" ? (
           <div className="concepts-tab">
             <div className="concepts-tab__head">
-              <h2 className="concepts-tab__title">Concepts to Review</h2>
+              <h2 className="concepts-tab__title">Concepts to review</h2>
               <span className="concepts-tab__count">{pluralize(concepts.length, "saved", "saved")}</span>
             </div>
             {sortedConcepts.length === 0 ? (
-              <p className="concepts-doc__empty">
+              <p className="state state--empty">
                 No concepts saved yet — add one from Daily Limmud while you're learning, and it'll
                 show up here with the mishnah it came from.
               </p>
@@ -150,7 +150,7 @@ export function PerekNamesScreen({ onOpenText }: PerekNamesScreenProps) {
                   return (
                     <div
                       key={c.id}
-                      className="concept-card"
+                      className="card card--rule concept-card"
                       style={{ ["--card-hue" as string]: getSederHue(sederId) }}
                     >
                       <div className="concept-card__head">
@@ -169,7 +169,7 @@ export function PerekNamesScreen({ onOpenText }: PerekNamesScreenProps) {
                         >
                           {c.masechetEn} <span dir="rtl">{hebrewNumeral(c.perek)}:{hebrewNumeral(c.mishnah)}</span>
                         </span>
-                        <button className="concept-card__goto" onClick={() => handleGoToConcept(c)}>
+                        <button className="btn btn--quiet concept-card__goto" onClick={() => handleGoToConcept(c)}>
                           Go to it →
                         </button>
                       </div>
@@ -181,7 +181,6 @@ export function PerekNamesScreen({ onOpenText }: PerekNamesScreenProps) {
           </div>
         ) : (
           <div
-            className="notes-body"
             style={{
               ["--active-seder-hue" as string]: getSederHue(selectedSederId),
               ["--active-seder-ink" as string]: getSederHueText(selectedSederId),
@@ -193,11 +192,13 @@ export function PerekNamesScreen({ onOpenText }: PerekNamesScreenProps) {
                 return (
                   <button
                     key={seder.id}
-                    className={"seder-pill" + (active ? " seder-pill--active" : "")}
+                    className={"pill seder-pill" + (active ? " pill--active seder-pill--active" : "")}
                     style={active ? { background: getSederHue(seder.id), borderColor: getSederHue(seder.id) } : undefined}
                     onClick={() => handleSelectSeder(seder.id)}
                   >
-                    <span className="seder-pill__he">{seder.he}</span>
+                    <span className="seder-pill__he" dir="rtl">
+                      {seder.he}
+                    </span>
                     <span className="seder-pill__en">{seder.en}</span>
                   </button>
                 );
@@ -216,7 +217,7 @@ export function PerekNamesScreen({ onOpenText }: PerekNamesScreenProps) {
                     <button
                       key={m.en}
                       title={m.en}
-                      className={"masechet-chip" + (active ? " masechet-chip--active" : "")}
+                      className={"pill pill--compact masechet-chip" + (active ? " pill--active masechet-chip--active" : "")}
                       onClick={() => handleSelectMasechet(m.en)}
                     >
                       <span className="masechet-chip__label">{m.en}</span>
@@ -227,10 +228,10 @@ export function PerekNamesScreen({ onOpenText }: PerekNamesScreenProps) {
               </div>
             </div>
 
-            <div className="concepts-band">
+            <div className="callout concepts-band">
               <div className="concepts-band__head">
                 <span className="concepts-band__title">Concepts to review</span>
-                <button className="concepts-band__all" onClick={() => setDocView("concepts")}>
+                <button className="btn btn--quiet concepts-band__all" onClick={() => setDocView("concepts")}>
                   {pluralize(concepts.length, "saved", "saved")} in all →
                 </button>
               </div>
@@ -259,7 +260,7 @@ export function PerekNamesScreen({ onOpenText }: PerekNamesScreenProps) {
               )}
             </div>
 
-            <div className="notes-page">
+            <div className="card notes-page">
               <div className="notes-page__header">
                 <div className="notes-page__id">
                   <h2 className="notes-page__masechet">{selectedMasechet.en}</h2>
@@ -341,13 +342,13 @@ export function PerekNamesScreen({ onOpenText }: PerekNamesScreenProps) {
                           />
                           <div className="notes-expand__foot">
                             {onOpenText ? (
-                              <button className="notes-expand__read" onClick={onOpenText}>
-                                Read the mishnayos →
+                              <button className="btn btn--quiet notes-expand__read" onClick={onOpenText}>
+                                Read the Mishnayot →
                               </button>
                             ) : (
                               <span />
                             )}
-                            <button className="notes-expand__done" onClick={() => setExpandedPerek(null)}>
+                            <button className="btn btn--primary btn--compact notes-expand__done" onClick={() => setExpandedPerek(null)}>
                               Done
                             </button>
                           </div>
