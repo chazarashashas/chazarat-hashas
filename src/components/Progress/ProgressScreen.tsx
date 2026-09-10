@@ -9,6 +9,7 @@ import {
   type Pace,
 } from "../../utils/useLearningProgress";
 import { useAuth } from "../../utils/useAuth";
+import { hebrewNumeral } from "../../utils/hebrewNumeral";
 import { ProgressTracks } from "../ProgressTracks/ProgressTracks";
 import { SEDER_HUE } from "../../utils/sederHue";
 import { LogLearningModal } from "./LogLearningModal";
@@ -170,10 +171,12 @@ export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
   return (
     <div className="stage">
       <div className="panel">
-        <h1 className="panel__title">My Siyumim</h1>
+        <div className="screen-head">
+          <h1 className="screen-head__title">My Siyumim</h1>
+        </div>
 
         {sederRemaining > 0 && (
-          <div className="siyum-countdown">
+          <div className="hero-card siyum-countdown">
             <div className="siyum-countdown__head">
               <div className="siyum-countdown__text">
                 <p className="siyum-countdown__label">Your next siyum</p>
@@ -208,13 +211,13 @@ export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
             <div className="pace-control">
               <div className="pace-control__tabs">
                 <button
-                  className={"pace-tab" + (paceDirection === "amount" ? " pace-tab--active" : "")}
+                  className={"pill pill--compact" + (paceDirection === "amount" ? " pill--active" : "")}
                   onClick={() => setPaceDirection("amount")}
                 >
                   By daily amount
                 </button>
                 <button
-                  className={"pace-tab" + (paceDirection === "frequency" ? " pace-tab--active" : "")}
+                  className={"pill pill--compact" + (paceDirection === "frequency" ? " pill--active" : "")}
                   onClick={() => setPaceDirection("frequency")}
                 >
                   By how often you finish
@@ -225,13 +228,13 @@ export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
                 <>
                   <div className="pace-pill-row">
                     <button
-                      className={"pace-pill" + (progress.pace.unit === "mishnayot" ? " pace-pill--active" : "")}
+                      className={"pill pill--compact" + (progress.pace.unit === "mishnayot" ? " pill--active" : "")}
                       onClick={() => progress.setPace({ unit: "mishnayot", amount: 1 })}
                     >
                       Mishnayot
                     </button>
                     <button
-                      className={"pace-pill" + (progress.pace.unit === "perakim" ? " pace-pill--active" : "")}
+                      className={"pill pill--compact" + (progress.pace.unit === "perakim" ? " pill--active" : "")}
                       onClick={() => progress.setPace({ unit: "perakim", amount: 1 })}
                     >
                       Perakim
@@ -243,7 +246,7 @@ export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
                       return (
                         <button
                           key={amount}
-                          className={"pace-pill" + (paceEquals(progress.pace, optionPace) ? " pace-pill--active" : "")}
+                          className={"pill pill--compact" + (paceEquals(progress.pace, optionPace) ? " pill--active" : "")}
                           onClick={() => progress.setPace(optionPace)}
                         >
                           {amount}
@@ -260,7 +263,7 @@ export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
                       <button
                         key={f.key}
                         className={
-                          "pace-pill pace-pill--freq" + (paceEquals(progress.pace, optionPace) ? " pace-pill--active" : "")
+                          "pill pill--compact pace-pill--freq" + (paceEquals(progress.pace, optionPace) ? " pill--active" : "")
                         }
                         onClick={() => progress.setPace(optionPace)}
                       >
@@ -286,15 +289,15 @@ export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
         )}
 
         <div className="siyumim-stats">
-          <div className="siyumim-stat">
+          <div className="card siyumim-stat">
             <span className="siyumim-stat__num">{perakimFinished}</span>
             <span className="siyumim-stat__label">perakim finished</span>
           </div>
-          <div className="siyumim-stat">
+          <div className="card siyumim-stat">
             <span className="siyumim-stat__num">{masechtotCompleted}</span>
             <span className="siyumim-stat__label">masechtot completed</span>
           </div>
-          <div className="siyumim-stat">
+          <div className="card siyumim-stat">
             <span className="siyumim-stat__num">{mishnayotLearned}</span>
             <span className="siyumim-stat__label">mishnayot learned</span>
           </div>
@@ -303,13 +306,13 @@ export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
         {shasPct === 100 && (
           <div className="note-banner note-banner--good progress-shas-done">
             <p className="progress-shas-done__text">You've completed all of Shas!</p>
-            <button className="progress-cert-btn" onClick={() => setShasCertificateOpen(true)}>
+            <button className="btn btn--accent btn--compact progress-cert-btn" onClick={() => setShasCertificateOpen(true)}>
               Get your certificate
             </button>
           </div>
         )}
 
-        <p className="siyumim-next-label">Where each level stands</p>
+        <h2 className="section-title">Where each level stands</h2>
         <ProgressTracks
           masechet={{ title: nextMasechet.en, percent: masechetPct }}
           seder={{ title: nextSeder.en, percent: sederPct }}
@@ -318,16 +321,16 @@ export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
         />
 
         <div className="progress-actions">
-          <button className="restart progress-log-btn" onClick={() => setLogOpen(true)}>
+          <button className="btn btn--primary progress-log-btn" onClick={() => setLogOpen(true)}>
             + Log learning
           </button>
-          <button className="progress-print-btn" onClick={() => setPrintOpen(true)}>
+          <button className="btn btn--secondary progress-print-btn" onClick={() => setPrintOpen(true)}>
             Print notes
           </button>
         </div>
 
         {onOpenNishmat && (
-          <button className="progress-nishmat-link" onClick={onOpenNishmat}>
+          <button className="card progress-nishmat-link" onClick={onOpenNishmat}>
             <span className="progress-nishmat-link__title">L'Iluy Nishmat</span>
             <span className="progress-nishmat-link__sub">
               Dedicate a full siyum on Shas to a neshama, or take a perek in someone else's →
@@ -335,7 +338,7 @@ export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
           </button>
         )}
 
-        <h2 className="home-section-title">Siyumim ahead</h2>
+        <h2 className="section-title">Siyumim ahead</h2>
         <div className="progress-list">
           {SEDARIM.map((seder) => {
             const isOpen = expanded === seder.id;
@@ -377,7 +380,7 @@ export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
                           <ProgressBar pct={progress.masechetPercent(m.en, m.perakim)} />
                           {progress.masechetPercent(m.en, m.perakim) === 100 && (
                             <button
-                              className="progress-cert-btn progress-cert-btn--row"
+                              className="btn btn--accent btn--compact progress-cert-btn progress-cert-btn--row"
                               onClick={() => setCertificateFor({ en: m.en, he: m.he })}
                             >
                               Get certificate
@@ -391,7 +394,7 @@ export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
                                 return (
                                   <div key={p} className="progress-row progress-row--perek">
                                     <span className="progress-row__label">
-                                      Perek {p}
+                                      Perek <span dir="rtl">{hebrewNumeral(p)}</span>
                                       {name ? ` — ${name}` : ""}
                                     </span>
                                     <span className="progress-row__pct">

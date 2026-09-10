@@ -2,6 +2,20 @@
 
 One entry per PR, newest first.
 
+## Consistency pass PR 7 — My Siyumim
+
+- All 24 literals to tokens; `LogLearningModal` stops killing its focus
+  outline.
+- Title in a `.screen-head`; the countdown is a `.hero-card`; stat tiles
+  and the L'Iluy Nishmat link are `.card`; pace tabs and pills are
+  `.pill--compact`; the three actions use the button vocabulary.
+- "Siyumim ahead" and "Where each level stands" are both `.section-title`;
+  `.siyumim-next-label` is gone.
+- Perek rows and the log modal's options use Hebrew numerals.
+- `LogLearningModal` is a `.modal.modal--sm` with `.field` rows and the
+  shared close button. Copy: "a chavrusa, your own Mishnayos" → "a
+  chevrusa, your own Mishnayot".
+
 ## Consistency pass PR 6 — Mishna Notes
 
 - Literals and sizes to tokens; the three `outline: none` rules are gone,

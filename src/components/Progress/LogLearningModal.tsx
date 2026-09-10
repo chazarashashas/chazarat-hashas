@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { SEDARIM } from "../../data/shas";
 import { getPerekName } from "../../data/perekInfo";
+import { hebrewNumeral } from "../../utils/hebrewNumeral";
 import { useEscapeKey } from "../../utils/useEscapeKey";
 import { localDateStr } from "../../utils/localDate";
 import "./LogLearningModal.css";
@@ -46,17 +47,17 @@ export function LogLearningModal({ onSave, onClose }: LogLearningModalProps) {
   }
 
   return (
-    <div className="scrim log-modal-scrim" onClick={onClose}>
-      <div className="popup log-modal" onClick={(e) => e.stopPropagation()}>
-        <button className="note-modal__close" onClick={onClose} title="Close" aria-label="Close">
+    <div className="modal-scrim" onClick={onClose}>
+      <div className="modal modal--sm log-modal" onClick={(e) => e.stopPropagation()}>
+        <button className="icon-btn modal__close" onClick={onClose} title="Close" aria-label="Close">
           ✕
         </button>
-        <h2 className="log-modal__title">Log learning</h2>
+        <h2 className="modal__title">Log learning</h2>
         <p className="log-modal__sub">
-          Record a perek you learned outside the app — a shiur, a chavrusa, your own Mishnayos.
+          Record a perek you learned outside the app — a shiur, a chevrusa, your own Mishnayot.
         </p>
 
-        <label className="log-modal__field">
+        <label className="field log-modal__field">
           <span>Seder</span>
           <select value={sederId} onChange={(e) => handleSederChange(e.target.value)}>
             {SEDARIM.map((s) => (
@@ -67,7 +68,7 @@ export function LogLearningModal({ onSave, onClose }: LogLearningModalProps) {
           </select>
         </label>
 
-        <label className="log-modal__field">
+        <label className="field log-modal__field">
           <span>Masechet</span>
           <select value={masechetEn} onChange={(e) => handleMasechetChange(e.target.value)}>
             {seder.masechtot.map((m) => (
@@ -78,14 +79,14 @@ export function LogLearningModal({ onSave, onClose }: LogLearningModalProps) {
           </select>
         </label>
 
-        <label className="log-modal__field">
+        <label className="field log-modal__field">
           <span>Perek</span>
           <select value={perek} onChange={(e) => setPerek(Number(e.target.value))}>
             {Array.from({ length: masechet.perakim }, (_, i) => i + 1).map((n) => {
               const name = getPerekName(masechetEn, n);
               return (
                 <option key={n} value={n}>
-                  Perek {n}
+                  Perek {hebrewNumeral(n)}
                   {name ? ` — ${name}` : ""}
                 </option>
               );
@@ -93,7 +94,7 @@ export function LogLearningModal({ onSave, onClose }: LogLearningModalProps) {
           </select>
         </label>
 
-        <label className="log-modal__field">
+        <label className="field log-modal__field">
           <span>Date</span>
           <input type="date" value={date} max={todayStr()} onChange={(e) => setDate(e.target.value)} />
         </label>

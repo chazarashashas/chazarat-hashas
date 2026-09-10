@@ -18,13 +18,13 @@
 .log-modal__title {
   margin: 4px 26px 4px 0;
   font-family: var(--font-heading);
-  font-size: 16px;
+  font-size: var(--fs-16);
   font-weight: 700;
   color: var(--ink);
 }
 
 .log-modal__sub {
-  font-size: 11.5px;
+  font-size: var(--fs-12);
   color: var(--ink-soft);
   margin: 0 0 14px;
   line-height: 1.45;
@@ -38,7 +38,7 @@
 .log-modal__field span {
   display: block;
   font-family: var(--font-body);
-  font-size: 12px;
+  font-size: var(--fs-12);
   font-weight: 500;
   color: var(--muted);
   margin-bottom: 5px;
@@ -53,13 +53,12 @@
   border: 1.5px solid var(--border);
   background: var(--surface-hi);
   padding: 0 10px;
-  font-size: 12px;
+  font-size: var(--fs-12);
   font-family: var(--font-body);
   color: var(--ink);
 }
 
 .log-modal__field select:focus,
 .log-modal__field input:focus {
-  outline: none;
-  border-color: var(--brand);
+  border-color: var(--ink);
 }
