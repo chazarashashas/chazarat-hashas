@@ -19,7 +19,7 @@
   background: var(--surface-hi);
   color: var(--ink);
   font-family: var(--font-heading);
-  font-size: 12px;
+  font-size: var(--fs-12);
   font-weight: 700;
   cursor: pointer;
 }
@@ -36,7 +36,7 @@
 
 .admin-loading {
   color: var(--muted);
-  font-size: 13px;
+  font-size: var(--fs-13);
 }
 
 .admin-overview-grid {
@@ -62,14 +62,14 @@
 .admin-stat__num {
   margin: 0;
   font-family: var(--font-heading);
-  font-size: 24px;
+  font-size: var(--fs-20);
   font-weight: 800;
   color: var(--ink);
 }
 
 .admin-stat__label {
   margin: 2px 0 0;
-  font-size: 11px;
+  font-size: var(--fs-12);
   color: var(--muted);
 }
 
@@ -83,7 +83,7 @@
   width: 100%;
   border-collapse: collapse;
   text-align: left;
-  font-size: 12px;
+  font-size: var(--fs-12);
 }
 
 .admin-table th,
@@ -94,7 +94,7 @@
 
 .admin-table thead th {
   font-family: var(--font-heading);
-  font-size: 10.5px;
+  font-size: var(--fs-12);
   font-weight: 700;
   color: var(--muted);
   border-bottom: 1px solid var(--line);
@@ -130,7 +130,7 @@
   border: 1.5px solid var(--line);
   background: var(--surface-hi);
   color: var(--ink);
-  font-size: 11px;
+  font-size: var(--fs-12);
   padding: 0 6px;
 }
 
@@ -142,18 +142,18 @@
   background: none;
   color: var(--bad);
   font-family: var(--font-heading);
-  font-size: 11px;
+  font-size: var(--fs-12);
   font-weight: 700;
   cursor: pointer;
 }
 
 .admin-reset__btn:hover {
   background: var(--bad);
-  color: #fff;
+  color: var(--on-navy);
 }
 
 .admin-reset__message {
-  font-size: 11px;
+  font-size: var(--fs-12);
   font-weight: 600;
   color: var(--good);
 }
@@ -164,19 +164,19 @@
   border: 1.5px solid var(--bad);
   border-radius: var(--radius-small);
   background: var(--bad);
-  color: #fff;
+  color: var(--on-navy);
   font-family: var(--font-heading);
-  font-size: 11px;
+  font-size: var(--fs-12);
   font-weight: 700;
   cursor: pointer;
 }
 
 .admin-delete__btn:hover {
-  background: #96422f;
-  border-color: #96422f;
+  background: var(--seder-nezikin-text);
+  border-color: var(--seder-nezikin-text);
 }
 
 .admin-delete__self {
-  font-size: 10.5px;
+  font-size: var(--fs-12);
   color: var(--muted);
 }

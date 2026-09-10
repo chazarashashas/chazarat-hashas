@@ -126,7 +126,7 @@ export function AdminScreen() {
       <div className="panel admin-panel">
         <div className="admin-head">
           <div>
-            <h1 className="panel__title">Admin</h1>
+            <h1 className="screen-head__title">Admin</h1>
           </div>
           <button className="admin-refresh" onClick={refresh} disabled={loading}>
             {loading ? "Refreshing…" : "Refresh"}
@@ -172,7 +172,7 @@ export function AdminScreen() {
           )
         )}
 
-        <h2 className="account-section-title">Today's activity — everyone, live</h2>
+        <h2 className="section-title">Today's activity — everyone, live</h2>
         {activityGrid.error && (
           <p className="login-error" dir="ltr">
             {activityGrid.error}
@@ -184,7 +184,7 @@ export function AdminScreen() {
           <RebbeGrid students={activityGrid.students} submissions={activityGrid.submissions} />
         )}
 
-        <h2 className="account-section-title">Users</h2>
+        <h2 className="section-title">Users</h2>
         <div className="admin-table-wrap">
           <table className="admin-table">
             <thead>

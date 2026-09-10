@@ -1,7 +1,7 @@
 .cert-overlay {
   position: fixed;
   inset: 0;
-  background: #fff;
+  background: var(--on-navy);
   z-index: 100;
   overflow-y: auto;
   padding: calc(24px + env(safe-area-inset-top)) calc(24px + env(safe-area-inset-right))
@@ -18,7 +18,7 @@
 .cert-controls h2 {
   margin: 0 0 14px;
   font-family: var(--font-heading);
-  font-size: 18px;
+  font-size: var(--fs-16);
   font-weight: 700;
   color: var(--ink);
 }
@@ -30,7 +30,7 @@
 
 .cert-name-field span {
   display: block;
-  font-size: 12px;
+  font-size: var(--fs-12);
   font-weight: 500;
   color: var(--muted);
   margin-bottom: 5px;
@@ -44,7 +44,7 @@
   border: 1.5px solid var(--border);
   background: var(--surface-hi);
   padding: 0 12px;
-  font-size: 13px;
+  font-size: var(--fs-13);
   font-family: var(--font-body);
   color: var(--ink);
 }
@@ -77,7 +77,7 @@
 .cert-subject {
   margin: 20px 0 0;
   font-family: var(--font-hebrew);
-  font-size: 28px;
+  font-size: var(--fs-28);
   font-weight: 700;
   line-height: 1.5;
   color: var(--ink);
@@ -85,13 +85,13 @@
 }
 
 .cert-subject--shas {
-  font-size: 32px;
+  font-size: var(--fs-28);
 }
 
 .cert-subject-en {
   margin: 2px 0 0;
   font-family: var(--font-heading);
-  font-size: 12px;
+  font-size: var(--fs-12);
   font-weight: 600;
   color: var(--muted);
 }
@@ -99,14 +99,14 @@
 .cert-lead {
   margin: 18px 0 0;
   font-family: var(--font-body);
-  font-size: 12px;
+  font-size: var(--fs-12);
   color: var(--muted);
 }
 
 .cert-name {
   margin: 4px 0 0;
   font-family: var(--font-heading);
-  font-size: 24px;
+  font-size: var(--fs-20);
   font-weight: 800;
   color: var(--ink);
 }
@@ -122,28 +122,14 @@
 .cert-quote {
   margin: 18px 0 0;
   font-family: var(--font-hebrew);
-  font-size: 16px;
+  font-size: var(--fs-16);
   line-height: 1.7;
   color: var(--gold);
 }
 
 .cert-date {
   margin: 14px 0 0;
-  font-size: 12px;
+  font-size: var(--fs-12);
   color: var(--muted);
 }
 
-@media print {
-  .no-print {
-    display: none !important;
-  }
-
-  .cert-overlay {
-    position: static;
-    padding: 0;
-  }
-
-  .cert-page {
-    max-width: none;
-  }
-}

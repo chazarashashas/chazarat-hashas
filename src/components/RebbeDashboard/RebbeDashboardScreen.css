@@ -14,13 +14,13 @@
 
 .rebbe-title {
   margin: 0 0 4px;
-  font-size: 25px;
+  font-size: var(--fs-28);
   text-align: left;
 }
 
 .rebbe-sub {
   margin: 0;
-  font-size: 12px;
+  font-size: var(--fs-12);
   color: var(--muted);
 }
 
@@ -30,7 +30,7 @@
   border: 1.5px solid var(--line);
   background: var(--surface-hi);
   padding: 0 10px;
-  font-size: 12px;
+  font-size: var(--fs-12);
   font-family: var(--font-body);
   color: var(--ink);
 }
@@ -60,24 +60,24 @@
 
 .rebbe-summary__figure--sent .rebbe-summary__num,
 .rebbe-summary__figure--sent .rebbe-summary__label {
-  color: #fff;
+  color: var(--on-navy);
 }
 
 .rebbe-summary__num {
   margin: 0;
   font-family: var(--font-heading);
   font-weight: 800;
-  font-size: 24px;
+  font-size: var(--fs-20);
   color: var(--ink);
 }
 
 .rebbe-summary__figure--quiet .rebbe-summary__num {
-  color: #96422f;
+  color: var(--seder-nezikin-text);
 }
 
 .rebbe-summary__label {
   margin: 2px 0 0;
-  font-size: 10.5px;
+  font-size: var(--fs-12);
   color: var(--muted);
 }
 
@@ -86,7 +86,7 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 8px;
-  font-size: 11.5px;
+  font-size: var(--fs-12);
   color: var(--muted);
 }
 
@@ -96,7 +96,7 @@
   padding: 0;
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: 11.5px;
+  font-size: var(--fs-12);
   color: var(--brass-text);
   cursor: pointer;
 }
@@ -140,7 +140,7 @@
   justify-content: center;
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: 12px;
+  font-size: var(--fs-12);
 }
 
 .rebbe-row__body {
@@ -153,17 +153,17 @@
 .rebbe-row__name {
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: 14px;
+  font-size: var(--fs-14);
   color: var(--ink);
 }
 
 .rebbe-row__status {
-  font-size: 10.5px;
+  font-size: var(--fs-12);
   color: var(--muted);
 }
 
 .rebbe-row__status--quiet {
-  color: #96422f;
+  color: var(--seder-nezikin-text);
 }
 
 .rebbe-row__figures {
@@ -175,7 +175,7 @@
 .rebbe-row__figure {
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: 11.5px;
+  font-size: var(--fs-12);
   color: var(--ink);
   white-space: nowrap;
 }
@@ -193,7 +193,7 @@
   width: 12px;
   height: 12px;
   border-radius: 3px;
-  background: #e5dcc4;
+  background: var(--tint);
 }
 
 .rebbe-row__week-cell--sent {
@@ -226,7 +226,7 @@
   cursor: pointer;
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: 12px;
+  font-size: var(--fs-12);
   color: var(--ink-2);
 }
 
@@ -245,7 +245,7 @@
 
 .rebbe-joincode__label {
   margin: 0 0 6px;
-  font-size: 10.5px;
+  font-size: var(--fs-12);
   font-weight: 600;
   color: var(--muted);
 }
@@ -254,7 +254,7 @@
   margin: 0;
   font-family: var(--font-heading);
   font-weight: 800;
-  font-size: 22px;
+  font-size: var(--fs-20);
   letter-spacing: 0.08em;
   color: var(--ink);
 }
@@ -272,7 +272,7 @@
   padding: 0;
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: 11.5px;
+  font-size: var(--fs-12);
   color: var(--brass-text);
   cursor: pointer;
 }
@@ -289,7 +289,7 @@
   padding: 0;
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: 12px;
+  font-size: var(--fs-12);
   color: var(--muted);
   cursor: pointer;
 }
@@ -316,20 +316,20 @@
   justify-content: center;
   font-family: var(--font-heading);
   font-weight: 800;
-  font-size: 14px;
+  font-size: var(--fs-14);
 }
 
 .rebbe-detail__name {
   margin: 0;
   font-family: var(--font-heading);
   font-weight: 800;
-  font-size: 18px;
+  font-size: var(--fs-16);
   color: var(--ink);
 }
 
 .rebbe-detail__sub {
   margin: 2px 0 0;
-  font-size: 11.5px;
+  font-size: var(--fs-12);
   color: var(--muted);
 }
 
@@ -349,13 +349,13 @@
   display: flex;
   justify-content: space-between;
   margin-bottom: 6px;
-  font-size: 10.5px;
+  font-size: var(--fs-12);
   color: var(--muted);
 }
 
 .rebbe-day-card__line {
   margin: 2px 0;
-  font-size: 12px;
+  font-size: var(--fs-12);
   color: var(--ink);
 }
 
@@ -369,7 +369,7 @@
   background: var(--surface-hi);
   border-radius: var(--radius-card);
   overflow: hidden;
-  font-size: 12px;
+  font-size: var(--fs-12);
 }
 
 .rebbe-grid th,
@@ -382,7 +382,7 @@
 .rebbe-grid th {
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: 10.5px;
+  font-size: var(--fs-12);
   color: var(--ink);
   border-bottom: 1px solid var(--line);
 }
@@ -393,7 +393,7 @@
 
 .rebbe-grid__col-unit {
   display: block;
-  font-size: 9px;
+  font-size: var(--fs-12);
   font-weight: 500;
   color: var(--muted);
   text-transform: none;
@@ -417,7 +417,7 @@
   justify-content: center;
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: 10px;
+  font-size: var(--fs-12);
   color: var(--ink);
 }
 
@@ -426,19 +426,19 @@
 }
 
 .rebbe-grid__empty {
-  color: #a89f8a;
+  color: var(--faint);
 }
 
 .rebbe-grid__legend {
   margin: 0;
-  font-size: 10.5px;
+  font-size: var(--fs-12);
   color: var(--muted);
 }
 
-.rebbe-grid__avg-row td {
+.rebbe-grid tbody .rebbe-grid__avg-row td {
   border-top: 2px solid var(--line);
-  border-bottom: none !important;
-  background: #faf7ef;
+  border-bottom: none;
+  background: var(--surface);
   font-family: var(--font-heading);
   font-weight: 800;
   color: var(--ink);
@@ -451,7 +451,7 @@
 .rebbe-grid__avg-count {
   font-family: var(--font-body);
   font-weight: 500;
-  font-size: 9.5px;
+  font-size: var(--fs-12);
   color: var(--muted);
 }
 
@@ -471,7 +471,7 @@
   padding: 0;
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: 11px;
+  font-size: var(--fs-12);
   color: var(--ink-2);
   cursor: pointer;
   text-decoration: underline;
@@ -524,7 +524,7 @@
   min-width: 0;
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: 13px;
+  font-size: var(--fs-13);
   color: var(--ink);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -535,13 +535,13 @@
   flex-shrink: 0;
   font-family: var(--font-heading);
   font-weight: 800;
-  font-size: 13px;
+  font-size: var(--fs-13);
   color: var(--ink);
 }
 
 .rebbe-grid-mobile__avg {
   margin: 12px 2px 0;
-  font-size: 11.5px;
+  font-size: var(--fs-12);
   font-weight: 700;
   color: var(--ink);
 }

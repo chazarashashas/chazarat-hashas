@@ -165,7 +165,7 @@
 }
 
 .more-sheet__item--active .more-sheet__tile {
-  color: #fff;
+  color: var(--on-navy);
 }
 
 .more-sheet__item--active {

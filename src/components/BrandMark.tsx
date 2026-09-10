@@ -11,13 +11,16 @@ interface BrandMarkProps {
     wide the outline stroke stops resolving; use a solid-tile treatment
     instead at that size. */
 export function BrandMark({ variant = "reversed", className }: BrandMarkProps) {
-  const outline = variant === "reversed" ? "#f5f0e4" : "#16233f";
+  // The mark takes its colours from the page rather than carrying its
+  // own: cream on navy, navy on cream, and the one brass tile from the
+  // gold token.
+  const outline = variant === "reversed" ? "var(--on-navy)" : "var(--ink)";
   return (
     <svg viewBox="-5.5 0 355 281.2" role="img" aria-label="Chazarat Hashas mark" className={className}>
       {variant === "oneink" ? (
         <rect x="249.5" y="5.5" width="89" height="89" rx="22.5" fill="none" stroke={outline} strokeWidth="11" />
       ) : (
-        <rect x="244" y="0" width="100" height="100" rx="28" fill="#b8862b" />
+        <rect x="244" y="0" width="100" height="100" rx="28" fill="var(--gold)" />
       )}
       <rect x="127.5" y="5.5" width="89" height="89" rx="22.5" fill="none" stroke={outline} strokeWidth="11" />
       <rect x="5.5" y="5.5" width="89" height="89" rx="22.5" fill="none" stroke={outline} strokeWidth="11" />

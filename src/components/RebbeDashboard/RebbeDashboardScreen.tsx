@@ -209,7 +209,7 @@ export function RebbeDashboardScreen({ shiurim }: RebbeDashboardScreenProps) {
       <div className="panel rebbe-panel">
         <div className="rebbe-head">
           <div>
-            <h1 className="panel__title rebbe-title">{group.name ?? group.masechetEn}</h1>
+            <h1 className="screen-head__title rebbe-title">{group.name ?? group.masechetEn}</h1>
             <p className="rebbe-sub">
               {students.length} student{students.length === 1 ? "" : "s"} · {new Date().toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" })}
             </p>
@@ -269,7 +269,12 @@ export function RebbeDashboardScreen({ shiurim }: RebbeDashboardScreenProps) {
 
             <div className="rebbe-list">
               {displayed.map((s) => {
-                const ruleColor = s.daysQuiet === null ? "#cfc7b2" : (s.daysQuiet ?? 0) >= 3 ? "#b8543f" : "#b8862b";
+                const ruleColor =
+                  s.daysQuiet === null
+                    ? "var(--line)"
+                    : (s.daysQuiet ?? 0) >= 3
+                      ? "var(--bad-dot)"
+                      : "var(--gold)";
                 return (
                   <button
                     key={s.student.userId}
@@ -418,7 +423,7 @@ export function RebbeGrid({
         <table className="rebbe-grid">
           <thead>
             <tr>
-              <th className="rebbe-grid__student-col">STUDENT</th>
+              <th className="rebbe-grid__student-col">Student</th>
               {GRID_ACTIVITIES.map((a) => (
                 <th key={a.key}>
                   <span className="rebbe-grid__col-label">{a.label}</span>

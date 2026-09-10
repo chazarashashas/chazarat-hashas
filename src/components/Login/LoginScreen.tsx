@@ -69,7 +69,7 @@ function ResetProgressSection() {
     if (justReset === key) return <span className="reset-row__done">Reset ✓</span>;
     return (
       <button
-        className={"reset-row__btn" + (danger ? " reset-row__btn--danger" : "")}
+        className={"btn btn--danger-outline btn--compact reset-row__btn" + (danger ? " reset-row__btn--danger" : "")}
         onClick={() => setConfirming(key)}
       >
         Reset
@@ -79,7 +79,7 @@ function ResetProgressSection() {
 
   return (
     <>
-      <h2 className="account-section-title">Reset your progress</h2>
+      <h2 className="section-title">Reset your progress</h2>
       <div className="account-card reset-card">
         {RESET_ITEMS.map((item) => (
           <div key={item.key} className="reset-row">
@@ -133,7 +133,7 @@ function GoogleButton({
 }) {
   return (
     <button
-      className={"google-signin-btn" + (demoted ? " google-signin-btn--demoted" : "")}
+      className={"btn btn--secondary btn--block google-signin-btn" + (demoted ? " google-signin-btn--demoted" : "")}
       onClick={onClick}
       disabled={disabled}
     >
@@ -261,7 +261,7 @@ function BottomBarPicker({
           {poolIds.map((id) => {
             const item = ALL_NAV_ITEMS.find((x) => x.id === id)!;
             return (
-              <button type="button" key={id} className="bottom-bar-picker__chip" onClick={() => addFromPool(id)}>
+              <button type="button" key={id} className="pill pill--compact bottom-bar-picker__chip" onClick={() => addFromPool(id)}>
                 <NavIcon id={id} size={14} />
                 {item.label}
               </button>
@@ -466,7 +466,7 @@ function AccountDashboard({
             )}
             <SyncStatusLine />
             <div className="account-card__actions">
-              <button className="account-edit-btn" onClick={() => setEditing(true)}>
+              <button className="btn btn--primary btn--compact account-edit-btn" onClick={() => setEditing(true)}>
                 Edit profile
               </button>
               <button className="account-signout-btn" onClick={() => auth.signOut()}>
@@ -504,12 +504,12 @@ function AccountDashboard({
               />
             </label>
             {saveError && (
-              <p className="login-error" dir="ltr">
+              <p className="field__error" dir="ltr">
                 {saveError}
               </p>
             )}
             <div className="account-card__actions">
-              <button className="account-edit-btn" onClick={handleSaveProfile} disabled={saving}>
+              <button className="btn btn--primary btn--compact account-edit-btn" onClick={handleSaveProfile} disabled={saving}>
                 {saving ? "Saving…" : "Save"}
               </button>
               <button
@@ -531,7 +531,7 @@ function AccountDashboard({
         )}
       </div>
 
-      <h2 className="account-section-title">Your Shas</h2>
+      <h2 className="section-title">Your Shas</h2>
       <div className="account-card account-card--stats">
         <div className="account-stats-grid">
           <div className="account-stat">
@@ -579,10 +579,10 @@ function AccountDashboard({
         </button>
       </div>
 
-      <h2 className="account-section-title">Chevrusa &amp; Chabura</h2>
+      <h2 className="section-title">Chevrusa &amp; Chabura</h2>
       <div className="account-card">
         {groups.length === 0 ? (
-          <p className="account-empty">You're not in a chevrusa or chabura yet.</p>
+          <p className="state state--empty">You're not in a chevrusa or chabura yet.</p>
         ) : (
           <div className="account-group-list">
             {groups.map((g) => (
@@ -604,7 +604,7 @@ function AccountDashboard({
         </button>
       </div>
 
-      <h2 className="account-section-title">Practice</h2>
+      <h2 className="section-title">Practice</h2>
       <div className="account-card">
         <div className="account-stats-grid account-stats-grid--practice">
           <div className="account-stat">
@@ -632,9 +632,9 @@ function AccountDashboard({
 
       {mine.length > 0 && (
         <>
-          <h2 className="account-section-title">L'Iluy Nishmat</h2>
+          <h2 className="section-title">L'Iluy Nishmat</h2>
           <div className="account-card">
-            <p className="account-empty">
+            <p className="state state--empty">
               You're managing {mine.length} siyum{mine.length === 1 ? "" : "im"}.
             </p>
             <button className="account-view-link" onClick={() => onNavigate?.("liluy")}>
@@ -644,7 +644,7 @@ function AccountDashboard({
         </>
       )}
 
-      <h2 className="account-section-title">Your bottom bar</h2>
+      <h2 className="section-title">Your bottom bar</h2>
       <BottomBarPicker
         barIds={bottomBarIds}
         onChange={onBottomBarIdsChange}
@@ -744,7 +744,7 @@ function SetNewPasswordSection() {
         />
       </label>
       {error && (
-        <p className="login-error" dir="ltr">
+        <p className="field__error" dir="ltr">
           {error}
         </p>
       )}
@@ -837,7 +837,7 @@ export function LoginScreen({
     return (
       <div className="stage">
         <div className="panel login-panel">
-          <h1 className="panel__title">Set a new password</h1>
+          <h1 className="screen-head__title">Set a new password</h1>
           <SetNewPasswordSection />
         </div>
       </div>
@@ -848,7 +848,7 @@ export function LoginScreen({
     return (
       <div className="stage">
         <div className="panel login-panel">
-          <h1 className="panel__title">My Account</h1>
+          <h1 className="screen-head__title">My Account</h1>
           <AccountDashboard
             onNavigate={onNavigate}
             bottomBarIds={bottomBarIds}
@@ -864,7 +864,7 @@ export function LoginScreen({
   return (
     <div className="stage">
       <div className="panel login-panel">
-        <h1 className="panel__title">My Account</h1>
+        <h1 className="screen-head__title">My Account</h1>
 
         {!supabaseConfigured && (
           <div className="note-banner login-notice">
@@ -894,7 +894,7 @@ export function LoginScreen({
             </div>
 
             {error && (
-              <p className="login-error" dir="ltr">
+              <p className="field__error" dir="ltr">
                 {error}
               </p>
             )}
@@ -905,7 +905,7 @@ export function LoginScreen({
               <span>or</span>
             </div>
 
-            <button className="email-toggle-btn" onClick={() => setEmailOpen(true)}>
+            <button className="btn btn--secondary btn--block email-toggle-btn" onClick={() => setEmailOpen(true)}>
               Use an email address instead
             </button>
 
@@ -930,7 +930,7 @@ export function LoginScreen({
             </button>
 
             {resetSent ? (
-              <p className="login-message" dir="ltr">
+              <p className="callout callout--good" dir="ltr">
                 Check your email for a reset link.
               </p>
             ) : (
@@ -946,7 +946,7 @@ export function LoginScreen({
                 </label>
 
                 {error && (
-                  <p className="login-error" dir="ltr">
+                  <p className="field__error" dir="ltr">
                     {error}
                   </p>
                 )}
@@ -1049,12 +1049,12 @@ export function LoginScreen({
             </label>
 
             {error && (
-              <p className="login-error" dir="ltr">
+              <p className="field__error" dir="ltr">
                 {error}
               </p>
             )}
             {message && (
-              <p className="login-message" dir="ltr">
+              <p className="callout callout--good" dir="ltr">
                 {message}
               </p>
             )}

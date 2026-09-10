@@ -71,7 +71,7 @@
   margin: 0;
   font-family: var(--font-heading);
   font-weight: 800;
-  font-size: 17px;
+  font-size: var(--fs-16);
   letter-spacing: -0.02em;
   color: var(--on-navy);
 }
@@ -255,7 +255,7 @@
 
 .siyum-card__stat-num {
   font-family: var(--font-heading);
-  font-size: 17px;
+  font-size: var(--fs-16);
   font-weight: 800;
 }
 
@@ -886,7 +886,7 @@
   align-items: center;
   justify-content: center;
   font-family: var(--font-hebrew);
-  font-size: 17px;
+  font-size: var(--fs-hebrew-read);
   font-weight: 700;
   line-height: 1.3;
   animation: nishmat-stamp 0.5s ease;

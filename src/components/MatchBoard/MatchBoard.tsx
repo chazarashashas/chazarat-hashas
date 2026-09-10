@@ -214,8 +214,8 @@ export function MatchBoard({ view, state, onPlace, onReset, clearedSederIds }: M
       )}
 
       {completed && (
-        <div className="scrim">
-          <div className="popup">
+        <div className="modal-scrim">
+          <div className="modal modal--sm game__end">
             <div className="popup__mark">✓</div>
             <div className="popup__text">All {view.items.length} matched</div>
             <button className="popup__restart" onClick={onReset}>

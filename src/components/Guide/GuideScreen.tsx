@@ -61,7 +61,7 @@ function StepNav({ onNavigate, buttons }: { onNavigate: (id: string) => void; bu
   return (
     <div className="guide-step__nav">
       {buttons.map((b) => (
-        <button key={b.id} className="guide-step__nav-btn" onClick={() => onNavigate(b.id)}>
+        <button key={b.id} className="pill pill--compact guide-step__nav-btn" onClick={() => onNavigate(b.id)}>
           {b.label} →
         </button>
       ))}
@@ -79,7 +79,7 @@ function SederPills() {
         <span
           key={s.id}
           role="listitem"
-          className="guide-seder-pill"
+          className="pill pill--compact pill--hue guide-seder-pill"
           style={{ ["--pill-hue" as string]: getSederHue(s.id) }}
         >
           <span lang="he" dir="rtl">
@@ -129,7 +129,7 @@ export function GuideScreen({ onNavigate, initialAnchor, bare, forPrint }: Guide
         }
       >
         <header className="guide-header">
-          <h1 className="guide-header__title">How to Use Chazarat Hashas</h1>
+          <h1 className="screen-head__title guide-header__title">How to Use Chazarat Hashas</h1>
           <p className="guide-header__subtitle">A guide for the talmid</p>
           <p className="guide-header__intro">
             The purpose of this app is to help you organize Shas in your mind. Every feature was
@@ -137,7 +137,7 @@ export function GuideScreen({ onNavigate, initialAnchor, bare, forPrint }: Guide
             used, step by step.
           </p>
           {!forPrint && (
-            <button className="guide-print-btn" onClick={() => setPrintOpen(true)}>
+            <button className="btn btn--secondary btn--compact guide-print-btn" onClick={() => setPrintOpen(true)}>
               Print
             </button>
           )}
@@ -214,7 +214,7 @@ export function GuideScreen({ onNavigate, initialAnchor, bare, forPrint }: Guide
                     bring your score up.
                   </li>
                 </ul>
-                <div className="guide-callout">
+                <div className="callout guide-callout">
                   <p className="guide-callout__title">Away from a screen</p>
                   <p>
                     On the <strong>Resources</strong> page you can download worksheets and print

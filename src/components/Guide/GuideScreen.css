@@ -1,7 +1,5 @@
 .guide-panel {
   text-align: left;
-  max-width: 640px;
-  margin: 0 auto;
 }
 
 /* GuidePopup supplies its own popup chrome (background, border, padding) —
@@ -27,22 +25,22 @@
 .guide-header__title {
   margin: 0 0 4px;
   font-family: var(--font-heading);
-  font-weight: 900;
-  font-size: 34px;
+  font-weight: 700;
+  font-size: var(--fs-28);
   color: var(--ink);
   letter-spacing: -0.01em;
 }
 
 .guide-header__subtitle {
   margin: 0 0 14px;
-  font-size: 13px;
+  font-size: var(--fs-13);
   font-weight: 600;
   color: var(--ink-soft);
 }
 
 .guide-header__intro {
   margin: 0;
-  font-size: 14px;
+  font-size: var(--fs-14);
   line-height: 1.8;
   color: var(--ink);
 }
@@ -56,7 +54,7 @@
   border-radius: var(--radius-pill);
   padding: 6px 14px;
   font-family: var(--font-heading);
-  font-size: 11px;
+  font-size: var(--fs-12);
   font-weight: 700;
   color: var(--ink);
   cursor: pointer;
@@ -84,17 +82,17 @@
   align-items: baseline;
   gap: 4px;
   background: var(--pill-hue, var(--ink));
-  color: #fff;
+  color: var(--on-navy);
   border-radius: var(--radius-pill);
   padding: 5px 12px;
   font-family: var(--font-body);
-  font-size: 11px;
+  font-size: var(--fs-12);
   font-weight: 600;
 }
 
 .guide-seder-pill span[dir="rtl"] {
   font-family: var(--font-hebrew);
-  font-size: 12.5px;
+  font-size: var(--fs-13);
 }
 
 .guide-steps {
@@ -119,8 +117,8 @@
   flex-shrink: 0;
   width: 34px;
   font-family: var(--font-heading);
-  font-weight: 900;
-  font-size: 26px;
+  font-weight: 700;
+  font-size: var(--fs-28);
   color: var(--brass-text);
   font-variant-numeric: tabular-nums;
   line-height: 1.2;
@@ -134,14 +132,14 @@
   margin: 0 0 10px;
   font-family: var(--font-heading);
   font-weight: 800;
-  font-size: 21px;
+  font-size: var(--fs-20);
   color: var(--ink);
 }
 
 .guide-step__body p,
 .guide-step__body ul {
   margin: 0 0 14px;
-  font-size: 14px;
+  font-size: var(--fs-14);
   line-height: 1.8;
   color: var(--ink);
 }
@@ -176,7 +174,7 @@
 
 .guide-callout p {
   margin: 0 0 6px;
-  font-size: 13px;
+  font-size: var(--fs-13);
   line-height: 1.7;
 }
 
@@ -187,7 +185,7 @@
 .guide-callout__title {
   font-family: var(--font-heading);
   font-weight: 800;
-  font-size: 13px;
+  font-size: var(--fs-13);
   color: var(--ink);
 }
 
@@ -205,7 +203,7 @@
   border-radius: var(--radius-pill);
   padding: 8px 15px;
   font-family: var(--font-heading);
-  font-size: 11.5px;
+  font-size: var(--fs-12);
   font-weight: 700;
   color: var(--ink);
   cursor: pointer;
@@ -222,21 +220,21 @@
   text-align: center;
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: 15px;
+  font-size: var(--fs-14);
   color: var(--ink);
 }
 
 .guide-revisit {
   margin: 8px 0 0;
   text-align: center;
-  font-size: 12px;
+  font-size: var(--fs-12);
   color: var(--muted);
 }
 
 /* Phone: ≤599px, per ANDROID-BRIEF.md §6. */
 @media (max-width: 599px) {
   .guide-header__title {
-    font-size: 26px;
+    font-size: var(--fs-28);
   }
 
   .guide-print-btn {

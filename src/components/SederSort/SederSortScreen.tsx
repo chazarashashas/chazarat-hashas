@@ -233,8 +233,8 @@ export function SederSortScreen() {
       )}
 
       {completed && (
-        <div className="scrim">
-          <div className="popup">
+        <div className="modal-scrim">
+          <div className="modal modal--sm game__end">
             <div className="popup__mark">✓</div>
             <div className="popup__text">All {TOTAL} masechtot sorted</div>
             <button className="popup__restart" onClick={handleReset}>

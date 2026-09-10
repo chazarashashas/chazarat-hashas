@@ -36,9 +36,9 @@ import "./ChaburaScreen.css";
 function AboutChaburaModal({ onClose }: { onClose: () => void }) {
   useEscapeKey(onClose);
   return (
-    <div className="scrim intro-scrim" onClick={onClose}>
-      <div className="popup intro-popup" onClick={(e) => e.stopPropagation()}>
-        <button className="intro-popup__close" onClick={onClose} title="Close" aria-label="Close">
+    <div className="modal-scrim" onClick={onClose}>
+      <div className="modal modal--md" onClick={(e) => e.stopPropagation()}>
+        <button className="icon-btn modal__close" onClick={onClose} title="Close" aria-label="Close">
           ✕
         </button>
         <h2 className="modal__title">About Chaburos</h2>

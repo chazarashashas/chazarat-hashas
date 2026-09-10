@@ -89,9 +89,9 @@ export function ConfirmModal({
   const confirmDisabled = busy || (typeToConfirm !== undefined && typedValue !== typeToConfirm);
 
   return (
-    <div className="scrim" onClick={busy ? undefined : onCancel}>
+    <div className="modal-scrim" onClick={busy ? undefined : onCancel}>
       <div
-        className="popup confirm-modal"
+        className="modal modal--sm confirm-modal"
         ref={popupRef}
         onClick={(e) => e.stopPropagation()}
         onKeyDown={handleTabTrap}

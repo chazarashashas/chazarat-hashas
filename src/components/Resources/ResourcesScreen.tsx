@@ -14,19 +14,19 @@ const RESOURCES: Resource[] = [
   {
     id: "sedarim",
     file: "/resources/sedarim-order-worksheet.pdf",
-    title: "Sedarim Order Worksheet",
+    title: "Sedarim order worksheet",
     desc: "Practice writing the six Sedarim in order, with the Zman Nakat mnemonic and a word bank.",
   },
   {
     id: "masechtot",
     file: "/resources/masechtot-order-worksheet.pdf",
-    title: "Masechtot Order Worksheet",
+    title: "Masechtot order worksheet",
     desc: "Practice writing a seder's masechtot in order, from memory — two columns, so it works for one seder or two side by side.",
   },
   {
     id: "perakim",
-    file: "/resources/masechta-perek-worksheet.pdf",
-    title: "Masechet & Perek Worksheet",
+    file: "/resources/masechet-perek-worksheet.pdf",
+    title: "Masechet and perek worksheet",
     desc: "Fill in a seder and masechet, then number and name every perek in your own words.",
   },
 ];
@@ -41,57 +41,59 @@ export function ResourcesScreen({ onOpenGuide }: ResourcesScreenProps) {
   return (
     <div className="stage">
       <div className="panel">
-        <h1 className="panel__title">Resources</h1>
+        <div className="screen-head">
+          <h1 className="screen-head__title">Resources</h1>
+        </div>
 
         <div className="resources-list">
           {onOpenGuide && (
-            <div className="resource-card">
+            <div className="card card--rule resource-card">
               <div className="resource-card__body">
-                <p className="resource-card__title">How to Use Chazarat Hashas</p>
+                <p className="resource-card__title">How to use Chazarat Hashas</p>
                 <p className="resource-card__desc">
                   The full guide to the method behind the app, step by step.
                 </p>
               </div>
-              <button className="resource-card__download resource-card__download--print" onClick={() => onOpenGuide()}>
+              <button className="btn btn--secondary btn--compact resource-card__download" onClick={() => onOpenGuide()}>
                 Read
               </button>
             </div>
           )}
 
           {RESOURCES.map((r) => (
-            <div key={r.id} className="resource-card">
+            <div key={r.id} className="card card--rule resource-card">
               <div className="resource-card__body">
                 <p className="resource-card__title">{r.title}</p>
                 <p className="resource-card__desc">{r.desc}</p>
               </div>
-              <a className="resource-card__download" href={r.file} download>
+              <a className="btn btn--primary btn--compact resource-card__download" href={r.file} download>
                 <NavIcon id="download" size={15} weight={2.2} />
                 Download
               </a>
             </div>
           ))}
 
-          <div className="resource-card">
+          <div className="card card--rule resource-card">
             <div className="resource-card__body">
-              <p className="resource-card__title">Mishna Notes (printable)</p>
+              <p className="resource-card__title">Mishna notes (printable)</p>
               <p className="resource-card__desc">
                 Print your own notes and concepts — pick one masechet, one seder, or all of Shas.
               </p>
             </div>
-            <button className="resource-card__download resource-card__download--print" onClick={() => setPrintOpen(true)}>
+            <button className="btn btn--secondary btn--compact resource-card__download" onClick={() => setPrintOpen(true)}>
               <NavIcon id="print" size={15} weight={2} />
               Print
             </button>
           </div>
 
-          <div className="resource-card">
+          <div className="card card--rule resource-card">
             <div className="resource-card__body">
-              <p className="resource-card__title">Support &amp; Feedback</p>
+              <p className="resource-card__title">Support and feedback</p>
               <p className="resource-card__desc">
                 Found a bug, or have an idea for the app? We'd love to hear from you.
               </p>
             </div>
-            <a className="resource-card__download resource-card__download--mail" href="mailto:chazarashashas@gmail.com">
+            <a className="btn btn--secondary btn--compact resource-card__download" href="mailto:chazarashashas@gmail.com">
               <NavIcon id="mail" size={15} weight={2} />
               Email us
             </a>

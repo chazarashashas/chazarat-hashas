@@ -29,9 +29,9 @@ export function ConceptModal({ masechetEn, perek, onSave, onClose, onOpenNotes }
   }
 
   return (
-    <div className="scrim concept-modal-scrim" onClick={onClose}>
-      <div className="popup concept-modal" onClick={(e) => e.stopPropagation()}>
-        <button className="concept-modal__close" onClick={onClose} title="Close" aria-label="Close">
+    <div className="modal-scrim" onClick={onClose}>
+      <div className="modal modal--sm concept-modal" onClick={(e) => e.stopPropagation()}>
+        <button className="icon-btn modal__close" onClick={onClose} title="Close" aria-label="Close">
           ✕
         </button>
         <p className="concept-modal__label">

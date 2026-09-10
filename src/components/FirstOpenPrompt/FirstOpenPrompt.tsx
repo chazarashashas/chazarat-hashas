@@ -20,7 +20,7 @@ function joinList(items: string[]): string {
 function variantBCopy({ streakCurrent, mishnayotCount, noteCount }: Omit<FirstOpenPromptProps, "variant" | "onGoogle" | "onEmail" | "onDismiss">) {
   const clauses: string[] = [];
   if (streakCurrent > 0) clauses.push(`your ${streakCurrent}-day streak`);
-  if (mishnayotCount > 0) clauses.push(`${mishnayotCount} mishnah${mishnayotCount === 1 ? "" : "yot"}`);
+  if (mishnayotCount > 0) clauses.push(`${mishnayotCount} mishna${mishnayotCount === 1 ? "" : "yot"}`);
   if (noteCount > 0) clauses.push(`${noteCount} note${noteCount === 1 ? "" : "s"}`);
 
   const heading = streakCurrent > 0 ? `Keep your ${streakCurrent} day${streakCurrent === 1 ? "" : "s"}` : "Keep what you've started";
@@ -43,8 +43,8 @@ export function FirstOpenPrompt({ variant, streakCurrent, mishnayotCount, noteCo
   const b = variant === "B" ? variantBCopy({ streakCurrent, mishnayotCount, noteCount }) : null;
 
   return (
-    <div className="scrim first-open-scrim">
-      <div className="popup first-open-popup">
+    <div className="modal-scrim modal-scrim--top">
+      <div className="modal modal--md first-open-popup">
         <h2 className="first-open-popup__he" dir="rtl">
           חזרת הש״ס
         </h2>

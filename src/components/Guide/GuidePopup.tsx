@@ -23,9 +23,9 @@ export function GuidePopup({ onClose, onNavigate }: GuidePopupProps) {
   const versionsInUse = readVersionsSeen();
 
   return (
-    <div className="scrim intro-scrim" onClick={onClose}>
-      <div className="popup intro-popup guide-popup" onClick={(e) => e.stopPropagation()}>
-        <button className="intro-popup__close" onClick={onClose} title="Close" aria-label="Close">
+    <div className="modal-scrim" onClick={onClose}>
+      <div className="modal modal--lg guide-popup" onClick={(e) => e.stopPropagation()}>
+        <button className="icon-btn modal__close" onClick={onClose} title="Close" aria-label="Close">
           ✕
         </button>
         <GuideScreen bare onNavigate={handleNavigate} />

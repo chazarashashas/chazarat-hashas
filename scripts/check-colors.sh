@@ -5,16 +5,15 @@
 # The one permitted exception is the Google logo, whose four brand fills
 # are not ours to re-colour.
 #
-# BLOCKING=0 while the visual-consistency pass is still migrating screens:
-# the count is reported but does not fail the build. The last PR of the
-# pass flips it to 1, and from then on a literal colour breaks CI.
+# Blocking as of the last PR of the visual-consistency pass: a literal
+# colour anywhere outside theme.css fails the build.
 set -uo pipefail
-BLOCKING=0
+BLOCKING=1
 
 hits=$(grep -rEn "#[0-9a-fA-F]{3,8}\b|rgba?\(" src \
   --include=*.css --include=*.tsx \
   | grep -v "src/styles/theme.css" \
-  | grep -v "GOOGLE_LOGO" \
+  | grep -vE "#(4285F4|34A853|FBBC05|EA4335)" \
   || true)
 
 count=$(printf '%s' "$hits" | grep -c . || true)

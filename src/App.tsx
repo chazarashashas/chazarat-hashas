@@ -137,6 +137,8 @@ function initialOAuthError(): string | null {
   return message;
 }
 
+const WIDE_SECTIONS = new Set(["limmud", "map", "perek", "liluy", "guide", "rebbe", "admin", "dash"]);
+
 function App() {
   const deepLinkSlug = useState(initialNishmatSlug)[0];
   const oauthError = useState(initialOAuthError)[0];
@@ -274,13 +276,7 @@ function App() {
           <div
             className={
               "main__content" +
-              (section === "dash" ||
-              section === "limmud" ||
-              section === "map" ||
-              section === "liluy" ||
-              section === "perek"
-                ? " main__content--wide"
-                : "")
+              (WIDE_SECTIONS.has(section) ? " main__content--wide" : "")
             }
           >
             {section === "home" ? (

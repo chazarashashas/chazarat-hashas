@@ -18,14 +18,14 @@
 .error-fallback__title {
   margin: 0 0 10px;
   font-family: var(--font-heading);
-  font-size: 20px;
+  font-size: var(--fs-20);
   font-weight: 800;
   color: var(--ink);
 }
 
 .error-fallback__body {
   margin: 0 0 18px;
-  font-size: 13px;
+  font-size: var(--fs-13);
   line-height: 1.6;
   color: var(--ink-soft);
 }

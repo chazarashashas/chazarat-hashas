@@ -27,8 +27,7 @@ jobs:
       - run: npx tsc -b --noEmit
       - run: npm test
       - run: npm run build
-      # The visual-consistency guards. Reporting only until the pass
-      # finishes migrating every screen, then BLOCKING flips to 1 inside
-      # each script and a literal colour or off-scale size fails CI.
+      # The visual-consistency guards: a literal colour outside theme.css,
+      # or a font-size off the scale, fails the build.
       - run: bash scripts/check-colors.sh
       - run: bash scripts/check-type.sh

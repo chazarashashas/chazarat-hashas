@@ -463,9 +463,9 @@ function ClaimModal({
   }
 
   return (
-    <div className="scrim" onClick={onCancel}>
-      <div className="popup nishmat-modal" onClick={(e) => e.stopPropagation()}>
-        <h2 className="intro-popup__title">
+    <div className="modal-scrim" onClick={onCancel}>
+      <div className="modal modal--md nishmat-modal" onClick={(e) => e.stopPropagation()}>
+        <h2 className="modal__title">
           Take on {target.masechetEn} — Perek {hebrewNumeral(target.perek)}
         </h2>
 
@@ -545,15 +545,15 @@ function ManageClaimModal({
   }
 
   return (
-    <div className="scrim" onClick={onDismiss}>
-      <div className="popup nishmat-modal" onClick={(e) => e.stopPropagation()}>
+    <div className="modal-scrim" onClick={onDismiss}>
+      <div className="modal modal--md nishmat-modal" onClick={(e) => e.stopPropagation()}>
         <div className="nishmat-manage-head">
           {justClaimed && (
             <span className="nishmat-stamp" dir="rtl">
               {hebrewNumeral(claim.perek)}
             </span>
           )}
-          <h2 className="intro-popup__title nishmat-manage-title">
+          <h2 className="modal__title nishmat-manage-title">
             {claim.masechetEn} — Perek {hebrewNumeral(claim.perek)}
           </h2>
         </div>

@@ -2,6 +2,26 @@
 
 One entry per PR, newest first.
 
+## Consistency pass PR 10 — My Account, Rebbe, Admin, Resources, Guide, print
+
+- **Both CI guards are clean and now blocking.** No colour literal outside
+  `theme.css` (bar the four Google-logo fills) and no off-scale font-size
+  anywhere in `src`.
+- Every remaining modal is a `.modal` on a `.modal-scrim`: confirm,
+  concept, perek note, first-open (`--top`), About Chaburos, the two
+  nishmat modals and both game end blocks.
+- The wide list in `App.tsx` is the brief's eight, as a named set.
+- Guide: 640px cap gone, title on the scale at 700 weight, print button
+  and step buttons on the shared vocabulary, callout shared, popup is
+  `.modal--lg`.
+- Resources cards are `.card.card--rule` with the button vocabulary and
+  sentence-case titles; `masechta-perek-worksheet.pdf` is renamed to
+  `masechet-`.
+- Certificate and Print Notes drop their local `@media print` blocks —
+  `global.css` owns printing.
+- `BrandMark` takes its colours from tokens instead of three literals.
+- The two `!important`s are replaced with specificity.
+
 ## Consistency pass PR 9 — Chevrusa, Chabura, the gate, L'Iluy Nishmat
 
 - Every literal in the cluster is a token. The cream-on-navy alphas (a

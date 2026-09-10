@@ -400,9 +400,9 @@ export function LiluyNishmatScreen({ onOpenLogin, initialSlug }: LiluyNishmatScr
       </div>
 
       {createOpen && (
-        <div className="scrim" onClick={() => setCreateOpen(false)}>
-          <div className="popup nishmat-modal" onClick={(e) => e.stopPropagation()}>
-            <h2 className="intro-popup__title">Start a siyum</h2>
+        <div className="modal-scrim" onClick={() => setCreateOpen(false)}>
+          <div className="modal modal--md nishmat-modal" onClick={(e) => e.stopPropagation()}>
+            <h2 className="modal__title">Start a siyum</h2>
 
             <label className="login-field">
               <span className="login-field__label">L'Iluy Nishmat</span>

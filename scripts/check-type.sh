@@ -2,10 +2,11 @@
 # The type scale is closed: 12, 13, 14, 16, 20, 28, 36px and nothing else.
 # 36px is Home's Hebrew hero alone.
 #
-# BLOCKING=0 while the visual-consistency pass is still migrating screens;
-# the last PR of the pass flips it to 1.
+# Blocking as of the last PR of the visual-consistency pass: an
+# off-scale font-size fails the build. Hebrew reading text is 17px via
+# --fs-hebrew-read, which is a token and so never appears here.
 set -uo pipefail
-BLOCKING=0
+BLOCKING=1
 
 hits=$(grep -rEn "font-size:[[:space:]]*[0-9.]+px" src --include=*.css \
   | grep -v "src/styles/theme.css" \
