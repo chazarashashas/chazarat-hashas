@@ -325,7 +325,7 @@ export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
             + Log learning
           </button>
           <button className="btn btn--secondary progress-print-btn" onClick={() => setPrintOpen(true)}>
-            Print notes
+            Print
           </button>
         </div>
 

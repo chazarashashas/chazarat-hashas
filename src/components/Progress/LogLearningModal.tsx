@@ -15,8 +15,8 @@ function todayStr(): string {
   return localDateStr();
 }
 
-/** For learning done off the app entirely — a shiur, a chavrusa, the
-    student's own Mishnayos. Feeds the exact same completion records and
+/** For learning done off the app entirely — a shiur, a chevrusa, the
+    student's own Mishnayot. Feeds the exact same completion records and
     streak as in-app Daily Limmud, just tagged source: "logged". */
 export function LogLearningModal({ onSave, onClose }: LogLearningModalProps) {
   const [sederId, setSederId] = useState(SEDARIM[0].id);

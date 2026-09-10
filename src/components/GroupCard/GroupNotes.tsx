@@ -61,7 +61,7 @@ function NoteComposer({ onSave }: { onSave: (perek: number, mishnah: number, bod
           min={1}
           value={mishnah}
           onChange={(e) => setMishnah(e.target.value)}
-          placeholder="Mishnah"
+          placeholder="Mishna"
         />
       </div>
       <textarea

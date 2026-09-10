@@ -2,6 +2,16 @@
 
 One entry per PR, newest first.
 
+## Consistency pass PR 11 - the copy sweep
+
+- Text only, five lines. Most of the glossary was already applied by the
+  screen PRs as each screen was touched; this is what was left.
+- "Mishnah" to "Mishna" in Daily Limmud's breadcrumb and the group-note
+  placeholder; "Print notes" to "Print"; a comment saying "chavrusa" and
+  "Mishnayos".
+- Every other hit in src is an identifier (setMishnah, openMishnah,
+  record fields) or data, and is left alone.
+
 ## Consistency pass PR 10 — My Account, Rebbe, Admin, Resources, Guide, print
 
 - **Both CI guards are clean and now blocking.** No colour literal outside

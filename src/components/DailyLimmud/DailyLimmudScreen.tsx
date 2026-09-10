@@ -518,7 +518,7 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
                     {!isSelf && activeLabel && <span dir="ltr">{activeLabel} ▸ </span>}
                     {seder.en} ▸ {firstItem.masechetEn} ▸ Perek {hebrewNumeral(firstItem.perek)}
                     {perekName ? ` (${perekName})` : ""}
-                    {items.length === 1 ? ` ▸ Mishnah ${firstItem.mishnah}` : ""}
+                    {items.length === 1 ? ` ▸ Mishna ${firstItem.mishnah}` : ""}
                   </p>
                 )}
 
