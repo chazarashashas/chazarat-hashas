@@ -2,6 +2,7 @@ import { useState } from "react";
 import { SEDARIM, type Masechet } from "../../data/shas";
 import { getPerekName, getMishnayotCount } from "../../data/perekInfo";
 import { fetchMishna } from "../../utils/sefaria";
+import { friendlyError } from "../../utils/friendlyError";
 import { hebrewNumeral } from "../../utils/hebrewNumeral";
 import { useLearningProgress } from "../../utils/useLearningProgress";
 import { usePerekNotes } from "../../utils/usePerekNotes";
@@ -94,7 +95,7 @@ export function MapOfShasScreen({ onOpenNotes }: MapOfShasScreenProps) {
       const text = await fetchMishna(masechet.en, perek, mi);
       setTextState({ status: "loaded", text, error: "" });
     } catch (err) {
-      setTextState({ status: "error", text: "", error: err instanceof Error ? err.message : "Failed to load." });
+      setTextState({ status: "error", text: "", error: friendlyError(err, "explore-text") });
     }
   }
 
@@ -116,7 +117,9 @@ export function MapOfShasScreen({ onOpenNotes }: MapOfShasScreenProps) {
   return (
     <div className="stage">
       <div className="panel map-panel">
-        <h1 className="panel__title">Explore Shas</h1>
+        <div className="screen-head">
+          <h1 className="screen-head__title">Explore Shas</h1>
+        </div>
 
         <div className="map-search">
           <input
@@ -125,6 +128,11 @@ export function MapOfShasScreen({ onOpenNotes }: MapOfShasScreenProps) {
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Jump to a masechet…"
           />
+          {search.trim() !== "" && searchMatches.length === 0 && (
+            <div className="map-search__results">
+              <p className="state state--empty">No masechet matches that.</p>
+            </div>
+          )}
           {searchMatches.length > 0 && (
             <div className="map-search__results">
               {searchMatches.map((m) => (
@@ -142,11 +150,11 @@ export function MapOfShasScreen({ onOpenNotes }: MapOfShasScreenProps) {
         <div className="map-breadcrumb" dir="ltr">
           {masechet && (
             <>
-              <button className="map-crumb" onClick={() => goTo("masechtot")}>
+              <button className="pill pill--compact map-crumb" onClick={() => goTo("masechtot")}>
                 Shas
               </button>
               <span className="map-crumb-sep">‹</span>
-              <button className="map-crumb" onClick={() => goTo("perakim")}>
+              <button className="pill pill--compact map-crumb" onClick={() => goTo("perakim")}>
                 {masechet.en}
               </button>
             </>
@@ -154,7 +162,7 @@ export function MapOfShasScreen({ onOpenNotes }: MapOfShasScreenProps) {
           {perek != null && (
             <>
               <span className="map-crumb-sep">‹</span>
-              <button className="map-crumb" onClick={() => goTo("mishnayot")}>
+              <button className="pill pill--compact map-crumb" onClick={() => goTo("mishnayot")}>
                 Perek {hebrewNumeral(perek)}
               </button>
             </>
@@ -162,7 +170,7 @@ export function MapOfShasScreen({ onOpenNotes }: MapOfShasScreenProps) {
           {mishnah != null && (
             <>
               <span className="map-crumb-sep">‹</span>
-              <span className="map-crumb map-crumb--current">משנה {hebrewNumeral(mishnah)}</span>
+              <span className="pill pill--compact map-crumb map-crumb--current">משנה {hebrewNumeral(mishnah)}</span>
             </>
           )}
         </div>
@@ -241,17 +249,17 @@ export function MapOfShasScreen({ onOpenNotes }: MapOfShasScreenProps) {
                 </button>
               ))}
             </div>
-            <button className="map-note-link" onClick={() => setNoteOpen(true)}>
+            <button className="btn btn--quiet map-note-link" onClick={() => setNoteOpen(true)}>
               {getPerekNote(masechet.en, perek) ? "View/edit note" : "Add note"} for this perek
             </button>
           </>
         )}
 
         {level === "text" && masechet && perek != null && mishnah != null && (
-          <div className="map-text-block">
-            {textState.status === "loading" && <p className="map-text-status">Loading…</p>}
+          <div className="card map-text-block">
+            {textState.status === "loading" && <p className="state state--loading">Loading…</p>}
             {textState.status === "error" && (
-              <p className="map-text-status" dir="ltr">
+              <p className="state state--error" dir="ltr">
                 {textState.error}
               </p>
             )}

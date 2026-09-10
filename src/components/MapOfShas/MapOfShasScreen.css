@@ -15,14 +15,14 @@
   border: none;
   background: var(--surface-hi);
   padding: 0 16px;
-  font-size: 13px;
+  font-size: var(--fs-13);
   font-family: var(--font-body);
   color: var(--ink);
 }
 
-.map-search__input:focus {
-  outline: 2px solid var(--hue-explore);
-  outline-offset: 1px;
+.map-search__input:focus-visible {
+  outline: 2.5px solid var(--gold);
+  outline-offset: 2px;
 }
 
 .map-search__results {
@@ -46,7 +46,7 @@
   border: none;
   border-bottom: 1px solid var(--line);
   padding: 10px 16px;
-  font-size: 12.5px;
+  font-size: var(--fs-13);
   font-weight: 600;
   color: var(--ink);
   cursor: pointer;
@@ -63,7 +63,7 @@
 
 .map-search__result-he {
   font-family: var(--font-hebrew);
-  font-size: 13px;
+  font-size: var(--fs-13);
   color: var(--hue-explore);
 }
 
@@ -86,7 +86,7 @@
   border-radius: var(--radius-pill);
   color: var(--ink);
   font-family: var(--font-heading);
-  font-size: 11.5px;
+  font-size: var(--fs-12);
   line-height: 1.4;
   font-weight: 700;
   cursor: pointer;
@@ -108,7 +108,7 @@
 
 .map-crumb-sep {
   color: var(--muted);
-  font-size: 11px;
+  font-size: var(--fs-12);
 }
 
 .map-sedarim-groups {
@@ -124,14 +124,14 @@
   gap: 8px;
   margin-bottom: 8px;
   font-family: var(--font-heading);
-  font-size: 11px;
+  font-size: var(--fs-12);
   font-weight: 700;
   color: var(--tile-hue, var(--ink));
 }
 
 .map-seder-group__label span:first-child {
   font-family: var(--font-hebrew);
-  font-size: 14px;
+  font-size: var(--fs-14);
 }
 
 .map-grid {
@@ -146,7 +146,7 @@
    all 63 at once (BUILD-BRIEF.md), so this is the only signal telling
    them apart before you tap one. */
 .map-grid--masechtot {
-  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  grid-template-columns: repeat(6, 1fr);
 }
 
 .map-tile--size-1 {
@@ -154,7 +154,7 @@
 }
 
 .map-tile--size-1 .map-tile__he {
-  font-size: 12.5px;
+  font-size: var(--fs-13);
 }
 
 .map-tile--size-2 {
@@ -166,7 +166,7 @@
 }
 
 .map-tile--size-3 .map-tile__he {
-  font-size: 16.5px;
+  font-size: var(--fs-16);
 }
 
 .map-tile--size-4 {
@@ -175,15 +175,15 @@
 }
 
 .map-tile--size-4 .map-tile__he {
-  font-size: 18px;
+  font-size: var(--fs-16);
 }
 
 .map-grid--perakim {
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  grid-template-columns: repeat(6, 1fr);
 }
 
 .map-grid--mishnayot {
-  grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
+  grid-template-columns: repeat(10, 1fr);
   margin-bottom: 14px;
   direction: rtl;
 }
@@ -221,7 +221,7 @@
 
 .map-tile__he {
   font-family: var(--font-hebrew);
-  font-size: 15px;
+  font-size: var(--fs-14);
   font-weight: 700;
   color: var(--ink);
   line-height: 1.4;
@@ -229,13 +229,13 @@
 
 .map-tile__en {
   font-family: var(--font-heading);
-  font-size: 11px;
+  font-size: var(--fs-12);
   font-weight: 700;
   color: var(--ink);
 }
 
 .map-tile__sub {
-  font-size: 10px;
+  font-size: var(--fs-12);
   color: var(--muted);
 }
 
@@ -250,7 +250,7 @@
 
 .map-tile__perek-num {
   font-family: var(--font-hebrew);
-  font-size: 16px;
+  font-size: var(--fs-16);
   font-weight: 700;
   line-height: 1.4;
   color: var(--ink);
@@ -259,7 +259,7 @@
 .map-tile--mishnah {
   padding: 8px 4px;
   font-family: var(--font-hebrew);
-  font-size: 13px;
+  font-size: var(--fs-13);
   font-weight: 700;
   line-height: 1.4;
   color: var(--ink);
@@ -267,7 +267,7 @@
 
 .map-tile--done {
   background: var(--ink);
-  color: #fff;
+  color: var(--on-navy);
 }
 
 .map-tile--done:hover {
@@ -279,7 +279,7 @@
   border: none;
   color: var(--ink);
   font-family: var(--font-heading);
-  font-size: 12px;
+  font-size: var(--fs-12);
   font-weight: 700;
   cursor: pointer;
   padding: 4px 0;
@@ -293,15 +293,27 @@
 }
 
 .map-text-status {
-  font-size: 12px;
+  font-size: var(--fs-12);
   color: var(--muted);
   text-align: center;
 }
 
 .map-text {
   font-family: var(--font-hebrew);
-  font-size: 15px;
+  font-size: var(--fs-hebrew-read);
   line-height: 2;
   color: var(--ink);
   text-align: right;
+}
+
+/* phone */
+@media (max-width: 599px) {
+  .map-grid--masechtot,
+  .map-grid--perakim {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .map-grid--mishnayot {
+    grid-template-columns: repeat(6, 1fr);
+  }
 }

@@ -2,6 +2,21 @@
 
 One entry per PR, newest first.
 
+## Consistency pass PR 5 — Explore Shas
+
+- Literals and sizes to tokens; the per-screen focus ring becomes the
+  shared gold keyboard ring.
+- Grids move from `auto-fill` to fixed counts — 6 columns for masechtot
+  and perakim, 10 for mishnayot, 2/2/6 on a phone — so a tile is exactly
+  the same width in every seder. Masechet tiles still span by perek
+  count, which is the deliberate signal, not an inconsistency.
+- Hebrew reading text goes 15px → 17px, matching every other reading
+  surface.
+- Crumbs are `.pill--compact`, the note link is `.btn--quiet`, the text
+  block is a `.card`.
+- Loading/error use the shared states via `friendlyError`, and a search
+  that matches nothing now says so instead of showing an empty box.
+
 ## Consistency pass PR 4 — Daily Limmud
 
 - Every literal is a token; every font-size is on the scale.
