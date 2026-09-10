@@ -1,0 +1,848 @@
+/*
+ * The shared layer. Every button, field, card, callout, modal, state, the
+ * screen header and the game frame exist here exactly once; screen
+ * stylesheets are layout only (grids, gaps, per-screen positioning) and
+ * must not define a button, input, card, modal, scrim or keyframe.
+ *
+ * Colours are always a token — never a literal (scripts/check-colors.sh).
+ * Font sizes are always one of --fs-12/13/14/16/20/28/36 (check-type.sh).
+ */
+
+/* ============================================================
+   Stage and panel
+   ============================================================ */
+
+.stage {
+  position: relative;
+  width: 100%;
+  animation: screen-fade-up 0.3s ease;
+}
+
+.panel {
+  position: relative;
+  background: var(--surface);
+  border-radius: var(--radius-card);
+  border: 1px solid var(--line);
+  padding: 24px 26px 22px;
+}
+
+/* ============================================================
+   Screen header
+   ============================================================ */
+
+.screen-head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.screen-head__title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: var(--fs-28);
+  line-height: 1.15;
+  color: var(--ink);
+  text-align: left;
+}
+
+.screen-head__sub {
+  margin: 0;
+  font-size: var(--fs-13);
+  color: var(--muted);
+}
+
+/* Right-hand slot: one pill or one button, never a row of them. */
+.screen-head__aside {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-title {
+  margin: 26px 0 4px;
+  font-family: var(--font-heading);
+  font-size: var(--fs-20);
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* ============================================================
+   Buttons
+   ============================================================ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 18px;
+  border: none;
+  border-radius: var(--radius-control);
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: var(--fs-14);
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.btn--primary {
+  background: var(--ink);
+  color: var(--on-navy);
+}
+
+.btn--primary:hover:not(:disabled) {
+  background: var(--ink-2);
+}
+
+.btn--accent {
+  background: var(--gold);
+  color: var(--ink);
+}
+
+.btn--accent:hover:not(:disabled) {
+  background: var(--gold-bright);
+}
+
+.btn--secondary {
+  background: var(--surface-hi);
+  border: 1.5px solid var(--line);
+  color: var(--ink);
+}
+
+.btn--secondary:hover:not(:disabled) {
+  border-color: var(--ink);
+}
+
+.btn--danger {
+  background: var(--bad);
+  color: var(--on-navy);
+}
+
+.btn--danger:hover:not(:disabled) {
+  background: var(--bad-hover);
+}
+
+.btn--danger-outline {
+  background: none;
+  border: 1.5px solid var(--bad);
+  color: var(--bad);
+}
+
+.btn--danger-outline:hover:not(:disabled) {
+  background: var(--bad);
+  color: var(--on-navy);
+}
+
+/* A text button. Still 48px tall so it is as tappable as the rest. */
+.btn--quiet {
+  background: none;
+  border: none;
+  padding: 0 4px;
+  font-weight: 700;
+  font-size: var(--fs-13);
+  color: var(--ink);
+}
+
+.btn--quiet:hover:not(:disabled) {
+  color: var(--gold);
+}
+
+.btn--block {
+  width: 100%;
+}
+
+.btn--compact {
+  min-height: 36px;
+  padding: 0 14px;
+  font-size: var(--fs-13);
+}
+
+/* Buttons sitting on navy invert their quiet/secondary treatment. */
+.hero-card .btn--quiet,
+.btn--on-navy.btn--quiet {
+  color: var(--on-navy);
+}
+
+.hero-card .btn--secondary,
+.btn--on-navy.btn--secondary {
+  background: var(--on-navy-fill);
+  border-color: var(--on-navy-rule);
+  color: var(--on-navy);
+}
+
+.hero-card .btn--secondary:hover:not(:disabled),
+.btn--on-navy.btn--secondary:hover:not(:disabled) {
+  border-color: var(--on-navy);
+}
+
+.btn-row {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.btn-row > .btn {
+  flex: 1;
+}
+
+/* The one round icon button: restart, pause, close, remove. */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1.5px solid var(--line);
+  background: var(--surface-hi);
+  color: var(--muted);
+  font-size: var(--fs-13);
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.icon-btn:hover {
+  color: var(--ink);
+  border-color: var(--ink);
+}
+
+/* ============================================================
+   Pills
+   ============================================================ */
+
+.pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 48px;
+  padding: 7px 15px;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--line);
+  background: var(--surface-hi);
+  color: var(--ink);
+  font-family: var(--font-heading);
+  font-size: var(--fs-13);
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.pill--compact {
+  min-height: 36px;
+  padding: 5px 12px;
+  font-size: var(--fs-12);
+}
+
+.pill--active {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--on-navy);
+}
+
+.pill:not(.pill--active):hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+/* Pills inside a hero card sit on navy, so they invert. */
+.hero-card .pill,
+.pill--on-navy {
+  background: var(--on-navy-fill);
+  border-color: var(--on-navy-rule);
+  color: var(--on-navy);
+}
+
+.hero-card .pill--active,
+.pill--on-navy.pill--active {
+  background: var(--on-navy);
+  border-color: var(--on-navy);
+  color: var(--ink);
+}
+
+/* A pill carrying a seder hue as its fill. */
+.pill--hue {
+  background: var(--pill-hue, var(--ink));
+  border-color: var(--pill-hue, var(--ink));
+  color: var(--on-navy);
+}
+
+/* ============================================================
+   Cards
+   ============================================================ */
+
+.card {
+  background: var(--surface-hi);
+  border-radius: var(--radius-card);
+  padding: 18px;
+}
+
+/* A card whose subject has a hue — the rule carries it, not a fill. */
+.card--rule {
+  border-top: 3px solid var(--card-hue, var(--gold));
+}
+
+.hero-card {
+  background: var(--ink);
+  border-radius: var(--radius-hero);
+  padding: 20px;
+  box-shadow: var(--shadow-hero);
+  color: var(--on-navy);
+}
+
+/* ============================================================
+   Callout — a short aside with a rule down its left edge
+   ============================================================ */
+
+.callout {
+  background: var(--surface);
+  border: none;
+  border-left: 3px solid var(--gold);
+  border-radius: var(--radius-control);
+  padding: 12px 14px;
+  font-size: var(--fs-13);
+  line-height: 1.55;
+  color: var(--ink);
+  text-align: left;
+}
+
+.callout--good {
+  border-left-color: var(--good);
+  background: var(--good-bg);
+  color: var(--good);
+}
+
+.callout--bad {
+  border-left-color: var(--bad);
+  background: var(--bad-bg);
+  color: var(--bad);
+}
+
+.callout--seder {
+  border-left-color: var(--callout-hue, var(--gold));
+}
+
+/* On navy the fill would fight the card, so only the rule survives. */
+.hero-card .callout {
+  background: var(--on-navy-fill);
+  border-left-color: var(--gold-bright);
+  color: var(--on-navy);
+}
+
+/* ============================================================
+   Fields
+   ============================================================ */
+
+.field {
+  display: block;
+  margin: 0 0 14px;
+}
+
+.field__label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: var(--fs-13);
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.field__input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-control);
+  background: var(--surface-hi);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--fs-14);
+}
+
+textarea.field__input {
+  min-height: 0;
+  padding: 10px 14px;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+/* Matches the global keyboard ring, so a field never looks like it lost
+   its focus treatment. */
+.field__input:focus-visible {
+  outline: 2.5px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.field--on-navy .field__input,
+.field__input.field--on-navy {
+  background: var(--on-navy-fill);
+  border-color: var(--on-navy-rule);
+  color: var(--on-navy);
+}
+
+.field--on-navy .field__label {
+  color: var(--on-navy-muted);
+}
+
+.field__error {
+  margin: 6px 0 0;
+  font-size: var(--fs-13);
+  color: var(--bad);
+}
+
+.field__hint {
+  margin: 6px 0 0;
+  font-size: var(--fs-13);
+  color: var(--muted);
+}
+
+/* ============================================================
+   Modal
+   ============================================================ */
+
+.modal-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  background: var(--scrim);
+  animation: panel-fade-in 0.2s ease;
+}
+
+/* The first-open prompt has to clear anything already open. */
+.modal-scrim--top {
+  z-index: 60;
+}
+
+.modal {
+  position: relative;
+  width: 400px;
+  max-width: calc(100% - 32px);
+  max-height: calc(100vh - 64px);
+  overflow-y: auto;
+  padding: 24px 22px;
+  border-radius: var(--radius-hero);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+  text-align: left;
+  animation: panel-pop 0.25s ease;
+}
+
+.modal--sm {
+  width: 320px;
+}
+
+.modal--md {
+  width: 400px;
+}
+
+.modal--lg {
+  width: 640px;
+}
+
+.modal__title {
+  margin: 0 0 12px;
+  font-family: var(--font-heading);
+  font-size: var(--fs-16);
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.modal__close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+
+/* Primary first, secondary under it — the same order in every modal. */
+.modal__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+/* ============================================================
+   States — loading, empty, error
+   ============================================================ */
+
+.state {
+  padding: 24px 12px;
+  text-align: center;
+}
+
+.state--loading {
+  font-size: var(--fs-13);
+  color: var(--muted);
+  animation: state-pulse 1s ease-in-out infinite;
+}
+
+.state--empty {
+  font-size: var(--fs-14);
+  color: var(--muted);
+}
+
+.state--error {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  text-align: left;
+}
+
+/* ============================================================
+   Game frame — every game is this shape
+   ============================================================ */
+
+.game__board {
+  position: relative;
+  height: var(--board-h, auto);
+}
+
+.game__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+/* The pre-start overlay: the board behind it is blurred, one action on top. */
+.game__start {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.game__end {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 24px 12px;
+  text-align: center;
+}
+
+.game__end-big {
+  font-family: var(--font-heading);
+  font-size: var(--fs-28);
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.game__end-sub {
+  margin: 0;
+  font-size: var(--fs-14);
+  color: var(--muted);
+}
+
+/* The one wrong-answer treatment, shared by all five games. */
+.game__wrong {
+  border: 1.5px solid var(--bad);
+  background: var(--bad-bg);
+  color: var(--bad);
+  animation: panel-wobble 0.3s ease;
+}
+
+/* ============================================================
+   Print controls — shared by the certificate, notes and the guide
+   ============================================================ */
+
+.print-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.translation-notice {
+  font-size: var(--fs-12);
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+/* ============================================================
+   Keyframes — the only ones in the app
+   ============================================================ */
+
+@keyframes panel-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes panel-pop {
+  0% {
+    transform: scale(0.86);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes screen-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(9px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes panel-wobble {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}
+
+@keyframes state-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+/* ============================================================
+   Migration aliases
+   ------------------------------------------------------------
+   Everything below is the old vocabulary, kept only so screens that
+   have not been migrated yet keep working. Each block is deleted by the
+   phase that migrates its last user; nothing new may use these.
+   ============================================================ */
+
+.panel__title {
+  margin: 0 0 14px;
+  font-family: var(--font-heading);
+  font-size: var(--fs-28);
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--ink);
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.panel__subtitle {
+  margin: 0 0 14px;
+  font-size: var(--fs-12);
+  color: var(--muted);
+  text-align: center;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.restart-icon {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line);
+  background: var(--surface-hi);
+  color: var(--muted);
+  font-size: var(--fs-13);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.restart-icon:hover {
+  color: var(--ink);
+  border-color: var(--ink);
+}
+
+.note-banner {
+  background: var(--surface);
+  border: none;
+  border-left: 3px solid var(--gold);
+  border-radius: var(--radius-control);
+  padding: 10px 13px;
+  font-size: var(--fs-12);
+  color: var(--brass-text);
+  text-align: left;
+  margin-bottom: 14px;
+  font-weight: 600;
+}
+
+.note-banner--good {
+  border-left-color: var(--good);
+  color: var(--good);
+}
+
+.scrim {
+  position: absolute;
+  inset: 0;
+  background: var(--scrim);
+  border-radius: var(--radius-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: panel-fade-in 0.2s ease;
+}
+
+.scrim.intro-scrim {
+  position: fixed;
+  border-radius: 0;
+  z-index: 50;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.popup {
+  width: 260px;
+  max-width: calc(100% - 32px);
+  background: var(--surface);
+  border-radius: var(--radius-hero);
+  padding: 26px 22px 22px;
+  text-align: center;
+  box-shadow: var(--shadow-card);
+  animation: panel-pop 0.25s ease;
+}
+
+.popup.intro-popup {
+  width: 400px;
+  max-width: calc(100% - 32px);
+  max-height: calc(100vh - 64px);
+  overflow-y: auto;
+  padding: 26px 24px 22px;
+  position: relative;
+  text-align: left;
+}
+
+.intro-popup__close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line);
+  background: var(--surface-hi);
+  color: var(--muted);
+  font-size: var(--fs-12);
+  cursor: pointer;
+}
+
+.intro-popup__title {
+  margin: 6px 0 12px;
+  font-family: var(--font-heading);
+  font-size: var(--fs-16);
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.intro-popup__text {
+  font-size: var(--fs-13);
+  line-height: 1.55;
+  color: var(--muted);
+  margin: 0 0 12px;
+  text-align: left;
+}
+
+.intro-popup__lead {
+  font-size: var(--fs-13);
+  line-height: 1.55;
+  color: var(--muted);
+  margin: 0 0 16px;
+}
+
+.intro-popup__subtitle {
+  margin: 0 0 10px;
+  font-family: var(--font-heading);
+  font-size: var(--fs-14);
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.popup__mark {
+  font-size: var(--fs-28);
+  color: var(--gold);
+}
+
+.popup__text {
+  font-size: var(--fs-14);
+  color: var(--ink);
+  margin-top: 8px;
+  font-weight: 600;
+  font-family: var(--font-heading);
+}
+
+/* Aliases of .btn.btn--primary.btn--block. */
+.popup__restart,
+.restart {
+  margin-top: 4px;
+  width: 100%;
+  min-height: 48px;
+  padding: 11px;
+  background: var(--ink);
+  color: var(--on-navy);
+  border: none;
+  border-radius: var(--radius-control);
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: var(--fs-14);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.popup__restart:hover:not(:disabled),
+.restart:hover:not(:disabled) {
+  background: var(--gold);
+  color: var(--ink);
+}

@@ -10,10 +10,29 @@
   --muted: #6b6350;
   --faint: #a0987f;
   --gold: #b8862b;
-  --good: #4f7a3f;
+  /* Gold reads as gold on navy only when it is lifted; this is also the
+     hover for every gold fill. */
+  --gold-bright: #d9a63d;
+  /* Success has its own hue rather than borrowing Seder Zeraim's green —
+     "done" and "this belongs to Zeraim" are different statements. */
+  --good: #3d7c5c;
+  --good-bg: #e3efe7;
   --bad: #8f3b2e;
   --bad-bg: #f6e3df;
   --bad-dot: #b8543f;
+  --bad-hover: #7a3226;
+  /* Taken/inactive red — one pink across the app. */
+  --bad-soft: #d9a99a;
+  /* The one light tint behind toggles, skeletons and empty cells. */
+  --tint: #efe8d6;
+
+  /* Text and rules on navy. --on-navy is the ONE cream used there; the
+     alphas below are the only permitted variations of it. */
+  --on-navy: #f5f0e4;
+  --on-navy-muted: rgba(245, 240, 228, 0.7);
+  --on-navy-faint: rgba(245, 240, 228, 0.4);
+  --on-navy-rule: rgba(245, 240, 228, 0.16);
+  --on-navy-fill: rgba(245, 240, 228, 0.08);
 
   /* Aliases kept so existing components (written against the old token
      names) pick up the new palette without a file-by-file rewrite. */
@@ -65,13 +84,31 @@
   --radius-small: 10px;
   --radius-pill: 999px;
 
+  /* Every shadow is navy — nothing casts a grey or black one. */
   --shadow-hero: 0 12px 28px rgba(22, 35, 63, 0.18);
   --shadow-hover: 0 8px 18px rgba(22, 35, 63, 0.1);
+  --shadow-card: 0 20px 40px rgba(22, 35, 63, 0.3);
+  --shadow-chip: 0 3px 8px rgba(22, 35, 63, 0.25);
+  --shadow-drag: 0 8px 18px rgba(22, 35, 63, 0.3);
+
+  --scrim: rgba(22, 35, 63, 0.45);
 
   --font-heading: "Gabarito", sans-serif;
   --font-body: "Assistant", sans-serif;
   --font-hebrew: "Frank Ruhl Libre", serif;
 
-  --stage-width: 480px;
+  /* The closed type scale. Nothing outside this list; scripts/check-type.sh
+     is what keeps it closed. 36px is Home's Hebrew hero alone. */
+  --fs-12: 12px;
+  --fs-13: 13px;
+  --fs-14: 14px;
+  --fs-16: 16px;
+  --fs-20: 20px;
+  --fs-28: 28px;
+  --fs-36: 36px;
+
+  /* Two stage widths, no per-screen exceptions. */
+  --stage-width: 520px;
+  --stage-width-wide: 760px;
   --sidebar-width: 108px;
 }

@@ -43,6 +43,14 @@ export function reportSilentSignInFailure() {
   Sentry.captureMessage("Sign-in redirect returned with no session and no error", "warning");
 }
 
+/** The raw thrown error, kept out of the student's way but not lost —
+    friendlyError shows one of three sentences on screen and sends the
+    real message here, so a failure is still diagnosable. */
+export function reportHandledError(err: unknown, context: string) {
+  if (!monitoringConfigured) return;
+  Sentry.captureException(err, { tags: { handled: context } });
+}
+
 /** For the "Report a problem" link in My Account — attaches whatever
     the student typed to the current error/session context, if
     monitoring is configured, in addition to the mailto fallback that

@@ -1,5 +1,5 @@
 @import "./theme.css";
-@import "./panel.css";
+@import "./components.css";
 
 * {
   box-sizing: border-box;
@@ -38,4 +38,20 @@ textarea:focus-visible,
 [tabindex]:focus-visible {
   outline: 2.5px solid var(--gold);
   outline-offset: 2px;
+}
+
+/* Printing is always "just the overlay": the app chrome and whatever
+   screen is behind it never reach paper. Owning this here is what lets
+   each printable view drop its own @media print block. */
+@media print {
+  .sidebar,
+  .bottom-bar,
+  .main > :not(.print-overlay) {
+    display: none !important;
+  }
+
+  .print-overlay {
+    position: static;
+    padding: 0;
+  }
 }
