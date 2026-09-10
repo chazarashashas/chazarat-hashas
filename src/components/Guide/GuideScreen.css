@@ -220,8 +220,10 @@
   border-color: var(--ink);
 }
 
+/* The closing line sits above the rule that ends the document, mirroring
+   the rule that closes the header. */
 .guide-closing {
-  margin: 0;
+  margin: 24px 0 0;
   text-align: center;
   font-family: var(--font-heading);
   font-weight: 700;
@@ -249,22 +251,15 @@
   }
 }
 
+/* The copy being sent to paper: the per-step navigation is a screen
+   affordance and means nothing printed. Everything else about the print
+   path (hiding the controls, unpinning the overlay) is Mishna Notes'
+   shared print CSS, which this reuses rather than restating. */
+.guide-panel--print .guide-step__nav {
+  display: none;
+}
+
 @media print {
-  .stage {
-    background: #fff;
-  }
-
-  .guide-print-btn,
-  .guide-step__nav {
-    display: none;
-  }
-
-  .guide-panel {
-    max-width: none;
-    border: none;
-    box-shadow: none;
-  }
-
   .guide-step {
     break-inside: avoid;
   }

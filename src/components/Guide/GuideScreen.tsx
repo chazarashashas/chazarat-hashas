@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { SEDARIM } from "../../data/shas";
 import { getSederHue } from "../../utils/sederHue";
 import "./GuideScreen.css";
@@ -12,6 +12,10 @@ interface GuideScreenProps {
   /** Skips the outer .stage/.panel page chrome — GuidePopup supplies its
       own popup chrome around this same content instead. */
   bare?: boolean;
+  /** This copy is the one being sent to paper: no Print button, no step
+      navigation, no "find this again" note — none of which mean anything
+      once printed. Also what stops the print overlay recursing. */
+  forPrint?: boolean;
 }
 
 interface StepNavButton {
@@ -66,15 +70,22 @@ function StepNav({ onNavigate, buttons }: { onNavigate: (id: string) => void; bu
 }
 
 function SederPills() {
+  // role="list"/"listitem" so the container's aria-label is actually
+  // honoured (it is ignored on a bare div) and each pill is announced as
+  // its own item, named by its Hebrew-plus-English text.
   return (
-    <div className="guide-seder-pills" aria-label="The six sedarim">
+    <div className="guide-seder-pills" role="list" aria-label="The six sedarim">
       {SEDARIM.map((s) => (
         <span
           key={s.id}
+          role="listitem"
           className="guide-seder-pill"
           style={{ ["--pill-hue" as string]: getSederHue(s.id) }}
         >
-          <span dir="rtl">{s.he}</span> {s.en}
+          <span lang="he" dir="rtl">
+            {s.he}
+          </span>{" "}
+          {s.en}
         </span>
       ))}
     </div>
@@ -96,7 +107,9 @@ function SederPills() {
  * are in-page scroll targets, not real URLs. Revisit this the moment a
  * real router lands.
  */
-export function GuideScreen({ onNavigate, initialAnchor, bare }: GuideScreenProps) {
+export function GuideScreen({ onNavigate, initialAnchor, bare, forPrint }: GuideScreenProps) {
+  const [printOpen, setPrintOpen] = useState(false);
+
   useEffect(() => {
     if (!initialAnchor) return;
     const el = document.getElementById(initialAnchor);
@@ -108,7 +121,13 @@ export function GuideScreen({ onNavigate, initialAnchor, bare }: GuideScreenProp
 
   return (
     <div className={bare ? "guide-bare" : "stage"}>
-      <div className={"panel guide-panel" + (bare ? " guide-panel--bare" : "")}>
+      <div
+        className={
+          "panel guide-panel" +
+          (bare ? " guide-panel--bare" : "") +
+          (forPrint ? " guide-panel--print" : "")
+        }
+      >
         <header className="guide-header">
           <h1 className="guide-header__title">How to Use Chazarat Hashas</h1>
           <p className="guide-header__subtitle">A guide for the talmid</p>
@@ -117,9 +136,11 @@ export function GuideScreen({ onNavigate, initialAnchor, bare }: GuideScreenProp
             built with that as its first and primary goal. Here is how the app is meant to be
             used, step by step.
           </p>
-          <button className="guide-print-btn" onClick={() => window.print()}>
-            Print
-          </button>
+          {!forPrint && (
+            <button className="guide-print-btn" onClick={() => setPrintOpen(true)}>
+              Print
+            </button>
+          )}
         </header>
         <div className="guide-rule" aria-hidden="true" />
 
@@ -317,10 +338,35 @@ export function GuideScreen({ onNavigate, initialAnchor, bare }: GuideScreenProp
           </li>
         </ol>
 
-        <div className="guide-rule" aria-hidden="true" />
         <p className="guide-closing">Stay consistent, and keep on learning!</p>
-        <p className="guide-revisit">You can always find this guide again from the navigation.</p>
+        <div className="guide-rule" aria-hidden="true" />
+        {!forPrint && (
+          <p className="guide-revisit">You can always find this guide again from the navigation.</p>
+        )}
       </div>
+
+      {/* The Guide on paper goes through Mishna Notes' print path — the same
+          .print-overlay shell, .no-print controls and window.print() — rather
+          than a second print mechanism of its own. The copy inside is this
+          same component with forPrint set, which is what stops it recursing. */}
+      {printOpen && !forPrint && (
+        <div className="print-overlay">
+          <div className="print-controls no-print">
+            <h2>Print the Guide</h2>
+            <div className="print-actions">
+              <button className="restart print-btn" onClick={() => window.print()}>
+                Print
+              </button>
+              <button className="print-close" onClick={() => setPrintOpen(false)}>
+                Close
+              </button>
+            </div>
+          </div>
+          <div className="print-content">
+            <GuideScreen bare forPrint onNavigate={onNavigate} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
