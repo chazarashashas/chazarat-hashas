@@ -26,7 +26,6 @@ import {
   JoinByCodeCard,
   InviteQueueRow,
 } from "../GroupCreateCard/GroupCreateCard";
-import "../Chevrusa/ChevrusaScreen.css";
 import "./ChaburaScreen.css";
 
 /** Explains the rebbe/talmid roles a "Rebbe & Class" chabura creates —
@@ -42,7 +41,7 @@ function AboutChaburaModal({ onClose }: { onClose: () => void }) {
         <button className="intro-popup__close" onClick={onClose} title="Close" aria-label="Close">
           ✕
         </button>
-        <h2 className="intro-popup__title">About Chaburas</h2>
+        <h2 className="modal__title">About Chaburos</h2>
         <p className="intro-popup__lead">
           A chabura is a group of any size learning one masechet together — with your shiur or
           class, or among friends. Starting one with your shiur or class makes you its rebbe
@@ -92,7 +91,7 @@ function AboutChaburaModal({ onClose }: { onClose: () => void }) {
           <p className="intro-job__text">Classmates never see your report, and you never see theirs.</p>
         </div>
 
-        <p className="intro-popup__text" style={{ marginTop: 14, marginBottom: 0 }}>
+        <p className="intro-popup__text intro-popup__text--last">
           Looking to pair with one study partner instead, no group or rebbe? That's Chevrusa.
         </p>
       </div>
@@ -131,7 +130,7 @@ const SIGNED_OUT_KIND = {
 const ROSTER_PREVIEW = [
   { name: "Yitzy Feldman", learned: true, value: "4 mishnayot · B+" },
   { name: "Moshe Guttman", learned: true, value: "2 mishnayot · A−" },
-  { name: "Eli Brandwein", learned: true, value: "1 mishnah", valueMuted: true },
+  { name: "Eli Brandwein", learned: true, value: "1 mishna", valueMuted: true },
   { name: "Shmuli Klein", learned: false, value: "not yet today", valueMuted: true },
 ];
 
@@ -142,9 +141,9 @@ const BUNDLE_PREVIEW = [
 ];
 
 const PACE_OPTIONS: { value: GroupPace; label: string }[] = [
-  { value: "1", label: "1 Mishnah/day" },
-  { value: "2", label: "2 Mishnayot/day" },
-  { value: "perek", label: "1 Perek/day" },
+  { value: "1", label: "1 Mishna a day" },
+  { value: "2", label: "2 Mishnayot a day" },
+  { value: "perek", label: "1 Perek a day" },
 ];
 
 function MasechetSelect({ value, onChange }: { value: string; onChange: (value: string) => void }) {
@@ -166,7 +165,7 @@ function MasechetSelect({ value, onChange }: { value: string; onChange: (value: 
 
 function ErrorRow({ message }: { message: string }) {
   return (
-    <div className="chevrusa-error" dir="ltr">
+    <div className="callout callout--bad chevrusa-error" dir="ltr">
       <span className="chevrusa-error__dot" aria-hidden="true" />
       {message}
     </div>
@@ -437,9 +436,9 @@ export function ChaburaScreen({ onOpenLogin }: ChaburaScreenProps) {
         />
 
         <div className="chevrusa-section">
-          <p className="chevrusa-section__label">Waiting for you</p>
+          <p className="section-title">Waiting for you</p>
           {chaburaPending.length === 0 ? (
-            <p className="chevrusa-empty">No pending invites.</p>
+            <p className="state state--empty">No pending invites.</p>
           ) : (
             chaburaPending.map((inv) => (
               <InviteQueueRow
@@ -460,9 +459,9 @@ export function ChaburaScreen({ onOpenLogin }: ChaburaScreenProps) {
         </div>
 
         <div className="chevrusa-section">
-          <p className="chevrusa-section__label">Your chaburot</p>
+          <p className="section-title">Your chaburos</p>
           {chaburot.length === 0 ? (
-            <p className="chevrusa-empty">
+            <p className="state state--empty">
               Not in any chabura yet. Each group you start or join will show here, with its own
               masechet and member list.
             </p>
@@ -474,9 +473,9 @@ export function ChaburaScreen({ onOpenLogin }: ChaburaScreenProps) {
         </div>
 
         <div className="chevrusa-section">
-          <p className="chevrusa-section__label">Invitations you've sent</p>
+          <p className="section-title">Invitations you've sent</p>
           {chaburaSent.length === 0 ? (
-            <p className="chevrusa-empty">No outstanding invites.</p>
+            <p className="state state--empty">No outstanding invites.</p>
           ) : (
             chaburaSent.map((inv) => (
               <InviteQueueRow

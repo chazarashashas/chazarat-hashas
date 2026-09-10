@@ -8,7 +8,7 @@ import "./GroupCreateCard.css";
     this dark ground rather than bordered boxes on the page. */
 export function CreateCard({ heading, subtitle, children }: { heading: string; subtitle: string; children: ReactNode }) {
   return (
-    <div className="create-card">
+    <div className="hero-card create-card">
       <p className="create-card__heading">{heading}</p>
       <p className="create-card__subtitle">{subtitle}</p>
       {children}

@@ -2,6 +2,25 @@
 
 One entry per PR, newest first.
 
+## Consistency pass PR 9 — Chevrusa, Chabura, the gate, L'Iluy Nishmat
+
+- Every literal in the cluster is a token. The cream-on-navy alphas (a
+  dozen slightly different opacities) collapse onto the five on-navy
+  tokens by band; gold/ink/red tints become `color-mix`.
+- `GroupCreateCard` stops killing its focus outlines, so the global
+  keyboard ring works in its fields.
+- L'Iluy Nishmat's accent moves off `--hue-chevrusa` onto `--hue-siyumim`
+  — it is a siyum feature, not a group feature (17 uses).
+- Create card, gate facts/CTA and the nishmat board are `.hero-card`;
+  siyum cards are `.card`; gate facts and nishmat facts are `.callout`;
+  kind tabs are `.pill`; errors are `.callout--bad`; empties are
+  `.state--empty`; section labels are `.section-title`.
+- `ChaburaScreen` stops importing `ChevrusaScreen.css` and its inline
+  style becomes a class.
+- Copy: pace strings standardised across both screens; "About Chaburas" →
+  "About Chaburos"; "Your chaburot/chevrusot" → "chaburos/chevrusos";
+  "L'iluy nishmat" → "L'Iluy Nishmat".
+
 ## Consistency pass PR 8 — the five games
 
 - Every literal across all five games plus `GameHud` and

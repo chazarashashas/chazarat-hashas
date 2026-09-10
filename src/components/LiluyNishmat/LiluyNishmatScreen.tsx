@@ -74,7 +74,7 @@ function SiyumCard({
   onHide?: () => void;
 }) {
   return (
-    <div className="siyum-card">
+    <div className="card siyum-card">
       <button className="siyum-card__open" onClick={onOpen}>
         <div className="siyum-card__head">
           <span className="siyum-card__name">{siyum.dedication}</span>
@@ -234,14 +234,14 @@ export function LiluyNishmatScreen({ onOpenLogin, initialSlug }: LiluyNishmatScr
     return (
       <div className="stage">
         <div className="panel nishmat-gate">
-          <h1 className="gate2-title">L'Iluy Nishmat</h1>
-          <p className="gate2-subtitle">
+          <h1 className="screen-head__title">L'Iluy Nishmat</h1>
+          <p className="screen-head__sub">
             A siyum haShas is {siyumim.TOTAL_PERAKIM} perakim. Split among enough people, it comes to
             one perek each.
           </p>
 
           {boardSiyum && boardStats && (
-            <div className="nishmat-gate-board">
+            <div className="hero-card nishmat-gate-board">
               <p className="nishmat-gate-board__head">All of Shas, one square per perek</p>
               <p className="nishmat-gate-board__body">
                 Someone opens a siyum. Each square is one perek. People take the ones they can learn,
@@ -276,8 +276,8 @@ export function LiluyNishmatScreen({ onOpenLogin, initialSlug }: LiluyNishmatScr
           )}
 
           <div className="gate2-facts">
-            <div className="nishmat-gate-fact">
-              <span className="nishmat-gate-fact__rule" style={{ background: "#b8862b" }} />
+            <div className="callout nishmat-gate-fact">
+              <span className="nishmat-gate-fact__rule" style={{ background: "var(--gold)" }} />
               <div>
                 <p className="nishmat-gate-fact__head">One perek is the whole ask</p>
                 <p className="nishmat-gate-fact__body">
@@ -286,8 +286,8 @@ export function LiluyNishmatScreen({ onOpenLogin, initialSlug }: LiluyNishmatScr
                 </p>
               </div>
             </div>
-            <div className="nishmat-gate-fact">
-              <span className="nishmat-gate-fact__rule" style={{ background: "#4f7a3f" }} />
+            <div className="callout nishmat-gate-fact">
+              <span className="nishmat-gate-fact__rule" style={{ background: "var(--good)" }} />
               <div>
                 <p className="nishmat-gate-fact__head">It appears in your daily limmud</p>
                 <p className="nishmat-gate-fact__body">
@@ -296,8 +296,8 @@ export function LiluyNishmatScreen({ onOpenLogin, initialSlug }: LiluyNishmatScr
                 </p>
               </div>
             </div>
-            <div className="nishmat-gate-fact">
-              <span className="nishmat-gate-fact__rule" style={{ background: "#2f4470" }} />
+            <div className="callout nishmat-gate-fact">
+              <span className="nishmat-gate-fact__rule" style={{ background: "var(--ink-2)" }} />
               <div>
                 <p className="nishmat-gate-fact__head">A perek can be released</p>
                 <p className="nishmat-gate-fact__body">
@@ -405,7 +405,7 @@ export function LiluyNishmatScreen({ onOpenLogin, initialSlug }: LiluyNishmatScr
             <h2 className="intro-popup__title">Start a siyum</h2>
 
             <label className="login-field">
-              <span className="login-field__label">L'iluy nishmat</span>
+              <span className="login-field__label">L'Iluy Nishmat</span>
               <input
                 value={dedication}
                 onChange={(e) => setDedication(e.target.value)}

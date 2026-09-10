@@ -15,18 +15,18 @@
   margin: 0;
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: 14px;
+  font-size: var(--fs-14);
   color: var(--ink);
 }
 
 .group-notes__subtitle {
-  font-size: 11.5px;
+  font-size: var(--fs-12);
   color: var(--muted);
 }
 
 .group-notes__composer {
   margin-top: 10px;
-  background: #fff;
+  background: var(--on-navy);
   border-radius: var(--radius-control);
   box-shadow: inset 0 0 0 1.5px var(--line);
   padding: 12px 13px;
@@ -45,7 +45,7 @@
   border: none;
   background: var(--paper);
   padding: 0 10px;
-  font-size: 12px;
+  font-size: var(--fs-12);
   font-family: var(--font-body);
   color: var(--ink);
 }
@@ -63,9 +63,9 @@
   min-height: 56px;
   border: none;
   padding: 0;
-  font-size: 12.5px;
+  font-size: var(--fs-13);
   font-family: var(--font-body);
-  color: #736a5c;
+  color: var(--muted);
   resize: vertical;
 }
 
@@ -80,10 +80,10 @@
   border-radius: var(--radius-small);
   padding: 7px 14px;
   background: var(--brand);
-  color: #fff;
+  color: var(--on-navy);
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: 11.5px;
+  font-size: var(--fs-12);
   cursor: pointer;
 }
 
@@ -102,9 +102,9 @@
 /* ---------- Note card ---------- */
 
 .group-note {
-  background: #fff;
+  background: var(--on-navy);
   border-radius: var(--radius-control);
-  border-left: 3px solid #7c93c4;
+  border-left: 3px solid var(--ink-2);
   padding: 11px 13px;
 }
 
@@ -122,15 +122,15 @@
 .group-note__author {
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: 12.5px;
+  font-size: var(--fs-13);
   color: var(--ink);
 }
 
 .group-note__source {
   flex: 1;
   min-width: 0;
-  font-size: 11.5px;
-  color: #736a5c;
+  font-size: var(--fs-12);
+  color: var(--muted);
 }
 
 .group-note__edit {
@@ -140,7 +140,7 @@
   padding: 0;
   font-family: var(--font-body);
   font-weight: 600;
-  font-size: 11px;
+  font-size: var(--fs-12);
   color: var(--brass-text);
   text-decoration: underline;
   text-underline-offset: 2px;
@@ -153,7 +153,7 @@
 
 .group-note__body {
   margin: 5px 0 0;
-  font-size: 12.5px;
+  font-size: var(--fs-13);
   line-height: 1.55;
   color: var(--ink);
 }
@@ -170,7 +170,7 @@
   border-radius: var(--radius-small);
   border: 1.5px solid var(--border);
   padding: 8px 10px;
-  font-size: 12.5px;
+  font-size: var(--fs-13);
   font-family: var(--font-body);
   color: var(--ink);
   resize: vertical;
@@ -195,7 +195,7 @@
   color: var(--ink);
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: 11px;
+  font-size: var(--fs-12);
   cursor: pointer;
 }
 
@@ -205,7 +205,7 @@
   color: var(--muted);
   font-family: var(--font-body);
   font-weight: 600;
-  font-size: 11px;
+  font-size: var(--fs-12);
   cursor: pointer;
 }
 
@@ -214,14 +214,14 @@
 .group-note__comments {
   margin-top: 8px;
   padding-left: 10px;
-  border-left: 2px solid #efe8d6;
+  border-left: 2px solid var(--line);
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
 .group-note__comment {
-  font-size: 12.5px;
+  font-size: var(--fs-13);
   line-height: 1.5;
   color: var(--ink);
 }
@@ -229,13 +229,13 @@
 .group-note__comment-author {
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: 11.5px;
+  font-size: var(--fs-12);
   color: var(--ink-2);
 }
 
 .group-note__comment-time {
   display: block;
-  font-size: 10.5px;
+  font-size: var(--fs-12);
   color: var(--muted);
 }
 
@@ -247,7 +247,7 @@
   padding: 0;
   font-family: var(--font-body);
   font-weight: 600;
-  font-size: 11px;
+  font-size: var(--fs-12);
   color: var(--brass-text);
   text-decoration: underline;
   text-underline-offset: 2px;
@@ -274,7 +274,7 @@
   border-radius: var(--radius-small);
   border: 1.5px solid var(--border);
   padding: 0 10px;
-  font-size: 12px;
+  font-size: var(--fs-12);
   font-family: var(--font-body);
   color: var(--ink);
 }
@@ -295,7 +295,7 @@
   color: var(--ink);
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: 11px;
+  font-size: var(--fs-12);
   cursor: pointer;
 }
 

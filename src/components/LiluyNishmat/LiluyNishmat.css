@@ -23,12 +23,12 @@
   flex-shrink: 0;
   min-height: 48px;
   padding: 10px 18px;
-  background: var(--hue-chevrusa);
-  color: #fff;
+  background: var(--hue-siyumim);
+  color: var(--on-navy);
   border: none;
   border-radius: var(--radius-pill);
   font-family: var(--font-heading);
-  font-size: 12.5px;
+  font-size: var(--fs-13);
   font-weight: 700;
   cursor: pointer;
 }
@@ -39,7 +39,7 @@
 }
 
 .nishmat-helping-note {
-  font-size: 12px;
+  font-size: var(--fs-12);
   color: var(--muted);
   font-style: italic;
   margin: 4px 0 16px;
@@ -64,7 +64,7 @@
   background: var(--ink);
   border-radius: var(--radius-hero);
   padding: 20px;
-  color: #f0eee6;
+  color: var(--on-navy);
 }
 
 .nishmat-gate-board__head {
@@ -73,14 +73,14 @@
   font-weight: 800;
   font-size: 17px;
   letter-spacing: -0.02em;
-  color: #fff;
+  color: var(--on-navy);
 }
 
 .nishmat-gate-board__body {
   margin: 5px 0 0;
-  font-size: 12px;
+  font-size: var(--fs-12);
   line-height: 1.65;
-  color: rgba(240, 238, 230, 0.7);
+  color: var(--on-navy-muted);
 }
 
 .nishmat-gate-board .siyum-card__mosaic {
@@ -91,13 +91,13 @@
   margin: 8px 0 0;
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: 11.5px;
-  color: #d9a63d;
+  font-size: var(--fs-12);
+  color: var(--gold-bright);
 }
 
 .nishmat-gate-lead {
   margin: 16px 0 9px;
-  font-size: 12px;
+  font-size: var(--fs-12);
   color: var(--muted);
 }
 
@@ -120,13 +120,13 @@
   margin: 0;
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: 12.5px;
+  font-size: var(--fs-13);
   color: var(--ink);
 }
 
 .nishmat-gate-fact__body {
   margin: 2px 0 0;
-  font-size: 11.5px;
+  font-size: var(--fs-12);
   line-height: 1.65;
   color: var(--ink-soft);
 }
@@ -167,7 +167,7 @@
   border-radius: var(--radius-pill);
   color: var(--muted);
   font-family: var(--font-heading);
-  font-size: 10px;
+  font-size: var(--fs-12);
   font-weight: 700;
   cursor: pointer;
 }
@@ -185,7 +185,7 @@
 
 .siyum-card__name {
   font-family: var(--font-heading);
-  font-size: 18px;
+  font-size: var(--fs-16);
   font-weight: 700;
   color: var(--ink);
 }
@@ -193,7 +193,7 @@
 .siyum-card__badge {
   margin-left: auto;
   font-family: var(--font-heading);
-  font-size: 9.5px;
+  font-size: var(--fs-12);
   font-weight: 700;
   padding: 2px 9px;
   border-radius: var(--radius-pill);
@@ -202,13 +202,13 @@
 }
 
 .siyum-card__badge--public {
-  background: var(--hue-chevrusa);
-  color: #fff;
+  background: var(--hue-siyumim);
+  color: var(--on-navy);
 }
 
 .siyum-card__occasion {
   margin: 4px 0 0;
-  font-size: 12px;
+  font-size: var(--fs-12);
   color: var(--muted);
 }
 
@@ -231,15 +231,15 @@
   flex: 1;
   height: 6px;
   border-radius: 1px;
-  background: #f0e9d7;
+  background: var(--tint);
 }
 
 .siyum-card__mosaic-sq--taken {
-  background: #c98f7f;
+  background: var(--bad-soft);
 }
 
 .siyum-card__mosaic-sq--learned {
-  background: var(--hue-chevrusa);
+  background: var(--hue-siyumim);
 }
 
 .siyum-card__stats {
@@ -260,7 +260,7 @@
 }
 
 .siyum-card__stat--learned .siyum-card__stat-num {
-  color: var(--hue-chevrusa);
+  color: var(--hue-siyumim);
 }
 
 .siyum-card__stat--taken .siyum-card__stat-num {
@@ -272,7 +272,7 @@
 }
 
 .siyum-card__stat-label {
-  font-size: 10px;
+  font-size: var(--fs-12);
   color: var(--muted);
 }
 
@@ -286,18 +286,18 @@
 }
 
 .siyum-card__bar-seg--learned {
-  background: var(--hue-chevrusa);
+  background: var(--hue-siyumim);
 }
 
 .siyum-card__bar-seg--taken {
-  background: #d9a99a;
+  background: var(--bad-soft);
 }
 
 .siyum-card__cta {
   font-family: var(--font-heading);
-  font-size: 12px;
+  font-size: var(--fs-12);
   font-weight: 700;
-  color: var(--hue-chevrusa);
+  color: var(--hue-siyumim);
 }
 
 /* ---------- Shared modal bits ---------- */
@@ -312,7 +312,7 @@
 
 .nishmat-visibility-note {
   margin: 6px 0 0;
-  font-size: 11px;
+  font-size: var(--fs-12);
   color: var(--muted);
 }
 
@@ -325,7 +325,7 @@
   margin-top: 8px;
   padding: 8px;
   font-family: var(--font-heading);
-  font-size: 12px;
+  font-size: var(--fs-12);
   font-weight: 600;
   color: var(--muted);
   cursor: pointer;
@@ -340,7 +340,7 @@
   border: none;
   padding: 8px 0;
   margin-bottom: 10px;
-  font-size: 12px;
+  font-size: var(--fs-12);
   color: var(--ink);
   text-align: left;
   cursor: pointer;
@@ -356,8 +356,8 @@
 }
 
 .nishmat-anon-toggle--on .nishmat-anon-toggle__box {
-  background: var(--hue-chevrusa);
-  border-color: var(--hue-chevrusa);
+  background: var(--hue-siyumim);
+  border-color: var(--hue-siyumim);
 }
 
 /* ---------- Detail view ---------- */
@@ -367,7 +367,7 @@
   border: none;
   color: var(--muted);
   font-family: var(--font-heading);
-  font-size: 12px;
+  font-size: var(--fs-12);
   font-weight: 700;
   cursor: pointer;
   padding: 4px 0;
@@ -386,7 +386,7 @@
 .nishmat-plaque__label {
   margin: 0 0 4px;
   font-family: var(--font-heading);
-  font-size: 11px;
+  font-size: var(--fs-12);
   font-weight: 700;
   color: var(--gold);
 }
@@ -396,19 +396,19 @@
   font-family: var(--font-hebrew);
   font-size: clamp(24px, 4.4vw, 32px);
   line-height: 1.4;
-  color: #fff;
+  color: var(--on-navy);
 }
 
 .nishmat-plaque__sub {
   margin: 8px 0 0;
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.7);
+  font-size: var(--fs-12);
+  color: var(--on-navy-muted);
 }
 
 .nishmat-plaque__scope {
   margin: 4px 0 0;
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.5);
+  font-size: var(--fs-12);
+  color: var(--on-navy-muted);
 }
 
 .nishmat-stats {
@@ -427,7 +427,7 @@
 }
 
 .nishmat-stat--learned {
-  border-top-color: var(--hue-chevrusa);
+  border-top-color: var(--hue-siyumim);
 }
 
 .nishmat-stat--taken {
@@ -437,14 +437,14 @@
 .nishmat-stat__num {
   display: block;
   font-family: var(--font-heading);
-  font-size: 22px;
+  font-size: var(--fs-20);
   font-weight: 800;
   color: var(--ink);
 }
 
 .nishmat-stat__label {
   display: block;
-  font-size: 10px;
+  font-size: var(--fs-12);
   color: var(--muted);
   margin-top: 3px;
 }
@@ -473,13 +473,13 @@
 
 .nishmat-mosaic__he {
   font-family: var(--font-hebrew);
-  font-size: 13px;
+  font-size: var(--fs-13);
   font-weight: 700;
   line-height: 1.4;
 }
 
 .nishmat-mosaic__count {
-  font-size: 9px;
+  font-size: var(--fs-12);
   color: var(--muted);
 }
 
@@ -496,11 +496,11 @@
   border: none;
   padding: 0;
   cursor: pointer;
-  background: #f0e9d7;
+  background: var(--tint);
 }
 
 .nishmat-sq--learned {
-  background: var(--hue-chevrusa);
+  background: var(--hue-siyumim);
 }
 
 .nishmat-sq--yours,
@@ -510,7 +510,7 @@
 
 .nishmat-sq--other,
 .nishmat-sq--anon {
-  background: #c98f7f;
+  background: var(--bad-soft);
   cursor: default;
 }
 
@@ -519,7 +519,7 @@
 }
 
 .nishmat-sq--open:hover {
-  background: #e2d7bd;
+  background: var(--line);
 }
 
 .nishmat-legend {
@@ -527,7 +527,7 @@
   flex-wrap: wrap;
   gap: 14px;
   margin-top: 12px;
-  font-size: 10.5px;
+  font-size: var(--fs-12);
   color: var(--muted);
 }
 
@@ -545,7 +545,7 @@
 }
 
 .nishmat-legend__sw--learned {
-  background: var(--hue-chevrusa);
+  background: var(--hue-siyumim);
 }
 
 .nishmat-legend__sw--yours {
@@ -553,11 +553,11 @@
 }
 
 .nishmat-legend__sw--taken {
-  background: #c98f7f;
+  background: var(--bad-soft);
 }
 
 .nishmat-legend__sw--open {
-  background: #f0e9d7;
+  background: var(--tint);
 }
 
 .nishmat-next-card {
@@ -570,21 +570,21 @@
 
 .nishmat-next-card__label {
   margin: 0;
-  font-size: 10.5px;
+  font-size: var(--fs-12);
   color: var(--muted);
 }
 
 .nishmat-next-card__value {
   margin: 3px 0 0;
   font-family: var(--font-heading);
-  font-size: 14.5px;
+  font-size: var(--fs-14);
   font-weight: 700;
   color: var(--ink);
 }
 
 .nishmat-next-card__desc {
   margin: 4px 0 0;
-  font-size: 11.5px;
+  font-size: var(--fs-12);
   line-height: 1.55;
   color: var(--ink-soft);
 }
@@ -594,12 +594,12 @@
   min-height: 48px;
   margin-top: 12px;
   padding: 0 18px;
-  background: var(--hue-chevrusa);
-  color: #fff;
+  background: var(--hue-siyumim);
+  color: var(--on-navy);
   border: none;
   border-radius: var(--radius-control);
   font-family: var(--font-heading);
-  font-size: 13px;
+  font-size: var(--fs-13);
   font-weight: 700;
   cursor: pointer;
 }
@@ -607,7 +607,7 @@
 .nishmat-next-card__promise {
   margin: 8px 0 0;
   text-align: center;
-  font-size: 10px;
+  font-size: var(--fs-12);
   color: var(--muted);
 }
 
@@ -623,7 +623,7 @@
 }
 
 .nishmat-share-row__label {
-  font-size: 11px;
+  font-size: var(--fs-12);
   font-weight: 700;
   color: var(--muted);
   flex-shrink: 0;
@@ -632,7 +632,7 @@
 .nishmat-share-row__url {
   flex: 1;
   min-width: 120px;
-  font-size: 11px;
+  font-size: var(--fs-12);
   color: var(--ink);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -644,11 +644,11 @@
   min-height: 32px;
   padding: 0 12px;
   background: var(--ink);
-  color: #fff;
+  color: var(--on-navy);
   border: none;
   border-radius: var(--radius-pill);
   font-family: var(--font-heading);
-  font-size: 11px;
+  font-size: var(--fs-12);
   font-weight: 700;
   cursor: pointer;
 }
@@ -663,7 +663,7 @@
 .nishmat-activity__title {
   margin: 0 0 8px;
   font-family: var(--font-heading);
-  font-size: 13px;
+  font-size: var(--fs-13);
   font-weight: 700;
   color: var(--ink);
 }
@@ -684,14 +684,14 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: var(--hue-chevrusa);
+  background: var(--hue-siyumim);
   flex-shrink: 0;
 }
 
 .nishmat-activity__text {
   flex: 1;
   min-width: 0;
-  font-size: 12px;
+  font-size: var(--fs-12);
   color: var(--ink);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -700,7 +700,7 @@
 
 .nishmat-activity__time {
   flex-shrink: 0;
-  font-size: 10.5px;
+  font-size: var(--fs-12);
   color: var(--muted);
 }
 
@@ -742,7 +742,7 @@
 
 .nishmat-seder-row__he {
   font-family: var(--font-hebrew);
-  font-size: 15px;
+  font-size: var(--fs-14);
   font-weight: 700;
   color: var(--row-hue, var(--ink));
 }
@@ -750,7 +750,7 @@
 .nishmat-seder-row__en {
   flex: 1;
   font-family: var(--font-heading);
-  font-size: 12.5px;
+  font-size: var(--fs-13);
   font-weight: 700;
   color: var(--ink);
 }
@@ -772,7 +772,7 @@
   border: none;
   border-bottom: 1px solid var(--line);
   padding: 9px 4px;
-  font-size: 12px;
+  font-size: var(--fs-12);
   font-weight: 600;
   color: var(--ink);
   cursor: pointer;
@@ -780,7 +780,7 @@
 }
 
 .nishmat-masechet-row__meta {
-  font-size: 10.5px;
+  font-size: var(--fs-12);
   font-weight: 600;
   color: var(--muted);
 }
@@ -808,19 +808,19 @@
 
 .nishmat-perek-tile__letter {
   font-family: var(--font-hebrew);
-  font-size: 15px;
+  font-size: var(--fs-14);
   font-weight: 700;
   color: var(--ink);
 }
 
 .nishmat-perek-tile__status {
-  font-size: 9px;
+  font-size: var(--fs-12);
   color: var(--muted);
   line-height: 1.3;
 }
 
 .nishmat-perek-tile__name {
-  font-size: 8.5px;
+  font-size: var(--fs-12);
   color: var(--muted);
 }
 
@@ -845,13 +845,13 @@
 }
 
 .nishmat-perek-tile--learned {
-  border-left: 3px solid var(--hue-chevrusa);
+  border-left: 3px solid var(--hue-siyumim);
   background: var(--surface);
   cursor: default;
 }
 
 .nishmat-perek-tile--learned .nishmat-perek-tile__letter {
-  color: var(--hue-chevrusa);
+  color: var(--hue-siyumim);
 }
 
 @keyframes nishmat-stamp {
@@ -880,8 +880,8 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: var(--hue-chevrusa);
-  color: #fff;
+  background: var(--hue-siyumim);
+  color: var(--on-navy);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -903,20 +903,20 @@
   border: none;
   border-radius: var(--radius-control);
   font-family: var(--font-heading);
-  font-size: 13px;
+  font-size: var(--fs-13);
   font-weight: 700;
   cursor: pointer;
   margin-bottom: 8px;
 }
 
 .nishmat-manage-btn--learn {
-  background: var(--hue-chevrusa);
-  color: #fff;
+  background: var(--hue-siyumim);
+  color: var(--on-navy);
 }
 
 .nishmat-manage-btn--queue {
   background: var(--ink);
-  color: #fff;
+  color: var(--on-navy);
 }
 
 .nishmat-manage-btn--release {

@@ -31,7 +31,7 @@ export function KindTabs<T extends string>({
           <button
             key={opt.value}
             type="button"
-            className={"gate2-kind-tab" + (active ? " gate2-kind-tab--active" : "")}
+            className={"pill gate2-kind-tab" + (active ? " pill--active gate2-kind-tab--active" : "")}
             onClick={() => onChange(opt.value)}
           >
             <span className="gate2-kind-tab__label">{opt.label}</span>
@@ -45,7 +45,7 @@ export function KindTabs<T extends string>({
 
 export function FactCard({ head, body, children }: { head: string; body: string; children?: ReactNode }) {
   return (
-    <div className="gate2-fact">
+    <div className="hero-card gate2-fact">
       <p className="gate2-fact__head">{head}</p>
       <p className="gate2-fact__body">{body}</p>
       {children && <div className="gate2-fact__preview">{children}</div>}
@@ -173,7 +173,7 @@ export function GateCTA({
   onAction: () => void;
 }) {
   return (
-    <div className="gate2-cta">
+    <div className="hero-card gate2-cta">
       <div className="gate2-cta__text">
         <p className="gate2-cta__heading">{heading}</p>
         <p className="gate2-cta__body">{body}</p>

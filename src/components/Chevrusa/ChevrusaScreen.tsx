@@ -16,9 +16,9 @@ import { CreateCard, FieldInset, PaceSegment, CreateCta, InviteQueueRow } from "
 import "./ChevrusaScreen.css";
 
 const PACE_OPTIONS: { value: GroupPace; label: string }[] = [
-  { value: "1", label: "1 Mishnah/day" },
-  { value: "2", label: "2/day" },
-  { value: "perek", label: "1 Perek/day" },
+  { value: "1", label: "1 Mishna a day" },
+  { value: "2", label: "2 Mishnayot a day" },
+  { value: "perek", label: "1 Perek a day" },
 ];
 
 function MasechetSelect({ value, onChange }: { value: string; onChange: (value: string) => void }) {
@@ -40,7 +40,7 @@ function MasechetSelect({ value, onChange }: { value: string; onChange: (value: 
 
 function ErrorRow({ message }: { message: string }) {
   return (
-    <div className="chevrusa-error" dir="ltr">
+    <div className="callout callout--bad chevrusa-error" dir="ltr">
       <span className="chevrusa-error__dot" aria-hidden="true" />
       {message}
     </div>
@@ -204,9 +204,9 @@ export function ChevrusaScreen({ onOpenLogin }: ChevrusaScreenProps) {
         </CreateCard>
 
         <div className="chevrusa-section">
-          <p className="chevrusa-section__label">Waiting for you</p>
+          <p className="section-title">Waiting for you</p>
           {chevrusaPending.length === 0 ? (
-            <p className="chevrusa-empty">No pending invites.</p>
+            <p className="state state--empty">No pending invites.</p>
           ) : (
             chevrusaPending.map((inv) => (
               <InviteQueueRow
@@ -227,9 +227,9 @@ export function ChevrusaScreen({ onOpenLogin }: ChevrusaScreenProps) {
         </div>
 
         <div className="chevrusa-section">
-          <p className="chevrusa-section__label">Your chevrusot</p>
+          <p className="section-title">Your chevrusos</p>
           {chevrusot.length === 0 ? (
-            <p className="chevrusa-empty">
+            <p className="state state--empty">
               Not paired with anyone yet. Each pairing you make will show its own masechet here.
             </p>
           ) : (
@@ -240,9 +240,9 @@ export function ChevrusaScreen({ onOpenLogin }: ChevrusaScreenProps) {
         </div>
 
         <div className="chevrusa-section">
-          <p className="chevrusa-section__label">Invitations you've sent</p>
+          <p className="section-title">Invitations you've sent</p>
           {chevrusaSent.length === 0 ? (
-            <p className="chevrusa-empty">No outstanding invites.</p>
+            <p className="state state--empty">No outstanding invites.</p>
           ) : (
             chevrusaSent.map((inv) => (
               <InviteQueueRow

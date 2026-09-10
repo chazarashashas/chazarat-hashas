@@ -5,7 +5,7 @@
   background: var(--ink);
   border-radius: var(--radius-hero);
   padding: 20px;
-  color: #f0eee6;
+  color: var(--on-navy);
 }
 
 .create-card__heading {
@@ -14,29 +14,29 @@
   font-weight: 800;
   font-size: 17px;
   letter-spacing: -0.02em;
-  color: #fff;
+  color: var(--on-navy);
 }
 
 .create-card__subtitle {
   margin: 4px 0 0;
-  font-size: 12px;
+  font-size: var(--fs-12);
   line-height: 1.6;
-  color: rgba(240, 238, 230, 0.68);
+  color: var(--on-navy-muted);
 }
 
 .create-card__shiur-notice {
   margin-top: 13px;
   padding: 11px 13px;
   border-radius: var(--radius-control);
-  background: rgba(217, 166, 61, 0.14);
-  border-left: 3px solid #d9a63d;
+  background: color-mix(in srgb, var(--gold-bright) 14%, transparent);
+  border-left: 3px solid var(--gold-bright);
 }
 
 .create-card__shiur-notice p {
   margin: 0;
-  font-size: 11.5px;
+  font-size: var(--fs-12);
   line-height: 1.6;
-  color: #f0eee6;
+  color: var(--on-navy);
 }
 
 .create-card .gate2-kind-tabs {
@@ -56,9 +56,9 @@
   margin: 0;
   font-family: var(--font-body);
   font-weight: 600;
-  font-size: 11.5px;
+  font-size: var(--fs-12);
   line-height: 1.4;
-  color: rgba(240, 238, 230, 0.72);
+  color: var(--on-navy-muted);
 }
 
 .create-field__inset {
@@ -80,27 +80,23 @@
   background: none;
   padding: 0;
   font-family: var(--font-body);
-  font-size: 13.5px;
+  font-size: var(--fs-14);
   color: var(--ink);
   appearance: none;
   -webkit-appearance: none;
 }
 
 .create-field__inset input::placeholder {
-  color: #736a5c;
+  color: var(--muted);
   opacity: 1;
 }
 
-.create-field__inset input:focus,
-.create-field__inset select:focus {
-  outline: none;
-}
 
 .create-field__hint {
   margin: 5px 0 0;
-  font-size: 11px;
+  font-size: var(--fs-12);
   line-height: 1.55;
-  color: rgba(240, 238, 230, 0.6);
+  color: var(--on-navy-muted);
 }
 
 /* ---------- Pace segment (inverted for navy) ---------- */
@@ -110,7 +106,7 @@
   display: flex;
   padding: 3px;
   border-radius: var(--radius-pill);
-  background: rgba(240, 238, 230, 0.1);
+  background: var(--on-navy-fill);
 }
 
 .pace-segment__btn {
@@ -122,14 +118,14 @@
   text-align: center;
   font-family: var(--font-body);
   font-weight: 600;
-  font-size: 12px;
-  color: rgba(240, 238, 230, 0.72);
+  font-size: var(--fs-12);
+  color: var(--on-navy-muted);
   cursor: pointer;
   transition: background 0.12s ease;
 }
 
 .pace-segment__btn--active {
-  background: #f0eee6;
+  background: var(--on-navy);
   color: var(--ink);
   font-weight: 700;
 }
@@ -144,8 +140,8 @@
 }
 
 .create-field__count {
-  font-size: 10.5px;
-  color: rgba(240, 238, 230, 0.55);
+  font-size: var(--fs-12);
+  color: var(--on-navy-muted);
 }
 
 .invite-repeater-list {
@@ -173,8 +169,8 @@
   height: 38px;
   border: none;
   border-radius: var(--radius-control);
-  background: rgba(240, 238, 230, 0.1);
-  color: #f0eee6;
+  background: var(--on-navy-fill);
+  color: var(--on-navy);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -183,7 +179,7 @@
 }
 
 .invite-repeater-row__remove:hover {
-  background: rgba(184, 84, 63, 0.5);
+  background: color-mix(in srgb, var(--bad-dot) 50%, transparent);
 }
 
 .create-add-invite {
@@ -193,13 +189,13 @@
   padding: 0;
   font-family: var(--font-body);
   font-weight: 700;
-  font-size: 11.5px;
-  color: #d9a63d;
+  font-size: var(--fs-12);
+  color: var(--gold-bright);
   cursor: pointer;
 }
 
 .create-add-invite:hover {
-  color: #f0d488;
+  color: var(--gold-bright);
 }
 
 /* ---------- CTA ---------- */
@@ -215,13 +211,13 @@
   text-align: center;
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: 14.5px;
+  font-size: var(--fs-14);
   cursor: pointer;
   transition: background 0.12s ease;
 }
 
 .create-cta:hover:not(:disabled) {
-  background: #d9a63d;
+  background: var(--gold-bright);
 }
 
 .create-cta:disabled {
@@ -232,9 +228,9 @@
 .create-cta__note {
   margin: 9px 0 0;
   text-align: center;
-  font-size: 11px;
+  font-size: var(--fs-12);
   line-height: 1.55;
-  color: rgba(240, 238, 230, 0.6);
+  color: var(--on-navy-muted);
 }
 
 /* ---------- Join by code (cream, quieter) ---------- */
@@ -259,13 +255,13 @@
   margin: 0;
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: 13px;
+  font-size: var(--fs-13);
   color: var(--ink);
 }
 
 .join-code-card__sub {
   margin: 2px 0 0;
-  font-size: 11.5px;
+  font-size: var(--fs-12);
   line-height: 1.55;
   color: var(--muted);
 }
@@ -284,17 +280,16 @@
   padding: 0 12px;
   border: none;
   border-radius: var(--radius-small);
-  background: #fff;
+  background: var(--on-navy);
   box-shadow: inset 0 0 0 1.5px var(--line);
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: 14px;
+  font-size: var(--fs-14);
   letter-spacing: 0.08em;
-  color: #736a5c;
+  color: var(--muted);
 }
 
 .join-code-card__input:focus {
-  outline: none;
   box-shadow: inset 0 0 0 1.5px var(--gold);
 }
 
@@ -304,10 +299,10 @@
   border: none;
   border-radius: var(--radius-small);
   background: var(--ink);
-  color: #f0eee6;
+  color: var(--on-navy);
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: 12.5px;
+  font-size: var(--fs-13);
   cursor: pointer;
   transition: background 0.12s ease;
 }
@@ -339,7 +334,7 @@
   min-height: 34px;
   border-radius: var(--radius-pill);
   flex-shrink: 0;
-  background: #cfc7b2;
+  background: var(--line);
 }
 
 .invite-queue-row__rule--mine {
@@ -355,7 +350,7 @@
   margin: 0;
   font-family: var(--font-body);
   font-weight: 600;
-  font-size: 13px;
+  font-size: var(--fs-13);
   color: var(--ink);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -364,8 +359,8 @@
 
 .invite-queue-row__detail {
   margin: 1px 0 0;
-  font-size: 11.5px;
-  color: #736a5c;
+  font-size: var(--fs-12);
+  color: var(--muted);
 }
 
 .invite-queue-row__actions {
@@ -380,10 +375,10 @@
   border: none;
   border-radius: var(--radius-small);
   background: var(--ink);
-  color: #f0eee6;
+  color: var(--on-navy);
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: 12px;
+  font-size: var(--fs-12);
   cursor: pointer;
   transition: background 0.12s ease;
 }
@@ -398,8 +393,8 @@
   padding: 0;
   font-family: var(--font-body);
   font-weight: 600;
-  font-size: 11.5px;
-  color: #736a5c;
+  font-size: var(--fs-12);
+  color: var(--muted);
   text-decoration: underline;
   text-underline-offset: 2px;
   cursor: pointer;
