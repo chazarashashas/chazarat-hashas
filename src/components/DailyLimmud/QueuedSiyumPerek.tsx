@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getMishnayotCount } from "../../data/perekInfo";
 import { fetchMishna } from "../../utils/sefaria";
+import { FRIENDLY_ERRORS } from "../../utils/friendlyError";
 import { hebrewNumeral } from "../../utils/hebrewNumeral";
 import { useLearningProgress } from "../../utils/useLearningProgress";
 import { useSiyumim, type PerekClaim } from "../../utils/useSiyumim";
@@ -72,7 +73,7 @@ export function QueuedSiyumPerek({ claim, siyumim }: Props) {
 
   return (
     <div className="limmud-perek-block">
-      <p className="limmud-siyum-tag">L'iluy nishmat: {claim.dedication}</p>
+      <p className="limmud-siyum-tag">L'Iluy Nishmat: {claim.dedication}</p>
       <p className="limmud-breadcrumb">
         {claim.masechetEn} ▸ Perek {hebrewNumeral(claim.perek)}
       </p>
@@ -85,7 +86,7 @@ export function QueuedSiyumPerek({ claim, siyumim }: Props) {
             <span className="limmud-mishna__loading">Loading…</span>
           ) : m.status === "error" ? (
             <span className="limmud-mishna__error" dir="ltr">
-              Couldn't load this mishnah.
+              {FRIENDLY_ERRORS.load}
             </span>
           ) : (
             <p className="limmud-mishna__text" dir="rtl">

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { SEDARIM } from "../../data/shas";
 import { getPerekName, getMishnayotCount } from "../../data/perekInfo";
 import { fetchMishna } from "../../utils/sefaria";
+import { friendlyError } from "../../utils/friendlyError";
 import { fetchMishnaTranslation, type TranslationAttribution } from "../../utils/translation";
 import { usePerekNotes } from "../../utils/usePerekNotes";
 import { useLearningProgress, type Pace, paceEquals, paceLabel } from "../../utils/useLearningProgress";
@@ -63,9 +64,9 @@ interface MishnaContent extends MishnaItem {
 // same progress.pace, so a choice made either place shows up as the
 // active pill here and vice versa.
 const PACE_OPTIONS: { value: Pace; label: string }[] = [
-  { value: { unit: "mishnayot", amount: 1 }, label: "1 Mishnah/day" },
-  { value: { unit: "mishnayot", amount: 2 }, label: "2 Mishnayot/day" },
-  { value: { unit: "perakim", amount: 1 }, label: "1 Perek/day" },
+  { value: { unit: "mishnayot", amount: 1 }, label: "1 Mishna a day" },
+  { value: { unit: "mishnayot", amount: 2 }, label: "2 Mishnayot a day" },
+  { value: { unit: "perakim", amount: 1 }, label: "1 Perek a day" },
 ];
 
 const ALL_MASECHTOT = SEDARIM.flatMap((s) => s.masechtot.map((m) => ({ ...m, sederId: s.id })));
@@ -373,11 +374,9 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
   return (
     <div className="stage limmud-stage">
       <div className="panel limmud-panel">
-        <div className="limmud-head">
-          <div className="limmud-head__text">
-            <h1 className="panel__title limmud-head__title">Today's limmud</h1>
-          </div>
-          <div className="limmud-streak">
+        <div className="screen-head limmud-head">
+          <h1 className="screen-head__title">Today's limmud</h1>
+          <div className="screen-head__aside limmud-streak">
             <span className="limmud-streak__dot" aria-hidden="true" />
             <span className="limmud-streak__num">{streak.current} days</span>
             <span className="limmud-streak__label">best {streak.longest}</span>
@@ -387,7 +386,7 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
         {(groupContexts.length > 0 || isSelf) && !finished && (
           <>
             <button
-              className="limmud-settings-summary"
+              className="btn btn--secondary btn--block limmud-settings-summary"
               onClick={() => setSettingsOpen((v) => !v)}
               aria-expanded={settingsOpen}
             >
@@ -513,7 +512,7 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
         ) : (
           <div className="limmud-body">
             <div className="limmud-reader">
-              <div className="limmud-card">
+              <div className="card limmud-card">
                 {seder && firstItem && (
                   <p className="limmud-breadcrumb">
                     {!isSelf && activeLabel && <span dir="ltr">{activeLabel} ▸ </span>}
@@ -533,10 +532,10 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
                             משנה {hebrewNumeral(item.mishnah)}
                           </p>
                           {item.status === "loading" ? (
-                            <span className="limmud-mishna__loading">Loading…</span>
+                            <span className="state state--loading">Loading…</span>
                           ) : item.status === "error" ? (
-                            <span className="limmud-mishna__error" dir="ltr">
-                              {item.error}
+                            <span className="state state--error" dir="ltr">
+                              {friendlyError(item.error, "limmud-mishna")}
                             </span>
                           ) : (
                             <p className="limmud-mishna__text" dir="rtl">

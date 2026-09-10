@@ -106,6 +106,10 @@
   --fs-20: 20px;
   --fs-28: 28px;
   --fs-36: 36px;
+  /* Rule 7's Hebrew reading size. It is off the Latin scale on purpose —
+     Frank Ruhl Libre needs the extra pixel to sit alongside 14px body
+     text — so it gets a token rather than an exception in check-type.sh. */
+  --fs-hebrew-read: 17px;
 
   /* Two stage widths, no per-screen exceptions. */
   --stage-width: 520px;

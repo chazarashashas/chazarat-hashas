@@ -2,6 +2,21 @@
 
 One entry per PR, newest first.
 
+## Consistency pass PR 4 — Daily Limmud
+
+- Every literal is a token; every font-size is on the scale.
+- New `--fs-hebrew-read: 17px` token so rule 7 (Hebrew reading text at
+  17px/2.0) and rule 4 (closed Latin scale) can both hold.
+- Header is a `.screen-head` with the streak in `__aside`; the settings
+  summary is a `.btn--secondary.btn--block`; the reader is a `.card`.
+- `.limmud-stage`'s 640px cap is gone — the wide slot is the width.
+- The mishna's Hebrew label goes from 12px `--gold` to 14px
+  `--brass-text`, which actually holds contrast at that size.
+- Loading and error use the shared states, and the error runs through
+  `friendlyError` so Sefaria's raw text never renders.
+- Copy: pace options are "1 Mishna a day / 2 Mishnayot a day / 1 Perek a
+  day"; "L'iluy nishmat:" → "L'Iluy Nishmat:".
+
 ## Consistency pass PR 3 — Home
 
 - Every literal in Home, `ProgressHeaderBar`, `ProgressTracks`,

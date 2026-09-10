@@ -1,6 +1,5 @@
 .limmud-stage {
   width: 100%;
-  max-width: 640px;
 }
 
 .limmud-panel {
@@ -18,32 +17,13 @@
   min-width: 0;
 }
 
-.limmud-head__title {
-  text-align: left;
-  margin: 0;
-}
-
-.limmud-head__sub {
-  text-align: left;
-  margin: 4px 0 0;
-}
-
+/* A .btn--secondary.btn--block; all that is its own is that the content
+   is left-aligned rather than centred. */
 .limmud-settings-summary {
   margin-top: 14px;
-  width: 100%;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
+  justify-content: flex-start;
   gap: 9px;
-  padding: 11px 14px;
-  border-radius: var(--radius-control);
-  background: var(--surface);
-  transition: background 0.12s ease;
-}
-
-.limmud-settings-summary:hover,
-.limmud-settings-summary:active {
-  background: var(--surface-hi);
+  text-align: left;
 }
 
 .limmud-settings-summary__dot {
@@ -57,7 +37,7 @@
 .limmud-settings-summary__text {
   flex: 1;
   min-width: 0;
-  font-size: 12.5px;
+  font-size: var(--fs-13);
   font-weight: 600;
   color: var(--ink);
   white-space: nowrap;
@@ -86,7 +66,7 @@
 
 .limmud-settings__fixed-note {
   margin: 0;
-  font-size: 11px;
+  font-size: var(--fs-12);
   line-height: 1.6;
   color: var(--muted);
 }
@@ -120,7 +100,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 12px;
+  font-size: var(--fs-12);
   color: var(--ink);
 }
 
@@ -143,7 +123,7 @@
   gap: 7px;
   padding: 8px 13px;
   border-radius: var(--radius-pill);
-  background: rgba(184, 134, 43, 0.14);
+  background: color-mix(in srgb, var(--gold) 14%, transparent);
   white-space: nowrap;
 }
 
@@ -157,13 +137,13 @@
 
 .limmud-streak__num {
   font-family: var(--font-heading);
-  font-size: 12.5px;
+  font-size: var(--fs-13);
   font-weight: 700;
   color: var(--brass-text);
 }
 
 .limmud-streak__label {
-  font-size: 10.5px;
+  font-size: var(--fs-12);
   font-weight: 500;
   color: var(--brass-text);
   opacity: 0.75;
@@ -187,7 +167,7 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  font-size: 11.5px;
+  font-size: var(--fs-12);
 }
 
 .limmud-finished__pick select {
@@ -196,7 +176,7 @@
   border: 1.5px solid var(--border);
   background: var(--surface-hi);
   padding: 0 8px;
-  font-size: 12px;
+  font-size: var(--fs-12);
   font-family: var(--font-body);
   color: var(--ink);
 }
@@ -225,7 +205,7 @@
 .limmud-siyum-tag {
   margin: 0 0 4px;
   font-family: var(--font-heading);
-  font-size: 10.5px;
+  font-size: var(--fs-12);
   font-weight: 700;
   color: var(--hue-chevrusa);
   text-align: center;
@@ -238,7 +218,7 @@
 }
 
 .limmud-breadcrumb {
-  font-size: 11px;
+  font-size: var(--fs-12);
   font-weight: 600;
   line-height: 1.5;
   color: var(--muted);
@@ -265,10 +245,10 @@
 .limmud-mishna__title {
   margin: 0 0 4px;
   font-family: var(--font-hebrew);
-  font-size: 12px;
+  font-size: var(--fs-14);
   font-weight: 700;
   line-height: 1.4;
-  color: var(--gold);
+  color: var(--brass-text);
   text-align: right;
 }
 
@@ -276,7 +256,7 @@
   margin: 0;
   font-family: var(--font-hebrew);
   font-weight: 400;
-  font-size: 17px;
+  font-size: var(--fs-hebrew-read);
   line-height: 2;
   color: var(--ink);
   text-align: right;
@@ -286,22 +266,22 @@
 .limmud-mishna__loading,
 .limmud-mishna__error {
   color: var(--ink-soft);
-  font-size: 12px;
+  font-size: var(--fs-12);
 }
 
 .limmud-mishna__hairline {
   height: 1px;
   margin: 18px 0;
-  background: #f0e9d7;
+  background: var(--tint);
 }
 
 .limmud-mishna__english {
   margin: 0;
   font-family: var(--font-body);
   font-weight: 400;
-  font-size: 13.5px;
+  font-size: var(--fs-14);
   line-height: 1.75;
-  color: #4f4a3d;
+  color: var(--ink);
   text-align: left;
   direction: ltr;
 }
@@ -315,7 +295,7 @@
 .limmud-english-skeleton__bar {
   height: 11px;
   border-radius: var(--radius-pill);
-  background: #f0e9d7;
+  background: var(--tint);
 }
 
 .limmud-english-error {
@@ -324,7 +304,7 @@
   justify-content: space-between;
   gap: 12px;
   margin: 0;
-  font-size: 12.5px;
+  font-size: var(--fs-13);
   color: var(--muted);
 }
 
@@ -335,7 +315,7 @@
   padding: 0;
   font-family: var(--font-heading);
   font-weight: 700;
-  font-size: 12px;
+  font-size: var(--fs-12);
   color: var(--brass-text);
   cursor: pointer;
 }
@@ -360,11 +340,11 @@
   padding: 0 15px;
   border-radius: var(--radius-pill);
   border: none;
-  background: #f0e9d7;
+  background: var(--tint);
   cursor: pointer;
   font-family: var(--font-heading);
   font-weight: 600;
-  font-size: 12px;
+  font-size: var(--fs-12);
   color: var(--ink);
 }
 
@@ -379,7 +359,7 @@
   width: 30px;
   height: 16px;
   border-radius: var(--radius-pill);
-  background: #cfc6ac;
+  background: var(--line);
 }
 
 .english-switch__knob::after {
@@ -390,12 +370,12 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: #fff;
+  background: var(--on-navy);
   transition: transform 0.15s ease;
 }
 
 .english-switch--on .english-switch__knob {
-  background: rgba(255, 255, 255, 0.25);
+  background: var(--on-navy-fill);
 }
 
 .english-switch--on .english-switch__knob::after {
@@ -447,7 +427,7 @@
   padding: 12px 16px;
   border-radius: var(--radius-card);
   background: var(--hue-limmud);
-  color: #fff;
+  color: var(--on-navy);
   animation: limmud-confirm-rise 0.3s ease;
 }
 
@@ -456,12 +436,12 @@
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.18);
+  background: var(--on-navy-fill);
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-hebrew);
-  font-size: 17px;
+  font-size: var(--fs-hebrew-read);
   font-weight: 700;
   line-height: 1.3;
   animation: limmud-confirm-stamp 0.5s ease;
@@ -475,15 +455,15 @@
 }
 
 .limmud-confirm__head {
-  font-size: 13.5px;
+  font-size: var(--fs-14);
   font-weight: 700;
 }
 
 .limmud-confirm__sub {
-  font-size: 11.5px;
+  font-size: var(--fs-12);
   font-weight: 500;
   line-height: 1.5;
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--on-navy-muted);
 }
 
 .limmud-notes__actions {
@@ -532,7 +512,7 @@
 .limmud-notes__open-title {
   display: block;
   font-family: var(--font-heading);
-  font-size: 12px;
+  font-size: var(--fs-12);
   font-weight: 700;
   color: var(--ink);
 }
@@ -540,7 +520,7 @@
 .limmud-notes__open-sub {
   display: block;
   margin-top: 1px;
-  font-size: 10.5px;
+  font-size: var(--fs-12);
   color: var(--muted);
 }
 
@@ -552,7 +532,7 @@
   border: none;
   color: var(--brand);
   font-family: var(--font-heading);
-  font-size: 11px;
+  font-size: var(--fs-12);
   font-weight: 700;
   cursor: pointer;
   margin-top: 6px;
