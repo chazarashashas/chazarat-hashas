@@ -2,6 +2,14 @@
 
 One entry per PR, newest first.
 
+## Shas Dash: pause is a thinking break again
+
+- Pausing freezes the crossing only. You can still steer while paused and
+  the card eases to the new lane; it just does not move forward. This is
+  how it worked before the feel pass, which had blocked steering.
+- ← pauses again, alongside Space. → is still Lock in, and pressing it
+  while paused resumes and commits.
+
 ## chazarashashas.org/shasdash
 
 - A short link that opens Shas Dash directly. The app reads the path on

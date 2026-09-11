@@ -155,7 +155,9 @@ export function ShasDashScreen() {
   }, [togglePause]);
 
   const moveLane = useCallback((delta: number) => {
-    if (!runningRef.current || pausedRef.current || !cardRef.current || lockRef.current) return;
+    // Steering still works while paused: a pause freezes the crossing, not
+    // the player — a thinking break you can line up the answer in.
+    if (!runningRef.current || !cardRef.current || lockRef.current) return;
     const next = Math.max(0, Math.min(LANES - 1, laneRef.current + delta));
     if (next === laneRef.current) return;
     laneRef.current = next;
@@ -199,7 +201,7 @@ export function ShasDashScreen() {
       const board = boardRef.current;
       const runner = runnerRef.current;
       // Hold until React has committed this card, so its width is real.
-      if (pausedRef.current || !board || !runner || runner.dataset.card !== picked.name) {
+      if (!board || !runner || runner.dataset.card !== picked.name) {
         rafRef.current = requestAnimationFrame(step);
         return;
       }
@@ -208,7 +210,11 @@ export function ShasDashScreen() {
       const runway = Math.max(0, board.clientWidth - GATE_W - runner.offsetWidth);
       // Progress is wall clock minus time paused, never the sum of clamped
       // frame deltas — those drift from real time whenever frames drop.
-      const elapsed = frameNow - cardStartRef.current - pausedTotalRef.current;
+      // While paused the clock stops at the moment of pausing, so the card
+      // holds its place across the board — but the loop keeps running, so a
+      // lane change still eases the card up or down.
+      const clockNow = pausedRef.current ? pauseBeganRef.current : frameNow;
+      const elapsed = clockNow - cardStartRef.current - pausedTotalRef.current;
       const t = lockRef.current ? 1 : Math.min(1, Math.max(0, elapsed / ms));
       const x = t * runway;
       const targetY = laneRef.current * laneH + (laneH - cardH) / 2;
@@ -346,7 +352,7 @@ export function ShasDashScreen() {
       } else if (e.key === "ArrowRight") {
         e.preventDefault();
         if (!e.repeat) lockIn();
-      } else if (e.key === " " || e.key === "Spacebar") {
+      } else if (e.key === " " || e.key === "Spacebar" || e.key === "ArrowLeft") {
         e.preventDefault();
         if (!e.repeat) togglePause();
       }
@@ -499,7 +505,7 @@ export function ShasDashScreen() {
                 <button
                   className="dash-ctl"
                   disabled={!playing}
-                  title={paused ? "Resume (Space)" : "Pause (Space)"}
+                  title={paused ? "Resume (Space / ←)" : "Pause (Space / ←)"}
                   aria-label={paused ? "Resume" : "Pause"}
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={togglePause}
