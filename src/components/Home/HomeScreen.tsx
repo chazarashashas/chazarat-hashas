@@ -13,7 +13,7 @@ import { ReceivedNudges } from "../GroupCard/ReceivedNudges";
 import { GuidePopup } from "../Guide/GuidePopup";
 import { ErevChagCard } from "../ChagPrint/ErevChagCard";
 import { stretchFromErev } from "../../utils/chagCalendar";
-import { localDateStr } from "../../utils/localDate";
+import { useToday } from "../../utils/useToday";
 import "./HomeScreen.css";
 
 interface Feature {
@@ -134,8 +134,11 @@ interface HomeScreenProps {
 export function HomeScreen({ onNavigate }: HomeScreenProps) {
   const [showGuidePopup, setShowGuidePopup] = useState(false);
   const progress = useLearningProgress();
+  // Kept current at local midnight, so the erev card is gone the moment
+  // erev ends — never shown on Shabbat or yom tov.
+  const today = useToday();
   // Erev Shabbat or erev yom tov: point to Daily Limmud, where the printing is.
-  const erevStretch = stretchFromErev(localDateStr());
+  const erevStretch = stretchFromErev(today);
   const { perekNotes } = usePerekNotes();
   const { isLoggedIn, session } = useAuth();
   const { groups } = useChevrusa();

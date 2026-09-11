@@ -3,7 +3,7 @@ import { PrintNotesView } from "../PrintNotes/PrintNotesView";
 import { NavIcon } from "../Icon/NavIcon";
 import { ChagPrintCard } from "../ChagPrint/ChagPrintCard";
 import { nextStretch } from "../../utils/chagCalendar";
-import { localDateStr } from "../../utils/localDate";
+import { useToday } from "../../utils/useToday";
 import { GUIDE_PDF } from "../Guide/guidePdf";
 import "./ResourcesScreen.css";
 
@@ -41,9 +41,10 @@ interface ResourcesScreenProps {
 
 export function ResourcesScreen({ onOpenGuide }: ResourcesScreenProps) {
   const [printOpen, setPrintOpen] = useState(false);
-  // Mishnayot for the next Shabbat or yom tov, any day of the week — Home
-  // and Daily Limmud only offer it on erev itself.
-  const upcoming = nextStretch(localDateStr());
+  // Mishnayot for the next Shabbat or yom tov, any ordinary day of the week
+  // (never on Shabbat or yom tov itself) — Home and Daily Limmud only offer
+  // it on erev.
+  const upcoming = nextStretch(useToday());
 
   return (
     <div className="stage">

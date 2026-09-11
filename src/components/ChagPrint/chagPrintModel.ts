@@ -172,6 +172,11 @@ const CHAG_NAMES: Record<ChagId, string> = {
   shavuot: "Shavuot",
 };
 
+/** "Rosh Hashana", or "Shabbat" for an ordinary Shabbat. */
+export function chagName(stretch: ChagStretch): string {
+  return stretch.chag ? CHAG_NAMES[stretch.chag] : "Shabbat";
+}
+
 /** "Two days of Rosh Hashana", "Yom Kippur", "Shabbat". */
 export function stretchName(stretch: ChagStretch): string {
   if (!stretch.chag) return "Shabbat";

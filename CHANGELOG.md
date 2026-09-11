@@ -2,6 +2,22 @@
 
 One entry per PR, newest first.
 
+## Chag printing: the same greeting everywhere, and never on the day itself
+
+- **One greeting.** The print card on Daily Limmud and Resources now opens
+  with the same block as Home's erev card, in place of its old "Print
+  before yom tov" heading: the apple and honey, "Wishing all of Am Yisrael
+  a", כְּתִיבָה וַחֲתִימָה טוֹבָה, and "Make sure to print your Mishnayos
+  before Rosh Hashana".
+- **Erev only, to the minute.** Home and Daily Limmud show it on erev's
+  secular date, by the device's own local clock.
+  - The date now rolls over at local midnight even with the app left open,
+    and is re-read when the app comes back to the foreground. So the card
+    is gone the moment erev ends.
+  - Resources no longer offers the next Shabbat or yom tov while it is
+    Shabbat or yom tov. On those days, printing isn't an option anywhere.
+  - Tests cover both.
+
 ## Rosh Hashana: a festive apple and honey
 
 - The apple and honey were thin brass outlines, which read more like an

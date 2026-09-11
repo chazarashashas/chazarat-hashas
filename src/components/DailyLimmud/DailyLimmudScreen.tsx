@@ -20,6 +20,7 @@ import { buildJourneyScopes } from "../../utils/shasJourney";
 import { groupDayItems } from "../../utils/dailyProjection";
 import { useGroupContexts } from "../../utils/useGroupContexts";
 import { stretchFromErev } from "../../utils/chagCalendar";
+import { useToday } from "../../utils/useToday";
 import { ChagPrintCard } from "../ChagPrint/ChagPrintCard";
 import { useRunShare } from "../Share/useRunShare";
 import { learningMoments } from "../Share/learningMoments";
@@ -116,7 +117,9 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
 
   // Only offered once logged in, since groups require an account.
   const groupContexts = useGroupContexts();
-  const erevStretch = stretchFromErev(localDateStr());
+  const localToday = useToday();
+  // Kept current at local midnight — gone the moment erev ends.
+  const erevStretch = stretchFromErev(localToday);
   const share = useRunShare();
 
   const [context, setContext] = useState<string>("self");

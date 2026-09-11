@@ -10,33 +10,6 @@
   box-shadow: inset 0 0 0 1.5px var(--line);
 }
 
-.chag-card__head {
-  display: flex;
-  align-items: flex-start;
-  gap: 11px;
-}
-
-.chag-card__icon {
-  flex: none;
-  margin-top: 2px;
-  color: var(--brass-text);
-}
-
-.chag-card__title {
-  margin: 0;
-  font-family: var(--font-heading);
-  font-size: var(--fs-16);
-  font-weight: 800;
-  color: var(--ink);
-}
-
-.chag-card__sub {
-  margin: 3px 0 0;
-  font-size: var(--fs-13);
-  line-height: 1.6;
-  color: var(--muted);
-}
-
 .chag-card__days {
   display: flex;
   flex-direction: column;
@@ -685,12 +658,21 @@
   animation: screen-fade-up 0.3s ease both;
 }
 
-.erev-card__art .chag-motif svg {
+/* The erev greeting: Home's erev card and the top of every print card. */
+.chag-greeting {
+  text-align: center;
+}
+
+.chag-card .chag-greeting {
+  margin-bottom: 4px;
+}
+
+.chag-greeting__art .chag-motif svg {
   width: 56px;
   height: 56px;
 }
 
-.erev-card__wish {
+.chag-greeting__wish {
   margin: 10px 0 0;
   font-family: var(--font-heading);
   font-size: var(--fs-13);
@@ -699,7 +681,7 @@
   color: var(--brass-text);
 }
 
-.erev-card__greeting {
+.chag-greeting__he {
   margin: 2px 0 0;
   font-family: var(--font-hebrew);
   font-size: var(--fs-chag-greeting);
@@ -708,7 +690,7 @@
   color: var(--ink);
 }
 
-.erev-card__title {
+.chag-greeting__title {
   margin: 6px 0 0;
   font-family: var(--font-heading);
   font-size: var(--fs-16);

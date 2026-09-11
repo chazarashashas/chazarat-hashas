@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { lastEndedStretch, longDayLabel, restDay, shortDayLabel, stretchFromErev, SHENI_TITLE } from "./chagCalendar";
+import { lastEndedStretch, longDayLabel, nextStretch, restDay, shortDayLabel, stretchFromErev, SHENI_TITLE } from "./chagCalendar";
 
 describe("chag calendar", () => {
   it("reads Rosh Hashana 5787 — first day on Shabbat, counted once", () => {
@@ -42,5 +42,14 @@ describe("chag calendar", () => {
   it("labels days by name, with Shabbat for Saturday", () => {
     expect(shortDayLabel("2026-09-11")).toBe("Friday 11 Sept");
     expect(longDayLabel("2026-09-12")).toBe("Shabbat 12 September · 5787");
+  });
+
+  it("never offers printing on Shabbat or yom tov — not even the next one, from Resources", () => {
+    for (const restDate of ["2026-09-12", "2026-09-13", "2026-09-19", "2026-09-21"]) {
+      expect(stretchFromErev(restDate)).toBeNull();
+      expect(nextStretch(restDate)).toBeNull();
+    }
+    expect(nextStretch("2026-09-16")?.erev.date).toBe("2026-09-18");
+    expect(nextStretch("2026-09-11")?.erev.date).toBe("2026-09-11");
   });
 });

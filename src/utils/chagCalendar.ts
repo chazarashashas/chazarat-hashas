@@ -131,8 +131,10 @@ export function stretchFromErev(today: string): ChagStretch | null {
 }
 
 /** The next stretch to print for — today's, when today is erev, otherwise
-    the first erev within the next two weeks. Resources offers it any day. */
+    the first erev within the next two weeks. Resources offers it on any
+    ordinary day; never on Shabbat or yom tov itself. */
 export function nextStretch(today: string): ChagStretch | null {
+  if (restDay(today)) return null;
   for (let i = 0; i <= 14; i++) {
     const s = stretchFromErev(addDays(today, i));
     if (s) return s;

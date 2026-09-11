@@ -9,7 +9,7 @@ import { shortDayLabel, type ChagStretch } from "../../utils/chagCalendar";
 import type { MishnaRef } from "../../utils/dailyProjection";
 import { buildPrintDays, itemsMeta, sequenceIndex, stretchName, textKey, type GroupPlan } from "./chagPrintModel";
 import { ChagPrintDocument, type PrintLayout } from "./ChagPrintDocument";
-import { NavIcon } from "../Icon/NavIcon";
+import { ChagGreeting } from "./ChagGreeting";
 import { takePrintCardFocus } from "./printCardFocus";
 import "./ChagPrint.css";
 
@@ -157,15 +157,7 @@ export function ChagPrintCard({ stretch }: { stretch: ChagStretch }) {
 
   return (
     <section ref={cardRef} className="card chag-card" aria-label="Print before yom tov">
-      <div className="chag-card__head">
-        <span className="chag-card__icon" aria-hidden="true">
-          <NavIcon id="print" size={26} weight={1.7} />
-        </span>
-        <div>
-          <h2 className="chag-card__title">{stretch.chag ? "Print before yom tov" : "Print before Shabbat"}</h2>
-          <p className="chag-card__sub">{stretchName(stretch)}. Take the mishnayot with you on paper.</p>
-        </div>
-      </div>
+      <ChagGreeting stretch={stretch} />
 
       <div className="chag-card__days">
         {days.map((d) => {
