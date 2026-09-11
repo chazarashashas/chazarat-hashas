@@ -2,6 +2,19 @@
 
 One entry per PR, newest first.
 
+## A link for every page
+
+- Every page now has its own link, like /shasdash:
+  - /daily-limmud, /explore-shas, /mishna-notes, /my-siyumim
+  - /chevrusa, /chabura
+  - /sidrei-hamishna, /mishna-quiz, /seder-sort, /mishna-chazara, /shasdash
+  - /liluy-nishmat, /resources, /guide, /my-account, /rebbe
+- Home stays the site root.
+- The admin panel has no link. It is reached only from inside the app, and
+  /admin is a 404.
+- A test checks that every menu page has a link, that every link has its
+  Vercel rewrite, and that admin never gets one.
+
 ## Daily Limmud: perakim for siyumim read as their own group
 
 - When perakim taken on for siyumim were waiting, they ran on below the

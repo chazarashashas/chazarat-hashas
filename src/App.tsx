@@ -36,6 +36,7 @@ import { useGameStats } from "./utils/useGameStats";
 import { countCompletedMasechtot } from "./utils/shasJourney";
 import { shuffle } from "./utils/shuffle";
 import type { ViewState } from "./types/viewState";
+import { sectionForPath } from "./utils/pathLinks";
 import "./App.css";
 
 function initViewState(items: string[]): ViewState {
@@ -110,16 +111,9 @@ function initialNishmatSlug(): string | null {
   return new URLSearchParams(window.location.search).get("siyum");
 }
 
-/** Short links straight to one screen — chazarashashas.org/shasdash opens
-    the game. Each path also needs a rewrite in vercel.json, or Vercel 404s
-    it before this code ever loads. Read once at startup, like ?siyum=. */
-const PATH_LINKS: Record<string, string> = {
-  "/shasdash": "dash",
-};
-
+/** Short links straight to one screen — see PATH_LINKS. */
 function initialPathSection(): string | null {
-  const path = window.location.pathname.replace(/\/+$/, "").toLowerCase();
-  return PATH_LINKS[path] ?? null;
+  return sectionForPath(window.location.pathname);
 }
 
 /** Google's consent screen can finish successfully while the handoff
@@ -159,9 +153,10 @@ function App() {
     deepLinkSlug ? "liluy" : oauthError ? "login" : (pathSection ?? "home"),
   );
 
-  // Keep /shasdash in the address bar while the game is open, so a refresh
-  // reopens it, but put it back to / once they move on — otherwise a
-  // refresh on Home would drop them back into the game.
+  // Keep the link's path (/shasdash, /daily-limmud, …) in the address bar
+  // while that page is open, so a refresh reopens it, but put it back to /
+  // once they move on — otherwise a refresh on Home would drop them back
+  // onto the page they arrived on.
   useEffect(() => {
     if (pathSection && section !== pathSection && window.location.pathname !== "/") {
       window.history.replaceState(null, "", "/" + window.location.search + window.location.hash);

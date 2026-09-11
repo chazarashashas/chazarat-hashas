@@ -1,7 +1,37 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
+    { "source": "/daily-limmud", "destination": "/index.html" },
+    { "source": "/daily-limmud/", "destination": "/index.html" },
+    { "source": "/explore-shas", "destination": "/index.html" },
+    { "source": "/explore-shas/", "destination": "/index.html" },
+    { "source": "/mishna-notes", "destination": "/index.html" },
+    { "source": "/mishna-notes/", "destination": "/index.html" },
+    { "source": "/my-siyumim", "destination": "/index.html" },
+    { "source": "/my-siyumim/", "destination": "/index.html" },
+    { "source": "/chevrusa", "destination": "/index.html" },
+    { "source": "/chevrusa/", "destination": "/index.html" },
+    { "source": "/chabura", "destination": "/index.html" },
+    { "source": "/chabura/", "destination": "/index.html" },
+    { "source": "/sidrei-hamishna", "destination": "/index.html" },
+    { "source": "/sidrei-hamishna/", "destination": "/index.html" },
+    { "source": "/mishna-quiz", "destination": "/index.html" },
+    { "source": "/mishna-quiz/", "destination": "/index.html" },
+    { "source": "/seder-sort", "destination": "/index.html" },
+    { "source": "/seder-sort/", "destination": "/index.html" },
+    { "source": "/mishna-chazara", "destination": "/index.html" },
+    { "source": "/mishna-chazara/", "destination": "/index.html" },
     { "source": "/shasdash", "destination": "/index.html" },
-    { "source": "/shasdash/", "destination": "/index.html" }
+    { "source": "/shasdash/", "destination": "/index.html" },
+    { "source": "/liluy-nishmat", "destination": "/index.html" },
+    { "source": "/liluy-nishmat/", "destination": "/index.html" },
+    { "source": "/resources", "destination": "/index.html" },
+    { "source": "/resources/", "destination": "/index.html" },
+    { "source": "/guide", "destination": "/index.html" },
+    { "source": "/guide/", "destination": "/index.html" },
+    { "source": "/my-account", "destination": "/index.html" },
+    { "source": "/my-account/", "destination": "/index.html" },
+    { "source": "/rebbe", "destination": "/index.html" },
+    { "source": "/rebbe/", "destination": "/index.html" }
   ]
 }
