@@ -4,6 +4,7 @@ import { NavIcon } from "../Icon/NavIcon";
 import { ChagPrintCard } from "../ChagPrint/ChagPrintCard";
 import { nextStretch } from "../../utils/chagCalendar";
 import { localDateStr } from "../../utils/localDate";
+import { GUIDE_PDF } from "../Guide/guidePdf";
 import "./ResourcesScreen.css";
 
 interface Resource {
@@ -62,9 +63,15 @@ export function ResourcesScreen({ onOpenGuide }: ResourcesScreenProps) {
                   The full guide to the method behind the app, step by step.
                 </p>
               </div>
-              <button className="btn btn--secondary btn--compact resource-card__download" onClick={() => onOpenGuide()}>
-                Read
-              </button>
+              <div className="resource-card__actions">
+                <button className="btn btn--secondary btn--compact resource-card__download" onClick={() => onOpenGuide()}>
+                  Read
+                </button>
+                <a className="btn btn--primary btn--compact resource-card__download" href={GUIDE_PDF} download="How to Use Chazarat Hashas.pdf">
+                  <NavIcon id="download" size={15} weight={2.2} />
+                  Download
+                </a>
+              </div>
             </div>
           )}
 

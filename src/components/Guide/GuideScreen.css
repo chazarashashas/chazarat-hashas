@@ -45,23 +45,13 @@
   color: var(--ink);
 }
 
-.guide-print-btn {
-  position: absolute;
-  top: 0;
-  right: 0;
-  background: none;
-  border: 1.5px solid var(--line);
-  border-radius: var(--radius-pill);
-  padding: 6px 14px;
-  font-family: var(--font-heading);
-  font-size: var(--fs-12);
-  font-weight: 700;
-  color: var(--ink);
-  cursor: pointer;
-}
-
-.guide-print-btn:hover {
-  border-color: var(--ink);
+/* Download and Print, in the flow under the intro so two buttons never
+   crowd the title on a phone. */
+.guide-header__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
 }
 
 .guide-rule {
@@ -235,12 +225,6 @@
 @media (max-width: 599px) {
   .guide-header__title {
     font-size: var(--fs-28);
-  }
-
-  .guide-print-btn {
-    position: static;
-    display: inline-block;
-    margin-top: 10px;
   }
 }
 

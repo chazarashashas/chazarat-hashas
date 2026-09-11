@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { SEDARIM } from "../../data/shas";
 import { getSederHue } from "../../utils/sederHue";
+import { NavIcon } from "../Icon/NavIcon";
+import { GUIDE_PDF } from "./guidePdf";
 import "./GuideScreen.css";
 
 interface GuideScreenProps {
@@ -137,9 +139,16 @@ export function GuideScreen({ onNavigate, initialAnchor, bare, forPrint }: Guide
             used, step by step.
           </p>
           {!forPrint && (
-            <button className="btn btn--secondary btn--compact guide-print-btn" onClick={() => setPrintOpen(true)}>
-              Print
-            </button>
+            <div className="guide-header__actions">
+              <a className="btn btn--secondary btn--compact" href={GUIDE_PDF} download="How to Use Chazarat Hashas.pdf">
+                <NavIcon id="download" size={15} weight={2.2} />
+                Download
+              </a>
+              <button className="btn btn--secondary btn--compact guide-print-btn" onClick={() => setPrintOpen(true)}>
+                <NavIcon id="print" size={15} weight={2} />
+                Print
+              </button>
+            </div>
           )}
         </header>
         <div className="guide-rule" aria-hidden="true" />

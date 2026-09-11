@@ -90,3 +90,12 @@
     text-align: center;
   }
 }
+
+/* The Guide card carries two actions, Read and Download, side by side. */
+.resource-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}

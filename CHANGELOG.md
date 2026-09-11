@@ -2,6 +2,16 @@
 
 One entry per PR, newest first.
 
+## The Guide is downloadable
+
+- A Download button sits beside Print on the Guide page itself, and on
+  the Guide's card in Resources, next to Read. It saves "How to Use
+  Chazarat Hashas.pdf", four pages.
+- The PDF is built from the Guide's own print layout by
+  `scripts/build-guide-pdf.mjs`, which drives your installed Chrome
+  headless, so the file always has the same words as the screen. Rerun it
+  after changing the Guide's copy.
+
 ## Chag print: continued sheets say what they continue
 
 - In "All on one", a day that ran onto the next sheet started it with a
