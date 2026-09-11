@@ -110,6 +110,18 @@ function initialNishmatSlug(): string | null {
   return new URLSearchParams(window.location.search).get("siyum");
 }
 
+/** Short links straight to one screen — chazarashashas.org/shasdash opens
+    the game. Each path also needs a rewrite in vercel.json, or Vercel 404s
+    it before this code ever loads. Read once at startup, like ?siyum=. */
+const PATH_LINKS: Record<string, string> = {
+  "/shasdash": "dash",
+};
+
+function initialPathSection(): string | null {
+  const path = window.location.pathname.replace(/\/+$/, "").toLowerCase();
+  return PATH_LINKS[path] ?? null;
+}
+
 /** Google's consent screen can finish successfully while the handoff
     back to Supabase still fails (a redirect-URL mismatch between Google
     Cloud Console and Supabase's Auth settings is the usual cause) — with
@@ -142,9 +154,19 @@ const WIDE_SECTIONS = new Set(["limmud", "map", "perek", "liluy", "guide", "rebb
 function App() {
   const deepLinkSlug = useState(initialNishmatSlug)[0];
   const oauthError = useState(initialOAuthError)[0];
+  const pathSection = useState(initialPathSection)[0];
   const [section, setSection] = useState(() =>
-    deepLinkSlug ? "liluy" : oauthError ? "login" : "home",
+    deepLinkSlug ? "liluy" : oauthError ? "login" : (pathSection ?? "home"),
   );
+
+  // Keep /shasdash in the address bar while the game is open, so a refresh
+  // reopens it, but put it back to / once they move on — otherwise a
+  // refresh on Home would drop them back into the game.
+  useEffect(() => {
+    if (pathSection && section !== pathSection && window.location.pathname !== "/") {
+      window.history.replaceState(null, "", "/" + window.location.search + window.location.hash);
+    }
+  }, [section, pathSection]);
   // Where to send the user back to once they log in — set by any screen
   // that gates an action behind an account (see requestLogin), so "Log
   // in first" never dead-ends: it returns you to what you were doing.
@@ -226,11 +248,11 @@ function App() {
     0,
   );
   const firstOpen = useFirstOpenPrompt({
-    // A ?siyum= deep link means someone was sent here for one specific
-    // siyum — that content should never be greeted with an unrelated
+    // A ?siyum= or /shasdash link means someone was sent here for one
+    // specific thing — it should never be greeted with an unrelated
     // sign-in card on top of it, so this treats it like "don't show"
     // without touching the ask-count/retirement bookkeeping.
-    isLoggedIn: isLoggedIn || !!deepLinkSlug,
+    isLoggedIn: isLoggedIn || !!deepLinkSlug || !!pathSection,
     streakCurrent: progress.streak.current,
     mishnayotCount: progress.completions.length,
     noteCount,

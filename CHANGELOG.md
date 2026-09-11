@@ -2,6 +2,16 @@
 
 One entry per PR, newest first.
 
+## chazarashashas.org/shasdash
+
+- A short link that opens Shas Dash directly. The app reads the path on
+  load (it has no router), and a new vercel.json rewrites only /shasdash to
+  the app, so every other unknown URL still 404s as before.
+- Like a ?siyum= link, it skips the first-open sign-in prompt: someone sent
+  to play the game lands on the game.
+- The URL stays /shasdash while the game is open, so a refresh reopens it,
+  and goes back to / once they move to another screen.
+
 ## Shas Dash: visual and feel pass (SHAS-DASH-BRIEF2.md)
 
 Same game, same mechanic — six lanes, one masechet crossing, land it in
