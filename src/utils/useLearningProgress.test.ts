@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderHook, act } from "@testing-library/react";
-import { useLearningProgress } from "./useLearningProgress";
+import { computeStreak, isRestDate, useLearningProgress } from "./useLearningProgress";
 
 const PREFIX = "chazarat-hashas:";
 
@@ -79,5 +79,24 @@ describe("useLearningProgress streak", () => {
     });
     expect(result.current.position).toBeGreaterThan(startingPosition);
     expect(result.current.completions.some((c) => c.date === "2026-01-05")).toBe(true);
+  });
+});
+
+describe("streak across Shabbat and yom tov", () => {
+  const streak = (dates: string[], today: string) => computeStreak(new Set(dates), today, isRestDate);
+
+  it("holds through Rosh Hashana 5787 — Shabbat and Sunday — without counting them", () => {
+    // Wed–Fri learned, then two days of yom tov, back on Monday.
+    expect(streak(["2026-09-09", "2026-09-10", "2026-09-11"], "2026-09-14").current).toBe(3);
+    expect(streak(["2026-09-09", "2026-09-10", "2026-09-11", "2026-09-14"], "2026-09-14").current).toBe(4);
+  });
+
+  it("holds through an ordinary Shabbat, every week", () => {
+    expect(streak(["2026-09-17", "2026-09-18", "2026-09-20"], "2026-09-20").current).toBe(3);
+    expect(streak(["2026-09-17", "2026-09-18", "2026-09-20"], "2026-09-20").longest).toBe(3);
+  });
+
+  it("still breaks on an ordinary weekday with nothing learned", () => {
+    expect(streak(["2026-09-15", "2026-09-17"], "2026-09-17").current).toBe(1);
   });
 });

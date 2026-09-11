@@ -455,3 +455,168 @@
     break-after: auto;
   }
 }
+
+/* ============================================================
+   First open after Shabbat or yom tov
+   ============================================================ */
+
+.chag-return__head {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.chag-tile {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  font-family: var(--font-heading);
+  font-size: var(--fs-16);
+  font-weight: 700;
+  color: var(--on-navy);
+}
+
+.chag-tile--good {
+  background: var(--good);
+}
+
+.chag-tile--brass {
+  background: var(--gold);
+  color: var(--ink);
+}
+
+.chag-tile--navy {
+  background: var(--ink);
+}
+
+.chag-return__title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: var(--fs-16);
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.chag-return__sub {
+  margin: 2px 0 0;
+  font-size: var(--fs-12);
+  color: var(--muted);
+}
+
+.chag-return__lead {
+  margin: 13px 0 0;
+  font-size: var(--fs-13);
+  line-height: 1.7;
+  color: var(--ink);
+}
+
+.chag-return__due {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-top: 11px;
+  padding: 12px 13px;
+  border-radius: var(--radius-control);
+  background: var(--surface-hi);
+  box-shadow: inset 0 0 0 1.5px var(--line);
+}
+
+.chag-return__day {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 9px;
+}
+
+.chag-return__day-title {
+  font-family: var(--font-heading);
+  font-size: var(--fs-12);
+  font-weight: 700;
+  color: var(--brass-text);
+}
+
+.chag-return__day-date {
+  font-size: var(--fs-12);
+  color: var(--muted);
+}
+
+.chag-return__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 4px;
+}
+
+.chag-return__chip {
+  padding: 4px 9px;
+  border-radius: 8px;
+  background: var(--tint);
+  font-size: var(--fs-12);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.chag-return__options {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-top: 14px;
+}
+
+.chag-option {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-height: 56px;
+  padding: 10px 12px;
+  border: none;
+  border-radius: var(--radius-control);
+  background: var(--surface-hi);
+  box-shadow: inset 0 0 0 1.5px var(--line);
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .chag-option:hover {
+    box-shadow: inset 0 0 0 1.5px var(--ink);
+  }
+}
+
+.chag-option__text {
+  min-width: 0;
+}
+
+.chag-option__title {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: var(--fs-13);
+  font-weight: 700;
+}
+
+.chag-option__sub {
+  display: block;
+  margin-top: 2px;
+  font-size: var(--fs-12);
+  color: var(--muted);
+}
+
+.chag-return__back {
+  min-height: 44px;
+  border: none;
+  background: none;
+  font-family: var(--font-heading);
+  font-size: var(--fs-13);
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.chag-return__done {
+  margin-top: 16px;
+}

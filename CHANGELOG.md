@@ -2,6 +2,25 @@
 
 One entry per PR, newest first.
 
+## Streaks hold over Shabbat and yom tov, and a welcome back after
+
+- **Shabbat and yom tov never break a streak.** Someone who keeps them
+  cannot mark a mishnah, so those days are held: not counted, never
+  broken. This works backwards too, so a streak that ran across last
+  Shabbat is whole again. No streak freeze is spent on a rest day.
+- **First open after Shabbat or yom tov.** One message, once per stretch,
+  for someone who was learning before it and hasn't marked anything since.
+  - It opens with "Your streak is safe", then for example "Two days of
+    Rosh Hashana · 12 days held".
+  - It lists what came due, day by day, under each day's own name. What
+    came due is read from where Daily Limmud actually is, not from
+    anything printed.
+  - Three options:
+    - "Yes — mark all four learned", recorded on the days they came due.
+    - "Some of them — let me choose", ticked per day.
+    - "Not yet — let's catch up now", which opens Daily Limmud with all of
+      them queued as one portion.
+
 ## Fixed: only the first printed page came out
 
 - Printing the chag mishnayot as "A page each" gave one page with one

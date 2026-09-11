@@ -5,6 +5,7 @@ import { dayRange } from "./dailyProjection";
 import { SEDARIM } from "../data/shas";
 import { getMishnayotCount } from "../data/perekInfo";
 import { localDateStr } from "./localDate";
+import { restDay } from "./chagCalendar";
 
 export type CompletionSource = "app" | "logged";
 
@@ -102,6 +103,54 @@ function todayStr(): string {
   return localDateStr();
 }
 
+const restCache = new Map<string, boolean>();
+/** Shabbat or yom tov — a day nobody who keeps it can mark a mishnah. */
+export function isRestDate(date: string): boolean {
+  let rest = restCache.get(date);
+  if (rest === undefined) {
+    rest = restDay(date) !== null;
+    restCache.set(date, rest);
+  }
+  return rest;
+}
+
+/**
+ * Streak: consecutive days of learning (any completion, either source, or
+ * a day bridged by a streak freeze), ending today or yesterday — a day
+ * isn't "missed" until it has fully passed.
+ *
+ * Shabbat and yom tov are held, not counted and never broken
+ * (CHAG-BRIEF.md, Decision 1): someone who keeps them cannot mark a
+ * mishnah, and the app will not penalise keeping the day it exists to
+ * serve. A rest day with learning on it still counts.
+ */
+export function computeStreak(active: Set<string>, today: string, isRest: (date: string) => boolean): { current: number; longest: number } {
+  let longest = 0;
+  {
+    let run = 0;
+    let prev: string | null = null;
+    for (const d of Array.from(active).sort()) {
+      let next = prev ? addDaysStr(prev, 1) : null;
+      while (next && next < d && isRest(next)) next = addDaysStr(next, 1);
+      run = next === d ? run + 1 : 1;
+      if (run > longest) longest = run;
+      prev = d;
+    }
+  }
+  let current = 0;
+  {
+    let cursor = active.has(today) ? today : addDaysStr(today, -1);
+    // Bounded: a run of rest days is at most three long, and the walk
+    // stops at the first ordinary day with nothing learned.
+    for (let guard = 0; guard < 20000; guard++) {
+      if (active.has(cursor)) current++;
+      else if (!isRest(cursor)) break;
+      cursor = addDaysStr(cursor, -1);
+    }
+  }
+  return { current, longest };
+}
+
 function addDaysStr(date: string, delta: number): string {
   const d = new Date(date + "T00:00:00.000Z");
   d.setUTCDate(d.getUTCDate() + delta);
@@ -137,9 +186,16 @@ export function useLearningProgress() {
     return completedKeys.has(mishnaKey(item));
   }
 
+  // "Not yet — let's catch up now" after a chag: everything that came due
+  // while away, shown and marked as one portion (see queueCatchUp).
+  const [catchUpEnd, setCatchUpEnd] = useLocalStorageState<number | null>("catchUpEnd", null);
+
   const finishedShas = position >= MISHNA_SEQUENCE.length;
   // Same projection the offline prefetch and the chag print job use.
-  const todaysRange = dayRange(position, pace);
+  const todaysRange: [number, number] | null =
+    !finishedShas && catchUpEnd !== null && catchUpEnd >= position
+      ? [position, Math.min(catchUpEnd, MISHNA_SEQUENCE.length - 1)]
+      : dayRange(position, pace);
   const rangeStart = todaysRange ? todaysRange[0] : Math.max(0, MISHNA_SEQUENCE.length - 1);
   const rangeEnd = todaysRange ? todaysRange[1] : rangeStart;
   const todaysItems = todaysRange ? MISHNA_SEQUENCE.slice(todaysRange[0], todaysRange[1] + 1) : [];
@@ -154,6 +210,33 @@ export function useLearningProgress() {
       .map((item) => ({ ...item, date, source: "app" as const }));
     setCompletions((prev) => [...prev, ...fresh]);
     setPosition(rangeEnd + 1);
+    if (catchUpEnd !== null) setCatchUpEnd(null);
+  }
+
+  /** After a chag: "mark all learned" or a chosen few, each day's
+      mishnayot recorded on the day they came due. Position moves through
+      whatever run of them now starts at the current position — a day
+      skipped in the middle stays as the next thing Daily Limmud shows. */
+  function markDaysLearned(days: { date: string; items: { masechetEn: string; perek: number; mishnah: number }[] }[]) {
+    const marked = new Set<string>();
+    const fresh: CompletionRecord[] = [];
+    for (const day of days) {
+      for (const item of day.items) {
+        marked.add(mishnaKey(item));
+        if (!isCompleted(item)) fresh.push({ ...item, date: day.date, source: "app" });
+      }
+    }
+    if (fresh.length > 0) setCompletions((prev) => [...prev, ...fresh]);
+    let next = position;
+    while (next < MISHNA_SEQUENCE.length && marked.has(mishnaKey(MISHNA_SEQUENCE[next]))) next++;
+    if (next !== position) setPosition(next);
+  }
+
+  /** Makes Daily Limmud's next portion run from the current position
+      through `endIndex`, so a stretch that came due over a chag is caught
+      up as one sitting. Cleared when that portion is marked learned. */
+  function queueCatchUp(endIndex: number) {
+    setCatchUpEnd(endIndex);
   }
 
   /** Offline logging — marks a whole perek learned on a given date,
@@ -208,32 +291,9 @@ export function useLearningProgress() {
     setConcepts((prev) => [...prev, entry]);
   }
 
-  // Streak: consecutive days (by any completion, either source, or a day
-  // bridged by a streak freeze) ending today or yesterday — a day isn't
-  // "missed" until it's fully passed.
   const rawActiveDates = new Set(completions.map((c) => c.date));
   const activeDates = new Set([...rawActiveDates, ...frozenDates]);
-  let longest = 0;
-  {
-    const sorted = Array.from(activeDates).sort();
-    let run = 0;
-    let prev: string | null = null;
-    for (const d of sorted) {
-      run = prev && addDaysStr(prev, 1) === d ? run + 1 : 1;
-      if (run > longest) longest = run;
-      prev = d;
-    }
-  }
-  let current = 0;
-  {
-    const today = todayStr();
-    const yesterday = addDaysStr(today, -1);
-    let cursor: string | null = activeDates.has(today) ? today : activeDates.has(yesterday) ? yesterday : null;
-    while (cursor && activeDates.has(cursor)) {
-      current++;
-      cursor = addDaysStr(cursor, -1);
-    }
-  }
+  const { current, longest } = computeStreak(activeDates, todayStr(), isRestDate);
 
   // Spends one freeze to bridge yesterday, but only when doing so actually
   // saves a real streak: today is active, yesterday isn't (and hasn't
@@ -245,8 +305,10 @@ export function useLearningProgress() {
       const yesterday = addDaysStr(today, -1);
       const dayBefore = addDaysStr(today, -2);
       const todayActive = rawActiveDates.has(today);
-      const yesterdayActive = rawActiveDates.has(yesterday) || frozenDates.includes(yesterday);
-      const dayBeforeActive = rawActiveDates.has(dayBefore) || frozenDates.includes(dayBefore);
+      // A Shabbat or yom tov never needs bridging — the streak is held
+      // across it — so no freeze is ever spent on one.
+      const yesterdayActive = rawActiveDates.has(yesterday) || frozenDates.includes(yesterday) || isRestDate(yesterday);
+      const dayBeforeActive = rawActiveDates.has(dayBefore) || frozenDates.includes(dayBefore) || isRestDate(dayBefore);
       if (todayActive && !yesterdayActive && dayBeforeActive && streakFreezes > 0) {
         setFrozenDates((prev) => (prev.includes(yesterday) ? prev : [...prev, yesterday]));
         setStreakFreezes((prev) => Math.max(0, prev - 1));
@@ -326,6 +388,8 @@ export function useLearningProgress() {
     rangeEnd,
     finishedShas,
     markTodayLearned,
+    markDaysLearned,
+    queueCatchUp,
     logLearning,
     addConcept,
     getMasechetPosition,

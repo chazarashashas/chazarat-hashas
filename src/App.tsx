@@ -20,6 +20,9 @@ import { MapOfShasScreen } from "./components/MapOfShas/MapOfShasScreen";
 import { LiluyNishmatScreen } from "./components/LiluyNishmat/LiluyNishmatScreen";
 import { AdminScreen } from "./components/Admin/AdminScreen";
 import { FirstOpenPrompt } from "./components/FirstOpenPrompt/FirstOpenPrompt";
+import { ChagReturnModal } from "./components/ChagPrint/ChagReturnModal";
+import { lastEndedStretch, type ChagStretch } from "./utils/chagCalendar";
+import { localDateStr } from "./utils/localDate";
 import { RebbeDashboardScreen } from "./components/RebbeDashboard/RebbeDashboardScreen";
 import { GuideScreen } from "./components/Guide/GuideScreen";
 import { useAuth, OAUTH_PENDING_KEY } from "./utils/useAuth";
@@ -143,6 +146,8 @@ function initialOAuthError(): string | null {
   return message;
 }
 
+const CHAG_RETURN_SEEN_KEY = "chazarat-hashas:chagReturnSeen";
+
 const WIDE_SECTIONS = new Set(["limmud", "map", "perek", "liluy", "guide", "rebbe", "admin", "dash"]);
 
 function App() {
@@ -252,6 +257,35 @@ function App() {
     noteCount,
     masechtotCompleted: countCompletedMasechtot(progress),
   });
+
+  // The first open after Shabbat or yom tov (CHAG-BRIEF.md, Feature B):
+  // read once per load, and only ever once per stretch. Only for someone
+  // who was already learning before it and marked nothing during it.
+  const [chagReturn, setChagReturn] = useState<ChagStretch | null>(() => {
+    const s = lastEndedStretch(localDateStr());
+    try {
+      if (!s || localStorage.getItem(CHAG_RETURN_SEEN_KEY) === s.erev.date) return null;
+    } catch {
+      return null;
+    }
+    return s;
+  });
+  const showChagReturn =
+    !!chagReturn &&
+    !firstOpen.variant &&
+    !progress.finishedShas &&
+    progress.completions.some((c) => c.date < chagReturn.days[0].date) &&
+    // Nothing marked during it, and nothing since — this really is the
+    // first time back, not a Wednesday after last week's Shabbat.
+    !progress.completions.some((c) => c.date >= chagReturn.days[0].date);
+  useEffect(() => {
+    if (!showChagReturn || !chagReturn) return;
+    try {
+      localStorage.setItem(CHAG_RETURN_SEEN_KEY, chagReturn.erev.date);
+    } catch {
+      // Storage unavailable — at worst it shows again next load.
+    }
+  }, [showChagReturn, chagReturn]);
 
   function requestLogin(from: string, mode?: "signIn" | "signUp", emailOpen?: boolean) {
     setLoginReturnTo(from);
@@ -372,6 +406,9 @@ function App() {
             onEmail={handlePromptEmail}
             onDismiss={firstOpen.dismiss}
           />
+        )}
+        {showChagReturn && chagReturn && (
+          <ChagReturnModal stretch={chagReturn} onClose={() => setChagReturn(null)} onCatchUp={() => handleSelect("limmud")} />
         )}
       </div>
     </SyncStatusProvider>
