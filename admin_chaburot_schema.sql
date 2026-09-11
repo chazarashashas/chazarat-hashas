@@ -60,7 +60,9 @@ language sql security definer set search_path = public as $$
     p.first_name,
     p.last_name,
     m.role,
-    m.created_at
+    -- group_members has no join timestamp; the column stays so the panel's
+    -- row shape is unchanged.
+    null::timestamptz as joined_at
   from group_members m
   join auth.users u on u.id = m.user_id
   left join profiles p on p.id = m.user_id

@@ -90,7 +90,10 @@ language sql security definer set search_path = public as $$
   where exists (select 1 from profiles where id = auth.uid() and is_admin)
   order by l.created_at desc
   limit greatest(1, least(coalesce(p_limit, 100), 500));
-$$;
+$;
+
+grant execute on function log_admin_action(text, uuid, text, jsonb) to authenticated;
+grant execute on function admin_audit_log_list(int) to authenticated;
 
 -- No role-granting function here on purpose. ADMIN-PROPOSAL.md §2 assumes
 -- "rebbe status is presumably set by hand in the database now" and asks
