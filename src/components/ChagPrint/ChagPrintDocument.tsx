@@ -28,9 +28,15 @@ interface Unit {
   key: string;
   dayIndex: number;
   node: ReactNode;
+  /** Opens its day (carries the day's own heading). */
+  dayStart: boolean;
+  /** Where this unit sits — the day, and the perek at a perek a day — so
+      a sheet that opens mid-way through says what it is continuing. */
+  context: string;
 }
 
-type PageHead = { kind: "full"; dayIndex: number | null } | { kind: "cont"; dayIndex: number | null };
+type PageHead =
+  { kind: "full"; dayIndex: number | null } | { kind: "cont"; dayIndex: number | null };
 
 interface Page {
   head: PageHead;
@@ -38,7 +44,12 @@ interface Page {
   pageOf: [number, number];
 }
 
-function buildUnits(days: PrintDay[], layout: PrintLayout, texts: Record<string, string>, noteFor: Props["noteFor"]): Unit[] {
+function buildUnits(
+  days: PrintDay[],
+  layout: PrintLayout,
+  texts: Record<string, string>,
+  noteFor: Props["noteFor"],
+): Unit[] {
   const units: Unit[] = [];
   days.forEach((day, dayIndex) => {
     let lead: ReactNode[] = [];
@@ -52,14 +63,33 @@ function buildUnits(days: PrintDay[], layout: PrintLayout, texts: Record<string,
     }
     const empty = day.tracks.every((t) => t.items.length === 0);
     if (empty) {
-      units.push({ key: `${day.date}-empty`, dayIndex, node: [...lead, <p key="e" className="chag-page__empty">Nothing left to learn this day.</p>] });
+      units.push({
+        key: `${day.date}-empty`,
+        dayIndex,
+        dayStart: true,
+        context: day.title,
+        node: [
+          ...lead,
+          <p key="e" className="chag-page__empty">
+            Nothing left to learn this day.
+          </p>,
+        ],
+      });
       return;
     }
+    let firstOfDay = true;
     day.tracks.forEach((track, ti) => {
       if (track.items.length === 0) return;
-      if (track.label) lead.push(<p key={`t${ti}`} className="chag-page__track">{track.label}</p>);
+      if (track.label)
+        lead.push(
+          <p key={`t${ti}`} className="chag-page__track">
+            {track.label}
+          </p>,
+        );
       let lastPerek = "";
-      const groupOf = new Map(perekGroups(track.items).map((g) => [`${g.masechetEn}.${g.perek}`, g]));
+      const groupOf = new Map(
+        perekGroups(track.items).map((g) => [`${g.masechetEn}.${g.perek}`, g]),
+      );
       track.items.forEach((m, i) => {
         const perekKey = `${m.masechetEn}.${m.perek}`;
         const newPerek = perekKey !== lastPerek;
@@ -71,7 +101,11 @@ function buildUnits(days: PrintDay[], layout: PrintLayout, texts: Record<string,
           const name = getPerekName(m.masechetEn, m.perek);
           const g = groupOf.get(perekKey)!;
           // A perek only part-learned this day says which part.
-          const range = g.full ? "" : g.first === g.last ? ` · mishnah ${g.first}` : ` · mishnayot ${g.first}–${g.last}`;
+          const range = g.full
+            ? ""
+            : g.first === g.last
+              ? ` · mishnah ${g.first}`
+              : ` · mishnayot ${g.first}–${g.last}`;
           pieces.push(
             <div key="ph" className="chag-page__perek">
               <span className="chag-page__perek-title">
@@ -97,7 +131,11 @@ function buildUnits(days: PrintDay[], layout: PrintLayout, texts: Record<string,
         pieces.push(
           <div key="m" className="chag-page__mishnah">
             <div className="chag-page__ref-row">
-              <span className="chag-page__ref">{track.perekUnit ? `${m.perek}:${m.mishnah}` : `${m.masechetEn} ${m.perek}:${m.mishnah}`}</span>
+              <span className="chag-page__ref">
+                {track.perekUnit
+                  ? `${m.perek}:${m.mishnah}`
+                  : `${m.masechetEn} ${m.perek}:${m.mishnah}`}
+              </span>
               <span className="chag-page__count">
                 {i + 1} of {track.items.length}
               </span>
@@ -107,7 +145,14 @@ function buildUnits(days: PrintDay[], layout: PrintLayout, texts: Record<string,
             </p>
           </div>,
         );
-        units.push({ key: `${day.date}-${ti}-${textKey(m)}`, dayIndex, node: pieces });
+        units.push({
+          key: `${day.date}-${ti}-${textKey(m)}`,
+          dayIndex,
+          node: pieces,
+          dayStart: firstOfDay,
+          context: `${day.title}${track.label ? ` · ${track.label}` : ""}${track.perekUnit ? ` · ${m.masechetEn} perek ${m.perek}` : ""}`,
+        });
+        firstOfDay = false;
       });
     });
   });
@@ -131,7 +176,7 @@ function FullHeader({ chag, title, date }: { chag: ChagId | null; title: string;
 function ContHeader({ title, pageOf }: { title: string; pageOf: [number, number] }) {
   return (
     <header className="chag-page__cont">
-      <span>{title}</span>
+      <span>{title.charAt(0).toUpperCase() + title.slice(1)}</span>
       <span>
         page {pageOf[0]} of {pageOf[1]}
       </span>
@@ -157,13 +202,30 @@ function Footer() {
  * continuation with only the day's title and "page 2 of 3" — and the
  * card's button can say exactly how many sheets are about to print.
  */
-export function ChagPrintDocument({ days, layout, chag, stretchTitle, texts, noteFor, measureOnly, onPageCount }: Props) {
+export function ChagPrintDocument({
+  days,
+  layout,
+  chag,
+  stretchTitle,
+  texts,
+  noteFor,
+  measureOnly,
+  onPageCount,
+}: Props) {
   const measureRef = useRef<HTMLDivElement>(null);
   const [pages, setPages] = useState<Page[] | null>(null);
   const units = buildUnits(days, layout, texts, noteFor);
-  const signature = JSON.stringify([days.map((d) => d.date + d.tracks.map((t) => t.items.map(textKey).join()).join()), layout, Object.keys(texts).length, !!noteFor]);
+  const signature = JSON.stringify([
+    days.map((d) => d.date + d.tracks.map((t) => t.items.map(textKey).join()).join()),
+    layout,
+    Object.keys(texts).length,
+    !!noteFor,
+  ]);
 
-  const fullTitle = (dayIndex: number | null) => (dayIndex === null ? `My Mishnayot for ${stretchTitle}` : `My Mishnayot for ${days[dayIndex].title}`);
+  const fullTitle = (dayIndex: number | null) =>
+    dayIndex === null
+      ? `My Mishnayot for ${stretchTitle}`
+      : `My Mishnayot for ${days[dayIndex].title}`;
   const fullDate = (dayIndex: number | null) =>
     dayIndex === null
       ? days.length > 1
@@ -176,17 +238,24 @@ export function ChagPrintDocument({ days, layout, chag, stretchTitle, texts, not
     const layOut = () => {
       const root = measureRef.current;
       if (!root || cancelled) return;
-      const px = (sel: string) => (root.querySelector(sel) as HTMLElement | null)?.offsetHeight ?? 0;
+      const px = (sel: string) =>
+        (root.querySelector(sel) as HTMLElement | null)?.offsetHeight ?? 0;
       const pageH = px(".chag-measure__page");
       const footH = px(".chag-measure__foot");
       const contH = px(".chag-measure__cont");
-      const unitH = Array.from(root.querySelectorAll<HTMLElement>(".chag-measure__unit")).map((el) => el.offsetHeight + 1);
+      const unitH = Array.from(root.querySelectorAll<HTMLElement>(".chag-measure__unit")).map(
+        (el) => el.offsetHeight + 1,
+      );
       const fullH = (i: number | null) => px(`.chag-measure__full-${i === null ? "all" : i}`);
       const room = pageH - footH;
 
       const out: Page[] = [];
       const pack = (dayIndex: number | null, unitIdx: number[], startFull: boolean) => {
-        let cur: Page = { head: { kind: startFull ? "full" : "cont", dayIndex }, units: [], pageOf: [1, 1] };
+        let cur: Page = {
+          head: { kind: startFull ? "full" : "cont", dayIndex },
+          units: [],
+          pageOf: [1, 1],
+        };
         let used = startFull ? fullH(dayIndex) : contH;
         for (const ui of unitIdx) {
           if (cur.units.length > 0 && used + unitH[ui] > room) {
@@ -202,12 +271,20 @@ export function ChagPrintDocument({ days, layout, chag, stretchTitle, texts, not
       if (layout === "each") {
         days.forEach((_, d) => {
           const first = out.length;
-          pack(d, units.flatMap((u, i) => (u.dayIndex === d ? [i] : [])), true);
+          pack(
+            d,
+            units.flatMap((u, i) => (u.dayIndex === d ? [i] : [])),
+            true,
+          );
           const n = out.length - first;
           for (let k = first; k < out.length; k++) out[k].pageOf = [k - first + 1, n];
         });
       } else {
-        pack(null, units.map((_, i) => i), true);
+        pack(
+          null,
+          units.map((_, i) => i),
+          true,
+        );
         out.forEach((p, k) => (p.pageOf = [k + 1, out.length]));
       }
       setPages(out);
@@ -232,7 +309,10 @@ export function ChagPrintDocument({ days, layout, chag, stretchTitle, texts, not
           <Footer />
         </div>
         <div className="chag-measure__cont">
-          <ContHeader title="x" pageOf={[2, 3]} />
+          <ContHeader
+            title="the second day of Rosh Hashana · Chevrusa — Berachot · Berachot perek 12, continued"
+            pageOf={[2, 3]}
+          />
         </div>
         {layout === "each" ? (
           days.map((d, i) => (
@@ -258,9 +338,20 @@ export function ChagPrintDocument({ days, layout, chag, stretchTitle, texts, not
         pages?.map((p, i) => (
           <section key={i} className="chag-page">
             {p.head.kind === "full" ? (
-              <FullHeader chag={chag} title={fullTitle(p.head.dayIndex)} date={fullDate(p.head.dayIndex)} />
+              <FullHeader
+                chag={chag}
+                title={fullTitle(p.head.dayIndex)}
+                date={fullDate(p.head.dayIndex)}
+              />
             ) : (
-              <ContHeader title={p.head.dayIndex === null ? stretchTitle : days[p.head.dayIndex].title} pageOf={p.pageOf} />
+              <ContHeader
+                title={
+                  p.units[0] && !(layout === "one" && p.units[0].dayStart)
+                    ? `${p.units[0].context}, continued`
+                    : stretchTitle
+                }
+                pageOf={p.pageOf}
+              />
             )}
             <div className="chag-page__body">
               {p.units.map((u) => (

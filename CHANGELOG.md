@@ -2,6 +2,14 @@
 
 One entry per PR, newest first.
 
+## Chag print: continued sheets say what they continue
+
+- In "All on one", a day that ran onto the next sheet started it with a
+  bare "2:6" under "Rosh Hashana · page 3 of 4". Then the next day began
+  halfway down, which read as mixed up. A continued sheet now names the
+  day, and the perek at a perek a day: "The first day of Rosh Hashana ·
+  Berachot perek 2, continued · page 3 of 4". "A page each" does the same.
+
 ## Chag print: a partial perek says which part
 
 - At a perek a day, starting part-way through a perek printed the rest of
