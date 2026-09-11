@@ -252,7 +252,7 @@ export function RecallScreen() {
             </div>
             {missed.length > 0 && (
               <div className="recall-missed">
-                <p className="recall-missed__label">You missed:</p>
+                <p className="recall-missed__label">Still to find:</p>
                 <div className="recall-missed__list">
                   {missed.map((m) => (
                     <span key={m.en} className="recall-missed__item">

@@ -215,7 +215,7 @@ export function SiyumDetail({ siyum, siyumim, isOwner, onBack, onOpenLogin }: Pr
           </div>
           <div className="nishmat-stat nishmat-stat--taken">
             <span className="nishmat-stat__num">{stats.taken}</span>
-            <span className="nishmat-stat__label">taken, not yet learned</span>
+            <span className="nishmat-stat__label">taken, being learned</span>
           </div>
           <div className="nishmat-stat nishmat-stat--open">
             <span className="nishmat-stat__num">{stats.open}</span>

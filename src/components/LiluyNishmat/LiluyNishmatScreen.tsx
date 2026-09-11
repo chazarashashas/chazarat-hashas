@@ -381,8 +381,8 @@ export function LiluyNishmatScreen({ onOpenLogin, initialSlug }: LiluyNishmatScr
           {list.length === 0 && (session || tab === "helping") && (
             <p className="chevrusa-empty">
               {tab === "managing"
-                ? "You haven't started a siyum yet."
-                : "No public siyumim need help right now — check back soon."}
+                ? "Siyumim you start appear here."
+                : "Public siyumim looking for help appear here — check back soon."}
             </p>
           )}
           {list.map((s) => (

@@ -2,6 +2,17 @@
 
 One entry per PR, newest first.
 
+## Copy: nothing framed by absence
+
+A standing rule (REVISED-SHARE-BRIEF.md §4): copy names the learning, not
+the failure that didn't happen. Swept the app:
+
+- Mishna Chazara: "You missed:" → "Still to find:"
+- Siyum board: "taken, not yet learned" → "taken, being learned"
+- L'Iluy Nishmat's empty lists: "You haven't started a siyum yet." →
+  "Siyumim you start appear here."; "No public siyumim need help right
+  now" → "Public siyumim looking for help appear here — check back soon."
+
 ## Sharing, part 2: the learning moments
 
 - **Daily Limmud.** When marking finishes something, a prompt appears
