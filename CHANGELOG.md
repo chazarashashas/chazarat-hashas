@@ -2,6 +2,17 @@
 
 One entry per PR, newest first.
 
+## Home points to Daily Limmud for chag printing
+
+- Printing lives on Daily Limmud, and Resources keeps it too. Home no
+  longer carries the print card.
+- On erev Shabbat or yom tov, Home shows an erev card instead: the chag's
+  motif, its greeting (כְּתִיבָה וַחֲתִימָה טוֹבָה for Rosh Hashana), "Take
+  your mishnayot into Rosh Hashana", and one button, "Print from Daily
+  Limmud".
+- The button opens Daily Limmud scrolled to the print card, whatever
+  scroll position Home left behind.
+
 ## Copy: nothing framed by absence
 
 A standing rule (REVISED-SHARE-BRIEF.md §4): copy names the learning, not

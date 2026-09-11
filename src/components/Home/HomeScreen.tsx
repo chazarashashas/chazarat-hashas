@@ -11,7 +11,7 @@ import { useTodaySnapshot } from "../../utils/useDailySubmission";
 import { TodayLearningCard } from "../TodayLearning/TodayLearningCard";
 import { ReceivedNudges } from "../GroupCard/ReceivedNudges";
 import { GuidePopup } from "../Guide/GuidePopup";
-import { ChagPrintCard } from "../ChagPrint/ChagPrintCard";
+import { ErevChagCard } from "../ChagPrint/ErevChagCard";
 import { stretchFromErev } from "../../utils/chagCalendar";
 import { localDateStr } from "../../utils/localDate";
 import "./HomeScreen.css";
@@ -134,7 +134,7 @@ interface HomeScreenProps {
 export function HomeScreen({ onNavigate }: HomeScreenProps) {
   const [showGuidePopup, setShowGuidePopup] = useState(false);
   const progress = useLearningProgress();
-  // Erev Shabbat or erev yom tov: the day to print what comes due.
+  // Erev Shabbat or erev yom tov: point to Daily Limmud, where the printing is.
   const erevStretch = stretchFromErev(localDateStr());
   const { perekNotes } = usePerekNotes();
   const { isLoggedIn, session } = useAuth();
@@ -218,7 +218,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
           onOpenGuide={() => setShowGuidePopup(true)}
         />
 
-        {erevStretch && <ChagPrintCard stretch={erevStretch} />}
+        {erevStretch && <ErevChagCard stretch={erevStretch} onGoToLimmud={() => onNavigate("limmud")} />}
 
         <ReceivedNudges />
 

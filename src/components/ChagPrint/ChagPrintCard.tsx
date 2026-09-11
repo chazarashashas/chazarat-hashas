@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SEDARIM } from "../../data/shas";
 import { fetchMishna } from "../../utils/sefaria";
 import { useLearningProgress } from "../../utils/useLearningProgress";
@@ -10,6 +10,7 @@ import type { MishnaRef } from "../../utils/dailyProjection";
 import { buildPrintDays, itemsMeta, sequenceIndex, stretchName, textKey, type GroupPlan } from "./chagPrintModel";
 import { ChagPrintDocument, type PrintLayout } from "./ChagPrintDocument";
 import { NavIcon } from "../Icon/NavIcon";
+import { takePrintCardFocus } from "./printCardFocus";
 import "./ChagPrint.css";
 
 const PERAKIM_BY_MASECHET = new Map(SEDARIM.flatMap((s) => s.masechtot.map((m) => [m.en, m.perakim] as const)));
@@ -41,6 +42,13 @@ export function ChagPrintCard({ stretch }: { stretch: ChagStretch }) {
   const [retryTick, setRetryTick] = useState(0);
   const [pageCount, setPageCount] = useState<number | null>(null);
   const [printing, setPrinting] = useState(false);
+  const cardRef = useRef<HTMLElement>(null);
+
+  // Arriving from Home's erev card: bring this card into view, whatever
+  // scroll position the previous screen left behind.
+  useEffect(() => {
+    if (takePrintCardFocus()) cardRef.current?.scrollIntoView({ block: "start" });
+  }, []);
 
   const learnedToday: MishnaRef[] = progress.completions
     .filter((c) => c.date === today && c.source === "app")
@@ -148,7 +156,7 @@ export function ChagPrintCard({ stretch }: { stretch: ChagStretch }) {
   };
 
   return (
-    <section className="card chag-card" aria-label="Print before yom tov">
+    <section ref={cardRef} className="card chag-card" aria-label="Print before yom tov">
       <div className="chag-card__head">
         <span className="chag-card__icon" aria-hidden="true">
           <NavIcon id="print" size={26} weight={1.7} />
