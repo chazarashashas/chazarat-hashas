@@ -7,6 +7,8 @@ import { useLearningProgress } from "../../utils/useLearningProgress";
 import { useEscapeKey } from "../../utils/useEscapeKey";
 import { ALL_PEREK_SLOTS } from "../../utils/nishmatMosaic";
 import type { PerekClaim, Siyum, useSiyumim } from "../../utils/useSiyumim";
+import { useRunShare } from "../Share/useRunShare";
+import { boardMoment } from "../Share/shareMoments";
 import "./LiluyNishmat.css";
 
 type Filter = "all" | "open" | "yours";
@@ -105,6 +107,20 @@ export function SiyumDetail({ siyum, siyumim, isOwner, onBack, onOpenLogin }: Pr
 
   const byKey = new Map(claims.map((c) => [`${c.masechetEn}:${c.perek}`, c]));
   const stats = siyumim.statsFor(claims);
+
+  // The board filling — every one of the 524 perakim taken — is one of the
+  // moments worth a prompt (SHARE-BRIEF.md), offered to its owner once.
+  const share = useRunShare();
+  const boardFull = isOwner && claims.length > 0 && stats.open === 0;
+  const [boardShared, setBoardShared] = useState(false);
+  useEffect(() => {
+    if (!boardFull || boardShared) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setBoardShared(true);
+    const moment = boardMoment(siyum.dedication, siyum.shareSlug);
+    share.finish(moment, [moment]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [boardFull]);
   const firstOpen = ALL_PEREK_SLOTS.find((s) => !byKey.has(`${s.masechetEn}:${s.perek}`));
 
   function claimAt(masechetEn: string, perek: number): PerekClaim | undefined {
@@ -285,6 +301,9 @@ export function SiyumDetail({ siyum, siyumim, isOwner, onBack, onOpenLogin }: Pr
           </div>
         )}
 
+        {boardFull && share.prompt("cream")}
+        {boardFull && share.link()}
+
         {isOwner && (
           <div className="nishmat-share-row">
             <span className="nishmat-share-row__label">Share link</span>
@@ -303,6 +322,7 @@ export function SiyumDetail({ siyum, siyumim, isOwner, onBack, onOpenLogin }: Pr
         )}
 
         {isOwner && <ActivityFeed claims={claims} />}
+        {share.sheet}
 
         <div className="nishmat-accordion">
           <div className="nishmat-accordion__head">

@@ -15,6 +15,10 @@ import { SEDER_HUE } from "../../utils/sederHue";
 import { LogLearningModal } from "./LogLearningModal";
 import { PrintNotesView } from "../PrintNotes/PrintNotesView";
 import { CertificateView } from "../Certificate/CertificateView";
+import { ShareSheet } from "../Share/ShareSheet";
+import { ShareLink } from "../Share/SharePrompt";
+import { masechetMoment, sederMoment, shasMoment, type ShareMoment } from "../Share/shareMoments";
+import { countCompletedMasechtot } from "../../utils/shasJourney";
 import "./ProgressScreen.css";
 
 const MISHNAYOT_AMOUNTS = [1, 2, 3, 5, 10];
@@ -65,6 +69,9 @@ export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
   const [logOpen, setLogOpen] = useState(false);
   const [printOpen, setPrintOpen] = useState(false);
   const [certificateFor, setCertificateFor] = useState<{ en: string; he: string } | null>(null);
+  // Every siyum is shareable on demand, beside its certificate — declining
+  // a prompt never takes the option away.
+  const [sharing, setSharing] = useState<ShareMoment | null>(null);
   const [shasCertificateOpen, setShasCertificateOpen] = useState(false);
 
   const certificateName = auth.firstName
@@ -309,6 +316,7 @@ export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
             <button className="btn btn--accent btn--compact progress-cert-btn" onClick={() => setShasCertificateOpen(true)}>
               Get your certificate
             </button>
+            <ShareLink onClick={() => setSharing(shasMoment())} />
           </div>
         )}
 
@@ -358,6 +366,7 @@ export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
                   <span className="progress-row__pct">{progress.sederPercent(seder.id)}%</span>
                 </button>
                 <ProgressBar pct={progress.sederPercent(seder.id)} />
+                {progress.sederPercent(seder.id) === 100 && <ShareLink onClick={() => setSharing(sederMoment(seder.id))} />}
 
                 {isOpen && (
                   <div className="progress-masechtot">
@@ -385,6 +394,9 @@ export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
                             >
                               Get certificate
                             </button>
+                          )}
+                          {progress.masechetPercent(m.en, m.perakim) === 100 && (
+                            <ShareLink onClick={() => setSharing(masechetMoment(m.en, countCompletedMasechtot(progress)))} />
                           )}
 
                           {mOpen && (
@@ -434,6 +446,7 @@ export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
       {shasCertificateOpen && (
         <CertificateView masechetEn={null} defaultName={certificateName} onClose={() => setShasCertificateOpen(false)} />
       )}
+      {sharing && <ShareSheet moment={sharing} onClose={() => setSharing(null)} />}
     </div>
   );
 }

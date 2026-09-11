@@ -2,6 +2,28 @@
 
 One entry per PR, newest first.
 
+## Sharing, part 2: the learning moments
+
+- **Daily Limmud.** When marking finishes something, a prompt appears
+  under the confirmation, and the heaviest the rules allow wins:
+  - a streak milestone (7, 30, 100, 180 or 365 days, on the day's first
+    mark)
+  - a masechet ("Mesayem Masechet Berachot · All 57 mishnayot. One of
+    the 63.")
+  - the seder it closes
+  - all of Shas
+  - in a chabura, the masechet the shiur finished together
+
+  A perek never prompts.
+- **A siyum board filling.** Its owner is offered the ceremonial card
+  when every one of the 524 perakim is taken.
+- **On demand.** My Siyumim has a Share link beside every certificate:
+  masechet, seder and Shas. Declining a prompt never removes the option.
+- **Fixed:** prompts could not fire at all, because nothing recorded a
+  device's first visit. It is now recorded once, backdated to the earliest
+  learning already on the device, so existing users are not treated as
+  new.
+
 ## Sharing, part 1: the card, the sheet, and the games
 
 From SHARE-BRIEF.md and REVISED-SHARE-BRIEF.md.

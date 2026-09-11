@@ -23,6 +23,7 @@ import { FirstOpenPrompt } from "./components/FirstOpenPrompt/FirstOpenPrompt";
 import { ChagReturnModal } from "./components/ChagPrint/ChagReturnModal";
 import { lastEndedStretch, type ChagStretch } from "./utils/chagCalendar";
 import { localDateStr } from "./utils/localDate";
+import { markFirstSeen } from "./components/Share/sharePrompts";
 import { RebbeDashboardScreen } from "./components/RebbeDashboard/RebbeDashboardScreen";
 import { GuideScreen } from "./components/Guide/GuideScreen";
 import { useAuth, OAUTH_PENDING_KEY } from "./utils/useAuth";
@@ -257,6 +258,16 @@ function App() {
     noteCount,
     masechtotCompleted: countCompletedMasechtot(progress),
   });
+
+  // The share prompts never fire on a first visit, so the first day this
+  // device opened the app is recorded once — backdated to the earliest
+  // learning already on it, so someone who has used the app for months is
+  // not treated as new the day this shipped.
+  useEffect(() => {
+    const earliest = progress.completions.reduce((min, c) => (c.date < min ? c.date : min), localDateStr());
+    markFirstSeen(earliest);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // The first open after Shabbat or yom tov (CHAG-BRIEF.md, Feature B):
   // read once per load, and only ever once per stretch. Only for someone

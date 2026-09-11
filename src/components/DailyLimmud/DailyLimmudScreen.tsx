@@ -21,6 +21,8 @@ import { groupDayItems } from "../../utils/dailyProjection";
 import { useGroupContexts } from "../../utils/useGroupContexts";
 import { stretchFromErev } from "../../utils/chagCalendar";
 import { ChagPrintCard } from "../ChagPrint/ChagPrintCard";
+import { useRunShare } from "../Share/useRunShare";
+import { learningMoments } from "../Share/learningMoments";
 import { QueuedSiyumPerek } from "./QueuedSiyumPerek";
 import { NudgeStrip } from "../NudgeStrip/NudgeStrip";
 import { TranslationAttributionLine } from "../TranslationAttribution/TranslationAttribution";
@@ -115,6 +117,7 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
   // Only offered once logged in, since groups require an account.
   const groupContexts = useGroupContexts();
   const erevStretch = stretchFromErev(localDateStr());
+  const share = useRunShare();
 
   const [context, setContext] = useState<string>("self");
   const activeContext = context === "self" || groupContexts.some((g) => g.masechetEn === context) ? context : "self";
@@ -246,6 +249,19 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
     }
     const markingNow = items.filter((i) => i.perek === firstItem.perek).length;
     const remaining = Math.max(0, perekTotal - doneBefore - markingNow);
+
+    // What this mark completes — a masechet, a seder, Shas, a streak
+    // milestone, a chabura finishing together — judged before it lands.
+    // The heaviest the prompt rules allow is offered; never a perek.
+    share.finish(
+      null,
+      learningMoments({
+        progress,
+        marking: items,
+        today: localDateStr(),
+        chaburaName: !isSelf && activeChabura ? (activeChabura.name?.trim() || "Our chabura") : null,
+      }),
+    );
 
     if (isSelf) {
       progress.markTodayLearned();
@@ -461,6 +477,7 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
                 </label>
               </>
             )}
+            {share.prompt("cream")}
           </div>
         ) : (
           <div className="limmud-body">
@@ -559,6 +576,8 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
                 </div>
               )}
 
+              {share.prompt("cream")}
+
               {justMarked && !session && onOpenLogin && streak.current >= 3 && (
                 <NudgeStrip
                   text={`${streak.current} days is worth keeping.`}
@@ -617,6 +636,7 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
         )}
       </div>
 
+      {share.sheet}
       {noteOpen && firstItem && (
         <PerekNoteModal
           masechetEn={firstItem.masechetEn}
