@@ -2,6 +2,16 @@
 
 One entry per PR, newest first.
 
+## Fixed: only the first printed page came out
+
+- Printing the chag mishnayot as "A page each" gave one page with one
+  mishnah; every later page was cut off. The print view keeps its screen
+  style (fixed, one screen tall) because that stylesheet loads after the
+  print rule meant to undo it. The print rule now wins, so every page
+  prints. This also affected the Guide and Mishna Notes.
+- On paper the card around the print view no longer shows its outline, and
+  pages are centred on a white sheet.
+
 ## Home: remove the "New here?" strip
 
 - The "New here? Start with Step 1 — Learn the Sedarim" strip at the top of

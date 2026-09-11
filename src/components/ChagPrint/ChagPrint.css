@@ -444,7 +444,7 @@
 
   .chag-print-preview .chag-page,
   .chag-page {
-    margin: 0;
+    margin: 0 auto;
     outline: none;
     box-shadow: none;
     zoom: 1;

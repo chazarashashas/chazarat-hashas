@@ -69,9 +69,25 @@ textarea:focus-visible,
     padding: 0 !important;
     max-width: none !important;
     background: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
   }
 
-  .print-overlay {
-    position: static;
+  /* !important because each overlay's own stylesheet (position: fixed;
+     inset: 0) loads after this one and would otherwise win — leaving the
+     overlay one screen tall, so only the first page ever printed. */
+  .print-overlay,
+  .main :has(.print-overlay) {
+    position: static !important;
+    inset: auto !important;
+  }
+
+  html,
+  body,
+  #root {
+    height: auto !important;
+    overflow: visible !important;
+    background: var(--surface-hi) !important;
   }
 }
