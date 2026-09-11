@@ -32,6 +32,7 @@ const PATHS: Record<string, string> = {
   more: "M5 12h.01M12 12h.01M19 12h.01",
   download: "M12 3v12M8 11l4 4 4-4M5 19h14",
   print: "M7 8V4h10v4M5 8h14v8h-4v3H9v-3H5zM9 14h6",
+  share: "M12 15V4M8 8l4-4 4 4M5 12v7h14v-7",
   mail: "M4 6h16v12H4zM4 7l8 6 8-6",
   guide: "M12 2a10 10 0 100 20 10 10 0 000-20zM9.5 9a2.5 2.5 0 015-.5c0 1.7-2.3 1.9-2.3 3.5M12 16.5h.01",
 };

@@ -120,6 +120,16 @@
   --fs-dash-score: 44px;
   /* The chag greeting on a printed mishnayot page (CHAG-BRIEF.md). */
   --fs-chag-greeting: 26px;
+  /* The share card (SHARE-BRIEF.md), drawn at 340px and exported at 1080. */
+  --fs-share-15: 15px;
+  --fs-share-17: 17px;
+  --fs-share-18: 18px;
+  --fs-share-19: 19px;
+  --fs-share-cer: 34px;
+  --fs-share-step: 44px;
+  --fs-share-fig: 68px;
+  --fs-share-fig-lg: 86px;
+  --fs-share-letter: 190px;
 
   /* Two stage widths, no per-screen exceptions. */
   --stage-width: 520px;

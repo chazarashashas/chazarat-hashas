@@ -1,0 +1,703 @@
+/* ============================================================
+   The share card — 340px here, exported at 1080 × 1080.
+   20px radius on every kind (REVISED-SHARE-BRIEF.md §2).
+   ============================================================ */
+
+.share-card {
+  position: relative;
+  width: 340px;
+  height: 340px;
+  overflow: hidden;
+  border-radius: 20px;
+  box-sizing: border-box;
+  color: var(--ink);
+  text-align: left;
+}
+
+.share-card__squares {
+  display: flex;
+  gap: 3px;
+}
+
+.share-card__square {
+  width: 13px;
+  height: 13px;
+  border-radius: 4px;
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--ink) 26%, transparent);
+}
+
+.share-card__square--on {
+  background: var(--gold);
+  box-shadow: none;
+}
+
+.share-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.share-card__top--start {
+  justify-content: flex-start;
+  gap: 11px;
+}
+
+.share-card__he {
+  font-family: var(--font-hebrew);
+  font-size: var(--fs-share-18);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.share-card__he--light {
+  font-size: var(--fs-share-19);
+  color: var(--on-navy);
+}
+
+.share-card__mark {
+  flex: none;
+  width: 40px;
+  height: auto;
+  display: block;
+}
+
+.share-card__mark--bright rect:first-child {
+  fill: var(--gold-bright);
+}
+
+.share-card__column {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.share-card__center {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.share-card__letter {
+  position: absolute;
+  font-family: var(--font-hebrew);
+  font-size: var(--fs-share-letter);
+  font-weight: 700;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+.share-card__url {
+  margin-top: 3px;
+  font-family: var(--font-heading);
+  font-size: var(--fs-12);
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--gold-bright);
+}
+
+.share-card__invite {
+  font-family: var(--font-heading);
+  font-size: var(--fs-share-17);
+  font-weight: 900;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+  color: var(--surface-hi);
+}
+
+/* ---------- Challenge: bright, the game card ---------- */
+
+.share-card--challenge {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 16px 0;
+  background: var(--surface);
+}
+
+.share-card--challenge .share-card__middle {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 12px 0;
+}
+
+.share-card__figure {
+  flex: none;
+  max-width: 120px;
+}
+
+.share-card__fig {
+  font-family: var(--font-heading);
+  font-size: var(--fs-share-fig);
+  font-weight: 900;
+  line-height: 0.8;
+  letter-spacing: -0.06em;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.share-card__fighead {
+  margin-top: 6px;
+  font-family: var(--font-heading);
+  font-size: var(--fs-13);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--brass-text);
+}
+
+.share-card__figsub {
+  margin-top: 3px;
+  font-size: var(--fs-12);
+  color: var(--muted);
+}
+
+/* All 63 masechtot in their seder hues — 9 columns × 7 rows. At 7 columns
+   it runs 9 rows tall and pushes the invitation off the card. */
+.share-card__grid {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 3px;
+  align-content: center;
+}
+
+.share-card__cell {
+  aspect-ratio: 1;
+  border-radius: 3px;
+  background: var(--cell);
+}
+
+.share-card__cell--dim {
+  background: color-mix(in srgb, var(--cell) 22%, var(--surface));
+}
+
+.share-card__invite-band {
+  flex: none;
+  margin: 0 -16px;
+  padding: 13px 16px;
+  background: var(--ink);
+}
+
+/* ---------- Step: a masechet ---------- */
+
+.share-card--step {
+  padding: 18px;
+  background: var(--surface);
+}
+
+.share-card--step .share-card__letter {
+  top: -54px;
+  right: -26px;
+  color: color-mix(in srgb, var(--gold) 13%, transparent);
+}
+
+.share-card__label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--font-heading);
+  font-size: var(--fs-12);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--brass-text);
+}
+
+.share-card__label-dot {
+  flex: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 3px;
+  background: var(--gold);
+}
+
+.share-card__step-he {
+  font-family: var(--font-hebrew);
+  font-size: var(--fs-share-step);
+  font-weight: 700;
+  line-height: 1.3;
+  text-align: right;
+  color: var(--ink);
+}
+
+.share-card__step-head {
+  margin-top: 6px;
+  font-family: var(--font-heading);
+  font-size: var(--fs-share-19);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+}
+
+.share-card__road {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.share-card__road-track {
+  flex: 1;
+  height: 7px;
+  overflow: hidden;
+  border-radius: var(--radius-pill);
+  background: var(--line);
+}
+
+.share-card__road-fill {
+  display: block;
+  height: 100%;
+  background: var(--gold);
+}
+
+.share-card__road-count {
+  font-family: var(--font-heading);
+  font-size: var(--fs-share-15);
+  font-weight: 900;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--brass-text);
+}
+
+.share-card__ahead {
+  margin-top: 7px;
+  font-size: var(--fs-13);
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.share-card__foot {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 2px solid var(--line);
+}
+
+.share-card__foot-url {
+  font-family: var(--font-heading);
+  font-size: var(--fs-share-17);
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.share-card__foot-he {
+  font-family: var(--font-hebrew);
+  font-size: var(--fs-share-19);
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--brass-text);
+}
+
+/* ---------- Ceremony: a seder, or all of Shas ---------- */
+
+.share-card--ceremony {
+  padding: 5px;
+  background: var(--ink);
+}
+
+.share-card__frame {
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 18px 16px;
+  border-radius: 16px;
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--gold-bright) 55%, transparent);
+  text-align: center;
+}
+
+.share-card__cer-he {
+  font-family: var(--font-hebrew);
+  font-size: var(--fs-share-cer);
+  font-weight: 900;
+  line-height: 1.35;
+  color: var(--surface-hi);
+}
+
+.share-card__rule {
+  width: 52px;
+  height: 2px;
+  margin: 13px auto 0;
+  background: var(--gold-bright);
+}
+
+.share-card__hadran {
+  margin-top: 13px;
+  font-family: var(--font-hebrew);
+  font-size: var(--fs-share-17);
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--gold-bright);
+}
+
+.share-card__cer-sub {
+  margin-top: 12px;
+  font-size: var(--fs-13);
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--on-navy-muted);
+}
+
+.share-card__cer-url {
+  font-family: var(--font-heading);
+  font-size: var(--fs-share-15);
+  font-weight: 800;
+  line-height: 1.3;
+  color: var(--on-navy);
+}
+
+/* ---------- Plain: a streak ---------- */
+
+.share-card--plain {
+  padding: 18px;
+  background: var(--ink);
+}
+
+.share-card--plain .share-card__letter {
+  right: -30px;
+  bottom: -70px;
+  color: color-mix(in srgb, var(--on-navy) 7%, transparent);
+}
+
+.share-card__fig--plain {
+  font-size: var(--fs-share-fig-lg);
+  line-height: 0.82;
+  letter-spacing: -0.055em;
+  color: var(--gold-bright);
+}
+
+.share-card__plain-head {
+  margin-top: 8px;
+  font-family: var(--font-heading);
+  font-size: var(--fs-20);
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+  color: var(--surface-hi);
+}
+
+.share-card__plain-sub {
+  margin-top: 4px;
+  font-size: var(--fs-13);
+  line-height: 1.55;
+  color: var(--on-navy-muted);
+}
+
+.share-card__plain-foot {
+  padding-top: 14px;
+  border-top: 2px solid var(--on-navy-rule);
+}
+
+/* ============================================================
+   The sheet
+   ============================================================ */
+
+.share-sheet {
+  width: 420px;
+}
+
+.share-sheet__sub {
+  margin: -6px 0 14px;
+  font-size: var(--fs-13);
+  color: var(--muted);
+}
+
+.share-sheet__card {
+  display: flex;
+  justify-content: center;
+}
+
+.share-sheet__card .share-card {
+  box-shadow: 0 4px 20px color-mix(in srgb, var(--ink) 18%, transparent);
+}
+
+.share-sheet__status {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: var(--radius-control);
+  background: var(--surface-hi);
+  box-shadow: inset 0 0 0 1.5px var(--line);
+}
+
+.share-sheet__status-label {
+  margin: 0 0 6px;
+  font-family: var(--font-heading);
+  font-size: var(--fs-12);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--good);
+}
+
+.share-sheet__status-he {
+  margin: 0;
+  font-family: var(--font-hebrew);
+  font-size: var(--fs-16);
+  font-weight: 700;
+  line-height: 1.6;
+  text-align: right;
+  color: var(--ink);
+}
+
+.share-sheet__status-line {
+  margin: 0;
+  font-size: var(--fs-13);
+  line-height: 1.6;
+  color: var(--ink);
+}
+
+.share-sheet__status-line--link {
+  color: var(--brass-text);
+}
+
+.share-sheet__toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.share-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 12px;
+  border: none;
+  border-radius: var(--radius-control);
+  background: var(--surface-hi);
+  box-shadow: inset 0 0 0 1.5px var(--line);
+  font-family: var(--font-body);
+  font-size: var(--fs-13);
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.share-toggle__box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  background: var(--paper);
+  box-shadow: inset 0 0 0 1.5px var(--line);
+  font-family: var(--font-heading);
+  font-size: var(--fs-12);
+  font-weight: 700;
+  color: var(--surface-hi);
+}
+
+.share-toggle[aria-checked="true"] .share-toggle__box {
+  background: var(--ink);
+  box-shadow: none;
+}
+
+.share-sheet__targets {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.share-target {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 12px;
+  background: var(--surface-hi);
+  box-shadow: inset 0 0 0 1.5px var(--line);
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.share-target:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.share-target--primary {
+  background: var(--ink);
+  box-shadow: none;
+  color: var(--surface-hi);
+}
+
+.share-target__dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 3px;
+  background: var(--faint);
+}
+
+.share-target--primary .share-target__dot {
+  background: var(--gold-bright);
+}
+
+.share-target__label {
+  flex: 1;
+  font-family: var(--font-heading);
+  font-size: var(--fs-14);
+  font-weight: 700;
+}
+
+.share-target__meta {
+  font-size: var(--fs-12);
+  color: var(--muted);
+}
+
+.share-target--primary .share-target__meta {
+  color: var(--on-navy-muted);
+}
+
+.share-sheet__note {
+  margin: 10px 0 0;
+  font-size: var(--fs-13);
+  color: var(--muted);
+}
+
+/* ============================================================
+   The prompt — rises 10px over 300ms; its ✓ stamps at 400ms
+   ============================================================ */
+
+.share-prompt {
+  margin-top: 14px;
+  padding: 14px 15px;
+  border-radius: 15px;
+  animation: share-rise 0.3s ease both;
+}
+
+.share-prompt--cream {
+  background: var(--surface-hi);
+  box-shadow: inset 3px 0 0 var(--gold);
+}
+
+.share-prompt--game {
+  background: color-mix(in srgb, var(--gold-bright) 16%, transparent);
+  box-shadow: inset 2px 0 0 var(--gold-bright);
+}
+
+.share-prompt__row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.share-prompt__mark {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  background: var(--gold);
+  font-family: var(--font-heading);
+  font-size: var(--fs-12);
+  font-weight: 800;
+  color: var(--ink);
+  animation: share-stamp 0.4s ease 0.1s both;
+}
+
+.share-prompt__head {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: var(--fs-14);
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.share-prompt__body {
+  margin: 3px 0 0;
+  font-size: var(--fs-13);
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.share-prompt--game .share-prompt__head {
+  color: var(--surface-hi);
+}
+
+.share-prompt--game .share-prompt__body {
+  color: var(--on-navy-muted);
+}
+
+.share-prompt__actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.share-prompt__share {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 17px;
+  border: none;
+  border-radius: 12px;
+  background: var(--gold);
+  font-family: var(--font-heading);
+  font-size: var(--fs-13);
+  font-weight: 800;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.share-prompt__not-now {
+  min-height: 48px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 12px;
+  background: none;
+  font-family: var(--font-body);
+  font-size: var(--fs-12);
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.share-prompt--game .share-prompt__not-now {
+  color: var(--on-navy-muted);
+}
+
+/* ============================================================
+   The quiet link, in a run summary
+   ============================================================ */
+
+.share-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 48px;
+  padding: 0 4px;
+  border: none;
+  background: none;
+  font-family: var(--font-heading);
+  font-size: var(--fs-13);
+  font-weight: 700;
+  color: var(--brass-text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.share-link--dark {
+  color: var(--gold-bright);
+}

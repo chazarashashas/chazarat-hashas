@@ -5,6 +5,9 @@ import { shuffle } from "../../utils/shuffle";
 import { getSederHue } from "../../utils/sederHue";
 import { useGameStats } from "../../utils/useGameStats";
 import { GameHud } from "../GameHud/GameHud";
+import { ShareSheet } from "../Share/ShareSheet";
+import { ShareLink } from "../Share/SharePrompt";
+import { all63Moment } from "../Share/shareMoments";
 import "./SederSortScreen.css";
 
 interface FlatMasechet {
@@ -46,6 +49,7 @@ const TAP_MOVE_THRESHOLD = 6;
 export function SederSortScreen() {
   const { recordSortCompletion, recordSortProgress } = useGameStats();
   const [{ placed, pool }, setState] = useState(initState);
+  const [sharing, setSharing] = useState(false);
   const [drag, setDrag] = useState<DragState | null>(null);
   const [hoverBin, setHoverBin] = useState<string | null>(null);
   const [rejectBin, setRejectBin] = useState<string | null>(null);
@@ -240,9 +244,11 @@ export function SederSortScreen() {
             <button className="popup__restart" onClick={handleReset}>
               Play again
             </button>
+            <ShareLink onClick={() => setSharing(true)} />
           </div>
         </div>
       )}
+      {sharing && <ShareSheet moment={all63Moment("Seder Sort")} onClose={() => setSharing(false)} />}
     </div>
   );
 }

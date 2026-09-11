@@ -5,6 +5,9 @@ import type { MatchView } from "../../data/matchViews";
 import type { ViewState } from "../../types/viewState";
 import { getSederHue } from "../../utils/sederHue";
 import { GameHud } from "../GameHud/GameHud";
+import { ShareSheet } from "../Share/ShareSheet";
+import { ShareLink } from "../Share/SharePrompt";
+import { numberWords, orderMoment } from "../Share/shareMoments";
 import "./MatchBoard.css";
 
 /** Which seder a slot/chip belongs to, found from the item name itself
@@ -45,6 +48,7 @@ const TAP_MOVE_THRESHOLD = 6;
 export function MatchBoard({ view, state, onPlace, onReset, clearedSederIds }: MatchBoardProps) {
   const { placed, pool } = state;
   const [drag, setDrag] = useState<DragState | null>(null);
+  const [sharing, setSharing] = useState(false);
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
   const [rejectIndex, setRejectIndex] = useState<number | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -221,8 +225,18 @@ export function MatchBoard({ view, state, onPlace, onReset, clearedSederIds }: M
             <button className="popup__restart" onClick={onReset}>
               Play again
             </button>
+            <ShareLink onClick={() => setSharing(true)} />
           </div>
         </div>
+      )}
+      {sharing && (
+        <ShareSheet
+          moment={orderMoment(
+            view.items.length,
+            view.id === "shas" ? `the ${numberWords(view.items.length)} sedarim` : `the ${numberWords(view.items.length)} masechtot of Seder ${view.label}`,
+          )}
+          onClose={() => setSharing(false)}
+        />
       )}
     </div>
   );

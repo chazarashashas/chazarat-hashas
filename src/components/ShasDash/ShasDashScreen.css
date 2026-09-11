@@ -543,3 +543,11 @@
     padding-bottom: 5px;
   }
 }
+
+.dash-end__actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 14px;
+}

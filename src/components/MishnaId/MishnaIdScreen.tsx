@@ -10,6 +10,8 @@ import { PerekNoteModal } from "../PerekNoteModal/PerekNoteModal";
 import { TranslationReveal } from "../TranslationReveal/TranslationReveal";
 import { TabBar } from "../TabBar/TabBar";
 import { GameHud } from "../GameHud/GameHud";
+import { useRunShare } from "../Share/useRunShare";
+import { bestMoment } from "../Share/shareMoments";
 import "./MishnaIdScreen.css";
 
 type ScopeType = "masechta" | "seder" | "all";
@@ -160,7 +162,8 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
   const [textFontSize, setTextFontSize] = useState(MAX_TEXT_FONT_SIZE);
   const [noteOpen, setNoteOpen] = useState(false);
   const { getPerekNote, setPerekNote } = usePerekNotes();
-  const { recordQuizResult } = useGameStats();
+  const { stats, recordQuizResult } = useGameStats();
+  const share = useRunShare();
   const timerRef = useRef<number | null>(null);
   const cardBoxRef = useRef<HTMLDivElement>(null);
   const cardTextRef = useRef<HTMLSpanElement>(null);
@@ -260,6 +263,7 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
 
   /** Resets the whole session: back to the Start button, streak/quiz progress cleared. */
   function prepareSession(nextScopeType = scopeType, nextScopeValue = scopeValue) {
+    share.reset();
     prepareCard(nextScopeType, nextScopeValue);
     setStarted(false);
     setStreak(0);
@@ -348,6 +352,9 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
         setQuizFinished(true);
         const scopeLabel =
           scopeType === "all" ? "All of Shas" : scopeType === "seder" ? (SEDARIM.find((s) => s.id === scopeValue)?.en ?? scopeValue) : scopeValue;
+        // A score above their best may prompt; any result can be shared.
+        const moment = bestMoment("quiz", finalScore, QUIZ_LENGTH);
+        share.finish(moment, [finalScore > 0 && finalScore > stats.quiz.bestScore ? moment : null]);
         recordQuizResult(finalScore, QUIZ_LENGTH, scopeLabel);
         return;
       }
@@ -458,9 +465,11 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
             {quizBonus > 0 && <p className="mishna-summary__bonus">★ {quizBonus} perek bonus</p>}
             <p className="mishna-summary__grade">{letterGrade((quizScore / QUIZ_LENGTH) * 100)}</p>
             <p className="mishna-summary__label">Quiz complete</p>
+            {share.prompt("cream")}
             <button className="restart" onClick={() => prepareSession()}>
               Play again
             </button>
+            {share.link()}
           </div>
         ) : (
           <>
@@ -630,6 +639,7 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
           onOpenNotes={onOpenNotes}
         />
       )}
+      {share.sheet}
     </div>
   );
 }

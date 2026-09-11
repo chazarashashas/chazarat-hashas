@@ -646,6 +646,29 @@ textarea.field__input {
   }
 }
 
+/* A share prompt rises 10px over 300ms; its ✓ stamps in at 400ms. */
+@keyframes share-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes share-stamp {
+  0% {
+    opacity: 0;
+    transform: scale(1.6);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 @keyframes state-pulse {
   0%,
   100% {

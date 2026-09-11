@@ -5,6 +5,8 @@ import { TabBar } from "../TabBar/TabBar";
 import { useGameStats } from "../../utils/useGameStats";
 import { getSederHue } from "../../utils/sederHue";
 import { GameHud } from "../GameHud/GameHud";
+import { useRunShare } from "../Share/useRunShare";
+import { bestMoment } from "../Share/shareMoments";
 import "./RecallScreen.css";
 
 function flatList(): Masechet[] {
@@ -73,7 +75,8 @@ function formatTime(totalSeconds: number): string {
 type Phase = "ready" | "playing" | "ended";
 
 export function RecallScreen() {
-  const { recordChazaraResult } = useGameStats();
+  const { stats, recordChazaraResult } = useGameStats();
+  const share = useRunShare();
   const [sederTab, setSederTab] = useState("all");
   const [phase, setPhase] = useState<Phase>("ready");
   const [guess, setGuess] = useState("");
@@ -101,7 +104,12 @@ export function RecallScreen() {
   }, [phase]);
 
   useEffect(() => {
-    if (phase === "ended") recordChazaraResult(found.size, scopeLabel);
+    if (phase === "ended") {
+      // A higher recall count than their best may prompt; any run can be shared.
+      const moment = bestMoment("chazara", found.size);
+      share.finish(moment, [found.size > 0 && found.size > stats.chazara.bestCount ? moment : null]);
+      recordChazaraResult(found.size, scopeLabel);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase]);
 
@@ -114,6 +122,7 @@ export function RecallScreen() {
   }
 
   function handleStart() {
+    share.reset();
     setFound(new Set());
     setGuess("");
     setTimeLeft(durationSec);
@@ -253,13 +262,16 @@ export function RecallScreen() {
                 </div>
               </div>
             )}
+            {share.prompt("cream")}
             <button className="restart" onClick={handleStart}>
               Try again
             </button>
+            {share.link()}
           </div>
         )}
       </div>
       <TabBar tabs={SEDER_TABS} activeId={sederTab} onSelect={handleSederTabChange} />
+      {share.sheet}
     </div>
   );
 }

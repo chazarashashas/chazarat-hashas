@@ -5,6 +5,11 @@ import { shuffle } from "../../utils/shuffle";
 import { useGameStats } from "../../utils/useGameStats";
 import { useEscapeKey } from "../../utils/useEscapeKey";
 import { crossingMs, speedPips, easeToward, laneAt, lockBonus, MAX_DT_MS } from "./dashPhysics";
+import { localDateStr } from "../../utils/localDate";
+import { ShareSheet } from "../Share/ShareSheet";
+import { SharePrompt, ShareLink } from "../Share/SharePrompt";
+import { all63Moment, bestMoment, type ShareMoment } from "../Share/shareMoments";
+import { pickPrompt, recordPromptShown } from "../Share/sharePrompts";
 import "./ShasDashScreen.css";
 
 interface FlatMasechet {
@@ -87,6 +92,10 @@ export function ShasDashScreen() {
   const [crossing, setCrossing] = useState(crossingMs(0));
   const [paused, setPaused] = useState(false);
   const [caught, setCaught] = useState<Set<string>>(new Set());
+  // What this run can share, whether it earned a prompt, and the open sheet.
+  const [runMoment, setRunMoment] = useState<ShareMoment | null>(null);
+  const [promptMoment, setPromptMoment] = useState<ShareMoment | null>(null);
+  const [sheetMoment, setSheetMoment] = useState<ShareMoment | null>(null);
   const [won, setWon] = useState(false);
   const [msg, setMsg] = useState<Message>(IDLE);
   const [wobble, setWobble] = useState(false);
@@ -240,6 +249,16 @@ export function ShasDashScreen() {
     setWon(didWin);
     setPhase("ended");
     setCard(null);
+    // A new best, or all 63, may prompt (SHARE-BRIEF.md) — judged against
+    // the best as it stood before this run is recorded.
+    const newBest = scoreRef.current > 0 && scoreRef.current > stats.dash.bestScore;
+    const placed = caughtRef.current;
+    const moment = didWin ? all63Moment() : bestMoment("dash", placed.size, undefined, [...placed], scoreRef.current);
+    setRunMoment(moment);
+    const today = localDateStr();
+    const prompt = pickPrompt([didWin ? moment : null, !didWin && newBest ? moment : null], today);
+    if (prompt) recordPromptShown(prompt.type, today);
+    setPromptMoment(prompt);
     recordDashScore(scoreRef.current);
   }
 
@@ -452,9 +471,20 @@ export function ShasDashScreen() {
               <p className="game__end-sub">
                 {won ? `All ${TOTAL} masechtot · Score ${score}` : `Score ${score} · Best ${best}`}
               </p>
-              <button className="btn btn--accent" onClick={handleStart}>
-                {won ? "Play again" : "Try again"}
-              </button>
+              {promptMoment && (
+                <SharePrompt
+                  moment={promptMoment}
+                  variant="game"
+                  onShare={() => setSheetMoment(promptMoment)}
+                  onDismiss={() => setPromptMoment(null)}
+                />
+              )}
+              <div className="dash-end__actions">
+                <button className="btn btn--accent" onClick={handleStart}>
+                  {won ? "Play again" : "Try again"}
+                </button>
+                {runMoment && !promptMoment && <ShareLink onDark onClick={() => setSheetMoment(runMoment)} />}
+              </div>
             </div>
           ) : (
             <>
@@ -547,6 +577,7 @@ export function ShasDashScreen() {
           )}
         </div>
       </div>
+      {sheetMoment && <ShareSheet moment={sheetMoment} onClose={() => setSheetMoment(null)} />}
     </div>
   );
 }

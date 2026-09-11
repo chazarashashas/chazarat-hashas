@@ -2,6 +2,46 @@
 
 One entry per PR, newest first.
 
+## Sharing, part 1: the card, the sheet, and the games
+
+From SHARE-BRIEF.md and REVISED-SHARE-BRIEF.md.
+
+- **The card.** A 1080 × 1080 PNG made on the device (html-to-image) from
+  the same element the sheet shows, with fonts loaded first. Every kind
+  carries the logo's six-square geometry, with 20px corners. Four
+  structurally different kinds:
+  - **Game, bright:** cream ground, the figure, and all 63 masechtot as
+    seder-hue squares in a 9 × 7 grid using the real counts per seder. A
+    navy band at the foot with the invitation.
+  - **Masechet, a step:** "סיום מסכת …", then the road, "1 / 63", and
+    what's next.
+  - **Seder or Shas, ceremonial:** navy, a brass rule inset, the siyum in
+    Hebrew, and the hadran.
+  - **Streak, plain:** navy, the figure in brass.
+- **The status text.** Three lines, Hebrew first, verbatim with nikud:
+  the passuk for streaks and games, the siyum line for a siyum. It is on
+  the clipboard the moment the sheet opens, marked "✓ STATUS TEXT ·
+  COPIED". There is no Copy button.
+- **The sheet.**
+  - Heading, "This is what goes out. Your name is not on it unless you
+    add it.", then the card at full size, the status text, and two
+    toggles: "Include my name" (off) and "Include the figure" (on).
+  - Four targets: WhatsApp (image + text through the share sheet, or
+    save + wa.me where files can't be shared), Save the image, More…,
+    and Copy link.
+- **Games.**
+  - Shas Dash, Mishna Quiz and Mishna Chazara: a new personal best can
+    prompt. So can all 63 in Shas Dash.
+  - Every run of those three, plus Seder Sort and Sidrei Hamishna, gets
+    the quiet underlined Share link in its summary.
+- **Prompt rules.**
+  - One prompt a day at most; if two land together, the heavier wins.
+  - Never the same type twice in a week.
+  - "Not now" quiets that type for 30 days.
+  - Nothing on a first visit.
+- **The copy rules.** Every line invites someone to join; none compares,
+  ranks or asks anyone to beat a number. A test checks for that.
+
 ## The Guide is downloadable
 
 - A Download button sits beside Print on the Guide page itself, and on

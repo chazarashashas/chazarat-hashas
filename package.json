@@ -23,6 +23,7 @@
     "@hebcal/core": "^6.9.2",
     "@sentry/react": "^10.74.0",
     "@supabase/supabase-js": "^2.115.0",
+    "html-to-image": "^1.11.13",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },
