@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useLocalStorageState } from "./useLocalStorageState";
-import { MISHNA_SEQUENCE, mishnaKey, endOfPerekIndex } from "../data/mishnaSequence";
+import { MISHNA_SEQUENCE, mishnaKey } from "../data/mishnaSequence";
+import { dayRange } from "./dailyProjection";
 import { SEDARIM } from "../data/shas";
 import { getMishnayotCount } from "../data/perekInfo";
 import { localDateStr } from "./localDate";
@@ -136,26 +137,12 @@ export function useLearningProgress() {
     return completedKeys.has(mishnaKey(item));
   }
 
-  const rangeStart = Math.min(position, Math.max(0, MISHNA_SEQUENCE.length - 1));
   const finishedShas = position >= MISHNA_SEQUENCE.length;
-  let rangeEnd = rangeStart;
-  if (!finishedShas) {
-    if (pace.unit === "mishnayot") {
-      rangeEnd = Math.min(rangeStart + pace.amount - 1, MISHNA_SEQUENCE.length - 1);
-    } else {
-      // Walk forward `amount` perakim from rangeStart, one at a time —
-      // endOfPerekIndex only ever finds the end of the perek containing
-      // the index it's given, so reaching perek N+1 means stepping past
-      // perek N's last mishnah first.
-      let end = rangeStart;
-      for (let i = 0; i < pace.amount; i++) {
-        end = endOfPerekIndex(end);
-        if (i < pace.amount - 1 && end + 1 < MISHNA_SEQUENCE.length) end += 1;
-      }
-      rangeEnd = Math.min(end, MISHNA_SEQUENCE.length - 1);
-    }
-  }
-  const todaysItems = finishedShas ? [] : MISHNA_SEQUENCE.slice(rangeStart, rangeEnd + 1);
+  // Same projection the offline prefetch and the chag print job use.
+  const todaysRange = dayRange(position, pace);
+  const rangeStart = todaysRange ? todaysRange[0] : Math.max(0, MISHNA_SEQUENCE.length - 1);
+  const rangeEnd = todaysRange ? todaysRange[1] : rangeStart;
+  const todaysItems = todaysRange ? MISHNA_SEQUENCE.slice(todaysRange[0], todaysRange[1] + 1) : [];
 
   /** The one deliberate confirmation action — nothing else advances
       position, completion, or streak. */

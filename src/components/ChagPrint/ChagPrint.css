@@ -1,0 +1,457 @@
+/* ============================================================
+   The card — print before Shabbat or yom tov
+   ============================================================ */
+
+.chag-card {
+  position: relative;
+  margin: 16px 0;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1.5px var(--line);
+}
+
+.chag-card__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+}
+
+.chag-card__icon {
+  flex: none;
+  margin-top: 2px;
+  color: var(--brass-text);
+}
+
+.chag-card__title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: var(--fs-16);
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.chag-card__sub {
+  margin: 3px 0 0;
+  font-size: var(--fs-13);
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.chag-card__days {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 13px;
+}
+
+.chag-day {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-height: 48px;
+  padding: 10px 12px;
+  border: none;
+  border-radius: var(--radius-control);
+  background: var(--surface-hi);
+  box-shadow: inset 0 0 0 1.5px var(--line);
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.chag-day--on {
+  box-shadow: inset 0 0 0 1.5px var(--ink);
+}
+
+.chag-box {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 1.5px var(--muted);
+  font-family: var(--font-heading);
+  font-size: var(--fs-13);
+  font-weight: 700;
+  color: var(--on-navy);
+}
+
+.chag-day--on .chag-box,
+.chag-toggle[aria-checked="true"] .chag-box {
+  background: var(--ink);
+  box-shadow: none;
+}
+
+.chag-day__text {
+  flex: 1;
+  min-width: 0;
+}
+
+.chag-day__title {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: var(--fs-13);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.chag-day__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 7px;
+  margin-top: 2px;
+}
+
+.chag-day__date {
+  font-size: var(--fs-12);
+  color: var(--muted);
+}
+
+.chag-day__items {
+  font-size: var(--fs-12);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.chag-pill {
+  padding: 2px 7px;
+  border-radius: var(--radius-pill);
+  background: var(--tint);
+  font-size: var(--fs-12);
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--brass-text);
+}
+
+.chag-seg {
+  display: flex;
+  gap: 5px;
+  margin-top: 12px;
+  padding: 4px;
+  border-radius: var(--radius-control);
+  background: var(--tint);
+}
+
+.chag-seg__opt {
+  flex: 1;
+  min-height: 48px;
+  padding: 8px 10px;
+  border: none;
+  border-radius: var(--radius-small);
+  background: none;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.chag-seg__opt--on {
+  background: var(--surface-hi);
+  box-shadow: var(--shadow-chip);
+}
+
+.chag-seg__label {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: var(--fs-13);
+  font-weight: 700;
+}
+
+.chag-seg__sub {
+  display: block;
+  margin-top: 1px;
+  font-size: var(--fs-12);
+  color: var(--muted);
+}
+
+.chag-toggle {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  min-height: 48px;
+  margin-top: 8px;
+  padding: 11px 13px;
+  border: none;
+  border-radius: var(--radius-control);
+  background: var(--surface-hi);
+  box-shadow: inset 0 0 0 1.5px var(--line);
+  font-family: var(--font-body);
+  font-size: var(--fs-13);
+  font-weight: 600;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.chag-card__print {
+  margin-top: 12px;
+}
+
+.chag-card__meta {
+  margin: 8px 0 0;
+  font-size: var(--fs-12);
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.chag-card__retry {
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  color: var(--brass-text);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ============================================================
+   The printed page — Letter and A4 both hold a 7.2 × 9.9in page
+   inside a half-inch margin.
+   ============================================================ */
+
+@page {
+  margin: 0.5in;
+}
+
+.chag-measure {
+  position: absolute;
+  top: 0;
+  left: -10000px;
+  width: 7.2in;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.chag-page {
+  display: flex;
+  flex-direction: column;
+  width: 7.2in;
+  height: 9.9in;
+  margin: 0 auto 24px;
+  overflow: hidden;
+  background: var(--surface-hi);
+  color: var(--ink);
+}
+
+.chag-print-preview .chag-page {
+  padding: 0;
+  outline: 24px solid var(--surface-hi);
+  box-shadow: 0 0 0 25px var(--line);
+  margin-bottom: 64px;
+}
+
+@media screen and (max-width: 760px) {
+  .chag-print-preview .chag-page {
+    zoom: 0.72;
+  }
+}
+
+@media screen and (max-width: 560px) {
+  .chag-print-preview .chag-page {
+    zoom: 0.46;
+  }
+}
+
+.chag-page__head {
+  padding-bottom: 15px;
+  border-bottom: 2px solid var(--ink);
+  text-align: center;
+}
+
+.chag-page__mark {
+  display: block;
+  width: 54px;
+  height: auto;
+  margin: 0 auto 13px;
+}
+
+.chag-motif {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.chag-motif svg {
+  display: block;
+  width: 46px;
+  height: 46px;
+  fill: none;
+  stroke: var(--gold);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.chag-page__greeting {
+  margin: 12px 0 0;
+  font-family: var(--font-hebrew);
+  font-size: var(--fs-chag-greeting);
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.chag-page__title {
+  margin: 5px 0 0;
+  font-family: var(--font-heading);
+  font-size: var(--fs-14);
+  font-weight: 700;
+}
+
+.chag-page__date {
+  margin: 2px 0 0;
+  font-size: var(--fs-12);
+  color: var(--muted);
+}
+
+.chag-page__cont {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--font-heading);
+  font-size: var(--fs-12);
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.chag-page__body {
+  flex: 1;
+}
+
+.chag-page__unit {
+  padding: 12px 0;
+  border-top: 1px solid transparent;
+}
+
+.chag-page__unit + .chag-page__unit {
+  border-top-color: var(--line);
+}
+
+.chag-page__dayhead {
+  margin-bottom: 10px;
+  padding-top: 10px;
+  border-top: 2px solid var(--ink);
+}
+
+.chag-page__unit:first-child .chag-page__dayhead {
+  padding-top: 0;
+  border-top: none;
+}
+
+.chag-page__daytitle {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: var(--fs-14);
+  font-weight: 700;
+}
+
+.chag-page__track {
+  margin: 0 0 8px;
+  font-family: var(--font-heading);
+  font-size: var(--fs-13);
+  font-weight: 700;
+  color: var(--brass-text);
+}
+
+.chag-page__perek {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.chag-page__perek-title {
+  font-family: var(--font-heading);
+  font-size: var(--fs-16);
+  font-weight: 800;
+}
+
+.chag-page__perek-name {
+  font-family: var(--font-hebrew);
+  font-size: var(--fs-16);
+  font-weight: 700;
+}
+
+.chag-page__note {
+  margin: 0 0 8px;
+  font-size: var(--fs-13);
+  font-style: italic;
+  color: var(--muted);
+}
+
+.chag-page__ref-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 9px;
+}
+
+.chag-page__ref {
+  font-family: var(--font-heading);
+  font-size: var(--fs-14);
+  font-weight: 800;
+}
+
+.chag-page__count {
+  font-size: var(--fs-12);
+  color: var(--muted);
+}
+
+.chag-page__text {
+  margin: 8px 0 0;
+  font-family: var(--font-hebrew);
+  font-size: var(--fs-16);
+  line-height: 2.15;
+  text-align: right;
+}
+
+.chag-page__empty {
+  margin: 0;
+  font-size: var(--fs-14);
+  color: var(--muted);
+}
+
+.chag-page__foot-wrap {
+  margin-top: auto;
+}
+
+.chag-page__foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 2px solid var(--ink);
+  font-family: var(--font-heading);
+  font-size: var(--fs-12);
+  font-weight: 700;
+}
+
+.chag-page__foot-he {
+  font-family: var(--font-hebrew);
+  font-size: var(--fs-14);
+  color: var(--brass-text);
+}
+
+@media print {
+  .chag-measure {
+    display: none !important;
+  }
+
+  .chag-print-preview .chag-page,
+  .chag-page {
+    margin: 0;
+    outline: none;
+    box-shadow: none;
+    zoom: 1;
+    break-after: page;
+  }
+
+  .chag-page:last-of-type {
+    break-after: auto;
+  }
+}

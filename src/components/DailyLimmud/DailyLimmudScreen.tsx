@@ -17,6 +17,10 @@ import { NavIcon } from "../Icon/NavIcon";
 import { hebrewNumeral } from "../../utils/hebrewNumeral";
 import { FlipCounter } from "../FlipCounter/FlipCounter";
 import { buildJourneyScopes } from "../../utils/shasJourney";
+import { groupDayItems } from "../../utils/dailyProjection";
+import { useGroupContexts } from "../../utils/useGroupContexts";
+import { stretchFromErev } from "../../utils/chagCalendar";
+import { ChagPrintCard } from "../ChagPrint/ChagPrintCard";
 import { QueuedSiyumPerek } from "./QueuedSiyumPerek";
 import { NudgeStrip } from "../NudgeStrip/NudgeStrip";
 import { TranslationAttributionLine } from "../TranslationAttribution/TranslationAttribution";
@@ -88,33 +92,6 @@ function nextMasechet(masechetEn: string): string | null {
   return ALL_MASECHTOT[index + 1].en;
 }
 
-/** Builds the mishnah range for a masechet context at a given pace,
-    starting from `start` — same idea as the global sequential range,
-    but scoped to one masechet and using that group's own agreed pace
-    (chosen once when the chevrusa/chabura was created) rather than a
-    hardcoded single mishnah, so switching context in Daily Limmud
-    "automatically" reflects however that group decided to pace itself. */
-function buildMasechetRange(masechetEn: string, start: MishnaItem, pace: GroupPace, totalPerakim: number): MishnaItem[] {
-  if (start.perek > totalPerakim) return [];
-  const items: MishnaItem[] = [{ masechetEn, perek: start.perek, mishnah: start.mishnah }];
-  if (pace === "1") return items;
-
-  if (pace === "2") {
-    const count = getMishnayotCount(masechetEn, start.perek);
-    const next =
-      start.mishnah < count
-        ? { perek: start.perek, mishnah: start.mishnah + 1 }
-        : { perek: start.perek + 1, mishnah: 1 };
-    if (next.perek <= totalPerakim) items.push({ masechetEn, ...next });
-    return items;
-  }
-
-  // pace === "perek": the rest of this perek
-  const count = getMishnayotCount(masechetEn, start.perek);
-  for (let mi = start.mishnah + 1; mi <= count; mi++) items.push({ masechetEn, perek: start.perek, mishnah: mi });
-  return items;
-}
-
 interface DailyLimmudScreenProps {
   onOpenNotes?: () => void;
   onOpenLogin?: () => void;
@@ -135,35 +112,9 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
   const [showEnglish, setShowEnglish] = useLocalStorageState<boolean>("showEnglish", false);
   const [englishByKey, setEnglishByKey] = useState<Record<string, EnglishItemState>>({});
 
-  // Every distinct masechet you have an active chevrusa/chabura on —
-  // grouped by masechet (not by group), since your real progress
-  // through a masechet is one fact even if two groups happen to share
-  // it. Only offered once logged in, since groups require an account.
-  // Named by who you're learning it with, so it reads like "Chevrusa
-  // with Dovid" rather than an anonymous masechet name.
-  const groupContexts: { masechetEn: string; label: string; pace: GroupPace }[] = [];
-  {
-    const byMasechet = new Map<string, { descriptor: string; pace: GroupPace }[]>();
-    for (const g of groups) {
-      let descriptor: string;
-      if (!g.isChabura) {
-        const partner = g.members.find((m) => m.userId !== session?.user.id);
-        const partnerName = partner ? (partner.firstName ?? partner.username ?? null) : null;
-        descriptor = partnerName ? `Chevrusa with ${partnerName}` : "Chevrusa";
-      } else {
-        descriptor = g.name?.trim() || (g.isClass ? "Class" : "Chabura");
-      }
-      byMasechet.set(g.masechetEn, [...(byMasechet.get(g.masechetEn) ?? []), { descriptor, pace: g.pace }]);
-    }
-    for (const [masechetEn, entries] of byMasechet) {
-      groupContexts.push({
-        masechetEn,
-        label:
-          entries.length > 1 ? `${masechetEn} (${entries.length} groups)` : `${entries[0].descriptor} — ${masechetEn}`,
-        pace: entries[0].pace,
-      });
-    }
-  }
+  // Only offered once logged in, since groups require an account.
+  const groupContexts = useGroupContexts();
+  const erevStretch = stretchFromErev(localDateStr());
 
   const [context, setContext] = useState<string>("self");
   const activeContext = context === "self" || groupContexts.some((g) => g.masechetEn === context) ? context : "self";
@@ -183,9 +134,9 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
     ? progress.todaysItems
     : groupFinished
       ? []
-      : buildMasechetRange(
+      : groupDayItems(
           activeContext,
-          { masechetEn: activeContext, ...progress.getMasechetPosition(activeContext) },
+          progress.getMasechetPosition(activeContext),
           groupPace,
           findPerakim(activeContext),
         );
@@ -382,6 +333,8 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
             <span className="limmud-streak__label">best {streak.longest}</span>
           </div>
         </div>
+
+        {erevStretch && <ChagPrintCard stretch={erevStretch} />}
 
         {(groupContexts.length > 0 || isSelf) && !finished && (
           <>

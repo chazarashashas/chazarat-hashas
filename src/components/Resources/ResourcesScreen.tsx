@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { PrintNotesView } from "../PrintNotes/PrintNotesView";
 import { NavIcon } from "../Icon/NavIcon";
+import { ChagPrintCard } from "../ChagPrint/ChagPrintCard";
+import { nextStretch } from "../../utils/chagCalendar";
+import { localDateStr } from "../../utils/localDate";
 import "./ResourcesScreen.css";
 
 interface Resource {
@@ -37,6 +40,9 @@ interface ResourcesScreenProps {
 
 export function ResourcesScreen({ onOpenGuide }: ResourcesScreenProps) {
   const [printOpen, setPrintOpen] = useState(false);
+  // Mishnayot for the next Shabbat or yom tov, any day of the week — Home
+  // and Daily Limmud only offer it on erev itself.
+  const upcoming = nextStretch(localDateStr());
 
   return (
     <div className="stage">
@@ -44,6 +50,8 @@ export function ResourcesScreen({ onOpenGuide }: ResourcesScreenProps) {
         <div className="screen-head">
           <h1 className="screen-head__title">Resources</h1>
         </div>
+
+        {upcoming && <ChagPrintCard stretch={upcoming} />}
 
         <div className="resources-list">
           {onOpenGuide && (

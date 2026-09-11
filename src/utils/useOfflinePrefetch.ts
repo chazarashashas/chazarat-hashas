@@ -1,33 +1,10 @@
 import { useEffect } from "react";
-import { MISHNA_SEQUENCE, endOfPerekIndex, type SequenceItem } from "../data/mishnaSequence";
+import { MISHNA_SEQUENCE, type SequenceItem } from "../data/mishnaSequence";
+import { upcomingDayRanges } from "./dailyProjection";
 import { fetchMishna } from "./sefaria";
 import type { Pace } from "./useLearningProgress";
 
 const DAYS_AHEAD = 5;
-
-/** Simulates Daily Limmud's own day-advance logic (see
-    useLearningProgress's markTodayLearned) purely, without touching any
-    real state, to find which sequence indices the next few days will
-    cover — so they can be warmed into the offline cache ahead of time. */
-function upcomingDayRanges(position: number, pace: Pace, days: number): [number, number][] {
-  const ranges: [number, number][] = [];
-  let start = position;
-  for (let day = 0; day < days; day++) {
-    if (start >= MISHNA_SEQUENCE.length) break;
-    let end = start;
-    if (pace.unit === "mishnayot") {
-      end = Math.min(start + pace.amount - 1, MISHNA_SEQUENCE.length - 1);
-    } else {
-      for (let i = 0; i < pace.amount; i++) {
-        end = endOfPerekIndex(end);
-        if (i < pace.amount - 1 && end + 1 < MISHNA_SEQUENCE.length) end += 1;
-      }
-    }
-    ranges.push([start, end]);
-    start = end + 1;
-  }
-  return ranges;
-}
 
 /** Warms the offline cache (via the service worker's runtime-caching rule
     for the Sefaria API, see vite.config.ts) with the next few days' worth

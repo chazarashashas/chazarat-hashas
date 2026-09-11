@@ -44,14 +44,34 @@ textarea:focus-visible,
    screen is behind it never reach paper. Owning this here is what lets
    each printable view drop its own @media print block. */
 @media print {
+  /* The overlay is rendered inside its screen (.main__content > .stage >
+     .print-overlay), so hiding .main's other children hid the overlay
+     too and every print came out blank. Instead, drop everything that is
+     neither the overlay, inside it, nor on the path down to it. */
   .sidebar,
   .bottom-bar,
-  .main > :not(.print-overlay) {
+  .modal-scrim,
+  .no-print,
+  .main :not(.print-overlay, .print-overlay *, :has(.print-overlay)) {
     display: none !important;
+  }
+
+  /* .app and .main are one screen tall and scroll inside themselves —
+     on paper that clips the overlay to its first page. */
+  .app,
+  .main,
+  .main :has(.print-overlay),
+  .print-overlay {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: none !important;
+    background: none !important;
   }
 
   .print-overlay {
     position: static;
-    padding: 0;
   }
 }

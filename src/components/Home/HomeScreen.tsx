@@ -12,6 +12,9 @@ import { TodayLearningCard } from "../TodayLearning/TodayLearningCard";
 import { ReceivedNudges } from "../GroupCard/ReceivedNudges";
 import { NudgeStrip } from "../NudgeStrip/NudgeStrip";
 import { GuidePopup } from "../Guide/GuidePopup";
+import { ChagPrintCard } from "../ChagPrint/ChagPrintCard";
+import { stretchFromErev } from "../../utils/chagCalendar";
+import { localDateStr } from "../../utils/localDate";
 import "./HomeScreen.css";
 
 interface Feature {
@@ -145,6 +148,8 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
   const showGuideTeaser = useGuideTeaserVisible();
   const [showGuidePopup, setShowGuidePopup] = useState(false);
   const progress = useLearningProgress();
+  // Erev Shabbat or erev yom tov: the day to print what comes due.
+  const erevStretch = stretchFromErev(localDateStr());
   const { perekNotes } = usePerekNotes();
   const { isLoggedIn, session } = useAuth();
   const { groups } = useChevrusa();
@@ -232,6 +237,8 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
           onGoToLimmud={() => onNavigate("limmud")}
           onOpenGuide={() => setShowGuidePopup(true)}
         />
+
+        {erevStretch && <ChagPrintCard stretch={erevStretch} />}
 
         <ReceivedNudges />
 

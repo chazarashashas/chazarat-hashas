@@ -2,6 +2,39 @@
 
 One entry per PR, newest first.
 
+## Print before Shabbat and yom tov
+
+- **A Jewish calendar.** `@hebcal/core` tells the app whether a date is yom
+  tov or Shabbat, which chag it is, and what the day is called. Yom tov is
+  read on the diaspora calendar, so a second day is always offered. A day
+  that is yom tov only outside Israel is titled "Yom Tov Sheni / Isru Chag".
+  The app never asks where you live.
+- **The print card.** It shows on Home and Daily Limmud on erev Shabbat and
+  erev yom tov, and on Resources for the next one, any day of the week.
+  - Each day is named for what it is ("My Mishnayot for the first day of
+    Rosh Hashana") and says exactly what it holds, for example "Berachot
+    4:5 · 4:6" or "Shabbat perek 2 · 7 mishnayot".
+  - Yom tov and Shabbat days are ticked by default; erev is not.
+  - Layout: "A page each" or "All on one". Also a perek notes toggle, and
+    your chevrusa or chabura as an optional add-on. What prints is always
+    your own Daily Limmud.
+  - The button gives the real sheet count.
+- **The printed page.**
+  - Header: the mark, the chag's greeting with nikud, apple and honey for
+    Rosh Hashana or candles for Shabbat, then the day's title and date.
+  - Body: Hebrew at 16px on a 2.15 line height.
+  - A mishnah never splits across pages. A day that runs long continues
+    on a sheet headed only with its title and "page 2 of 3".
+  - The page heading follows your pace: one heading per mishnah, or one
+    per perek if you learn a perek a day. Nothing on the page asks to be
+    written on.
+- **One "what comes next".** Daily Limmud, the offline prefetch and the
+  print job now share one projection (`dailyProjection.ts`), so they
+  cannot disagree.
+- **Fixed: printing came out blank.** The print rule hid the part of the
+  page the print view sits in, so the Guide and Mishna Notes printed empty
+  pages.
+
 ## A link for every page
 
 - Every page now has its own link, like /shasdash:

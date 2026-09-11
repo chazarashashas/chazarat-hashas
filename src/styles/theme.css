@@ -118,6 +118,8 @@
   --dash-stage: #0d1526;
   --dash-field: #131d33;
   --fs-dash-score: 44px;
+  /* The chag greeting on a printed mishnayot page (CHAG-BRIEF.md). */
+  --fs-chag-greeting: 26px;
 
   /* Two stage widths, no per-screen exceptions. */
   --stage-width: 520px;

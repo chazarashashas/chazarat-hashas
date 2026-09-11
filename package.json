@@ -20,6 +20,7 @@
     "@capacitor/keyboard": "^8.0.5",
     "@capacitor/splash-screen": "^8.0.2",
     "@capacitor/status-bar": "^8.0.3",
+    "@hebcal/core": "^6.9.2",
     "@sentry/react": "^10.74.0",
     "@supabase/supabase-js": "^2.115.0",
     "react": "^19.2.8",
