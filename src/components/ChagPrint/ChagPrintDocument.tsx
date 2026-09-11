@@ -2,7 +2,7 @@ import { Fragment, useLayoutEffect, useRef, useState, type ReactNode } from "rea
 import { BrandMark } from "../BrandMark";
 import { getPerekName } from "../../data/perekInfo";
 import { greetingFor, longDayLabel, shortDayLabel, type ChagId } from "../../utils/chagCalendar";
-import { textKey, type PrintDay } from "./chagPrintModel";
+import { perekGroups, textKey, type PrintDay } from "./chagPrintModel";
 import { ChagMotif } from "./ChagMotif";
 
 export type PrintLayout = "each" | "one";
@@ -59,6 +59,7 @@ function buildUnits(days: PrintDay[], layout: PrintLayout, texts: Record<string,
       if (track.items.length === 0) return;
       if (track.label) lead.push(<p key={`t${ti}`} className="chag-page__track">{track.label}</p>);
       let lastPerek = "";
+      const groupOf = new Map(perekGroups(track.items).map((g) => [`${g.masechetEn}.${g.perek}`, g]));
       track.items.forEach((m, i) => {
         const perekKey = `${m.masechetEn}.${m.perek}`;
         const newPerek = perekKey !== lastPerek;
@@ -68,10 +69,14 @@ function buildUnits(days: PrintDay[], layout: PrintLayout, texts: Record<string,
         lead = [];
         if (track.perekUnit && newPerek) {
           const name = getPerekName(m.masechetEn, m.perek);
+          const g = groupOf.get(perekKey)!;
+          // A perek only part-learned this day says which part.
+          const range = g.full ? "" : g.first === g.last ? ` · mishnah ${g.first}` : ` · mishnayot ${g.first}–${g.last}`;
           pieces.push(
             <div key="ph" className="chag-page__perek">
               <span className="chag-page__perek-title">
                 {m.masechetEn} perek {m.perek}
+                {range}
               </span>
               {name && (
                 <span className="chag-page__perek-name" lang="he" dir="rtl">

@@ -57,7 +57,15 @@ export function ChagPrintCard({ stretch }: { stretch: ChagStretch }) {
       totalPerakim: PERAKIM_BY_MASECHET.get(g.masechetEn) ?? 1,
     }));
 
-  const days = buildPrintDays({ stretch, today, position: progress.position, pace: progress.pace, learnedToday, groups });
+  const days = buildPrintDays({
+    stretch,
+    today,
+    position: progress.position,
+    pace: progress.pace,
+    learnedToday,
+    groups,
+    firstRange: progress.finishedShas ? null : [progress.rangeStart, progress.rangeEnd],
+  });
   const chosen = days.filter((d) => selected.has(d.date));
   const needed = Array.from(new Set(chosen.flatMap((d) => d.tracks.flatMap((t) => t.items.map(textKey)))));
   const missing = needed.filter((k) => !(k in texts) && !failed.has(k));

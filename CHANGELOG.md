@@ -2,6 +2,22 @@
 
 One entry per PR, newest first.
 
+## Chag print: a partial perek says which part
+
+- At a perek a day, starting part-way through a perek printed the rest of
+  it under the heading "Berachot perek 1", as if it were the whole perek.
+  It now reads "Berachot 1:2–1:5 · 4 mishnayot" on the card, and "Berachot
+  perek 1 · mishnayot 2–5" on the page. A whole perek is still "perek 2".
+- The first day now prints exactly the portion Daily Limmud shows,
+  including a queued catch-up, and each later day follows from it.
+- A 35-case audit checks every pace (1, 2, 5 or 10 mishnayot, 1 or 2
+  perakim) from several starting points. It confirms the first day matches
+  Daily Limmud and that nothing is skipped or repeated. It also covers:
+  - a masechet boundary
+  - a day already learned
+  - printing Shabbat from Resources midweek
+  - a queued catch-up
+
 ## Streaks hold over Shabbat and yom tov, and a welcome back after
 
 - **Shabbat and yom tov never break a streak.** Someone who keeps them
