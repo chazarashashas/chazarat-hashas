@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { SEDARIM } from "../../data/shas";
 import { getSederHue } from "../../utils/sederHue";
+import { shuffle } from "../../utils/shuffle";
 import { useGameStats } from "../../utils/useGameStats";
-import { GameHud } from "../GameHud/GameHud";
+import { useEscapeKey } from "../../utils/useEscapeKey";
+import { crossingMs, speedPips, easeToward, laneAt, lockBonus, MAX_DT_MS } from "./dashPhysics";
 import "./ShasDashScreen.css";
 
 interface FlatMasechet {
@@ -10,486 +12,534 @@ interface FlatMasechet {
   sederId: string;
 }
 
-function flatList(): FlatMasechet[] {
-  return SEDARIM.flatMap((s) => s.masechtot.map((m) => ({ name: m.en, sederId: s.id })));
-}
+const ALL_MASECHTOT: FlatMasechet[] = SEDARIM.flatMap((s) =>
+  s.masechtot.map((m) => ({ name: m.en, sederId: s.id })),
+);
+const TOTAL = ALL_MASECHTOT.length;
+const LANES = SEDARIM.length;
+const START_LANE = 2;
+const START_LIVES = 3;
 
-const ALL_MASECHTOT = flatList();
-
-function shuffle<T>(arr: T[]): T[] {
-  const a = arr.slice();
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-// Exponential ramp: starts slow, eases toward the floor without ever hitting
-// a hard cap early — a linear ramp stops feeling like it's still speeding up.
-const START_MS = 9000;
-const FLOOR_MS = 3400;
-const DECAY = 0.94;
-function durationFor(score: number): number {
-  return FLOOR_MS + (START_MS - FLOOR_MS) * Math.pow(DECAY, score);
-}
+// The gate column's width. The card stops with its leading edge on the
+// column's left edge, so the runway is whatever is left of the board.
+const GATE_W = 88;
+const RESOLVE_HOLD_MS = 380;
 
 type Phase = "ready" | "playing" | "ended";
+type Tone = "idle" | "good" | "bad";
+interface Message {
+  text: string;
+  tone: Tone;
+}
+const IDLE: Message = { text: "", tone: "idle" };
 
-function DestinationIcon() {
+/* Every glyph is drawn: text characters like ♥ render differently on
+   Samsung's font stack than on desktop Chrome. */
+
+function Heart({ full }: { full: boolean }) {
   return (
-    <svg viewBox="0 0 40 40" width="26" height="26" aria-hidden="true">
-      <path d="M6 17 Q20 3 34 17" fill="none" stroke="var(--gold)" strokeWidth="4" strokeLinecap="round" />
-      <rect x="7" y="16" width="5" height="20" rx="1" fill="var(--gold)" />
-      <rect x="28" y="16" width="5" height="20" rx="1" fill="var(--gold)" />
-      <rect x="16" y="25" width="8" height="11" fill="var(--paper)" />
+    <svg
+      viewBox="0 0 24 24"
+      width="20"
+      height="20"
+      aria-hidden="true"
+      className={"dash-heart" + (full ? " dash-heart--full" : "")}
+    >
+      <path d="M12 20.5s-7.8-4.7-7.8-10.4A4.4 4.4 0 0 1 12 7.4a4.4 4.4 0 0 1 7.8 2.7c0 5.7-7.8 10.4-7.8 10.4z" />
     </svg>
   );
 }
 
+function Icon({ d }: { d: string }) {
+  return (
+    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" className="dash-icon">
+      <path d={d} />
+    </svg>
+  );
+}
+
+const ICON = {
+  up: "M6 15l6-6 6 6",
+  down: "M6 9l6 6 6-6",
+  lock: "M5 12.5l4.5 4.5L19 7.5",
+  pause: "M9 6v12M15 6v12",
+  play: "M8 5.5v13l10.5-6.5z",
+  restart: "M4.5 12a7.5 7.5 0 1 0 2.2-5.3M4.5 4.5v3.9h3.9",
+};
+
+/** Makes the Android back gesture (and Escape) pause a running game, the
+    same way it closes a modal — and only while running, so a paused game's
+    back gesture still leaves the screen. */
+function PauseOnBack({ onBack }: { onBack: () => void }) {
+  useEscapeKey(onBack);
+  return null;
+}
+
 export function ShasDashScreen() {
-  const { recordDashScore } = useGameStats();
+  const { stats, recordDashScore } = useGameStats();
   const [phase, setPhase] = useState<Phase>("ready");
   const [score, setScore] = useState(0);
-  const [lives, setLives] = useState(3);
+  const [lives, setLives] = useState(START_LIVES);
   const [combo, setCombo] = useState(0);
-  const [bestScore, setBestScore] = useState(0);
   const [card, setCard] = useState<FlatMasechet | null>(null);
-  const [lane, setLane] = useState(2);
-  const [msg, setMsg] = useState("Steer with ↑ / ↓ to line it up with the right seder.");
-  const [flash, setFlash] = useState<{ laneIndex: number; correct: boolean } | null>(null);
-  const [cardAnimClass, setCardAnimClass] = useState<string | null>(null);
-  const [shaking, setShaking] = useState(false);
+  const [cardAnim, setCardAnim] = useState<"catch" | "miss" | null>(null);
+  const [lane, setLane] = useState(START_LANE);
+  const [crossing, setCrossing] = useState(crossingMs(0));
   const [paused, setPaused] = useState(false);
   const [caught, setCaught] = useState<Set<string>>(new Set());
   const [won, setWon] = useState(false);
+  const [msg, setMsg] = useState<Message>(IDLE);
+  const [wobble, setWobble] = useState(false);
 
-  // Refs mirror the latest values for use inside the rAF loop and keydown
-  // handler, where React state closures would otherwise go stale.
-  const laneRef = useRef(2);
-  const cardRef = useRef<FlatMasechet | null>(null);
-  const scoreRef = useRef(0);
-  const livesRef = useRef(3);
-  const comboRef = useRef(0);
-  const bestScoreRef = useRef(0);
+  // The frame loop and key handler read these rather than state, which would
+  // be a stale closure by the time the next frame runs.
   const runningRef = useRef(false);
-  const shuffleBagRef = useRef<FlatMasechet[]>([]);
-  const lastCardNameRef = useRef<string | null>(null);
-  const cardIdRef = useRef(0);
-  const rafRef = useRef<number | null>(null);
-  const lanesRef = useRef<HTMLDivElement>(null);
-  const runnerRef = useRef<HTMLSpanElement>(null);
-  const startTimeRef = useRef(0);
   const pausedRef = useRef(false);
-  const pauseBeganAtRef = useRef(0);
-  const forceResolveRef = useRef(false);
+  const pauseBeganRef = useRef(0);
+  const pausedTotalRef = useRef(0);
+  const cardRef = useRef<FlatMasechet | null>(null);
+  const cardIdRef = useRef(0);
+  const cardStartRef = useRef(0);
+  const crossingRef = useRef(crossingMs(0));
+  const laneRef = useRef(START_LANE);
+  const yRef = useRef<number | null>(null);
+  const lastFrameRef = useRef(0);
+  const lockRef = useRef(false);
+  const scoreRef = useRef(0);
+  const livesRef = useRef(START_LIVES);
+  const comboRef = useRef(0);
   const caughtRef = useRef<Set<string>>(new Set());
+  const bagRef = useRef<FlatMasechet[]>([]);
+  const lastNameRef = useRef<string | null>(null);
+  const rafRef = useRef<number | null>(null);
+  const holdTimerRef = useRef<number | null>(null);
+  const boardRef = useRef<HTMLDivElement>(null);
+  const runnerRef = useRef<HTMLDivElement>(null);
+  const roadRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const resolveRef = useRef<(id: number, centreY: number, laneH: number) => void>(() => {});
 
-  // Shuffle-bag draw, not independent Math.random() picks each time — that
-  // was letting the same masechet (Rosh Hashanah, repeatedly) come up far
-  // more than it should. A fresh bag excludes whatever's already been
-  // caught this run, so once you've been through everything once, the bag
-  // recycles down to just the ones you missed instead of re-showing ones
-  // you already have. We swap the top card if it would repeat the very
-  // last one drawn.
+  const best = Math.max(stats.dash.bestScore, score);
+
+  // Shuffle-bag draw. Each refill leaves out whatever is already caught, so
+  // once every masechet has come round the bag recycles down to the ones
+  // you missed — that is what "catch all 63" means. The top card is swapped
+  // if it would repeat the one just drawn.
   const nextCard = useCallback((): FlatMasechet => {
-    if (shuffleBagRef.current.length === 0) {
-      const remaining = ALL_MASECHTOT.filter((m) => !caughtRef.current.has(m.name));
-      shuffleBagRef.current = shuffle(remaining);
-      if (
-        lastCardNameRef.current &&
-        shuffleBagRef.current[0]?.name === lastCardNameRef.current &&
-        shuffleBagRef.current.length > 1
-      ) {
-        const tmp = shuffleBagRef.current[0];
-        shuffleBagRef.current[0] = shuffleBagRef.current[1];
-        shuffleBagRef.current[1] = tmp;
+    if (bagRef.current.length === 0) {
+      bagRef.current = shuffle(ALL_MASECHTOT.filter((m) => !caughtRef.current.has(m.name)));
+      if (bagRef.current.length > 1 && bagRef.current[0].name === lastNameRef.current) {
+        [bagRef.current[0], bagRef.current[1]] = [bagRef.current[1], bagRef.current[0]];
       }
     }
-    const picked = shuffleBagRef.current.shift()!;
-    lastCardNameRef.current = picked.name;
+    const picked = bagRef.current.shift()!;
+    lastNameRef.current = picked.name;
     return picked;
   }, []);
 
-  function moveLane(delta: number) {
-    if (!runningRef.current || !cardRef.current) return;
-    const next = Math.max(0, Math.min(5, laneRef.current + delta));
-    if (next === laneRef.current) return;
-    laneRef.current = next;
-    setLane(next);
-  }
-
-  /**
-   * Freezes (or resumes) the current card's slide in place — a thinking
-   * break. Works even in the brief gap between one card resolving and the
-   * next spawning, so a press there still "sticks" for the next card
-   * instead of being silently dropped.
-   */
-  function togglePause() {
+  const togglePause = useCallback(() => {
     if (!runningRef.current) return;
+    const now = performance.now();
     if (pausedRef.current) {
-      startTimeRef.current += performance.now() - pauseBeganAtRef.current;
+      pausedTotalRef.current += now - pauseBeganRef.current;
       pausedRef.current = false;
       setPaused(false);
     } else {
-      pauseBeganAtRef.current = performance.now();
+      pauseBeganRef.current = now;
       pausedRef.current = true;
       setPaused(true);
     }
+  }, []);
+
+  const pause = useCallback(() => {
+    if (runningRef.current && !pausedRef.current) togglePause();
+  }, [togglePause]);
+
+  const moveLane = useCallback((delta: number) => {
+    if (!runningRef.current || pausedRef.current || !cardRef.current || lockRef.current) return;
+    const next = Math.max(0, Math.min(LANES - 1, laneRef.current + delta));
+    if (next === laneRef.current) return;
+    laneRef.current = next;
+    setLane(next);
+  }, []);
+
+  /** Commits now instead of waiting for the crossing to finish. */
+  const lockIn = useCallback(() => {
+    if (!runningRef.current || !cardRef.current) return;
+    if (pausedRef.current) togglePause();
+    lockRef.current = true;
+  }, [togglePause]);
+
+  const spawnCard = useCallback(() => {
+    const picked = nextCard();
+    const ms = crossingMs(scoreRef.current);
+    const now = performance.now();
+    cardRef.current = picked;
+    cardIdRef.current += 1;
+    const id = cardIdRef.current;
+    laneRef.current = START_LANE;
+    yRef.current = null;
+    lockRef.current = false;
+    crossingRef.current = ms;
+    cardStartRef.current = now;
+    pausedTotalRef.current = 0;
+    // A pause pressed in the gap between cards carries over to this one,
+    // and only this card's share of it counts against this card's clock.
+    if (pausedRef.current) pauseBeganRef.current = now;
+    lastFrameRef.current = now;
+    setCard(picked);
+    setCardAnim(null);
+    setLane(START_LANE);
+    setCrossing(ms);
+    setMsg(IDLE);
+
+    const step = (frameNow: number) => {
+      if (cardIdRef.current !== id) return;
+      const dt = Math.min(Math.max(frameNow - lastFrameRef.current, 0), MAX_DT_MS);
+      lastFrameRef.current = frameNow;
+      const board = boardRef.current;
+      const runner = runnerRef.current;
+      // Hold until React has committed this card, so its width is real.
+      if (pausedRef.current || !board || !runner || runner.dataset.card !== picked.name) {
+        rafRef.current = requestAnimationFrame(step);
+        return;
+      }
+      const laneH = board.clientHeight / LANES;
+      const cardH = runner.offsetHeight;
+      const runway = Math.max(0, board.clientWidth - GATE_W - runner.offsetWidth);
+      // Progress is wall clock minus time paused, never the sum of clamped
+      // frame deltas — those drift from real time whenever frames drop.
+      const elapsed = frameNow - cardStartRef.current - pausedTotalRef.current;
+      const t = lockRef.current ? 1 : Math.min(1, Math.max(0, elapsed / ms));
+      const x = t * runway;
+      const targetY = laneRef.current * laneH + (laneH - cardH) / 2;
+      if (yRef.current === null) yRef.current = targetY;
+      yRef.current = easeToward(yRef.current, targetY, dt);
+      runner.style.transform = `translate(${x}px, ${yRef.current}px)`;
+      // The live lane's dashes travel with the card, at its own pace.
+      const road = roadRefs.current[laneRef.current];
+      if (road) road.style.backgroundPositionX = `${x}px`;
+      if (t >= 1) {
+        resolveRef.current(id, yRef.current + cardH / 2, laneH);
+        return;
+      }
+      rafRef.current = requestAnimationFrame(step);
+    };
+    rafRef.current = requestAnimationFrame(step);
+  }, [nextCard]);
+
+  function endGame(didWin: boolean) {
+    runningRef.current = false;
+    pausedRef.current = false;
+    setPaused(false);
+    setWon(didWin);
+    setPhase("ended");
+    setCard(null);
+    recordDashScore(scoreRef.current);
   }
 
-  /** Commits to the current lane right away instead of waiting for the slide to finish. */
-  function resolveNow() {
-    if (!runningRef.current || !cardRef.current) return;
-    if (pausedRef.current) {
-      pausedRef.current = false;
-      setPaused(false);
+  // The catch is the gate box: whichever box the card's centre is inside
+  // when it arrives is the answer — so a card still easing between lanes
+  // lands wherever it actually is, not where it was heading.
+  function resolveArrival(id: number, centreY: number, laneH: number) {
+    const thisCard = cardRef.current;
+    if (cardIdRef.current !== id || !thisCard) return;
+    cardRef.current = null;
+    cardIdRef.current += 1;
+
+    const landed = SEDARIM[laneAt(centreY, laneH, LANES)];
+    const answer = SEDARIM.find((s) => s.id === thisCard.sederId)!;
+    const correct = landed.id === answer.id;
+
+    if (correct) {
+      let bonus = 0;
+      if (lockRef.current) {
+        const elapsed = performance.now() - cardStartRef.current - pausedTotalRef.current;
+        bonus = lockBonus(crossingRef.current, elapsed);
+      }
+      comboRef.current += 1;
+      scoreRef.current += Math.max(1, comboRef.current) + bonus;
+      caughtRef.current.add(thisCard.name);
+      setCaught(new Set(caughtRef.current));
+      setCardAnim("catch");
+      setMsg({ text: `${thisCard.name} is ${answer.en}${bonus > 0 ? ` · +${bonus}` : ""}`, tone: "good" });
+    } else {
+      comboRef.current = 0;
+      livesRef.current -= 1;
+      setCardAnim("miss");
+      setMsg({ text: `Landed in ${landed.en} — ${thisCard.name} is ${answer.en}`, tone: "bad" });
+      setWobble(true);
+      window.setTimeout(() => setWobble(false), 350);
     }
-    forceResolveRef.current = true;
+    lockRef.current = false;
+    setScore(scoreRef.current);
+    setLives(livesRef.current);
+    setCombo(comboRef.current);
+
+    const outOfLives = livesRef.current <= 0;
+    const allCaught = caughtRef.current.size === TOTAL;
+    holdTimerRef.current = window.setTimeout(() => {
+      holdTimerRef.current = null;
+      if (!runningRef.current) return;
+      if (allCaught) endGame(true);
+      else if (outOfLives) endGame(false);
+      else spawnCard();
+    }, RESOLVE_HOLD_MS);
+  }
+
+  useEffect(() => {
+    resolveRef.current = resolveArrival;
+  });
+
+  function stopLoop() {
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    if (holdTimerRef.current) window.clearTimeout(holdTimerRef.current);
+    holdTimerRef.current = null;
+    cardIdRef.current += 1;
+  }
+
+  function resetRun() {
+    scoreRef.current = 0;
+    livesRef.current = START_LIVES;
+    comboRef.current = 0;
+    pausedRef.current = false;
+    lockRef.current = false;
+    cardRef.current = null;
+    laneRef.current = START_LANE;
+    bagRef.current = [];
+    lastNameRef.current = null;
+    caughtRef.current = new Set();
+    setScore(0);
+    setLives(START_LIVES);
+    setCombo(0);
+    setPaused(false);
+    setCaught(new Set());
+    setWon(false);
+    setCard(null);
+    setCardAnim(null);
+    setLane(START_LANE);
+    setCrossing(crossingMs(0));
+    setMsg(IDLE);
+  }
+
+  function handleStart() {
+    stopLoop();
+    resetRun();
+    runningRef.current = true;
+    setPhase("playing");
+    spawnCard();
+  }
+
+  function handleRestart() {
+    stopLoop();
+    runningRef.current = false;
+    resetRun();
+    setPhase("ready");
   }
 
   useEffect(() => {
     function onKeydown(e: KeyboardEvent) {
       if (!runningRef.current) return;
-      if (e.key === "ArrowUp") {
+      // Tapping only: a held key must not become held steering.
+      if (e.key === "ArrowUp" || e.key === "ArrowDown") {
         e.preventDefault();
-        moveLane(-1);
-      } else if (e.key === "ArrowDown") {
-        e.preventDefault();
-        moveLane(1);
-      } else if (e.key === "ArrowLeft" || e.key === " " || e.key === "Spacebar") {
-        e.preventDefault();
-        if (e.repeat) return;
-        togglePause();
+        if (!e.repeat) moveLane(e.key === "ArrowUp" ? -1 : 1);
       } else if (e.key === "ArrowRight") {
         e.preventDefault();
-        if (e.repeat) return;
-        resolveNow();
+        if (!e.repeat) lockIn();
+      } else if (e.key === " " || e.key === "Spacebar") {
+        e.preventDefault();
+        if (!e.repeat) togglePause();
       }
     }
     window.addEventListener("keydown", onKeydown);
     return () => window.removeEventListener("keydown", onKeydown);
-  }, []);
+  }, [moveLane, lockIn, togglePause]);
+
+  // A phone game that keeps running through a phone call costs a life.
+  useEffect(() => {
+    function onVisibility() {
+      if (document.visibilityState === "hidden") pause();
+    }
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => document.removeEventListener("visibilitychange", onVisibility);
+  }, [pause]);
 
   useEffect(() => {
     return () => {
+      runningRef.current = false;
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      if (holdTimerRef.current) window.clearTimeout(holdTimerRef.current);
       cardIdRef.current += 1;
     };
   }, []);
 
-  // resolveArrival and spawnCard call each other (spawnCard's animation ends
-  // by calling resolveArrival; resolveArrival schedules the next spawnCard).
-  // spawnCard is a useCallback so the animation-start timestamp read is
-  // clearly an event-driven side effect, not part of render — it reaches
-  // resolveArrival through a ref to avoid a circular closure dependency.
-  const resolveArrivalRef = useRef<(thisId: number) => void>(() => {});
-
-  const spawnCard = useCallback(() => {
-    const picked = nextCard();
-    cardRef.current = picked;
-    laneRef.current = 2;
-    cardIdRef.current += 1;
-    const thisId = cardIdRef.current;
-    setCard(picked);
-    setLane(2);
-    setCardAnimClass(null);
-
-    const dur = durationFor(scoreRef.current);
-    startTimeRef.current = performance.now();
-    forceResolveRef.current = false;
-    function step(now: number) {
-      if (cardIdRef.current !== thisId) return;
-      if (pausedRef.current) {
-        rafRef.current = requestAnimationFrame(step);
-        return;
-      }
-      const lanesEl = lanesRef.current;
-      const textEl = runnerRef.current;
-      if (!lanesEl || !textEl) {
-        rafRef.current = requestAnimationFrame(step);
-        return;
-      }
-      const maxLeft = lanesEl.clientWidth - 68 - textEl.offsetWidth - 18;
-      const t = forceResolveRef.current ? 1 : Math.min(1, (now - startTimeRef.current) / dur);
-      textEl.style.left = 10 + t * maxLeft + "px";
-      if (t >= 1) {
-        forceResolveRef.current = false;
-        resolveArrivalRef.current(thisId);
-        return;
-      }
-      rafRef.current = requestAnimationFrame(step);
-    }
-    rafRef.current = requestAnimationFrame(step);
-  }, [nextCard]);
-
-  function resolveArrival(thisId: number) {
-    if (cardIdRef.current !== thisId) return;
-    const thisCard = cardRef.current;
-    if (!thisCard) return;
-    const landedSederId = SEDARIM[laneRef.current].id;
-    const correct = landedSederId === thisCard.sederId;
-
-    if (correct) {
-      comboRef.current += 1;
-      const gain = Math.max(1, comboRef.current);
-      scoreRef.current += gain;
-      if (scoreRef.current > bestScoreRef.current) bestScoreRef.current = scoreRef.current;
-      caughtRef.current.add(thisCard.name);
-      setCaught(new Set(caughtRef.current));
-      setMsg("On you go!");
-      setCardAnimClass("catch-pop");
-    } else {
-      comboRef.current = 0;
-      livesRef.current -= 1;
-      setMsg(`Wrong turn — ${thisCard.name} isn't in ${SEDARIM[laneRef.current].en}.`);
-      setCardAnimClass("miss-fade");
-      setShaking(true);
-      window.setTimeout(() => setShaking(false), 350);
-    }
-    setScore(scoreRef.current);
-    setLives(livesRef.current);
-    setCombo(comboRef.current);
-    setBestScore(bestScoreRef.current);
-    setFlash({ laneIndex: laneRef.current, correct });
-
-    const wasLastLife = livesRef.current <= 0;
-    const allCaught = caughtRef.current.size === ALL_MASECHTOT.length;
-    cardRef.current = null;
-    cardIdRef.current += 1;
-    setCard(null);
-
-    window.setTimeout(() => {
-      setFlash(null);
-      if (allCaught) {
-        endGame(true);
-        return;
-      }
-      if (wasLastLife && !correct) {
-        endGame(false);
-        return;
-      }
-      if (runningRef.current) spawnCard();
-    }, 380);
-  }
-
-  function endGame(didWin: boolean) {
-    runningRef.current = false;
-    setWon(didWin);
-    setPhase("ended");
-    recordDashScore(scoreRef.current);
-  }
-
-  function handleStart() {
-    scoreRef.current = 0;
-    livesRef.current = 3;
-    comboRef.current = 0;
-    runningRef.current = true;
-    pausedRef.current = false;
-    shuffleBagRef.current = [];
-    lastCardNameRef.current = null;
-    caughtRef.current = new Set();
-    setScore(0);
-    setLives(3);
-    setCombo(0);
-    setPaused(false);
-    setCaught(new Set());
-    setWon(false);
-    setPhase("playing");
-    setMsg("On the road!");
-    spawnCard();
-  }
-
-  function handleRestartIcon() {
-    if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    cardIdRef.current += 1;
-    runningRef.current = false;
-    pausedRef.current = false;
-    forceResolveRef.current = false;
-    cardRef.current = null;
-    scoreRef.current = 0;
-    livesRef.current = 3;
-    comboRef.current = 0;
-    laneRef.current = 2;
-    caughtRef.current = new Set();
-    setPhase("ready");
-    setScore(0);
-    setLives(3);
-    setCombo(0);
-    setPaused(false);
-    setCaught(new Set());
-    setWon(false);
-    setCard(null);
-    setLane(2);
-    setFlash(null);
-    setCardAnimClass(null);
-    setMsg("Steer with ↑ / ↓ to line it up with the right seder.");
-  }
-
-  useEffect(() => {
-    resolveArrivalRef.current = resolveArrival;
-  });
+  const shown: Message = paused ? { text: "Paused", tone: "idle" } : msg;
+  const pips = speedPips(crossing);
+  const playing = phase === "playing";
 
   return (
     <div className="stage dash-stage">
-      <div className={"panel dash-panel" + (shaking ? " dash-panel--shake" : "")}>
-        <div className="dash-panel-icons">
-          {phase === "playing" && (
-            <button
-              className="icon-btn"
-              title={paused ? "Resume" : "Pause"}
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={togglePause}
-            >
-              {paused ? "▶" : "⏸"}
-            </button>
-          )}
-          <button
-            className="icon-btn"
-            title="Restart"
-            onMouseDown={(e) => e.preventDefault()}
-            onClick={handleRestartIcon}
-          >
-            ↺
-          </button>
-        </div>
-        <h1 className="panel__title">Shas Dash</h1>
-        <p className="dash-story">The road to the Beit Hamikdash — steer each masechet into its seder</p>
-
-        {phase === "ended" && (
-          <div className="dash-center">
-            <div className="dash-center__big">{won ? "All of Shas!" : "Trip cut short"}</div>
-            <div className="dash-center__sub">
-              {won
-                ? `You caught every masechet in Shas — final score ${score}.`
-                : `You made it ${score} stops toward the Beit Hamikdash. Best this session: ${bestScore}.`}
-            </div>
-            <button className="restart" onClick={handleStart}>
-              {won ? "Play again" : "Try again"}
+      {playing && !paused && <PauseOnBack onBack={pause} />}
+      <div className="panel dash-panel">
+        <div className="dash-game">
+          <div className="dash-head">
+            <h1 className="dash-title">Shas Dash</h1>
+            <button className="icon-btn dash-restart" title="Restart" aria-label="Restart" onClick={handleRestart}>
+              <Icon d={ICON.restart} />
             </button>
           </div>
-        )}
 
-        {phase !== "ended" && (
-          <>
-            <div className="dash-instructions">
-              ↑ / ↓ to steer · → to lock in now · space / ← to pause
+          <div className="dash-hud">
+            <div className="dash-score">
+              <span className="dash-score__num">{score}</span>
+              <span className="dash-score__best">BEST {best}</span>
             </div>
+            <div className="dash-speed" aria-label={`${(crossing / 1000).toFixed(1)} second crossing`}>
+              <span className="dash-speed__secs">{(crossing / 1000).toFixed(1)}s</span>
+              <span className="dash-pips" aria-hidden="true">
+                {[0, 1, 2, 3, 4].map((i) => (
+                  <span key={i} className={"dash-pip" + (i < pips ? " dash-pip--on" : "")} />
+                ))}
+              </span>
+            </div>
+            <span className={"dash-combo" + (combo >= 2 ? "" : " dash-combo--hidden")}>×{combo}</span>
+            <div className="dash-lives" aria-label={`${lives} of ${START_LIVES} lives left`}>
+              {Array.from({ length: START_LIVES }, (_, i) => (
+                <Heart key={i} full={i < lives} />
+              ))}
+            </div>
+          </div>
 
-            <div className="dash-board-wrap">
-              <div className={"dash-board" + (phase !== "playing" ? " dash-board--blurred" : "")}>
-                <GameHud
-                  doing={[0, 1, 2].map((i) => (i < lives ? "♥" : "♡")).join(" ")}
-                  progress={caught.size / ALL_MASECHTOT.length}
-                  worth={String(score)}
-                />
+          <div className="dash-ledger" aria-label={`${caught.size} of ${TOTAL} masechtot caught`}>
+            {ALL_MASECHTOT.map((m) => (
+              <span
+                key={m.name}
+                className={"dash-ledger__cell" + (caught.has(m.name) ? " dash-ledger__cell--caught" : "")}
+                style={{ ["--hue" as string]: getSederHue(m.sederId) }}
+              />
+            ))}
+          </div>
 
-                <div className="dash-combo-row">
-                  <span className={"dash-combo" + (combo >= 2 ? " dash-combo--show" : "")}>
-                    Combo ×{Math.max(1, combo)}
+          <div className="dash-tallies">
+            {SEDARIM.map((s) => {
+              const done = s.masechtot.filter((m) => caught.has(m.en)).length;
+              const total = s.masechtot.length;
+              return (
+                <span
+                  key={s.id}
+                  className={"dash-tally" + (done === total ? " dash-tally--complete" : "")}
+                  style={{ ["--hue" as string]: getSederHue(s.id) }}
+                  aria-label={`${s.en} ${done} of ${total}`}
+                >
+                  <span className="dash-tally__name">{s.en}</span>
+                  <span className="dash-tally__count">
+                    {done}/{total}
                   </span>
-                </div>
+                </span>
+              );
+            })}
+          </div>
 
-                <div className="dash-destination">
-                  <DestinationIcon />
-                </div>
-
-                <div className="dash-play-row">
-                  <div className="dash-lanes-wrap">
-                    <div className="dash-lanes" ref={lanesRef}>
-                      {SEDARIM.map((seder, i) => {
-                        const done = seder.masechtot.filter((m) => caught.has(m.en)).length;
-                        const total = seder.masechtot.length;
-                        const complete = done === total;
-                        return (
-                          <div
-                            key={seder.id}
-                            className={"dash-lane" + (lane === i ? " dash-lane--current" : "")}
-                            style={{ ["--lane-hue" as string]: getSederHue(seder.id) }}
-                          >
-                            {card && lane === i && (
-                              <span
-                                ref={runnerRef}
-                                className={
-                                  "dash-runner" + (cardAnimClass ? " dash-runner--" + cardAnimClass : "")
-                                }
-                              >
-                                {card.name}
-                              </span>
-                            )}
-                            <div
-                              className={
-                                "dash-bucket" +
-                                (flash?.laneIndex === i
-                                  ? flash.correct
-                                    ? " dash-bucket--correct"
-                                    : " dash-bucket--wrong"
-                                  : "") +
-                                (complete ? " dash-bucket--complete" : "")
-                              }
-                            >
-                              <span className="dash-bucket__name">{seder.en}</span>
-                              <span className="dash-bucket__count">
-                                {done}/{total}
-                              </span>
-                            </div>
-                          </div>
-                        );
-                      })}
+          {phase === "ended" ? (
+            <div className="game__end dash-end">
+              <p className="game__end-big">{won ? "All of Shas" : "Out of lives"}</p>
+              <p className="game__end-sub">
+                {won ? `All ${TOTAL} masechtot · Score ${score}` : `Score ${score} · Best ${best}`}
+              </p>
+              <button className="btn btn--accent" onClick={handleStart}>
+                {won ? "Play again" : "Try again"}
+              </button>
+            </div>
+          ) : (
+            <>
+              <div className="dash-board-wrap">
+                <div
+                  ref={boardRef}
+                  className={
+                    "dash-board" + (wobble ? " dash-board--wobble" : "") + (playing ? "" : " dash-board--idle")
+                  }
+                >
+                  {SEDARIM.map((s, i) => {
+                    const complete = s.masechtot.every((m) => caught.has(m.en));
+                    return (
+                      <div key={s.id} className="dash-lane" style={{ ["--hue" as string]: getSederHue(s.id) }}>
+                        <div
+                          ref={(el) => {
+                            roadRefs.current[i] = el;
+                          }}
+                          className={"dash-road" + (playing && lane === i ? " dash-road--live" : "")}
+                          aria-hidden="true"
+                        />
+                        <div className={"dash-gate" + (complete ? " dash-gate--complete" : "")}>{s.en}</div>
+                      </div>
+                    );
+                  })}
+                  {card && (
+                    <div ref={runnerRef} className="dash-runner" data-card={card.name}>
+                      <span className={"dash-runner__card" + (cardAnim ? ` dash-runner__card--${cardAnim}` : "")}>
+                        {card.name}
+                      </span>
                     </div>
-                    {paused && phase === "playing" && (
-                      <button
-                        className="dash-paused-overlay"
-                        onMouseDown={(e) => e.preventDefault()}
-                        onClick={togglePause}
-                      >
-                        Paused — tap to resume
-                      </button>
-                    )}
-                  </div>
-
-                  <div className="dash-steer">
-                    <button
-                      className="dash-steer__btn"
-                      disabled={phase !== "playing"}
-                      onMouseDown={(e) => e.preventDefault()}
-                      onClick={() => moveLane(-1)}
-                    >
-                      ▲
-                    </button>
-                    <button
-                      className="dash-steer__btn"
-                      disabled={phase !== "playing"}
-                      onMouseDown={(e) => e.preventDefault()}
-                      onClick={() => moveLane(1)}
-                    >
-                      ▼
-                    </button>
-                    <button
-                      className="dash-steer__btn dash-steer__btn--lock"
-                      disabled={phase !== "playing"}
-                      title="Lock in this lane now"
-                      onMouseDown={(e) => e.preventDefault()}
-                      onClick={resolveNow}
-                    >
-                      ✓
-                    </button>
-                  </div>
+                  )}
                 </div>
-
-                <div className="dash-msg">{msg}</div>
+                {phase === "ready" && (
+                  <div className="game__start">
+                    <button className="btn btn--accent" onClick={handleStart}>
+                      Start
+                    </button>
+                  </div>
+                )}
               </div>
 
-              {phase === "ready" && (
-                <div className="dash-board-overlay">
-                  <button className="restart" onMouseDown={(e) => e.preventDefault()} onClick={handleStart}>
-                    Start
-                  </button>
-                </div>
-              )}
-            </div>
-          </>
-        )}
+              <div className={`dash-msg dash-msg--${shown.tone}`} role="status">
+                {shown.text}
+              </div>
+
+              <div className="dash-controls">
+                <button
+                  className="dash-ctl"
+                  disabled={!playing}
+                  title={paused ? "Resume (Space)" : "Pause (Space)"}
+                  aria-label={paused ? "Resume" : "Pause"}
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={togglePause}
+                >
+                  <Icon d={paused ? ICON.play : ICON.pause} />
+                </button>
+                <button
+                  className="dash-ctl"
+                  disabled={!playing}
+                  title="Up (↑)"
+                  aria-label="Move up"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => moveLane(-1)}
+                >
+                  <Icon d={ICON.up} />
+                </button>
+                <button
+                  className="dash-ctl"
+                  disabled={!playing}
+                  title="Down (↓)"
+                  aria-label="Move down"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => moveLane(1)}
+                >
+                  <Icon d={ICON.down} />
+                </button>
+                <button
+                  className="dash-ctl dash-ctl--lock"
+                  disabled={!playing}
+                  title="Lock in (→)"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={lockIn}
+                >
+                  <Icon d={ICON.lock} />
+                  Lock in
+                </button>
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -1,426 +1,487 @@
+/* Shas Dash is the one screen in the app allowed its own temperature: a
+   near-black stage, a slightly lifted field, square corners
+   (SHAS-DASH-BRIEF2.md). Everything is still a token — the two stage
+   colours and the 44px score live in theme.css with the rest. */
+
 .dash-stage {
   width: 100%;
 }
 
 .dash-panel {
-  width: 100%;
-}
-
-/* Shas Dash lives on navy (HANDOFF §9) — everything below this point
-   overrides the shared cream-panel look scoped to .dash-panel only, so
-   no other screen is affected. */
-.dash-panel {
-  background: var(--ink);
-}
-
-.dash-panel .panel__title,
-.dash-panel .dash-story,
-.dash-panel .dash-msg {
+  --hue-light: color-mix(in srgb, var(--hue, var(--gold)) 55%, var(--on-navy));
+  padding: 20px;
+  border: none;
+  border-radius: 2px;
+  background: var(--dash-stage);
   color: var(--on-navy);
 }
 
-.dash-panel .dash-story {
-  color: var(--on-navy-muted);
+/* The reference board is 540px wide; the stage around it can be wider. */
+.dash-game {
+  max-width: 540px;
+  margin: 0 auto;
 }
 
-.dash-panel .dash-msg {
-  color: var(--on-navy-muted);
+/* A seder hue reads on navy only once it is lifted toward cream. */
+.dash-lane,
+.dash-tally,
+.dash-ledger__cell {
+  --hue-light: color-mix(in srgb, var(--hue) 55%, var(--on-navy));
+}
+
+/* ---------- Head ---------- */
+
+.dash-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.dash-title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: var(--fs-20);
+  font-weight: 700;
+  color: var(--on-navy);
 }
 
 .dash-panel .icon-btn {
-  border-color: var(--on-navy-fill);
-  background: var(--on-navy-fill);
+  width: 36px;
+  height: 36px;
+  border-color: var(--on-navy-rule);
+  background: var(--dash-field);
   color: var(--on-navy-muted);
 }
 
 .dash-panel .icon-btn:hover {
-  color: var(--on-navy);
-  border-color: var(--on-navy);
-}
-
-.dash-panel .dash-instructions {
-  background: var(--on-navy-fill);
-  border-color: var(--on-navy-rule);
-  color: var(--on-navy-muted);
-}
-
-.dash-panel .dash-combo {
-  background: color-mix(in srgb, var(--gold) 25%, transparent);
-  color: var(--gold);
-}
-
-.dash-panel .dash-lanes {
-  background: var(--on-navy-fill);
-  border-color: var(--on-navy-rule);
-}
-
-.dash-panel .dash-lane {
-  border-bottom-color: var(--on-navy-fill);
-}
-
-.dash-panel .dash-paused-overlay {
-  background: var(--ink);
-  border-color: var(--on-navy-rule);
+  border-color: var(--on-navy-muted);
   color: var(--on-navy);
 }
 
-.dash-panel .dash-bucket {
-  background: var(--on-navy-fill);
-  border-color: var(--on-navy-rule);
+.dash-icon {
+  display: block;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
-.dash-panel .dash-bucket--complete {
-  border-color: var(--good);
+.dash-restart .dash-icon {
+  width: 18px;
+  height: 18px;
 }
 
-.dash-panel .dash-steer__btn {
-  border-color: var(--on-navy-fill);
-  background: var(--on-navy-fill);
-  color: var(--on-navy);
-}
+/* ---------- Header: score, crossing time, combo, lives ---------- */
 
-.dash-panel .dash-steer__btn:disabled {
-  opacity: 0.4;
-}
-
-.dash-panel .dash-steer__btn:disabled:active {
-  background: var(--on-navy-fill);
-  color: var(--on-navy);
-}
-
-.dash-panel .dash-steer__btn--lock {
-  border-color: var(--gold);
-  color: var(--gold);
-}
-
-.dash-panel .dash-board-overlay {
-  background: var(--scrim);
-}
-
-.dash-panel .dash-center__big {
-  color: var(--on-navy);
-}
-
-.dash-panel .dash-center__sub {
-  color: var(--on-navy-muted);
-}
-
-.dash-panel-icons {
-  position: absolute;
-  top: 14px;
-  right: 14px;
+.dash-hud {
   display: flex;
-  gap: 6px;
-  z-index: 2;
+  align-items: flex-end;
+  gap: 18px;
+  margin-bottom: 14px;
 }
 
-.dash-panel--shake {
-  animation: panel-wobble 0.35s ease;
+.dash-score {
+  display: flex;
+  flex-direction: column;
 }
 
-.dash-story {
-  text-align: center;
+.dash-score__num {
+  font-family: var(--font-heading);
+  font-size: var(--fs-dash-score);
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--on-navy);
+}
+
+.dash-score__best {
+  margin-top: 4px;
   font-size: var(--fs-12);
-  color: var(--ink-soft);
-  font-weight: 500;
-  margin: -6px 0 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--on-navy-faint);
 }
 
-.dash-instructions {
-  text-align: center;
-  font-size: var(--fs-12);
-  font-weight: 600;
-  color: var(--ink);
-  background: var(--surface-hi);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-small);
-  padding: 6px 10px;
-  margin: 0 0 12px;
+.dash-speed {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding-bottom: 2px;
 }
 
-.dash-combo-row {
-  text-align: center;
-  min-height: 18px;
-  margin-bottom: 4px;
+.dash-speed__secs {
+  font-size: var(--fs-13);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--on-navy-muted);
+}
+
+.dash-pips {
+  display: flex;
+  gap: 3px;
+}
+
+.dash-pip {
+  width: 10px;
+  height: 4px;
+  background: var(--on-navy-rule);
+}
+
+.dash-pip--on {
+  background: var(--gold-bright);
 }
 
 .dash-combo {
-  display: inline-block;
-  font-family: var(--font-heading);
-  font-size: var(--fs-12);
-  font-weight: 700;
-  color: var(--gold);
-  background: color-mix(in srgb, var(--gold) 18%, transparent);
-  border-radius: var(--radius-pill);
-  padding: 3px 12px;
-  opacity: 0;
-  transform: scale(0.85);
-  transition:
-    opacity 0.15s ease,
-    transform 0.15s ease;
-}
-
-.dash-combo--show {
-  opacity: 1;
-  transform: scale(1);
-}
-
-.dash-destination {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 4px;
-}
-
-.dash-play-row {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.dash-lanes-wrap {
-  position: relative;
-  flex: 1;
-  min-width: 0;
-}
-
-.dash-lanes {
-  position: relative;
-  border-radius: var(--radius-control);
-  background: var(--surface-hi);
-  border: 1.5px solid var(--border);
-  overflow: hidden;
-}
-
-.dash-paused-overlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--on-navy-muted);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-control);
-  font-family: var(--font-heading);
-  font-weight: 700;
-  font-size: var(--fs-12);
-  color: var(--ink);
-  text-align: center;
-  padding: 8px;
-  cursor: pointer;
-}
-
-.dash-lane {
-  position: relative;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  border-bottom: 1px dashed var(--border);
-  transition: background 0.12s ease;
-}
-
-.dash-lane:last-child {
-  border-bottom: none;
-}
-
-.dash-lane--current {
-  background: color-mix(in srgb, var(--lane-hue, var(--gold)) 12%, var(--surface));
-}
-
-.dash-bucket {
-  margin-left: auto;
-  flex-shrink: 0;
-  box-sizing: border-box;
-  width: 68px;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1px;
-  background: var(--brand);
-  color: var(--on-navy);
-  font-family: var(--font-heading);
-  text-align: center;
-  padding: 0 4px;
-  border: 2px solid transparent;
-  transition:
-    background 0.15s ease,
-    border-color 0.15s ease;
-}
-
-.dash-bucket__name {
-  font-size: var(--fs-12);
-  font-weight: 700;
-}
-
-.dash-bucket__count {
-  font-size: var(--fs-12);
-  font-weight: 600;
-  opacity: 0.8;
-}
-
-.dash-bucket--correct {
-  background: var(--good);
-}
-
-.dash-bucket--wrong {
-  background: var(--bad);
-}
-
-.dash-bucket--complete {
-  border-color: var(--good);
-}
-
-.dash-runner {
-  position: absolute;
-  top: 50%;
-  left: 10px;
-  transform: translateY(-50%);
-  font-family: var(--font-heading);
-  font-weight: 700;
-  font-size: var(--fs-12);
-  color: var(--ink);
-  background: var(--gold);
-  border-radius: var(--radius-pill);
+  align-self: center;
   padding: 4px 10px;
-  white-space: nowrap;
+  border-radius: var(--radius-pill);
+  background: var(--gold-bright);
+  color: var(--ink);
+  font-family: var(--font-heading);
+  font-size: var(--fs-13);
+  font-weight: 800;
 }
 
-.dash-runner--catch-pop {
-  animation: dash-catch-pop 0.3s ease forwards;
+/* Kept in the row while hidden, so its arrival does not shift the header. */
+.dash-combo--hidden {
+  visibility: hidden;
 }
 
-@keyframes dash-catch-pop {
-  0% {
-    transform: translateY(-50%) scale(1);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(-50%) scale(1.5);
-    opacity: 0;
-  }
+.dash-lives {
+  display: flex;
+  gap: 3px;
+  margin-left: auto;
+  padding-bottom: 2px;
 }
 
-.dash-runner--miss-fade {
-  animation: dash-miss-fade 0.3s ease forwards;
+.dash-heart {
+  display: block;
 }
 
-@keyframes dash-miss-fade {
-  0% {
-    transform: translateY(-50%) scale(1);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(-50%) scale(0.7);
-    opacity: 0;
-  }
+.dash-heart path {
+  fill: none;
+  stroke: var(--on-navy-faint);
+  stroke-width: 1.8;
 }
 
-.dash-steer {
+.dash-heart--full path {
+  fill: var(--bad-soft);
+  stroke: var(--bad-soft);
+}
+
+/* ---------- Ledger: one cell per masechet ---------- */
+
+.dash-ledger {
+  display: grid;
+  grid-template-columns: repeat(63, minmax(4px, 1fr));
+  gap: 2px;
+  margin-bottom: 8px;
+}
+
+.dash-ledger__cell {
+  height: 8px;
+  background: var(--on-navy-fill);
+}
+
+.dash-ledger__cell--caught {
+  background: var(--hue-light);
+}
+
+/* ---------- Seder tallies ---------- */
+
+.dash-tallies {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.dash-tally {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  align-items: center;
   justify-content: center;
-  width: 48px;
-  flex-shrink: 0;
+  min-height: 36px;
+  padding: 4px 2px;
+  border: 1.5px solid var(--hue-light);
+  border-radius: 2px;
+  color: var(--hue-light);
+  font-size: var(--fs-12);
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
 }
 
-.dash-steer__btn {
-  flex: 1;
-  border-radius: var(--radius-small);
-  border: 1.5px solid var(--border);
-  background: var(--surface-hi);
-  color: var(--ink);
-  font-size: var(--fs-14);
-  cursor: pointer;
-}
-
-.dash-steer__btn:active {
-  background: var(--brand);
+.dash-tally--complete {
+  border-color: var(--hue);
+  background: var(--hue);
   color: var(--on-navy);
 }
 
-.dash-steer__btn:disabled {
-  cursor: default;
-  opacity: 0.6;
-}
-
-.dash-steer__btn:disabled:active {
-  background: var(--surface-hi);
-  color: var(--ink);
-}
-
-.dash-steer__btn--lock {
-  border-color: var(--gold);
-  color: var(--gold);
-  font-weight: 700;
-}
-
-.dash-steer__btn--lock:active {
-  background: var(--gold);
-  color: var(--brand);
-}
-
-.dash-steer__btn--lock:disabled {
-  border-color: var(--border);
-  color: var(--ink);
-}
+/* ---------- Board ---------- */
 
 .dash-board-wrap {
   position: relative;
 }
 
 .dash-board {
-  transition: filter 0.2s ease;
-}
-
-.dash-board--blurred {
-  filter: blur(1.5px);
+  --lane-h: 46px;
+  position: relative;
+  height: calc(var(--lane-h) * 6);
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--dash-field);
   user-select: none;
-  pointer-events: none;
+  -webkit-user-select: none;
 }
 
-.dash-board-overlay {
-  position: absolute;
-  inset: 0;
+.dash-board--idle {
+  filter: blur(2px);
+  opacity: 0.6;
+}
+
+.dash-board--wobble {
+  animation: panel-wobble 0.3s ease;
+}
+
+.dash-lane {
   display: flex;
+  height: var(--lane-h);
+}
+
+/* Inactive lanes are thin static rules. The live lane's dashes stream
+   toward its gate — its background-position is driven by the frame loop at
+   the card's own pace, so it is the one continuous speed signal. */
+.dash-road {
+  flex: 1;
+  align-self: center;
+  height: 1px;
+  background: var(--on-navy-rule);
+}
+
+.dash-road--live {
+  height: 2px;
+  background: repeating-linear-gradient(90deg, var(--hue-light) 0 14px, transparent 14px 28px);
+}
+
+/* The gate is the catch: six identical boxes, flush, name only. */
+.dash-gate {
+  display: flex;
+  flex: 0 0 88px;
   align-items: center;
-  justify-content: center;
-  background: var(--on-navy-fill);
-  border-radius: var(--radius-control);
-}
-
-.dash-board-overlay .restart {
-  width: auto;
-  padding: 7px 18px;
-  font-size: var(--fs-12);
-  box-shadow: var(--shadow-chip);
-}
-
-.dash-msg {
-  text-align: center;
+  justify-content: flex-end;
+  min-width: 0;
+  padding: 0 10px;
+  border-left: 2px solid var(--hue-light);
   font-size: var(--fs-12);
   font-weight: 600;
-  color: var(--ink-soft);
-  min-height: 15px;
+  line-height: 1.2;
+  text-align: right;
+  overflow-wrap: anywhere;
+  color: var(--on-navy-muted);
 }
 
-.dash-center {
-  text-align: center;
-  padding: 30px 10px 10px;
+.dash-gate--complete {
+  border-left-color: var(--hue);
+  background: var(--hue);
+  color: var(--on-navy);
 }
 
-.dash-center__big {
-  font-family: var(--font-heading);
-  font-size: var(--fs-28);
-  font-weight: 800;
+/* One element for the whole crossing, moved by transform — never
+   re-parented into a lane, which is what made it teleport. The card inside
+   carries the catch/miss animation so it does not fight the translate. */
+.dash-runner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.dash-runner__card {
+  display: block;
+  padding: 7px 12px;
+  border-radius: 2px;
+  background: var(--on-navy);
+  box-shadow: var(--shadow-chip);
   color: var(--ink);
-  margin-bottom: 4px;
+  font-family: var(--font-heading);
+  font-size: var(--fs-14);
+  font-weight: 700;
+  white-space: nowrap;
 }
 
-.dash-center__sub {
+.dash-runner__card--catch {
+  animation: dash-catch-pop 0.3s ease forwards;
+}
+
+.dash-runner__card--miss {
+  animation: dash-miss-fade 0.3s ease forwards;
+}
+
+@keyframes dash-catch-pop {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+
+@keyframes dash-miss-fade {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+}
+
+/* ---------- Message row: three tones by ground colour ---------- */
+
+.dash-msg {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  margin-top: 10px;
+  padding: 8px 12px;
+  border-radius: 2px;
   font-size: var(--fs-13);
-  color: var(--ink-soft);
-  margin-bottom: 18px;
-  line-height: 1.5;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.dash-msg--idle {
+  background: var(--dash-field);
+  color: var(--on-navy-muted);
+}
+
+.dash-msg--good {
+  background: color-mix(in srgb, var(--good) 40%, var(--dash-field));
+  color: var(--on-navy);
+}
+
+.dash-msg--bad {
+  background: color-mix(in srgb, var(--bad) 50%, var(--dash-field));
+  color: var(--on-navy);
+}
+
+/* ---------- Controls ---------- */
+
+.dash-controls {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  padding-bottom: env(safe-area-inset-bottom);
+  /* Without this, quick taps scroll the page in Chrome on Android. */
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* 50px: above Android's 48dp floor. */
+.dash-ctl {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 50px;
+  min-height: 50px;
+  padding: 0 12px;
+  border: 1.5px solid var(--on-navy-rule);
+  border-radius: 2px;
+  background: var(--dash-field);
+  color: var(--on-navy);
+  font-family: var(--font-heading);
+  font-size: var(--fs-14);
+  font-weight: 700;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dash-ctl:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* Hover does not exist on a phone; without :active a tap shows nothing. */
+.dash-ctl:active:not(:disabled) {
+  background: var(--on-navy-rule);
+  transform: translateY(1px);
+}
+
+@media (hover: hover) {
+  .dash-ctl:hover:not(:disabled) {
+    border-color: var(--on-navy-muted);
+  }
+}
+
+.dash-ctl--lock {
+  flex: 1;
+  border-color: var(--gold);
+  background: var(--gold);
+  color: var(--ink);
+}
+
+.dash-ctl--lock:active:not(:disabled) {
+  background: var(--gold-bright);
+}
+
+@media (hover: hover) {
+  .dash-ctl--lock:hover:not(:disabled) {
+    border-color: var(--gold-bright);
+    background: var(--gold-bright);
+  }
+}
+
+/* ---------- End ---------- */
+
+.dash-end .game__end-big {
+  color: var(--on-navy);
+}
+
+.dash-end .game__end-sub {
+  color: var(--on-navy-muted);
+}
+
+/* phone — the board reflows rather than scaling down. */
+@media (max-width: 599px) {
+  /* Full-bleed: cancel .main's side padding. */
+  .dash-panel {
+    margin: 0 calc(-1 * max(15px, env(safe-area-inset-right))) 0 calc(-1 * max(15px, env(safe-area-inset-left)));
+    padding: 12px;
+    border-radius: 0;
+  }
+
+  .dash-score__num {
+    font-size: var(--fs-36);
+  }
+
+  .dash-hud {
+    gap: 14px;
+  }
+
+  /* Wrap to two rows rather than shrink a cell below 4px. */
+  .dash-ledger {
+    grid-template-columns: repeat(32, minmax(4px, 1fr));
+  }
+
+  /* Six tinted counts still read without their names. */
+  .dash-tally__name {
+    display: none;
+  }
+
+  /* Six lanes at 40px fit a 360×640 screen with the header and controls.
+     The gate column keeps its 88px — the runway shortens instead. */
+  .dash-board {
+    --lane-h: 40px;
+  }
 }

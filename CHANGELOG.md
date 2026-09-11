@@ -2,6 +2,38 @@
 
 One entry per PR, newest first.
 
+## Shas Dash: visual and feel pass (SHAS-DASH-BRIEF2.md)
+
+Same game, same mechanic — six lanes, one masechet crossing, land it in
+its own seder.
+
+- **The card no longer teleports.** It is one absolutely positioned
+  element moved by `translate(x, y)`, easing to a new lane in about 130ms,
+  instead of being unmounted from one lane and remounted in the next.
+- **Frame-rate independent.** Lane easing is scaled by frame time, so a
+  120Hz Galaxy steers at the same speed as a 60Hz laptop (checked in the
+  running component: 102.2px vs 102.1px at 133ms). Crossing progress and
+  the lock-in bonus come from wall-clock time minus pauses, never from
+  summed frame deltas.
+- **The catch is the gate box**: whichever box contains the card's centre
+  on arrival. No separate catch line.
+- New layout: near-black stage, 44px score with best, crossing time with
+  five speed pips, three drawn hearts (no ♥ text), a combo pill from ×2, a
+  63-cell ledger, six seder tallies, a 276px board with an 88px gate
+  column, a dashed road that streams at the card's pace, and a three-tone
+  message row. A miss names both ends: "Landed in Nezikin — Chullin is
+  Kodashim".
+- Lock in (→) scores the whole seconds left, up to 8. The crossing eases
+  9.0s → 3.6s at 0.945^score.
+- Phone: full-bleed, 40px lanes, the 88px gates kept, the ledger wrapped to
+  two rows, tallies as counts, controls 50px with `touch-action: none` and
+  `:active` states. The back gesture and backgrounding the app both pause.
+- The keyboard legend, the story subtitle and the "Steer with ↑ / ↓"
+  message are gone; keys are in the buttons' tooltips.
+- The stage colours and 44px score are theme tokens, so the colour and type
+  guards still pass.
+- The physics is in `dashPhysics.ts` with 12 tests.
+
 ## CI: run tests on Node 24
 
 The test job had never once passed. The cause was not our tests: jsdom

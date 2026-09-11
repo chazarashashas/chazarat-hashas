@@ -111,6 +111,14 @@
      text — so it gets a token rather than an exception in check-type.sh. */
   --fs-hebrew-read: 17px;
 
+  /* Shas Dash is the one screen allowed its own temperature
+     (SHAS-DASH-BRIEF2.md): a near-black stage, a slightly lifted field,
+     and a score big enough to read mid-game. Tokens rather than literals
+     so the colour and type guards still hold. */
+  --dash-stage: #0d1526;
+  --dash-field: #131d33;
+  --fs-dash-score: 44px;
+
   /* Two stage widths, no per-screen exceptions. */
   --stage-width: 520px;
   --stage-width-wide: 760px;
