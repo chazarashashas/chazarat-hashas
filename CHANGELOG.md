@@ -2,6 +2,16 @@
 
 One entry per PR, newest first.
 
+## Shas Dash: the controls never sit under the bottom bar
+
+- On short phones, where the browser toolbar takes height (an iPhone SE in
+  Safari, or 360×560), Lock in and the arrows were under the bottom bar.
+- The six lanes now share whatever height is left once everything else is
+  placed: 40px on a tall phone, down to 30px on a short one. On phones
+  700px tall or less, the spacing tightens too.
+- The whole game fits above the bar on any screen 545px tall or more.
+  Tall phones look as before.
+
 ## The sign-in card shows on every page, not just Home
 
 - A signed-out visitor now gets the same sign-in card on whatever page

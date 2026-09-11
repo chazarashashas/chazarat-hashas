@@ -479,9 +479,67 @@
     display: none;
   }
 
-  /* Six lanes at 40px fit a 360×640 screen with the header and controls.
-     The gate column keeps its 88px — the runway shortens instead. */
+  /* The gate column keeps its 88px — the runway shortens instead. */
   .dash-board {
     --lane-h: 40px;
+  }
+
+  /* The bottom bar (../BottomBar/BottomBar.css, 56px) is fixed over the
+     foot of the page, and it owns the safe-area inset there. Everything on
+     screen that is not the board adds up to --dash-chrome. */
+  .dash-panel {
+    --dash-chrome: 412px;
+  }
+
+  /* The six lanes get whatever height is left after that: 40px on a tall
+     phone, down to 30px on a short one (an iPhone SE in Safari, a small
+     Android with its browser toolbar showing). Then the whole game fits
+     above the bottom bar. The frame loop reads the board's real height, so
+     steering and the catch follow. */
+  @supports (height: 100dvh) {
+    .dash-board {
+      --lane-h: clamp(30px, calc((100dvh - var(--dash-chrome) - env(safe-area-inset-bottom)) / 6), 40px);
+    }
+  }
+
+  .dash-controls {
+    padding-bottom: 0;
+  }
+}
+
+/* Short phones: tighter spacing, so the lanes give up less of their height. */
+@media (max-width: 599px) and (max-height: 700px) {
+  .dash-panel {
+    --dash-chrome: 364px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .dash-head,
+  .dash-hud,
+  .dash-tallies {
+    margin-bottom: 8px;
+  }
+
+  .dash-score__num {
+    font-size: var(--fs-28);
+  }
+
+  .dash-ledger {
+    margin-bottom: 6px;
+  }
+
+  .dash-tally {
+    min-height: 28px;
+  }
+
+  .dash-msg,
+  .dash-controls {
+    margin-top: 8px;
+  }
+
+  .dash-runner__card {
+    padding-top: 5px;
+    padding-bottom: 5px;
   }
 }
