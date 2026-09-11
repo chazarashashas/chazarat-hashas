@@ -2,6 +2,16 @@
 
 One entry per PR, newest first.
 
+## Rosh Hashana: a festive apple and honey
+
+- The apple and honey were thin brass outlines, which read more like an
+  l'iluy nishmat page than a chag. They are now small filled drawings in
+  the chag's colours: a red apple with a green leaf and a highlight, and a
+  golden honey pot with a drip and a dipper. The same drawing is on
+  Home's erev card and on the printed pages.
+- Home's erev card now opens with "Wishing all of Am Yisrael a" in small
+  brass letters above כְּתִיבָה וַחֲתִימָה טוֹבָה.
+
 ## Home points to Daily Limmud for chag printing
 
 - Printing lives on Daily Limmud, and Resources keeps it too. Home no

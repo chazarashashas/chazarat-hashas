@@ -31,6 +31,7 @@ export function ErevChagCard({
       <div className="erev-card__art" aria-hidden="true">
         <ChagMotif chag={stretch.chag} />
       </div>
+      <p className="erev-card__wish">Wishing all of Am Yisrael a</p>
       <p className="erev-card__greeting" lang="he" dir="rtl">
         {greetingFor(stretch.chag)}
       </p>

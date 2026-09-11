@@ -285,6 +285,55 @@
   stroke-linejoin: round;
 }
 
+/* Rosh Hashana's apple and honey: filled, in the chag's own colours, so it
+   reads festive rather than memorial. Tokens only. */
+.chag-motif--festive {
+  gap: 6px;
+}
+
+.chag-motif--festive svg {
+  width: 52px;
+  height: 52px;
+  stroke: none;
+}
+
+.chag-motif--festive .m-apple {
+  fill: var(--seder-nezikin);
+}
+
+.chag-motif--festive .m-leaf {
+  fill: var(--seder-zeraim);
+}
+
+.chag-motif--festive .m-stem,
+.chag-motif--festive .m-dipper {
+  fill: none;
+  stroke: var(--seder-moed-text);
+  stroke-width: 2.6;
+  stroke-linecap: round;
+}
+
+.chag-motif--festive .m-dipper-head {
+  fill: var(--seder-moed-text);
+}
+
+.chag-motif--festive .m-pot {
+  fill: var(--gold-bright);
+}
+
+.chag-motif--festive .m-rim,
+.chag-motif--festive .m-drip {
+  fill: var(--gold);
+}
+
+.chag-motif--festive .m-shine {
+  fill: none;
+  stroke: var(--surface-hi);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  opacity: 0.55;
+}
+
 .chag-page__greeting {
   margin: 12px 0 0;
   font-family: var(--font-hebrew);
@@ -637,12 +686,21 @@
 }
 
 .erev-card__art .chag-motif svg {
-  width: 40px;
-  height: 40px;
+  width: 56px;
+  height: 56px;
+}
+
+.erev-card__wish {
+  margin: 10px 0 0;
+  font-family: var(--font-heading);
+  font-size: var(--fs-13);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--brass-text);
 }
 
 .erev-card__greeting {
-  margin: 8px 0 0;
+  margin: 2px 0 0;
   font-family: var(--font-hebrew);
   font-size: var(--fs-chag-greeting);
   font-weight: 700;
