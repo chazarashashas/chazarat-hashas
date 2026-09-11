@@ -61,8 +61,9 @@ function bestToday<T extends { date: string }>(existing: T | null, fresh: T, isB
     every account that used the Practice games before the rebbe
     dashboard existed has a `gameStats` value with no `today` fields and
     no `sidrei` key at all, and reading `.today` off an entirely-missing
-    `sidrei` would otherwise throw on every load. */
-function normalize(raw: Partial<GameStats> | null | undefined): GameStats {
+    `sidrei` would otherwise throw on every load. The admin panel reads
+    other accounts' synced copies through this too. */
+export function normalizeGameStats(raw: Partial<GameStats> | null | undefined): GameStats {
   return {
     quiz: { ...EMPTY_STATS.quiz, ...raw?.quiz },
     dash: { ...EMPTY_STATS.dash, ...raw?.dash },
@@ -74,13 +75,15 @@ function normalize(raw: Partial<GameStats> | null | undefined): GameStats {
 
 /** Best-effort local record of Practice game results, for the My Account
     dashboard's "graded" summary and (via the `today` fields) the rebbe
-    dashboard's daily submission — same localStorage-per-browser scope as
-    the rest of the app's progress data, not synced to an account. */
+    dashboard's daily submission. Kept in localStorage like the rest of
+    the app's progress data, and synced to the account when signed in
+    (it is one of useCloudSync's SYNC_KEYS) — which is what lets the
+    admin panel read it (admin_game_stats_schema.sql). */
 export function useGameStats() {
   const [rawStats, setRawStats] = useLocalStorageState<Partial<GameStats>>("gameStats", EMPTY_STATS);
-  const stats = normalize(rawStats);
+  const stats = normalizeGameStats(rawStats);
   function setStats(updater: (prev: GameStats) => GameStats) {
-    setRawStats((prevRaw) => updater(normalize(prevRaw)));
+    setRawStats((prevRaw) => updater(normalizeGameStats(prevRaw)));
   }
 
   function recordQuizResult(score: number, outOf: number, scope: string) {

@@ -3,6 +3,9 @@ import { useAdmin, type AdminUserRow } from "../../utils/useAdmin";
 import { useAdminActivityGrid } from "../../utils/useAdminActivityGrid";
 import { useAdminAudit, logAdminAction, auditActionLabel } from "../../utils/useAdminAudit";
 import { useAdminGroups, useAdminGroupMembers, type AdminGroupRow } from "../../utils/useAdminGroups";
+import { useAdminGameStats } from "../../utils/useAdminGameStats";
+import type { GameStats } from "../../utils/useGameStats";
+import { localDateStr } from "../../utils/localDate";
 import { useAuth } from "../../utils/useAuth";
 import { useEscapeKey } from "../../utils/useEscapeKey";
 import { friendlyError } from "../../utils/friendlyError";
@@ -20,14 +23,113 @@ const RESET_SCOPES = [
   { value: "everything", label: "Everything" },
 ] as const;
 
-type Section = "users" | "chaburot" | "activity" | "log";
+type Section = "users" | "chaburot" | "activity" | "games" | "log";
 
 const SECTIONS: { id: Section; label: string }[] = [
   { id: "users", label: "Users" },
   { id: "chaburot", label: "Chaburos" },
   { id: "activity", label: "Today" },
+  { id: "games", label: "Games" },
   { id: "log", label: "Audit log" },
 ];
+
+/* ============================================================
+   Games — one account's record for one game, in the shape both the
+   Games list and the user drawer print. Seder Sort and Sidrei
+   Hamishna have no score, only completions, so their "best" is null.
+   ============================================================ */
+
+type GameId = "quiz" | "dash" | "chazara" | "sort" | "sidrei";
+
+interface GameLine {
+  played: boolean;
+  best: string | null;
+  /** What the Games list sorts by, highest first. */
+  rank: number;
+  count: number;
+  countLabel: string;
+  today: string | null;
+}
+
+function plural(n: number, one: string, many: string): string {
+  return `${n} ${n === 1 ? one : many}`;
+}
+
+const GAMES: { id: GameId; label: string; line: (s: GameStats, today: string) => GameLine }[] = [
+  {
+    id: "quiz",
+    label: "Mishna Quiz",
+    line: ({ quiz }, today) => {
+      const t = quiz.today?.date === today ? quiz.today : null;
+      return {
+        played: quiz.timesPlayed > 0,
+        best: `${quiz.bestScore}/${quiz.bestOutOf}`,
+        rank: quiz.bestOutOf > 0 ? quiz.bestScore / quiz.bestOutOf : 0,
+        count: quiz.timesPlayed,
+        countLabel: plural(quiz.timesPlayed, "play", "plays"),
+        today: t && `${t.bestScore}/${t.bestOutOf}${t.scope ? ` · ${t.scope}` : ""}`,
+      };
+    },
+  },
+  {
+    id: "dash",
+    label: "Shas Dash",
+    line: ({ dash }, today) => ({
+      played: dash.timesPlayed > 0,
+      best: String(dash.bestScore),
+      rank: dash.bestScore,
+      count: dash.timesPlayed,
+      countLabel: plural(dash.timesPlayed, "play", "plays"),
+      today: dash.today?.date === today ? String(dash.today.bestScore) : null,
+    }),
+  },
+  {
+    id: "chazara",
+    label: "Mishna Chazara",
+    line: ({ chazara }, today) => {
+      const t = chazara.today?.date === today ? chazara.today : null;
+      return {
+        played: chazara.timesPlayed > 0,
+        best: `${chazara.bestCount} recalled`,
+        rank: chazara.bestCount,
+        count: chazara.timesPlayed,
+        countLabel: plural(chazara.timesPlayed, "play", "plays"),
+        today: t && `${t.bestCount} recalled${t.scope ? ` · ${t.scope}` : ""}`,
+      };
+    },
+  },
+  {
+    id: "sort",
+    label: "Seder Sort",
+    line: ({ sort }, today) => ({
+      played: sort.timesCompleted > 0 || sort.today?.date === today,
+      best: null,
+      rank: sort.timesCompleted,
+      count: sort.timesCompleted,
+      countLabel: "completed",
+      today: sort.today?.date === today ? `${sort.today.placed}/${sort.today.total} placed` : null,
+    }),
+  },
+  {
+    id: "sidrei",
+    label: "Sidrei Hamishna",
+    line: ({ sidrei }, today) => ({
+      played: sidrei.timesCompleted > 0 || sidrei.today?.date === today,
+      best: null,
+      rank: sidrei.timesCompleted,
+      count: sidrei.timesCompleted,
+      countLabel: "completed",
+      today: sidrei.today?.date === today ? `${sidrei.today.placed}/${sidrei.today.total} placed` : null,
+    }),
+  },
+];
+
+function gameSummary(l: GameLine): string {
+  if (!l.played) return "—";
+  const parts = l.best !== null ? [`Best ${l.best}`, l.countLabel] : [`${l.count} ${l.countLabel}`];
+  if (l.today) parts.push(`today ${l.today}`);
+  return parts.join(" · ");
+}
 
 function fullName(u: { firstName: string | null; lastName: string | null }): string {
   return [u.firstName, u.lastName].filter(Boolean).join(" ").trim();
@@ -54,11 +156,14 @@ function shortDateTime(iso: string): string {
 interface UserDrawerProps {
   user: AdminUserRow;
   isSelf: boolean;
+  /** Undefined when this account has never played while signed in. */
+  games: GameStats | undefined;
+  gamesError: string | null;
   onClose: () => void;
   onChanged: () => void;
 }
 
-function UserDrawer({ user, isSelf, onClose, onChanged }: UserDrawerProps) {
+function UserDrawer({ user, isSelf, games, gamesError, onClose, onChanged }: UserDrawerProps) {
   useEscapeKey(onClose);
   const auth = useAuth();
   const [scope, setScope] = useState<string>(RESET_SCOPES[0].value);
@@ -138,6 +243,22 @@ function UserDrawer({ user, isSelf, onClose, onChanged }: UserDrawerProps) {
             <dd>{user.isAdmin ? "Yes" : "No"}</dd>
           </div>
         </dl>
+
+        <h3 className="section-title">Games</h3>
+        {gamesError ? (
+          <p className="state state--error callout callout--bad">{gamesError}</p>
+        ) : !games || GAMES.every((g) => !g.line(games, localDateStr()).played) ? (
+          <p className="state state--empty">No games played while signed in.</p>
+        ) : (
+          <dl className="admin-drawer__facts admin-drawer__facts--single">
+            {GAMES.map((g) => (
+              <div key={g.id}>
+                <dt>{g.label}</dt>
+                <dd>{gameSummary(g.line(games, localDateStr()))}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
 
         {note && <p className="callout callout--good">{note}</p>}
         {error && <p className="field__error">{error}</p>}
@@ -279,8 +400,10 @@ export function AdminScreen() {
   const activityGrid = useAdminActivityGrid(true);
   const audit = useAdminAudit(true);
   const groups = useAdminGroups(true);
+  const gameStats = useAdminGameStats(true);
 
   const [section, setSection] = useState<Section>("users");
+  const [game, setGame] = useState<GameId>("quiz");
   const [openUser, setOpenUser] = useState<AdminUserRow | null>(null);
   const [openGroup, setOpenGroup] = useState<AdminGroupRow | null>(null);
   const [search, setSearch] = useState("");
@@ -292,10 +415,21 @@ export function AdminScreen() {
       )
     : users;
 
+  const today = localDateStr();
+  const selectedGame = GAMES.find((g) => g.id === game) ?? GAMES[0];
+  const gameRows = users
+    .flatMap((u) => {
+      const s = gameStats.byUser.get(u.id);
+      const line = s && selectedGame.line(s, today);
+      return line?.played ? [{ user: u, line }] : [];
+    })
+    .sort((a, b) => b.line.rank - a.line.rank || b.line.count - a.line.count);
+
   function refreshAll() {
     refresh();
     audit.refresh();
     groups.refresh();
+    gameStats.refresh();
   }
 
   return (
@@ -421,6 +555,49 @@ export function AdminScreen() {
           </>
         )}
 
+        {section === "games" && (
+          <>
+            <label className="field">
+              <span className="field__label">Game</span>
+              <select className="field__input" value={game} onChange={(e) => setGame(e.target.value as GameId)}>
+                {GAMES.map((g) => (
+                  <option key={g.id} value={g.id}>
+                    {g.label}
+                  </option>
+                ))}
+              </select>
+              <span className="field__hint">Only games played while signed in are counted.</span>
+            </label>
+            {gameStats.error ? (
+              <p className="state state--error callout callout--bad">{gameStats.error}</p>
+            ) : gameStats.loading && gameStats.byUser.size === 0 ? (
+              <p className="state state--loading">Loading…</p>
+            ) : gameRows.length === 0 ? (
+              <p className="state state--empty">Nobody has played {selectedGame.label} while signed in yet.</p>
+            ) : (
+              <div className="admin-rows">
+                {gameRows.map(({ user: u, line }) => (
+                  <button key={u.id} className="card admin-row" onClick={() => setOpenUser(u)}>
+                    <span className="admin-row__main">
+                      <span className="admin-row__name">{fullName(u) || u.username || "—"}</span>
+                      <span className="admin-row__sub">
+                        {u.email}
+                        {line.today ? ` · today ${line.today}` : ""}
+                      </span>
+                    </span>
+                    <span className="admin-row__meta">
+                      <span className="admin-row__figure">{line.best ?? line.count}</span>
+                      <span className="admin-row__figure-label">
+                        {line.best !== null ? `best · ${line.countLabel}` : line.countLabel}
+                      </span>
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+
         {section === "log" && (
           <>
             {audit.error && <p className="state state--error callout callout--bad">{audit.error}</p>}
@@ -457,6 +634,8 @@ export function AdminScreen() {
         <UserDrawer
           user={openUser}
           isSelf={openUser.id === auth.session?.user.id}
+          games={gameStats.byUser.get(openUser.id)}
+          gamesError={gameStats.error}
           onClose={() => setOpenUser(null)}
           onChanged={refreshAll}
         />

@@ -2,6 +2,18 @@
 
 One entry per PR, newest first.
 
+## Admin: game scores
+
+- A new Games tab. Pick a game (Mishna Quiz, Shas Dash, Mishna Chazara,
+  Seder Sort or Sidrei Hamishna) and see everyone who has played it,
+  best score first, with how many times they played and today's best.
+  Tapping a row opens that user.
+- The user drawer has a Games section with that account's record for
+  every game.
+- Needs admin_game_stats_schema.sql run once in Supabase. It returns only
+  the game stats part of each account's synced data, and only to an admin.
+  Games played while signed out stay on that device and aren't counted.
+
 ## Shas Dash: the controls never sit under the bottom bar
 
 - On short phones, where the browser toolbar takes height (an iPhone SE in

@@ -140,6 +140,11 @@
   gap: 10px 12px;
 }
 
+/* One column where each fact is a full sentence (a game's record). */
+.admin-drawer__facts--single {
+  grid-template-columns: 1fr;
+}
+
 .admin-drawer__facts div {
   min-width: 0;
 }
