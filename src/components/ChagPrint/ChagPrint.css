@@ -658,14 +658,6 @@
   color: var(--ink);
 }
 
-.erev-card__sub {
-  margin: 4px auto 0;
-  max-width: 34ch;
-  font-size: var(--fs-13);
-  line-height: 1.6;
-  color: var(--muted);
-}
-
 .erev-card__go {
   margin-top: 14px;
 }

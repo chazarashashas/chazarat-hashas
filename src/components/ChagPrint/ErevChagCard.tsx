@@ -1,7 +1,6 @@
 import { greetingFor, type ChagStretch } from "../../utils/chagCalendar";
 import { NavIcon } from "../Icon/NavIcon";
 import { ChagMotif } from "./ChagMotif";
-import { stretchName } from "./chagPrintModel";
 import { requestPrintCardFocus } from "./printCardFocus";
 import "./ChagPrint.css";
 
@@ -35,10 +34,7 @@ export function ErevChagCard({
       <p className="erev-card__greeting" lang="he" dir="rtl">
         {greetingFor(stretch.chag)}
       </p>
-      <h2 className="erev-card__title">Take your mishnayot into {name}</h2>
-      <p className="erev-card__sub">
-        {stretchName(stretch)}. Print what comes due from Daily Limmud, and learn it from paper.
-      </p>
+      <h2 className="erev-card__title">Make sure to print your Mishnayos before {name}</h2>
       <button
         className="btn btn--primary btn--block erev-card__go"
         onClick={() => {
