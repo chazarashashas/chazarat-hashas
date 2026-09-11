@@ -10,7 +10,6 @@ import { ProgressHeaderBar } from "../ProgressHeaderBar/ProgressHeaderBar";
 import { useTodaySnapshot } from "../../utils/useDailySubmission";
 import { TodayLearningCard } from "../TodayLearning/TodayLearningCard";
 import { ReceivedNudges } from "../GroupCard/ReceivedNudges";
-import { NudgeStrip } from "../NudgeStrip/NudgeStrip";
 import { GuidePopup } from "../Guide/GuidePopup";
 import { ChagPrintCard } from "../ChagPrint/ChagPrintCard";
 import { stretchFromErev } from "../../utils/chagCalendar";
@@ -101,11 +100,21 @@ function letterGrade(percent: number): string {
   return "F";
 }
 
-function FeatureGrid({ features, onNavigate }: { features: Feature[]; onNavigate: (id: string) => void }) {
+function FeatureGrid({
+  features,
+  onNavigate,
+}: {
+  features: Feature[];
+  onNavigate: (id: string) => void;
+}) {
   return (
     <div className="home-grid">
       {features.map((f) => (
-        <button key={f.id} className={`home-card home-card--${f.id}`} onClick={() => onNavigate(f.id)}>
+        <button
+          key={f.id}
+          className={`home-card home-card--${f.id}`}
+          onClick={() => onNavigate(f.id)}
+        >
           <span className="home-card__icon">
             <NavIcon id={f.id} />
           </span>
@@ -118,34 +127,11 @@ function FeatureGrid({ features, onNavigate }: { features: Feature[]; onNavigate
   );
 }
 
-const GUIDE_TEASER_SEEN_KEY = "chazarat-hashas:hasSeenGuideTeaser";
-
-/** GUIDEBRIEF2.md's "cheapest onboarding": a single strip naming Step 1,
-    on a true first visit only — reuses NudgeStrip rather than a new
-    component, and reads/marks its own localStorage flag directly
-    (deliberately not one of the synced SYNC_KEYS: whether a specific
-    device has already seen this onboarding hint isn't meaningful data
-    to carry to another device). Marked seen the moment it mounts, not
-    only when clicked — it's "shown once," not "shown until acted on". */
-function useGuideTeaserVisible(): boolean {
-  const [visible] = useState(() => {
-    try {
-      if (localStorage.getItem(GUIDE_TEASER_SEEN_KEY)) return false;
-      localStorage.setItem(GUIDE_TEASER_SEEN_KEY, "1");
-      return true;
-    } catch {
-      return false;
-    }
-  });
-  return visible;
-}
-
 interface HomeScreenProps {
   onNavigate: (id: string) => void;
 }
 
 export function HomeScreen({ onNavigate }: HomeScreenProps) {
-  const showGuideTeaser = useGuideTeaserVisible();
   const [showGuidePopup, setShowGuidePopup] = useState(false);
   const progress = useLearningProgress();
   // Erev Shabbat or erev yom tov: the day to print what comes due.
@@ -160,7 +146,8 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
   // themselves. Whoever creates a Rebbe & Class chabura is automatically
   // its teacher, so that same account never sees this card for it.
   const myShiurim = groups.filter(
-    (g) => g.isClass && g.members.some((m) => m.userId === session?.user.id && m.role !== "teacher"),
+    (g) =>
+      g.isClass && g.members.some((m) => m.userId === session?.user.id && m.role !== "teacher"),
   );
 
   const noteCount = Object.values(perekNotes).reduce(
@@ -183,11 +170,13 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
     }
     if (f.id === "chevrusa" && isLoggedIn) {
       const count = groups.filter((g) => !g.isChabura).length;
-      if (count > 0) return { ...f, status: count === 1 ? "1 active chevrusa" : `${count} active chevrusot` };
+      if (count > 0)
+        return { ...f, status: count === 1 ? "1 active chevrusa" : `${count} active chevrusot` };
     }
     if (f.id === "chabura" && isLoggedIn) {
       const count = groups.filter((g) => g.isChabura).length;
-      if (count > 0) return { ...f, status: count === 1 ? "1 active chabura" : `${count} active chaburot` };
+      if (count > 0)
+        return { ...f, status: count === 1 ? "1 active chabura" : `${count} active chaburot` };
     }
     return f;
   });
@@ -222,15 +211,6 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
           חזרת הש״ס
         </h1>
         <p className="panel__subtitle">Let's learn Shas, together</p>
-
-        {showGuideTeaser && (
-          <NudgeStrip
-            text="New here? Start with Step 1 — Learn the Sedarim."
-            actionLabel="Read the whole guide →"
-            onAction={() => onNavigate("guide")}
-            accentColor="var(--hue-guide)"
-          />
-        )}
 
         <ProgressHeaderBar
           progress={progress}

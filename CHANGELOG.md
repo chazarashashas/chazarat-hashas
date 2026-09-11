@@ -2,6 +2,11 @@
 
 One entry per PR, newest first.
 
+## Home: remove the "New here?" strip
+
+- The "New here? Start with Step 1 — Learn the Sedarim" strip at the top of
+  Home is gone.
+
 ## Print before Shabbat and yom tov
 
 - **A Jewish calendar.** `@hebcal/core` tells the app whether a date is yom
