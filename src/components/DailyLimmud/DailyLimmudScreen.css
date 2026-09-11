@@ -202,13 +202,24 @@
   margin-bottom: 18px;
 }
 
+/* Perakim taken on for siyumim: one titled group after the day's
+   learning, one card per perek. */
+.limmud-siyumim__sub {
+  margin: 0 0 12px;
+  font-size: var(--fs-13);
+  color: var(--muted);
+}
+
+.limmud-siyum-card + .limmud-siyum-card {
+  margin-top: 12px;
+}
+
 .limmud-siyum-tag {
-  margin: 0 0 4px;
+  margin: 0 0 10px;
   font-family: var(--font-heading);
   font-size: var(--fs-12);
   font-weight: 700;
   color: var(--hue-chevrusa);
-  text-align: center;
 }
 
 .limmud-card {
@@ -261,12 +272,6 @@
   color: var(--ink);
   text-align: right;
   direction: rtl;
-}
-
-.limmud-mishna__loading,
-.limmud-mishna__error {
-  color: var(--ink-soft);
-  font-size: var(--fs-12);
 }
 
 .limmud-mishna__hairline {

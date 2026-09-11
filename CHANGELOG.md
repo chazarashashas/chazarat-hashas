@@ -2,6 +2,17 @@
 
 One entry per PR, newest first.
 
+## Daily Limmud: perakim for siyumim read as their own group
+
+- When perakim taken on for siyumim were waiting, they ran on below the
+  day's learning as bare text: no card, a small centred tag, and a
+  full-width navy "Mark as learned" under each one. Several in a row
+  looked like one long page with four identical buttons.
+- They now sit under a "For siyumim" heading with a count. Each perek has
+  its own card, laid out like the day's card (seder ▸ masechet ▸ perek
+  and its name, then the dedication), and a quieter "Mark perek learned"
+  button. The navy button now belongs only to the day's learning.
+
 ## Admin: game scores
 
 - A new Games tab. Pick a game (Mishna Quiz, Shas Dash, Mishna Chazara,

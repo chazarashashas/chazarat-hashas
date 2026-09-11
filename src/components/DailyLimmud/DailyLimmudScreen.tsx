@@ -615,10 +615,20 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
                 />
               )}
 
-              {isSelf &&
-                siyumim.myQueuedPerakim.map((claim) => (
-                  <QueuedSiyumPerek key={claim.id} claim={claim} siyumim={siyumim} />
-                ))}
+              {isSelf && siyumim.myQueuedPerakim.length > 0 && (
+                <section className="limmud-siyumim" aria-label="Perakim for siyumim">
+                  <h2 className="section-title">For siyumim</h2>
+                  <p className="limmud-siyumim__sub">
+                    {siyumim.myQueuedPerakim.length === 1
+                      ? "A perek you took on for a siyum"
+                      : `${siyumim.myQueuedPerakim.length} perakim you took on for siyumim`}
+                    , on top of today's learning.
+                  </p>
+                  {siyumim.myQueuedPerakim.map((claim) => (
+                    <QueuedSiyumPerek key={claim.id} claim={claim} siyumim={siyumim} />
+                  ))}
+                </section>
+              )}
             </div>
 
             <div className="limmud-notes">

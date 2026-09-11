@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { getMishnayotCount } from "../../data/perekInfo";
+import { SEDARIM } from "../../data/shas";
+import { getMishnayotCount, getPerekName } from "../../data/perekInfo";
 import { fetchMishna } from "../../utils/sefaria";
 import { FRIENDLY_ERRORS } from "../../utils/friendlyError";
 import { hebrewNumeral } from "../../utils/hebrewNumeral";
@@ -38,7 +39,9 @@ export function QueuedSiyumPerek({ claim, siyumim }: Props) {
   if (loadedKey !== perekKey) {
     setLoadedKey(perekKey);
     const count = getMishnayotCount(claim.masechetEn, claim.perek);
-    setMishnayot(Array.from({ length: count }, (_, i) => ({ mishnah: i + 1, status: "loading" as const })));
+    setMishnayot(
+      Array.from({ length: count }, (_, i) => ({ mishnah: i + 1, status: "loading" as const })),
+    );
   }
 
   useEffect(() => {
@@ -71,32 +74,47 @@ export function QueuedSiyumPerek({ claim, siyumim }: Props) {
     await siyumim.markLearnedById(claim.id);
   }
 
+  const seder = SEDARIM.find((s) => s.masechtot.some((m) => m.en === claim.masechetEn));
+  const perekName = getPerekName(claim.masechetEn, claim.perek);
+
+  // Its own card, laid out like the day's learning above it, so a list of
+  // several reads as separate perakim. The button is the quieter
+  // secondary one: the navy "Mark as learned" belongs to the day's
+  // portion, and several identical navy buttons in a row read as one.
   return (
-    <div className="limmud-perek-block">
-      <p className="limmud-siyum-tag">L'Iluy Nishmat: {claim.dedication}</p>
+    <div className="card limmud-card limmud-siyum-card">
       <p className="limmud-breadcrumb">
+        {seder ? `${seder.en} ▸ ` : ""}
         {claim.masechetEn} ▸ Perek {hebrewNumeral(claim.perek)}
+        {perekName ? ` (${perekName})` : ""}
       </p>
-      {mishnayot.map((m) => (
-        <div key={m.mishnah} className="limmud-mishna">
-          <p className="limmud-mishna__title" dir="rtl">
-            משנה {hebrewNumeral(m.mishnah)}
-          </p>
-          {m.status === "loading" ? (
-            <span className="limmud-mishna__loading">Loading…</span>
-          ) : m.status === "error" ? (
-            <span className="limmud-mishna__error" dir="ltr">
-              {FRIENDLY_ERRORS.load}
-            </span>
-          ) : (
-            <p className="limmud-mishna__text" dir="rtl">
-              {m.text}
+      <p className="limmud-siyum-tag">L'Iluy Nishmat: {claim.dedication}</p>
+      <div className="limmud-perek-block">
+        {mishnayot.map((m) => (
+          <div key={m.mishnah} className="limmud-mishna">
+            <p className="limmud-mishna__title" dir="rtl">
+              משנה {hebrewNumeral(m.mishnah)}
             </p>
-          )}
-        </div>
-      ))}
-      <button className="restart limmud-mark-btn" disabled={marking} onClick={handleMark}>
-        {marking ? "Marking…" : "Mark as learned"}
+            {m.status === "loading" ? (
+              <span className="state state--loading">Loading…</span>
+            ) : m.status === "error" ? (
+              <span className="state state--error" dir="ltr">
+                {FRIENDLY_ERRORS.load}
+              </span>
+            ) : (
+              <p className="limmud-mishna__text" dir="rtl">
+                {m.text}
+              </p>
+            )}
+          </div>
+        ))}
+      </div>
+      <button
+        className="btn btn--secondary btn--compact btn--block"
+        disabled={marking}
+        onClick={handleMark}
+      >
+        {marking ? "Marking…" : "Mark perek learned"}
       </button>
     </div>
   );
