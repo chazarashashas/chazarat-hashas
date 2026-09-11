@@ -35,6 +35,7 @@ function writeState(state: PromptState) {
 
 interface FirstOpenPromptInput {
   isLoggedIn: boolean;
+  authLoading: boolean;
   streakCurrent: number;
   mishnayotCount: number;
   noteCount: number;
@@ -54,10 +55,15 @@ interface FirstOpenPromptInput {
  * once per real page load, which is what "cold open" means here; it is
  * deliberately not re-evaluated as progress changes mid-session, since
  * the frequency rules cap this at once per session regardless.
+ *
+ * Signed-in is checked at return time, not in that initializer: on the
+ * first render the session hasn't been restored yet, so isLoggedIn is
+ * false for everyone. The card waits for auth to finish loading and
+ * then only ever shows to someone who is actually signed out — on
+ * whatever page they opened, not just Home.
  */
 export function useFirstOpenPrompt(input: FirstOpenPromptInput) {
   const [variant, setVariant] = useState<"A" | "B" | null>(() => {
-    if (input.isLoggedIn) return null;
     const state = readState();
 
     if (state.retired) {
@@ -112,5 +118,5 @@ export function useFirstOpenPrompt(input: FirstOpenPromptInput) {
     setVariant(null);
   }
 
-  return { variant, dismiss };
+  return { variant: input.isLoggedIn || input.authLoading ? null : variant, dismiss };
 }

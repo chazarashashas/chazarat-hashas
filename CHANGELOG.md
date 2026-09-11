@@ -2,6 +2,15 @@
 
 One entry per PR, newest first.
 
+## The sign-in card shows on every page, not just Home
+
+- A signed-out visitor now gets the same sign-in card on whatever page
+  they open, including /shasdash and ?siyum= links. Those two used to
+  skip it. How often it asks is unchanged.
+- The card now waits until sign-in status is known. Before, it decided
+  before the saved session loaded, so someone already signed in could
+  still see it.
+
 ## Shas Dash: pause is a thinking break again
 
 - Pausing freezes the crossing only. You can still steer while paused and

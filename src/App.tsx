@@ -248,11 +248,10 @@ function App() {
     0,
   );
   const firstOpen = useFirstOpenPrompt({
-    // A ?siyum= or /shasdash link means someone was sent here for one
-    // specific thing — it should never be greeted with an unrelated
-    // sign-in card on top of it, so this treats it like "don't show"
-    // without touching the ask-count/retirement bookkeeping.
-    isLoggedIn: isLoggedIn || !!deepLinkSlug || !!pathSection,
+    // Every page gets the same sign-in card Home does — a ?siyum= or
+    // /shasdash link included — as long as the visitor is signed out.
+    isLoggedIn,
+    authLoading,
     streakCurrent: progress.streak.current,
     mishnayotCount: progress.completions.length,
     noteCount,
