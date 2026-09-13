@@ -132,7 +132,9 @@ export function useChevrusa() {
 
     if (groupIds.length > 0) {
       const [{ data: groupsData }, { data: membersData }, { data: activityData }] = await Promise.all([
-        supabase.from("groups").select("id, name, masechet_en, is_chabura, is_class, pace, join_code").in("id", groupIds),
+        // "*" rather than a column list: archived_at only exists once the
+        // admin SQL has run, and naming it before then would fail the query.
+        supabase.from("groups").select("*").in("id", groupIds),
         supabase.from("group_members").select("group_id, user_id, role").in("group_id", groupIds),
         supabase.from("group_activity").select("group_id, user_id, last_learned_date").in("group_id", groupIds),
       ]);
@@ -147,7 +149,9 @@ export function useChevrusa() {
         (activityData ?? []).map((a) => [`${a.group_id}:${a.user_id}`, a.last_learned_date as string]),
       );
 
-      const built: Group[] = (groupsData ?? []).map((g) => ({
+      // An admin can archive a chabura: it stays intact but leaves its
+      // members' lists.
+      const built: Group[] = (groupsData ?? []).filter((g) => !g.archived_at).map((g) => ({
         id: g.id,
         name: g.name,
         masechetEn: g.masechet_en,

@@ -14,13 +14,48 @@ export interface AuditEntry {
 /** The actions worth a line in the log. Anything that changes or reveals
     another account's data belongs here; read-only browsing of the panel
     itself does not. */
-export type AuditAction = "reset_user_data" | "delete_user" | "view_as";
+export type AuditAction =
+  | "reset_user_data"
+  | "delete_user"
+  | "view_as"
+  | "grant_admin"
+  | "revoke_admin"
+  | "edit_name"
+  | "export_users"
+  | "edit_siyum"
+  | "delete_siyum"
+  | "release_claim"
+  | "edit_chabura"
+  | "archive_chabura"
+  | "unarchive_chabura"
+  | "transfer_rebbe"
+  | "delete_invite"
+  | "delete_note"
+  | "delete_comment"
+  | "set_announcement";
 
 const ACTION_LABELS: Record<string, string> = {
   reset_user_data: "Reset trackers",
   delete_user: "Deleted account",
   view_as: "Viewed as rebbe",
+  grant_admin: "Made admin",
+  revoke_admin: "Removed admin",
+  edit_name: "Edited name",
+  export_users: "Exported users",
+  edit_siyum: "Edited siyum",
+  delete_siyum: "Deleted siyum",
+  release_claim: "Released a perek",
+  edit_chabura: "Edited chabura",
+  archive_chabura: "Archived chabura",
+  unarchive_chabura: "Restored chabura",
+  transfer_rebbe: "Moved rebbe role",
+  delete_invite: "Removed invite",
+  delete_note: "Deleted note",
+  delete_comment: "Deleted comment",
+  set_announcement: "Changed announcement",
 };
+
+export const AUDIT_ACTIONS = Object.keys(ACTION_LABELS);
 
 export function auditActionLabel(action: string): string {
   return ACTION_LABELS[action] ?? action;
@@ -64,7 +99,7 @@ export function useAdminAudit(isAdmin: boolean) {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true);
     (async () => {
-      const { data, error: err } = await supabase!.rpc("admin_audit_log_list");
+      const { data, error: err } = await supabase!.rpc("admin_audit_log_list", { p_limit: 500 });
       if (cancelled) return;
       if (err) {
         // The panel's own §1 complaint: a raw Postgres string used to

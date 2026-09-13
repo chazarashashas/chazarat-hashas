@@ -2,6 +2,59 @@
 
 One entry per PR, newest first.
 
+## Admin panel, part two
+
+Needs admin_panel_v2_schema.sql run once in Supabase. It is safe to re-run.
+Every new function checks is_admin first. Private perek notes and concept
+notes are never read.
+
+- **Siyumim tab.** Every siyum with who started it and how many perakim
+  are learned, taken or open. A filter finds perakim waiting 30+ days.
+  The siyum panel can:
+  - edit the dedication, occasion or visibility (private takes it off the
+    public board; the link keeps working)
+  - release a perek someone never learned
+  - delete the siyum
+- **Users.**
+  - The list now shows last sign-in, email confirmation, last day learned
+    and Daily Limmud position.
+  - It sorts by newest, last learned, last sign-in, most mishnayot or name.
+  - It filters by activity (this week / quiet 14+ days / never), sign-up
+    route, admins, or unconfirmed email.
+  - The figure on each row follows the sort. There is a CSV export.
+- **User panel.**
+  - New facts: last sign-in, email confirmed, last learned, streak (Shabbat
+    and yom tov held, as in the app), Daily Limmud position and pace.
+  - A 30-day learning chart and the masechtot they learned most.
+  - Their chaburos and chevrusos with role and join date, the siyum perakim
+    they took on, and the siyumim they started.
+  - Their name can be edited, and admin access given or removed. An admin
+    can't remove their own.
+- **Growth tab.**
+  - Users, and people learning today, this week and this month.
+  - Mishnayot this week against last week.
+  - Sign-ups per week (26 weeks) and people learning per day (30 days), each
+    with a hover figure and a table view.
+  - The most-learned masechtot, and games played.
+- **Chaburos.**
+  - The list shows join codes and pending invites. It filters to chaburos,
+    chevrusos or archived, and searches by name, masechet, rebbe or code.
+  - The panel adds join dates on the roster, invites with a remove button,
+    and 60 days of daily submissions.
+  - It can edit the name or masechet, move the rebbe role to another
+    member, and archive or restore. Archived chaburos leave their members'
+    lists. Join dates are recorded from now on; earlier memberships show none.
+- **Moderation tab.** Chabura notes and comments can be deleted (a note
+  takes its comments with it). Siyum dedications and names open their panel
+  for editing. Newest first, with search.
+- **Audit log.** Filters by action, admin, and user or detail. Shows the
+  latest 500 entries with each entry's detail. Every new action above is
+  logged.
+- **Message tab.** One message at the top of the app for everyone, with a
+  preview. Anyone can close it, and a new or edited message shows again. An
+  empty message can't be switched on.
+- The tab row is one line that scrolls sideways.
+
 ## Chag printing: the same greeting everywhere, and never on the day itself
 
 - **One greeting.** The print card on Daily Limmud and Resources now opens

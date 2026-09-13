@@ -44,7 +44,7 @@ export const DEFAULT_PACE: Pace = { unit: "mishnayot", amount: 1 };
     before this type existed — real devices and accounts already have
     those values saved, and there's no migration script that touches
     them, so every read has to keep understanding them. */
-function normalizePace(raw: unknown): Pace {
+export function normalizePace(raw: unknown): Pace {
   if (raw && typeof raw === "object") {
     const p = raw as { unit?: unknown; amount?: unknown };
     if ((p.unit === "mishnayot" || p.unit === "perakim") && typeof p.amount === "number" && p.amount > 0) {

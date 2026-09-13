@@ -33,6 +33,8 @@ import { SyncStatusProvider } from "./utils/useCloudSync";
 import { useLearningProgress } from "./utils/useLearningProgress";
 import { usePerekNotes } from "./utils/usePerekNotes";
 import { useFirstOpenPrompt } from "./utils/useFirstOpenPrompt";
+import { useAnnouncement } from "./utils/useAnnouncement";
+import { AnnouncementBanner } from "./components/Announcement/AnnouncementBanner";
 import { useNativeApp } from "./utils/useNativeApp";
 import { useLocalStorageState } from "./utils/useLocalStorageState";
 import { DEFAULT_BOTTOM_BAR_IDS } from "./utils/navItems";
@@ -322,6 +324,9 @@ function App() {
 
   useNativeApp("home", section, () => handleSelect("home"));
 
+  // The admin's message to everyone, when one is switched on.
+  const { announcement, dismiss: dismissAnnouncement } = useAnnouncement();
+
   return (
     <SyncStatusProvider session={session}>
       <div className="app">
@@ -340,6 +345,7 @@ function App() {
               (WIDE_SECTIONS.has(section) ? " main__content--wide" : "")
             }
           >
+            {announcement && <AnnouncementBanner message={announcement.message} onDismiss={dismissAnnouncement} />}
             {section === "home" ? (
               <HomeScreen onNavigate={setSection} />
             ) : section === "map" ? (

@@ -28,9 +28,23 @@
   color: var(--muted);
 }
 
+/* Nine sections: one line that scrolls sideways rather than a wrapped
+   second row with a single pill stranded on it. */
 .admin-sections {
+  flex-wrap: nowrap;
   justify-content: flex-start;
   margin: 18px 0 14px;
+  padding-bottom: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.admin-sections::-webkit-scrollbar {
+  display: none;
+}
+
+.admin-sections .pill {
+  flex: none;
 }
 
 /* ---------- Rows ---------- */
@@ -201,6 +215,310 @@
   text-overflow: ellipsis;
 }
 
+/* Name above detail in the first column; the role or action button spans
+   both lines in the second. Placed explicitly — auto-placement put the
+   detail line beside the name instead of under it. */
+.admin-roster__row > * {
+  grid-column: 1;
+  min-width: 0;
+}
+
+.admin-roster__row > .admin-roster__role,
+.admin-roster__row > .admin-roster__action {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: center;
+}
+
+/* ---------- Filters and toolbars ---------- */
+
+.admin-filters {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0 10px;
+}
+
+.admin-subfilters {
+  justify-content: flex-start;
+  margin: 0 0 12px;
+}
+
+.admin-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin: 0 0 12px;
+}
+
+.admin-toolbar__count {
+  margin: 0 0 10px;
+  font-size: var(--fs-12);
+  color: var(--muted);
+}
+
+.admin-toolbar .admin-toolbar__count {
+  margin: 0 0 0 auto;
+}
+
+.admin-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  font-size: var(--fs-13);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.admin-check input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--ink);
+}
+
+.admin-link {
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  color: var(--ink-2);
+  text-align: left;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+/* ---------- Cards, tables, tiles ---------- */
+
+.admin-card {
+  margin-bottom: 12px;
+  padding: 16px;
+}
+
+.admin-card .section-title:first-child {
+  margin-top: 0;
+}
+
+.admin-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.admin-stat__sub {
+  margin: 2px 0 0;
+  font-size: var(--fs-12);
+  color: var(--faint);
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-13);
+  color: var(--ink);
+}
+
+.admin-table th {
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: var(--fs-12);
+  font-weight: 600;
+  color: var(--muted);
+  text-align: left;
+}
+
+.admin-table td {
+  padding: 7px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.admin-table__num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-table th.admin-table__num {
+  text-align: right;
+}
+
+/* ---------- Chart ---------- */
+
+.admin-chart {
+  margin: 0;
+}
+
+.admin-chart__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.admin-chart__title {
+  font-family: var(--font-heading);
+  font-size: var(--fs-13);
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.admin-chart__plot {
+  position: relative;
+}
+
+.admin-chart__plot svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.admin-chart__grid {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+
+.admin-chart__axis {
+  fill: var(--muted);
+  font-family: var(--font-body);
+  font-size: var(--fs-12);
+}
+
+.admin-chart__bar {
+  fill: var(--ink-2);
+}
+
+.admin-chart__bar--active {
+  fill: var(--ink);
+}
+
+.admin-chart__hit {
+  fill: transparent;
+  cursor: default;
+  outline: none;
+}
+
+.admin-chart__hit:focus-visible {
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+
+.admin-chart__tip {
+  position: absolute;
+  top: -6px;
+  z-index: 1;
+  max-width: 260px;
+  padding: 6px 9px;
+  border-radius: var(--radius-small);
+  background: var(--ink);
+  color: var(--on-navy);
+  font-size: var(--fs-12);
+  line-height: 1.4;
+  white-space: nowrap;
+  pointer-events: none;
+  transform: translate(-50%, -100%);
+}
+
+.admin-chart__table-wrap {
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+/* ---------- Siyum progress ---------- */
+
+.admin-meter {
+  display: flex;
+  gap: 2px;
+  height: 4px;
+  margin-top: 6px;
+  overflow: hidden;
+  border-radius: var(--radius-pill);
+  background: var(--track);
+}
+
+.admin-meter__learned {
+  background: var(--ink-2);
+}
+
+.admin-meter__taken {
+  background: var(--gold);
+}
+
+/* ---------- Moderation ---------- */
+
+.admin-post {
+  padding: 12px 14px;
+}
+
+.admin-post__body {
+  margin: 0 0 8px;
+  font-size: var(--fs-14);
+  line-height: 1.55;
+  color: var(--ink);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.admin-post__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+  font-size: var(--fs-12);
+  color: var(--muted);
+}
+
+.admin-post__action {
+  margin-left: auto;
+}
+
+/* ---------- Drawer extras ---------- */
+
+.admin-drawer__line {
+  margin: 8px 0 0;
+  font-size: var(--fs-13);
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.admin-drawer__hint {
+  margin: -4px 0 10px;
+}
+
+.admin-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0 8px;
+}
+
+.admin-history__day + .admin-history__day {
+  margin-top: 10px;
+}
+
+.admin-history__date {
+  margin: 0 0 2px;
+  font-family: var(--font-heading);
+  font-size: var(--fs-12);
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.admin-textarea {
+  min-height: 84px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.admin-status {
+  margin: 0 0 14px;
+}
+
+.admin-preview-label {
+  display: block;
+  margin: 14px 0 6px;
+}
+
 /* phone — the panel is a desk tool (ADMIN-PROPOSAL.md §6), so this is
    damage control rather than a phone layout: the stats stop being a
    six-across strip and the drawer takes the whole screen. */
@@ -214,6 +532,12 @@
   }
 
   .admin-drawer__facts {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-filters,
+  .admin-two-col,
+  .admin-form {
     grid-template-columns: 1fr;
   }
 }

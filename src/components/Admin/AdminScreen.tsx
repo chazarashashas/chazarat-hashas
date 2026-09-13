@@ -1,398 +1,39 @@
 import { useState } from "react";
-import { useAdmin, type AdminUserRow } from "../../utils/useAdmin";
+import { useAdmin } from "../../utils/useAdmin";
 import { useAdminActivityGrid } from "../../utils/useAdminActivityGrid";
-import { useAdminAudit, logAdminAction, auditActionLabel } from "../../utils/useAdminAudit";
-import { useAdminGroups, useAdminGroupMembers, type AdminGroupRow } from "../../utils/useAdminGroups";
+import { useAdminAudit } from "../../utils/useAdminAudit";
+import { useAdminGroups } from "../../utils/useAdminGroups";
 import { useAdminGameStats } from "../../utils/useAdminGameStats";
-import type { GameStats } from "../../utils/useGameStats";
-import { localDateStr } from "../../utils/localDate";
+import { useAdminSiyumim } from "../../utils/useAdminData";
 import { useAuth } from "../../utils/useAuth";
-import { useEscapeKey } from "../../utils/useEscapeKey";
-import { friendlyError } from "../../utils/friendlyError";
-import { supabase } from "../../utils/supabase";
 import { RebbeGrid } from "../RebbeDashboard/RebbeDashboardScreen";
-import { ConfirmModal } from "../ConfirmModal/ConfirmModal";
+import { UsersSection } from "./UsersSection";
+import { UserDrawer } from "./UserDrawer";
+import { GrowthSection } from "./GrowthSection";
+import { SiyumimSection, SiyumDrawer } from "./SiyumimSection";
+import { ChaburotSection, GroupDrawer } from "./ChaburotSection";
+import { ModerationSection } from "./ModerationSection";
+import { GamesSection } from "./GamesSection";
+import { AuditLogSection } from "./AuditLogSection";
+import { AnnouncementSection } from "./AnnouncementSection";
 import "../RebbeDashboard/RebbeDashboardScreen.css";
 import "./AdminScreen.css";
 
-const RESET_SCOPES = [
-  { value: "daily_limmud", label: "Daily Limmud & streak" },
-  { value: "perek_notes", label: "Perek Notes & notebook" },
-  { value: "concepts", label: "Concepts to review" },
-  { value: "game_stats", label: "Practice game stats" },
-  { value: "everything", label: "Everything" },
-] as const;
-
-type Section = "users" | "chaburot" | "activity" | "games" | "log";
+type Section = "users" | "growth" | "siyumim" | "chaburot" | "moderation" | "activity" | "games" | "log" | "announcement";
 
 const SECTIONS: { id: Section; label: string }[] = [
   { id: "users", label: "Users" },
+  { id: "growth", label: "Growth" },
+  { id: "siyumim", label: "Siyumim" },
   { id: "chaburot", label: "Chaburos" },
+  { id: "moderation", label: "Moderation" },
   { id: "activity", label: "Today" },
   { id: "games", label: "Games" },
   { id: "log", label: "Audit log" },
+  { id: "announcement", label: "Message" },
 ];
 
-/* ============================================================
-   Games — one account's record for one game, in the shape both the
-   Games list and the user drawer print. Seder Sort and Sidrei
-   Hamishna have no score, only completions, so their "best" is null.
-   ============================================================ */
-
-type GameId = "quiz" | "dash" | "chazara" | "sort" | "sidrei";
-
-interface GameLine {
-  played: boolean;
-  best: string | null;
-  /** What the Games list sorts by, highest first. */
-  rank: number;
-  count: number;
-  countLabel: string;
-  today: string | null;
-}
-
-function plural(n: number, one: string, many: string): string {
-  return `${n} ${n === 1 ? one : many}`;
-}
-
-const GAMES: { id: GameId; label: string; line: (s: GameStats, today: string) => GameLine }[] = [
-  {
-    id: "quiz",
-    label: "Mishna Quiz",
-    line: ({ quiz }, today) => {
-      const t = quiz.today?.date === today ? quiz.today : null;
-      return {
-        played: quiz.timesPlayed > 0,
-        best: `${quiz.bestScore}/${quiz.bestOutOf}`,
-        rank: quiz.bestOutOf > 0 ? quiz.bestScore / quiz.bestOutOf : 0,
-        count: quiz.timesPlayed,
-        countLabel: plural(quiz.timesPlayed, "play", "plays"),
-        today: t && `${t.bestScore}/${t.bestOutOf}${t.scope ? ` · ${t.scope}` : ""}`,
-      };
-    },
-  },
-  {
-    id: "dash",
-    label: "Shas Dash",
-    line: ({ dash }, today) => ({
-      played: dash.timesPlayed > 0,
-      best: String(dash.bestScore),
-      rank: dash.bestScore,
-      count: dash.timesPlayed,
-      countLabel: plural(dash.timesPlayed, "play", "plays"),
-      today: dash.today?.date === today ? String(dash.today.bestScore) : null,
-    }),
-  },
-  {
-    id: "chazara",
-    label: "Mishna Chazara",
-    line: ({ chazara }, today) => {
-      const t = chazara.today?.date === today ? chazara.today : null;
-      return {
-        played: chazara.timesPlayed > 0,
-        best: `${chazara.bestCount} recalled`,
-        rank: chazara.bestCount,
-        count: chazara.timesPlayed,
-        countLabel: plural(chazara.timesPlayed, "play", "plays"),
-        today: t && `${t.bestCount} recalled${t.scope ? ` · ${t.scope}` : ""}`,
-      };
-    },
-  },
-  {
-    id: "sort",
-    label: "Seder Sort",
-    line: ({ sort }, today) => ({
-      played: sort.timesCompleted > 0 || sort.today?.date === today,
-      best: null,
-      rank: sort.timesCompleted,
-      count: sort.timesCompleted,
-      countLabel: "completed",
-      today: sort.today?.date === today ? `${sort.today.placed}/${sort.today.total} placed` : null,
-    }),
-  },
-  {
-    id: "sidrei",
-    label: "Sidrei Hamishna",
-    line: ({ sidrei }, today) => ({
-      played: sidrei.timesCompleted > 0 || sidrei.today?.date === today,
-      best: null,
-      rank: sidrei.timesCompleted,
-      count: sidrei.timesCompleted,
-      countLabel: "completed",
-      today: sidrei.today?.date === today ? `${sidrei.today.placed}/${sidrei.today.total} placed` : null,
-    }),
-  },
-];
-
-function gameSummary(l: GameLine): string {
-  if (!l.played) return "—";
-  const parts = l.best !== null ? [`Best ${l.best}`, l.countLabel] : [`${l.count} ${l.countLabel}`];
-  if (l.today) parts.push(`today ${l.today}`);
-  return parts.join(" · ");
-}
-
-function fullName(u: { firstName: string | null; lastName: string | null }): string {
-  return [u.firstName, u.lastName].filter(Boolean).join(" ").trim();
-}
-
-function shortDate(iso: string): string {
-  return new Date(iso).toLocaleDateString();
-}
-
-function shortDateTime(iso: string): string {
-  return new Date(iso).toLocaleString(undefined, {
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
-}
-
-/* ============================================================
-   User drawer — everything about one account, and the two
-   privileged actions, in one place rather than as table cells.
-   ============================================================ */
-
-interface UserDrawerProps {
-  user: AdminUserRow;
-  isSelf: boolean;
-  /** Undefined when this account has never played while signed in. */
-  games: GameStats | undefined;
-  gamesError: string | null;
-  onClose: () => void;
-  onChanged: () => void;
-}
-
-function UserDrawer({ user, isSelf, games, gamesError, onClose, onChanged }: UserDrawerProps) {
-  useEscapeKey(onClose);
-  const auth = useAuth();
-  const [scope, setScope] = useState<string>(RESET_SCOPES[0].value);
-  const [confirmingReset, setConfirmingReset] = useState(false);
-  const [confirmingDelete, setConfirmingDelete] = useState(false);
-  const [busy, setBusy] = useState(false);
-  const [note, setNote] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  async function handleReset() {
-    if (!supabase) return;
-    setBusy(true);
-    setError(null);
-    const { error: err } = await supabase.rpc("admin_reset_user_data", {
-      p_user_id: user.id,
-      p_scope: scope,
-    });
-    setBusy(false);
-    setConfirmingReset(false);
-    if (err) {
-      setError(friendlyError(err, "admin-reset"));
-      return;
-    }
-    await logAdminAction("reset_user_data", { id: user.id, email: user.email }, { scope });
-    setNote(`Reset ${RESET_SCOPES.find((s) => s.value === scope)?.label ?? scope}.`);
-    onChanged();
-  }
-
-  async function handleDelete() {
-    setBusy(true);
-    setError(null);
-    const err = await auth.adminDeleteUser(user.id);
-    setBusy(false);
-    if (err) {
-      setError(err);
-      return;
-    }
-    await logAdminAction("delete_user", { id: user.id, email: user.email });
-    setConfirmingDelete(false);
-    onChanged();
-    onClose();
-  }
-
-  return (
-    <div className="modal-scrim" onClick={onClose}>
-      <div className="admin-drawer" role="dialog" aria-label="User" onClick={(e) => e.stopPropagation()}>
-        <button className="icon-btn modal__close" onClick={onClose} title="Close" aria-label="Close">
-          ✕
-        </button>
-
-        <h2 className="modal__title">{fullName(user) || user.username || user.email}</h2>
-        <p className="admin-drawer__email">{user.email}</p>
-
-        <dl className="admin-drawer__facts">
-          <div>
-            <dt>Username</dt>
-            <dd>{user.username ?? "—"}</dd>
-          </div>
-          <div>
-            <dt>Signed up via</dt>
-            <dd>{user.signedUpVia === "google" ? "Google" : "Email"}</dd>
-          </div>
-          <div>
-            <dt>Joined</dt>
-            <dd>{shortDate(user.createdAt)}</dd>
-          </div>
-          <div>
-            <dt>Location</dt>
-            <dd>{[user.city, user.country].filter(Boolean).join(", ") || "—"}</dd>
-          </div>
-          <div>
-            <dt>Mishnayot learned</dt>
-            <dd>{user.mishnayotLearned}</dd>
-          </div>
-          <div>
-            <dt>Super admin</dt>
-            <dd>{user.isAdmin ? "Yes" : "No"}</dd>
-          </div>
-        </dl>
-
-        <h3 className="section-title">Games</h3>
-        {gamesError ? (
-          <p className="state state--error callout callout--bad">{gamesError}</p>
-        ) : !games || GAMES.every((g) => !g.line(games, localDateStr()).played) ? (
-          <p className="state state--empty">No games played while signed in.</p>
-        ) : (
-          <dl className="admin-drawer__facts admin-drawer__facts--single">
-            {GAMES.map((g) => (
-              <div key={g.id}>
-                <dt>{g.label}</dt>
-                <dd>{gameSummary(g.line(games, localDateStr()))}</dd>
-              </div>
-            ))}
-          </dl>
-        )}
-
-        {note && <p className="callout callout--good">{note}</p>}
-        {error && <p className="field__error">{error}</p>}
-
-        <h3 className="section-title">Reset trackers</h3>
-        <label className="field">
-          <span className="field__label">What to reset</span>
-          <select
-            className="field__input"
-            value={scope}
-            onChange={(e) => setScope(e.target.value)}
-          >
-            {RESET_SCOPES.map((s) => (
-              <option key={s.value} value={s.value}>
-                {s.label}
-              </option>
-            ))}
-          </select>
-        </label>
-        <button
-          className="btn btn--danger-outline btn--compact"
-          onClick={() => setConfirmingReset(true)}
-        >
-          Reset
-        </button>
-
-        <h3 className="section-title">Delete account</h3>
-        {isSelf ? (
-          <p className="state state--empty">
-            This is your own account — delete it from My Account.
-          </p>
-        ) : (
-          <button className="btn btn--danger btn--compact" onClick={() => setConfirmingDelete(true)}>
-            Delete
-          </button>
-        )}
-
-        {confirmingReset && (
-          <ConfirmModal
-            title={`Reset ${RESET_SCOPES.find((s) => s.value === scope)?.label ?? scope} for ${user.email}?`}
-            body="This can't be undone. It will be recorded in the audit log."
-            confirmLabel="Yes, reset"
-            busyLabel="Resetting…"
-            busy={busy}
-            destructive
-            onConfirm={handleReset}
-            onCancel={() => setConfirmingReset(false)}
-          />
-        )}
-        {confirmingDelete && (
-          <ConfirmModal
-            title={`Permanently delete ${user.email}'s account?`}
-            body="This can't be undone. It will be recorded in the audit log. Type DELETE to confirm."
-            icon="⚠"
-            confirmLabel="Confirm delete"
-            busyLabel="Deleting…"
-            busy={busy}
-            destructive
-            typeToConfirm="DELETE"
-            error={error}
-            onConfirm={handleDelete}
-            onCancel={() => {
-              setError(null);
-              setConfirmingDelete(false);
-            }}
-          />
-        )}
-      </div>
-    </div>
-  );
-}
-
-/* ============================================================
-   Chabura drawer — what the rebbe sees, for support
-   ============================================================ */
-
-function GroupDrawer({ group, onClose }: { group: AdminGroupRow; onClose: () => void }) {
-  useEscapeKey(onClose);
-  const { members, loading, error } = useAdminGroupMembers(group.id);
-
-  return (
-    <div className="modal-scrim" onClick={onClose}>
-      <div className="admin-drawer" role="dialog" aria-label="Chabura" onClick={(e) => e.stopPropagation()}>
-        <button className="icon-btn modal__close" onClick={onClose} title="Close" aria-label="Close">
-          ✕
-        </button>
-
-        <h2 className="modal__title">{group.name ?? group.masechetEn}</h2>
-        <p className="admin-drawer__email">
-          {group.isClass ? "Rebbe & class" : group.isChabura ? "Chabura" : "Chevrusa"} ·{" "}
-          {group.masechetEn}
-        </p>
-
-        <dl className="admin-drawer__facts">
-          <div>
-            <dt>Rebbe</dt>
-            <dd>{group.teacherEmail ?? "—"}</dd>
-          </div>
-          <div>
-            <dt>Members</dt>
-            <dd>{group.memberCount}</dd>
-          </div>
-          <div>
-            <dt>Created</dt>
-            <dd>{shortDate(group.createdAt)}</dd>
-          </div>
-        </dl>
-
-        <h3 className="section-title">Roster</h3>
-        {loading ? (
-          <p className="state state--loading">Loading…</p>
-        ) : error ? (
-          <p className="state state--error callout callout--bad">{error}</p>
-        ) : members.length === 0 ? (
-          <p className="state state--empty">Nobody has joined yet.</p>
-        ) : (
-          <ul className="admin-roster">
-            {members.map((m) => (
-              <li key={m.userId} className="admin-roster__row">
-                <span className="admin-roster__name">{fullName(m) || m.email}</span>
-                <span className="admin-roster__email">{m.email}</span>
-                <span className="admin-roster__role">{m.role === "teacher" ? "Rebbe" : "Talmid"}</span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    </div>
-  );
-}
-
-/* ============================================================
-   The panel
-   ============================================================ */
+type Drawer = { kind: "user" | "group" | "siyum"; id: string } | null;
 
 export function AdminScreen() {
   const auth = useAuth();
@@ -401,43 +42,30 @@ export function AdminScreen() {
   const audit = useAdminAudit(true);
   const groups = useAdminGroups(true);
   const gameStats = useAdminGameStats(true);
+  const siyumim = useAdminSiyumim(true);
 
   const [section, setSection] = useState<Section>("users");
-  const [game, setGame] = useState<GameId>("quiz");
-  const [openUser, setOpenUser] = useState<AdminUserRow | null>(null);
-  const [openGroup, setOpenGroup] = useState<AdminGroupRow | null>(null);
-  const [search, setSearch] = useState("");
-
-  const needle = search.trim().toLowerCase();
-  const shownUsers = needle
-    ? users.filter((u) =>
-        [u.email, u.username, fullName(u)].some((v) => (v ?? "").toLowerCase().includes(needle)),
-      )
-    : users;
-
-  const today = localDateStr();
-  const selectedGame = GAMES.find((g) => g.id === game) ?? GAMES[0];
-  const gameRows = users
-    .flatMap((u) => {
-      const s = gameStats.byUser.get(u.id);
-      const line = s && selectedGame.line(s, today);
-      return line?.played ? [{ user: u, line }] : [];
-    })
-    .sort((a, b) => b.line.rank - a.line.rank || b.line.count - a.line.count);
+  const [drawer, setDrawer] = useState<Drawer>(null);
+  const open = (kind: "user" | "group" | "siyum") => (id: string) => setDrawer({ kind, id });
 
   function refreshAll() {
     refresh();
     audit.refresh();
     groups.refresh();
     gameStats.refresh();
+    siyumim.refresh();
   }
+
+  const openUser = drawer?.kind === "user" ? users.find((u) => u.id === drawer.id) : undefined;
+  const openGroup = drawer?.kind === "group" ? groups.groups.find((g) => g.id === drawer.id) : undefined;
+  const openSiyum = drawer?.kind === "siyum" ? siyumim.data.find((s) => s.id === drawer.id) : undefined;
 
   return (
     <div className="stage">
       <div className="panel">
         <div className="screen-head">
           <h1 className="screen-head__title">Admin</h1>
-          <p className="screen-head__sub">Every account, chabura and privileged action.</p>
+          <p className="screen-head__sub">Every account, chabura, siyum and privileged action.</p>
           <div className="screen-head__aside">
             <button className="btn btn--secondary btn--compact" onClick={refreshAll} disabled={loading}>
               {loading ? "Refreshing…" : "Refresh"}
@@ -465,10 +93,12 @@ export function AdminScreen() {
           </div>
         )}
 
-        <div className="pill-row admin-sections">
+        <div className="pill-row admin-sections" role="tablist" aria-label="Admin sections">
           {SECTIONS.map((s) => (
             <button
               key={s.id}
+              role="tab"
+              aria-selected={section === s.id}
               className={"pill pill--compact" + (section === s.id ? " pill--active" : "")}
               onClick={() => setSection(s.id)}
             >
@@ -477,76 +107,30 @@ export function AdminScreen() {
           ))}
         </div>
 
-        {section === "users" && (
-          <>
-            <label className="field">
-              <span className="field__label">Find a user</span>
-              <input
-                className="field__input"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Name, username or email"
-              />
-            </label>
-            {loading && users.length === 0 ? (
-              <p className="state state--loading">Loading…</p>
-            ) : shownUsers.length === 0 ? (
-              <p className="state state--empty">No user matches that.</p>
-            ) : (
-              <div className="admin-rows">
-                {shownUsers.map((u) => (
-                  <button key={u.id} className="card admin-row" onClick={() => setOpenUser(u)}>
-                    <span className="admin-row__main">
-                      <span className="admin-row__name">{fullName(u) || u.username || "—"}</span>
-                      <span className="admin-row__sub">{u.email}</span>
-                    </span>
-                    <span className="admin-row__meta">
-                      <span className="admin-row__figure">{u.mishnayotLearned}</span>
-                      <span className="admin-row__figure-label">mishnayot</span>
-                    </span>
-                    {u.isAdmin && <span className="pill pill--compact admin-row__tag">Admin</span>}
-                  </button>
-                ))}
-              </div>
-            )}
-          </>
+        {section === "users" && <UsersSection users={users} loading={loading} onOpenUser={open("user")} />}
+
+        {section === "growth" && <GrowthSection />}
+
+        {section === "siyumim" && (
+          <SiyumimSection siyumim={siyumim.data} loading={siyumim.loading} error={siyumim.error} onOpenSiyum={open("siyum")} />
         )}
 
         {section === "chaburot" && (
-          <>
-            {groups.error && <p className="state state--error callout callout--bad">{groups.error}</p>}
-            {groups.loading && groups.groups.length === 0 ? (
-              <p className="state state--loading">Loading…</p>
-            ) : groups.groups.length === 0 ? (
-              <p className="state state--empty">No chaburos or chevrusos yet.</p>
-            ) : (
-              <div className="admin-rows">
-                {groups.groups.map((g) => (
-                  <button key={g.id} className="card admin-row" onClick={() => setOpenGroup(g)}>
-                    <span className="admin-row__main">
-                      <span className="admin-row__name">{g.name ?? g.masechetEn}</span>
-                      <span className="admin-row__sub">
-                        {g.isClass ? "Rebbe & class" : g.isChabura ? "Chabura" : "Chevrusa"} ·{" "}
-                        {g.masechetEn}
-                        {g.teacherEmail ? ` · ${g.teacherEmail}` : ""}
-                      </span>
-                    </span>
-                    <span className="admin-row__meta">
-                      <span className="admin-row__figure">{g.memberCount}</span>
-                      <span className="admin-row__figure-label">members</span>
-                    </span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </>
+          <ChaburotSection groups={groups.groups} loading={groups.loading} error={groups.error} onOpenGroup={open("group")} />
+        )}
+
+        {section === "moderation" && (
+          <ModerationSection
+            siyumim={siyumim.data}
+            onOpenUser={open("user")}
+            onOpenGroup={open("group")}
+            onOpenSiyum={open("siyum")}
+          />
         )}
 
         {section === "activity" && (
           <>
-            {activityGrid.error && (
-              <p className="state state--error callout callout--bad">{activityGrid.error}</p>
-            )}
+            {activityGrid.error && <p className="state state--error callout callout--bad">{activityGrid.error}</p>}
             {activityGrid.loading && activityGrid.students.length === 0 ? (
               <p className="state state--loading">Loading…</p>
             ) : (
@@ -556,91 +140,51 @@ export function AdminScreen() {
         )}
 
         {section === "games" && (
-          <>
-            <label className="field">
-              <span className="field__label">Game</span>
-              <select className="field__input" value={game} onChange={(e) => setGame(e.target.value as GameId)}>
-                {GAMES.map((g) => (
-                  <option key={g.id} value={g.id}>
-                    {g.label}
-                  </option>
-                ))}
-              </select>
-              <span className="field__hint">Only games played while signed in are counted.</span>
-            </label>
-            {gameStats.error ? (
-              <p className="state state--error callout callout--bad">{gameStats.error}</p>
-            ) : gameStats.loading && gameStats.byUser.size === 0 ? (
-              <p className="state state--loading">Loading…</p>
-            ) : gameRows.length === 0 ? (
-              <p className="state state--empty">Nobody has played {selectedGame.label} while signed in yet.</p>
-            ) : (
-              <div className="admin-rows">
-                {gameRows.map(({ user: u, line }) => (
-                  <button key={u.id} className="card admin-row" onClick={() => setOpenUser(u)}>
-                    <span className="admin-row__main">
-                      <span className="admin-row__name">{fullName(u) || u.username || "—"}</span>
-                      <span className="admin-row__sub">
-                        {u.email}
-                        {line.today ? ` · today ${line.today}` : ""}
-                      </span>
-                    </span>
-                    <span className="admin-row__meta">
-                      <span className="admin-row__figure">{line.best ?? line.count}</span>
-                      <span className="admin-row__figure-label">
-                        {line.best !== null ? `best · ${line.countLabel}` : line.countLabel}
-                      </span>
-                    </span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </>
+          <GamesSection
+            users={users}
+            byUser={gameStats.byUser}
+            loading={gameStats.loading}
+            error={gameStats.error}
+            onOpenUser={open("user")}
+          />
         )}
 
-        {section === "log" && (
-          <>
-            {audit.error && <p className="state state--error callout callout--bad">{audit.error}</p>}
-            {audit.loading && audit.entries.length === 0 ? (
-              <p className="state state--loading">Loading…</p>
-            ) : audit.entries.length === 0 ? (
-              <p className="state state--empty">
-                Nothing logged yet. Resets, deletions and rebbe views appear here.
-              </p>
-            ) : (
-              <div className="admin-rows">
-                {audit.entries.map((e) => (
-                  <div key={e.id} className="card admin-row admin-row--static">
-                    <span className="admin-row__main">
-                      <span className="admin-row__name">{auditActionLabel(e.action)}</span>
-                      <span className="admin-row__sub">
-                        {e.actorEmail}
-                        {e.targetEmail ? ` → ${e.targetEmail}` : ""}
-                        {typeof e.detail.scope === "string" ? ` · ${e.detail.scope}` : ""}
-                      </span>
-                    </span>
-                    <span className="admin-row__meta">
-                      <span className="admin-row__figure-label">{shortDateTime(e.createdAt)}</span>
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </>
-        )}
+        {section === "log" && <AuditLogSection entries={audit.entries} loading={audit.loading} error={audit.error} />}
+
+        {section === "announcement" && <AnnouncementSection />}
       </div>
 
       {openUser && (
         <UserDrawer
+          key={openUser.id}
           user={openUser}
           isSelf={openUser.id === auth.session?.user.id}
           games={gameStats.byUser.get(openUser.id)}
           gamesError={gameStats.error}
-          onClose={() => setOpenUser(null)}
+          onClose={() => setDrawer(null)}
           onChanged={refreshAll}
+          onOpenGroup={open("group")}
+          onOpenSiyum={open("siyum")}
         />
       )}
-      {openGroup && <GroupDrawer group={openGroup} onClose={() => setOpenGroup(null)} />}
+      {openGroup && (
+        <GroupDrawer
+          key={openGroup.id}
+          group={openGroup}
+          onClose={() => setDrawer(null)}
+          onChanged={refreshAll}
+          onOpenUser={open("user")}
+        />
+      )}
+      {openSiyum && (
+        <SiyumDrawer
+          key={openSiyum.id}
+          siyum={openSiyum}
+          onClose={() => setDrawer(null)}
+          onChanged={refreshAll}
+          onOpenUser={open("user")}
+        />
+      )}
     </div>
   );
 }

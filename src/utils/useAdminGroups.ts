@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "./supabase";
 import { friendlyError } from "./friendlyError";
+import { useAdminRpc } from "./adminRpc";
 
 export interface AdminGroupRow {
   id: string;
@@ -11,6 +12,10 @@ export interface AdminGroupRow {
   createdAt: string;
   memberCount: number;
   teacherEmail: string | null;
+  joinCode: string | null;
+  pendingInvites: number;
+  lastSubmission: string | null;
+  archivedAt: string | null;
 }
 
 export interface AdminGroupMember {
@@ -19,71 +24,39 @@ export interface AdminGroupMember {
   firstName: string | null;
   lastName: string | null;
   role: string;
-  joinedAt: string;
+  /** Null for anyone who joined before join dates were recorded. */
+  joinedAt: string | null;
+}
+
+export function mapAdminGroups(data: unknown): AdminGroupRow[] {
+  return ((data as Record<string, unknown>[] | null) ?? []).map((g) => ({
+    id: g.id as string,
+    name: (g.name as string | null) ?? null,
+    masechetEn: g.masechet_en as string,
+    isChabura: Boolean(g.is_chabura),
+    isClass: Boolean(g.is_class),
+    createdAt: g.created_at as string,
+    memberCount: Number(g.member_count) || 0,
+    teacherEmail: (g.teacher_email as string | null) ?? null,
+    joinCode: (g.join_code as string | null) ?? null,
+    pendingInvites: Number(g.pending_invites) || 0,
+    lastSubmission: (g.last_submission as string | null) ?? null,
+    archivedAt: (g.archived_at as string | null) ?? null,
+  }));
 }
 
 /** Every chabura and chevrusa, for support. Admin-only server-side (see
-    admin_chaburot_schema.sql) — the ordinary group policies scope reads
+    admin_panel_v2_schema.sql) — the ordinary group policies scope reads
     to your own membership, which is right for students and no use when
     someone asks why their talmid is missing. */
 export function useAdminGroups(isAdmin: boolean) {
-  const [groups, setGroups] = useState<AdminGroupRow[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [tick, setTick] = useState(0);
-
-  const refresh = useCallback(() => setTick((t) => t + 1), []);
-
-  useEffect(() => {
-    if (!isAdmin || !supabase) return;
-    let cancelled = false;
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setLoading(true);
-    (async () => {
-      const { data, error: err } = await supabase!.rpc("admin_list_groups");
-      if (cancelled) return;
-      if (err) {
-        setError(friendlyError(err, "admin-groups"));
-        setGroups([]);
-      } else {
-        setError(null);
-        setGroups(
-          (data ?? []).map(
-            (g: {
-              id: string;
-              name: string | null;
-              masechet_en: string;
-              is_chabura: boolean;
-              is_class: boolean;
-              created_at: string;
-              member_count: number;
-              teacher_email: string | null;
-            }) => ({
-              id: g.id,
-              name: g.name,
-              masechetEn: g.masechet_en,
-              isChabura: g.is_chabura,
-              isClass: g.is_class,
-              createdAt: g.created_at,
-              memberCount: Number(g.member_count),
-              teacherEmail: g.teacher_email,
-            }),
-          ),
-        );
-      }
-      setLoading(false);
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [isAdmin, tick]);
-
-  return { groups, loading, error, refresh };
+  const { data, loading, error, refresh } = useAdminRpc("admin_list_groups", isAdmin ? {} : null, mapAdminGroups, []);
+  return { groups: data, loading, error, refresh };
 }
 
 /** One group's roster — loaded only when a row is opened, since the
     panel lists every group and most are never looked at. */
-export function useAdminGroupMembers(groupId: string | null) {
+export function useAdminGroupMembers(groupId: string | null, tick = 0) {
   const [members, setMembers] = useState<AdminGroupMember[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -111,7 +84,7 @@ export function useAdminGroupMembers(groupId: string | null) {
               first_name: string | null;
               last_name: string | null;
               role: string;
-              joined_at: string;
+              joined_at: string | null;
             }) => ({
               userId: m.user_id,
               email: m.email,
@@ -128,7 +101,7 @@ export function useAdminGroupMembers(groupId: string | null) {
     return () => {
       cancelled = true;
     };
-  }, [groupId]);
+  }, [groupId, tick]);
 
   return { members, loading, error };
 }

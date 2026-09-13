@@ -26,6 +26,12 @@ export interface AdminUserRow {
   /** "google" or "email" — from auth.users' own provider field, not a
       guess (see admin_setup.sql). */
   signedUpVia: string;
+  lastSignInAt: string | null;
+  emailConfirmedAt: string | null;
+  /** The latest date on any completion — the last day they learned. */
+  lastLearnedDate: string | null;
+  /** Index into MISHNA_SEQUENCE of the next mishnah Daily Limmud gives. */
+  dailyLimmudPosition: number | null;
 }
 
 /** Reads the two admin-only SECURITY DEFINER functions (see
@@ -86,6 +92,13 @@ export function useAdmin(isAdmin: boolean) {
           createdAt: r.created_at as string,
           mishnayotLearned: Number(r.mishnayot_learned),
           signedUpVia: (r.signed_up_via as string) ?? "email",
+          lastSignInAt: (r.last_sign_in_at as string | null) ?? null,
+          emailConfirmedAt: (r.email_confirmed_at as string | null) ?? null,
+          lastLearnedDate: (r.last_learned_date as string | null) ?? null,
+          dailyLimmudPosition:
+            r.daily_limmud_position === null || r.daily_limmud_position === undefined
+              ? null
+              : Number(r.daily_limmud_position),
         })),
       );
       setLoading(false);
