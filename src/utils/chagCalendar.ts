@@ -161,6 +161,49 @@ export function lastEndedStretch(today: string, withinDays = 10): ChagStretch | 
   return stretchFromErev(addDays(start, -1));
 }
 
+/** Minutes after nightfall before the after-chag prompt may show. */
+export const RETURN_GRACE_MINUTES = 10;
+
+/**
+ * The stretch the after-chag prompt is about, as of a real moment rather
+ * than a date. On an ordinary day it is the stretch that already ended; on
+ * the last rest day of a stretch it is that stretch, once
+ * RETURN_GRACE_MINUTES have passed after that evening's nightfall.
+ * `nightfall` gives the local nightfall for a date, or null when it can't
+ * be known — then the prompt waits for the next date, as it always did.
+ */
+export function endedStretchAt(
+  now: Date,
+  nightfall: (date: string) => Date | null,
+  graceMinutes = RETURN_GRACE_MINUTES,
+): ChagStretch | null {
+  const today = formatDate(now);
+  if (!restDay(today)) return lastEndedStretch(today);
+  if (restDay(addDays(today, 1))) return null;
+  const end = nightfall(today);
+  if (!end || now.getTime() < end.getTime() + graceMinutes * 60_000) return null;
+  let start = today;
+  while (restDay(addDays(start, -1))) start = addDays(start, -1);
+  return stretchFromErev(addDays(start, -1));
+}
+
+/** The next moment endedStretchAt's answer can change: that evening's
+    nightfall plus the grace minutes on a stretch's last rest day, or the
+    next local midnight. */
+export function nextStretchCheckAt(
+  now: Date,
+  nightfall: (date: string) => Date | null,
+  graceMinutes = RETURN_GRACE_MINUTES,
+): Date {
+  const today = formatDate(now);
+  if (restDay(today) && !restDay(addDays(today, 1))) {
+    const end = nightfall(today);
+    const at = end && new Date(end.getTime() + graceMinutes * 60_000);
+    if (at && at.getTime() > now.getTime()) return at;
+  }
+  return parseDate(addDays(today, 1));
+}
+
 const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Shabbat"];
 const MONTHS_SHORT = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"];
 const MONTHS_LONG = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];

@@ -21,7 +21,7 @@ import { LiluyNishmatScreen } from "./components/LiluyNishmat/LiluyNishmatScreen
 import { AdminScreen } from "./components/Admin/AdminScreen";
 import { FirstOpenPrompt } from "./components/FirstOpenPrompt/FirstOpenPrompt";
 import { ChagReturnModal } from "./components/ChagPrint/ChagReturnModal";
-import { lastEndedStretch, type ChagStretch } from "./utils/chagCalendar";
+import { useEndedStretch } from "./utils/useEndedStretch";
 import { localDateStr } from "./utils/localDate";
 import { markFirstSeen } from "./components/Share/sharePrompts";
 import { RebbeDashboardScreen } from "./components/RebbeDashboard/RebbeDashboardScreen";
@@ -271,18 +271,27 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // The first open after Shabbat or yom tov (CHAG-BRIEF.md, Feature B):
-  // read once per load, and only ever once per stretch. Only for someone
-  // who was already learning before it and marked nothing during it.
-  const [chagReturn, setChagReturn] = useState<ChagStretch | null>(() => {
-    const s = lastEndedStretch(localDateStr());
+  // The first open after Shabbat or yom tov (CHAG-BRIEF.md, Feature B),
+  // from ten minutes after nightfall — not the next morning — and only
+  // ever once per stretch. Only for someone who was already learning
+  // before it and marked nothing during it. "Seen" is read once per load,
+  // so the prompt isn't hidden by its own seen-marker the moment it shows.
+  const endedStretch = useEndedStretch();
+  const [seenAtLoad] = useState<string | null>(() => {
     try {
-      if (!s || localStorage.getItem(CHAG_RETURN_SEEN_KEY) === s.erev.date) return null;
+      return localStorage.getItem(CHAG_RETURN_SEEN_KEY) ?? "";
     } catch {
       return null;
     }
-    return s;
   });
+  const [closedReturn, setClosedReturn] = useState<string | null>(null);
+  const chagReturn =
+    endedStretch &&
+    seenAtLoad !== null &&
+    endedStretch.erev.date !== seenAtLoad &&
+    endedStretch.erev.date !== closedReturn
+      ? endedStretch
+      : null;
   const showChagReturn =
     !!chagReturn &&
     !firstOpen.variant &&
@@ -425,7 +434,11 @@ function App() {
           />
         )}
         {showChagReturn && chagReturn && (
-          <ChagReturnModal stretch={chagReturn} onClose={() => setChagReturn(null)} onCatchUp={() => handleSelect("limmud")} />
+          <ChagReturnModal
+            stretch={chagReturn}
+            onClose={() => setClosedReturn(chagReturn.erev.date)}
+            onCatchUp={() => handleSelect("limmud")}
+          />
         )}
       </div>
     </SyncStatusProvider>

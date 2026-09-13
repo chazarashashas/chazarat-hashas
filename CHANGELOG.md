@@ -2,6 +2,27 @@
 
 One entry per PR, newest first.
 
+## After Shabbat and yom tov: the prompt opens ten minutes after nightfall
+
+- The "did you learn your mishnayot" prompt used to wait for the next
+  calendar date, so on Motzei Shabbat or Motzei Yom Tov it only appeared
+  after midnight. It now opens ten minutes after that night's nightfall
+  (tzeit hakochavim, 8.5°), on the person's own clock. With the app left
+  open, it appears at that moment without a reload.
+- It works the same after an ordinary Shabbat and after yom tov. On the
+  first day of a two-day yom tov it never opens, because the stretch
+  continues.
+- The app doesn't ask for location. It uses the device's time zone and
+  takes the latest nightfall among the Jewish communities hebcal knows in
+  that zone. So it is never early for any of them, and at most some
+  minutes late for the eastern or southern ones.
+  - Israel's zone names (Asia/Jerusalem, Asia/Tel_Aviv, Asia/Hebron,
+    Asia/Gaza) all use the Israeli communities.
+  - In a zone with no known community, it waits for the next date as
+    before.
+- Still shown only once per stretch, and only to someone who was learning
+  before it and marked nothing during it.
+
 ## Admin panel, part two
 
 Needs admin_panel_v2_schema.sql run once in Supabase. It is safe to re-run.
