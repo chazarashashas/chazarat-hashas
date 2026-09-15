@@ -2,6 +2,27 @@
 
 One entry per PR, newest first.
 
+## Daily Limmud: choose your masechet
+
+- **Start anywhere.** Daily Limmud no longer has to start at Berachot.
+  - Its settings have a new "Start from" choice: any masechet, grouped by
+    seder, and a perek within it. Choosing a place moves only where today's
+    portion begins. Everything already learned stays marked.
+  - Someone who hasn't learned anything yet sees "Starting at Berachot —
+    start from a different masechet" under the settings line.
+- **At the end of a masechet, you choose.** Daily Limmud stops and shows
+  "You finished Berachot!" with "Continue to Peah", or a list to pick a
+  different masechet. This is the same choice chaburos already had.
+  - A day's portion now ends at the end of its masechet, instead of running
+    into the next one at 2 mishnayot or a perek a day.
+- **At the end of Shas**, the finished message offers the same list to
+  start another masechet.
+- **Sync.** The account used to keep whichever device was further along,
+  which would have undone a choice to go back.
+  - Now the most recent choice of where to start wins on every device,
+    and learning still moves forward as before.
+  - Answering "continue" on one device isn't asked again on another.
+
 ## After Shabbat and yom tov: the prompt opens ten minutes after nightfall
 
 - The "did you learn your mishnayot" prompt used to wait for the next

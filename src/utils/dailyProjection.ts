@@ -16,6 +16,11 @@ export interface MishnaRef {
   mishnah: number;
 }
 
+/** Where in the order of Shas a masechet's perek begins. */
+export function masechetStartIndex(masechetEn: string, perek = 1): number {
+  return MISHNA_SEQUENCE.findIndex((s) => s.masechetEn === masechetEn && s.perek === perek && s.mishnah === 1);
+}
+
 /** One day of personal learning: the [start, end] indices into
     MISHNA_SEQUENCE a day at this pace covers, starting at `position`.
     Null once the position is past the end of Shas. */
@@ -35,7 +40,12 @@ export function dayRange(position: number, pace: Pace): [number, number] | null 
     }
     end = Math.min(end, MISHNA_SEQUENCE.length - 1);
   }
-  return [start, end];
+  // A day never runs into the next masechet: finishing one is where the
+  // learner chooses to continue to the next or pick another.
+  const masechetEn = MISHNA_SEQUENCE[start].masechetEn;
+  let last = start;
+  while (last < end && MISHNA_SEQUENCE[last + 1].masechetEn === masechetEn) last++;
+  return [start, last];
 }
 
 /** `days` consecutive days of personal learning from `position`, each as

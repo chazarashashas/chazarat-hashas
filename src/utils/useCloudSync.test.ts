@@ -24,6 +24,18 @@ describe("mergeBlobs", () => {
     expect(mergeBlobs({ dailyLimmudPosition: 100 }, { dailyLimmudPosition: 40 }).dailyLimmudPosition).toBe(100);
   });
 
+  it("dailyLimmudPosition: a newer chosen start wins, even when it moved back", () => {
+    const chosen = { dailyLimmudPosition: 40, dailyLimmudStartChosenAt: "2026-09-15T10:00:00.000Z" };
+    // Another device, never told about the choice, is further along.
+    expect(mergeBlobs({ dailyLimmudPosition: 3000 }, chosen)).toMatchObject(chosen);
+    expect(mergeBlobs(chosen, { dailyLimmudPosition: 3000 })).toMatchObject(chosen);
+    // An older choice loses to a newer one.
+    const older = { dailyLimmudPosition: 900, dailyLimmudStartChosenAt: "2026-09-01T10:00:00.000Z" };
+    expect(mergeBlobs(older, chosen)).toMatchObject(chosen);
+    // Same choice on both: learning moves forward as usual.
+    expect(mergeBlobs({ ...chosen, dailyLimmudPosition: 55 }, chosen).dailyLimmudPosition).toBe(55);
+  });
+
   it("dailyLimmudPace: local wins when set, cloud fills in when local has none", () => {
     const localPace = { unit: "perakim", amount: 2 };
     const cloudPace = { unit: "mishnayot", amount: 1 };

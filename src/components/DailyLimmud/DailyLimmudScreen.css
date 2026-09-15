@@ -86,6 +86,35 @@
   text-align: left;
 }
 
+/* ---------- Where Daily Limmud starts ---------- */
+
+.limmud-start-hint {
+  margin-top: 6px;
+  align-self: flex-start;
+}
+
+.limmud-start {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.limmud-start__fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 8px;
+}
+
+.limmud-start__fields .field {
+  margin-bottom: 6px;
+}
+
+@media (max-width: 599px) {
+  .limmud-start__fields {
+    grid-template-columns: 1fr;
+  }
+}
+
 .limmud-chabura-members {
   display: flex;
   flex-wrap: wrap;

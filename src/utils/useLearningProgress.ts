@@ -168,6 +168,12 @@ function addDaysStr(date: string, delta: number): string {
 export function useLearningProgress() {
   const [completions, setCompletions] = useLocalStorageState<CompletionRecord[]>("completions", []);
   const [position, setPosition] = useLocalStorageState<number>("dailyLimmudPosition", 0);
+  // When someone last chose where Daily Limmud starts — lets sync prefer
+  // that choice over another device's higher position (see mergeBlobs).
+  const [, setStartChosenAt] = useLocalStorageState<string | null>("dailyLimmudStartChosenAt", null);
+  // The position where the person last chose to start or to continue —
+  // the finished-a-masechet question isn't asked there again.
+  const [confirmedStart, setConfirmedStart] = useLocalStorageState<number | null>("dailyLimmudConfirmedStart", null);
   const [rawPace, setRawPace] = useLocalStorageState<unknown>("dailyLimmudPace", DEFAULT_PACE);
   const pace = normalizePace(rawPace);
   const setPace = (next: Pace) => setRawPace(next);
@@ -232,6 +238,22 @@ export function useLearningProgress() {
     if (next !== position) setPosition(next);
   }
 
+  /** Starts Daily Limmud from a chosen mishnah — anywhere in Shas, forward
+      or back. What is already learned stays learned; only where today's
+      portion begins changes. */
+  function startFrom(index: number) {
+    const next = Math.max(0, Math.min(index, MISHNA_SEQUENCE.length - 1));
+    setPosition(next);
+    setConfirmedStart(next);
+    setStartChosenAt(new Date().toISOString());
+    if (catchUpEnd !== null) setCatchUpEnd(null);
+  }
+
+  /** "Continue to the next masechet" — Daily Limmud already stands there. */
+  function continueToNextMasechet() {
+    setConfirmedStart(position);
+  }
+
   /** Makes Daily Limmud's next portion run from the current position
       through `endIndex`, so a stretch that came due over a chag is caught
       up as one sitting. Cleared when that portion is marked learned. */
@@ -290,6 +312,17 @@ export function useLearningProgress() {
     };
     setConcepts((prev) => [...prev, entry]);
   }
+
+  // A masechet was just finished in Daily Limmud and the next portion would
+  // open a new one: ask first — continue to the next masechet, or choose a
+  // different one. Not after choosing a start there, not once answered,
+  // and not in the middle of a catch-up.
+  const atItem = MISHNA_SEQUENCE[position];
+  const beforeItem = position > 0 ? MISHNA_SEQUENCE[position - 1] : undefined;
+  const justFinishedMasechet =
+    atItem && beforeItem && atItem.masechetEn !== beforeItem.masechetEn && confirmedStart !== position && catchUpEnd === null && isCompleted(beforeItem)
+      ? beforeItem.masechetEn
+      : null;
 
   const rawActiveDates = new Set(completions.map((c) => c.date));
   const activeDates = new Set([...rawActiveDates, ...frozenDates]);
@@ -389,6 +422,9 @@ export function useLearningProgress() {
     finishedShas,
     markTodayLearned,
     markDaysLearned,
+    startFrom,
+    continueToNextMasechet,
+    justFinishedMasechet,
     queueCatchUp,
     logLearning,
     addConcept,

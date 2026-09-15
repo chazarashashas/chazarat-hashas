@@ -26,6 +26,8 @@ export const SYNC_KEYS = [
   "masechetSentences",
   "completions",
   "dailyLimmudPosition",
+  "dailyLimmudStartChosenAt",
+  "dailyLimmudConfirmedStart",
   "dailyLimmudPace",
   "conceptNotes",
   "nishmatMyClaims",
@@ -141,6 +143,39 @@ function mergeGameStats(local: unknown, cloud: unknown): Record<string, unknown>
   return merged;
 }
 
+/** Daily Limmud's position normally only moves forward, so the higher one
+    wins — except when someone has chosen where to start, which can move it
+    back. Then the side with the newer choice wins, and carries that choice's
+    time, so another device's older, higher position can't undo it. */
+function mergePosition(
+  local: SyncBlob,
+  cloud: SyncBlob,
+): Pick<SyncBlob, "dailyLimmudPosition" | "dailyLimmudStartChosenAt" | "dailyLimmudConfirmedStart"> {
+  const lAt = typeof local.dailyLimmudStartChosenAt === "string" ? local.dailyLimmudStartChosenAt : "";
+  const cAt = typeof cloud.dailyLimmudStartChosenAt === "string" ? cloud.dailyLimmudStartChosenAt : "";
+  const lPos = Number(local.dailyLimmudPosition) || 0;
+  const cPos = Number(cloud.dailyLimmudPosition) || 0;
+  // Where the person last said "start here" / "continue" — so the
+  // finished-a-masechet question isn't asked again on their other device.
+  const confirmed = (v: unknown) => (typeof v === "number" ? v : undefined);
+  if (lAt !== cAt) {
+    const localWins = lAt > cAt;
+    return {
+      dailyLimmudPosition: localWins ? lPos : cPos,
+      dailyLimmudStartChosenAt: localWins ? lAt : cAt,
+      dailyLimmudConfirmedStart: confirmed(localWins ? local.dailyLimmudConfirmedStart : cloud.dailyLimmudConfirmedStart),
+    };
+  }
+  const lConfirmed = confirmed(local.dailyLimmudConfirmedStart);
+  const cConfirmed = confirmed(cloud.dailyLimmudConfirmedStart);
+  return {
+    dailyLimmudPosition: Math.max(lPos, cPos),
+    dailyLimmudStartChosenAt: lAt || undefined,
+    dailyLimmudConfirmedStart:
+      lConfirmed === undefined && cConfirmed === undefined ? undefined : Math.max(lConfirmed ?? -1, cConfirmed ?? -1),
+  };
+}
+
 /** Merges this device's local data with whatever's already saved to the
     account — local edits always win on a direct conflict, cloud fills in
     anything local is missing, nothing is silently discarded. */
@@ -158,10 +193,7 @@ export function mergeBlobs(local: SyncBlob, cloud: SyncBlob): SyncBlob {
       cloud.conceptNotes,
       (item) => (item as { id: string }).id,
     ),
-    dailyLimmudPosition: Math.max(
-      Number(local.dailyLimmudPosition) || 0,
-      Number(cloud.dailyLimmudPosition) || 0,
-    ),
+    ...mergePosition(local, cloud),
     dailyLimmudPace: local.dailyLimmudPace ?? cloud.dailyLimmudPace ?? DEFAULT_PACE,
     nishmatMyClaims: mergeUniqueBy(
       local.nishmatMyClaims,

@@ -22,6 +22,9 @@ import { useGroupContexts } from "../../utils/useGroupContexts";
 import { stretchFromErev } from "../../utils/chagCalendar";
 import { useToday } from "../../utils/useToday";
 import { ChagPrintCard } from "../ChagPrint/ChagPrintCard";
+import { LimmudStartPicker, MasechetOptions } from "./LimmudStartPicker";
+import { masechetStartIndex as startIndexOf } from "../../utils/dailyProjection";
+import { MISHNA_SEQUENCE } from "../../data/mishnaSequence";
 import { useRunShare } from "../Share/useRunShare";
 import { learningMoments } from "../Share/learningMoments";
 import { QueuedSiyumPerek } from "./QueuedSiyumPerek";
@@ -355,7 +358,7 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
 
         {erevStretch && <ChagPrintCard stretch={erevStretch} />}
 
-        {(groupContexts.length > 0 || isSelf) && !finished && (
+        {(groupContexts.length > 0 || isSelf) && (!finished || isSelf) && (
           <>
             <button
               className="btn btn--secondary btn--block limmud-settings-summary"
@@ -368,6 +371,12 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
                 <NavIcon id="chevron" size={15} weight={2.2} />
               </span>
             </button>
+
+            {isSelf && !settingsOpen && progress.position === 0 && progress.completions.length === 0 && (
+              <button className="btn btn--quiet btn--compact limmud-start-hint" onClick={() => setSettingsOpen(true)}>
+                Starting at Berachot — start from a different masechet
+              </button>
+            )}
 
             {settingsOpen && (
               <div className="limmud-settings">
@@ -426,6 +435,18 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
                     </div>
                   </div>
                 )}
+                {isSelf && (
+                  <div className="limmud-control">
+                    <p className="mishna-control__label">Start from</p>
+                    <LimmudStartPicker
+                      position={progress.position}
+                      onStart={(index) => {
+                        progress.startFrom(index);
+                        setSettingsOpen(false);
+                      }}
+                    />
+                  </div>
+                )}
                 {!isSelf && (
                   <p className="limmud-settings__fixed-note">
                     {activeChabura
@@ -438,10 +459,44 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
           </>
         )}
 
-        {finished ? (
+        {isSelf && !finished && progress.justFinishedMasechet ? (
+          <div className="note-banner note-banner--good limmud-finished">
+            <p className="limmud-finished__text">You finished {progress.justFinishedMasechet}!</p>
+            <button className="restart limmud-finished__continue" onClick={progress.continueToNextMasechet}>
+              Continue to {MISHNA_SEQUENCE[progress.position]?.masechetEn}
+            </button>
+            <label className="limmud-finished__pick">
+              <span>or pick a different masechet:</span>
+              <select
+                value=""
+                onChange={(e) => {
+                  if (e.target.value) progress.startFrom(startIndexOf(e.target.value));
+                }}
+              >
+                <option value="">Choose…</option>
+                <MasechetOptions />
+              </select>
+            </label>
+            {share.prompt("cream")}
+          </div>
+        ) : finished ? (
           <div className="note-banner note-banner--good limmud-finished">
             {isSelf ? (
-              "You've reached the end of Shas in Daily Limmud! Restart from the beginning any time, or switch pace above."
+              <>
+                <p className="limmud-finished__text">You've reached the end of Shas in Daily Limmud!</p>
+                <label className="limmud-finished__pick">
+                  <span>Choose a masechet to learn next:</span>
+                  <select
+                    value=""
+                    onChange={(e) => {
+                      if (e.target.value) progress.startFrom(startIndexOf(e.target.value));
+                    }}
+                  >
+                    <option value="">Choose…</option>
+                    <MasechetOptions />
+                  </select>
+                </label>
+              </>
             ) : (
               <>
                 <p className="limmud-finished__text">

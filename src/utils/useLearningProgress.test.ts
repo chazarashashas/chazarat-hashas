@@ -1,6 +1,44 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { computeStreak, isRestDate, useLearningProgress } from "./useLearningProgress";
+import { MISHNA_SEQUENCE } from "../data/mishnaSequence";
+import { dayRange } from "./dailyProjection";
+
+describe("choosing where Daily Limmud starts", () => {
+  const at = (masechetEn: string, perek: number, mishnah: number) =>
+    MISHNA_SEQUENCE.findIndex((s) => s.masechetEn === masechetEn && s.perek === perek && s.mishnah === mishnah);
+
+  beforeEach(() => localStorage.clear());
+
+  it("starts from any masechet, and moving back keeps what was learned", () => {
+    const { result } = renderHook(() => useLearningProgress());
+    act(() => result.current.startFrom(at("Shabbat", 1, 1)));
+    expect(result.current.todaysItems[0]).toMatchObject({ masechetEn: "Shabbat", perek: 1, mishnah: 1 });
+    act(() => result.current.markTodayLearned());
+    act(() => result.current.startFrom(at("Berachot", 2, 1)));
+    expect(result.current.todaysItems[0]).toMatchObject({ masechetEn: "Berachot", perek: 2, mishnah: 1 });
+    expect(result.current.isCompleted({ masechetEn: "Shabbat", perek: 1, mishnah: 1 })).toBe(true);
+    expect(result.current.justFinishedMasechet).toBeNull();
+  });
+
+  it("asks after finishing a masechet, until the learner continues or picks another", () => {
+    const lastOfBerachot = at("Peah", 1, 1) - 1;
+    const { result } = renderHook(() => useLearningProgress());
+    act(() => result.current.startFrom(lastOfBerachot));
+    act(() => result.current.markTodayLearned());
+    expect(result.current.justFinishedMasechet).toBe("Berachot");
+    act(() => result.current.continueToNextMasechet());
+    expect(result.current.justFinishedMasechet).toBeNull();
+    expect(result.current.todaysItems[0]).toMatchObject({ masechetEn: "Peah", perek: 1, mishnah: 1 });
+  });
+
+  it("never lets a day's portion run into the next masechet", () => {
+    const lastOfBerachot = at("Peah", 1, 1) - 1;
+    expect(dayRange(lastOfBerachot, { unit: "mishnayot", amount: 2 })).toEqual([lastOfBerachot, lastOfBerachot]);
+    const range = dayRange(at("Berachot", 9, 1), { unit: "perakim", amount: 2 })!;
+    expect(MISHNA_SEQUENCE[range[1]].masechetEn).toBe("Berachot");
+  });
+});
 
 const PREFIX = "chazarat-hashas:";
 
