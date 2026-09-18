@@ -2,6 +2,18 @@
 
 One entry per PR, newest first.
 
+## Privacy policy finished, and an account-deletion page for Google Play
+
+- privacy.html: dated September 18, 2026, with chazarashashas@gmail.com as the
+  contact. It now also says that taking on a siyum perek asks for a name and
+  email, and it links to the deletion page.
+- New public page, delete-account.html. It covers:
+  - how to delete an account in the app (My Account, Delete account, type
+    DELETE)
+  - how to ask by email instead (deleted within 30 days)
+  - what is deleted, and what may remain
+  Google Play requires this link for the Data safety form.
+
 ## Daily Limmud: choose your masechet
 
 - **Start anywhere.** Daily Limmud no longer has to start at Berachot.
