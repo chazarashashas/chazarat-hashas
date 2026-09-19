@@ -2,6 +2,18 @@
 
 One entry per PR, newest first.
 
+## Android app: the share card reaches WhatsApp with its image
+
+- Sharing from inside the Android app sent the status text alone — the
+  card image was dropped. The app's web view has no file sharing, so the
+  web path (navigator.share with files) fell through to the text-only
+  WhatsApp link.
+- The app now writes the PNG to its own cache and hands Android's share
+  sheet both the image and the text, through @capacitor/share and
+  @capacitor/filesystem. WhatsApp and More… both take that path.
+- The website is unchanged — it already shared both.
+- Ships with the next Android build. Nothing to do on the web.
+
 ## Android app: Google's own account picker
 
 - "Continue with Google" in the Android app now opens Google's account

@@ -41,9 +41,13 @@ export async function startNativeGoogleSignIn(supabase: SupabaseClient): Promise
       if (idToken) {
         const { error } = await supabase.auth.signInWithIdToken({ provider: "google", token: idToken, nonce: rawNonce });
         if (!error) return null;
+        console.error("[google] Supabase rejected the ID token:", error.status, error.message);
+      } else {
+        console.error("[google] the account picker returned no ID token");
       }
     } catch (err) {
       if (isCancel(err)) return null;
+      console.error("[google] the account picker failed:", err);
       // Anything else — a setup mismatch, no Google account on the phone —
       // falls through to the browser, which works without any of it.
     }

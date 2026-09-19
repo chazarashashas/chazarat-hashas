@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { toBlob } from "html-to-image";
 import { useAuth } from "../../utils/useAuth";
+import { shareCardNatively } from "../../utils/nativeShare";
 import { useEscapeKey } from "../../utils/useEscapeKey";
 import { ShareCard } from "./ShareCard";
 import type { ShareMoment } from "./shareMoments";
@@ -75,6 +76,7 @@ export function ShareSheet({ moment, onClose }: Props) {
 
   function whatsapp() {
     withCard(async (file) => {
+      if (await shareCardNatively(file, text)) return;
       if (navigator.canShare?.({ files: [file] })) {
         await navigator.share({ files: [file], text });
         return;
@@ -88,6 +90,7 @@ export function ShareSheet({ moment, onClose }: Props) {
 
   function more() {
     withCard(async (file) => {
+      if (await shareCardNatively(file, text)) return;
       if (navigator.canShare?.({ files: [file] })) await navigator.share({ files: [file], text });
       else if (navigator.share) await navigator.share({ text, url: moment.link });
       else {
