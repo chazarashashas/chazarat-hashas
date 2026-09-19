@@ -10,7 +10,7 @@ import { NATIVE_OAUTH_CALLBACK, parseOAuthCallback, randomNonce, sha256Hex } fro
     Google's Android account picker asks for tokens addressed to it; the
     Android OAuth client (package + signing SHA-1) only has to exist in the
     same Google Cloud project. Empty = skip the picker, use the browser. */
-const GOOGLE_WEB_CLIENT_ID = "";
+const GOOGLE_WEB_CLIENT_ID = "144219374923-u6sh0f0cfd17hni572uuc91nglbb0a5q.apps.googleusercontent.com";
 
 let initialized: Promise<void> | null = null;
 
