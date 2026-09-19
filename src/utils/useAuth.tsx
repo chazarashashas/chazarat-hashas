@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import type { Session } from "@supabase/supabase-js";
 import { supabase, supabaseConfigured } from "./supabase";
 import { flushLocalDataToCloud } from "./useCloudSync";
+import { isNativeApp, listenForNativeOAuth, startNativeGoogleSignIn } from "./nativeOAuth";
 
 /** Set right before redirecting to Google, cleared on return whether
     sign-in worked or not (see App.tsx's silent-failure check). The one
@@ -135,7 +136,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }));
     });
 
-    return () => listener.subscription.unsubscribe();
+    // Android app: finish a Google sign-in handed back from the browser.
+    const stopNativeOAuth = listenForNativeOAuth(supabase);
+
+    return () => {
+      listener.subscription.unsubscribe();
+      stopNativeOAuth();
+    };
   }, []);
 
   async function checkUsernameAvailable(username: string): Promise<boolean> {
@@ -180,6 +187,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       comment for why. */
   async function signInWithGoogle(): Promise<string | null> {
     if (!supabase) return "Accounts aren't connected yet.";
+    // Inside the Android app, Google won't sign in within the app's own
+    // web view — the phone's browser does it and hands back to the app.
+    if (isNativeApp()) return startNativeGoogleSignIn(supabase);
     sessionStorage.setItem(OAUTH_PENDING_KEY, "1");
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",

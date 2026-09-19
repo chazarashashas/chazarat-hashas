@@ -2,6 +2,18 @@
 
 One entry per PR, newest first.
 
+## Android app: Google sign-in through the phone's browser
+
+- Google won't sign in inside an app's own web view, so "Continue with
+  Google" failed in the Android app. The app now opens Google's page in the
+  phone's browser. It returns through the app's own link
+  (org.chazarashashas.app://login-callback) and finishes signing in there.
+- A failed or cancelled sign-in shows its message on the sign-in screen, as
+  on the website. The website's Google sign-in is unchanged.
+- Needs org.chazarashashas.app://login-callback added in Supabase:
+  Authentication, then URL Configuration, then Redirect URLs.
+- Android version 1.0.1 (versionCode 2).
+
 ## Privacy policy finished, and an account-deletion page for Google Play
 
 - privacy.html: dated September 18, 2026, with chazarashashas@gmail.com as the
