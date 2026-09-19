@@ -2,6 +2,23 @@
 
 One entry per PR, newest first.
 
+## Android app: Google's own account picker
+
+- "Continue with Google" in the Android app now opens Google's account
+  picker over the app, and signs in without leaving it. It uses the
+  `@capgo/capacitor-social-login` plugin, Google Credential Manager, and
+  Supabase signInWithIdToken with a hashed nonce.
+- If the picker isn't set up or fails, it falls back to the browser tab
+  from 1.0.1, so sign-in never stops working. Cancelling the picker just
+  closes it.
+- Only the Google part of the plugin ships. Facebook, Apple and Twitter are
+  switched off in capacitor.config.ts, so no Facebook SDK is in the app.
+- Needs the Google Cloud Web client ID in GOOGLE_WEB_CLIENT_ID
+  (src/utils/nativeOAuth.ts). Until it's set, the app keeps using the
+  browser tab. It also needs Android OAuth clients in Google Cloud for the
+  package and both signing SHA-1s.
+- Android version 1.0.2 (versionCode 3).
+
 ## Android app: Google sign-in through the phone's browser
 
 - Google won't sign in inside an app's own web view, so "Continue with

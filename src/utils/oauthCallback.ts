@@ -4,6 +4,20 @@
     Redirect URLs, or Supabase sends the browser to the website instead. */
 export const NATIVE_OAUTH_CALLBACK = "org.chazarashashas.app://login-callback";
 
+/** A one-time random value for Google's account picker (see nativeOAuth). */
+export function randomNonce(): string {
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+/** SHA-256 as lowercase hex — the form Google expects the nonce in and
+    Supabase compares against. */
+export async function sha256Hex(value: string): Promise<string> {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
+  return Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, "0")).join("");
+}
+
 export interface OAuthCallback {
   accessToken: string | null;
   refreshToken: string | null;

@@ -1,5 +1,17 @@
 import { describe, expect, it } from "vitest";
-import { NATIVE_OAUTH_CALLBACK, parseOAuthCallback } from "./oauthCallback";
+import { NATIVE_OAUTH_CALLBACK, parseOAuthCallback, randomNonce, sha256Hex } from "./oauthCallback";
+
+describe("the nonce for Google's account picker", () => {
+  it("hashes to SHA-256 hex, as Supabase compares it", async () => {
+    expect(await sha256Hex("abc")).toBe("ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
+  });
+
+  it("is random and long", () => {
+    const a = randomNonce();
+    expect(a).toMatch(/^[0-9a-f]{64}$/);
+    expect(randomNonce()).not.toBe(a);
+  });
+});
 
 describe("Google sign-in returning to the Android app", () => {
   it("reads the tokens Supabase puts after the #", () => {

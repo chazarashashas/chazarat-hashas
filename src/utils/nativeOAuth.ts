@@ -2,15 +2,59 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { Capacitor } from "@capacitor/core";
 import { App as CapacitorApp } from "@capacitor/app";
 import { Browser } from "@capacitor/browser";
-import { NATIVE_OAUTH_CALLBACK, parseOAuthCallback } from "./oauthCallback";
+import { SocialLogin } from "@capgo/capacitor-social-login";
+import { NATIVE_OAUTH_CALLBACK, parseOAuthCallback, randomNonce, sha256Hex } from "./oauthCallback";
+
+/** The Google Cloud "Web application" OAuth client — the same Client ID set
+    in Supabase → Authentication → Providers → Google. Public, not a secret.
+    Google's Android account picker asks for tokens addressed to it; the
+    Android OAuth client (package + signing SHA-1) only has to exist in the
+    same Google Cloud project. Empty = skip the picker, use the browser. */
+const GOOGLE_WEB_CLIENT_ID = "";
+
+let initialized: Promise<void> | null = null;
+
+function initSocialLogin(): Promise<void> {
+  initialized ??= SocialLogin.initialize({ google: { webClientId: GOOGLE_WEB_CLIENT_ID, mode: "online" } });
+  return initialized;
+}
+
+function isCancel(err: unknown): boolean {
+  return /cancel/i.test(err instanceof Error ? err.message : String(err ?? ""));
+}
 
 /**
- * Google sign-in for the Android app. Google refuses to sign in inside an
- * app's own web view, so the sign-in page opens in the phone's browser (a
- * Chrome tab) instead, and returns to the app through NATIVE_OAUTH_CALLBACK.
- * The website keeps its ordinary redirect (see useAuth's signInWithGoogle).
+ * Google sign-in for the Android app. First choice: Google's own account
+ * picker over the app (Credential Manager), whose ID token Supabase turns
+ * into a session. If that isn't set up or fails, the browser tab below —
+ * so sign-in never simply stops working. Cancelling the picker just closes it.
  */
 export async function startNativeGoogleSignIn(supabase: SupabaseClient): Promise<string | null> {
+  if (GOOGLE_WEB_CLIENT_ID) {
+    try {
+      await initSocialLogin();
+      // Google stamps the token with what it's given; Supabase re-hashes the
+      // raw value and compares — so Google gets the hash, Supabase the raw.
+      const rawNonce = randomNonce();
+      const res = await SocialLogin.login({ provider: "google", options: { nonce: await sha256Hex(rawNonce) } });
+      const idToken = (res.result as { idToken?: string | null }).idToken;
+      if (idToken) {
+        const { error } = await supabase.auth.signInWithIdToken({ provider: "google", token: idToken, nonce: rawNonce });
+        if (!error) return null;
+      }
+    } catch (err) {
+      if (isCancel(err)) return null;
+      // Anything else — a setup mismatch, no Google account on the phone —
+      // falls through to the browser, which works without any of it.
+    }
+  }
+  return startBrowserGoogleSignIn(supabase);
+}
+
+/** Google won't sign in inside an app's own web view, so this opens the
+    sign-in page in the phone's browser (a Chrome tab), which returns to the
+    app through NATIVE_OAUTH_CALLBACK. */
+async function startBrowserGoogleSignIn(supabase: SupabaseClient): Promise<string | null> {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: { redirectTo: NATIVE_OAUTH_CALLBACK, skipBrowserRedirect: true },
