@@ -9,7 +9,7 @@ import { getSederHue } from "../../utils/sederHue";
 import { useGameStats } from "../../utils/useGameStats";
 import { GameHud } from "../GameHud/GameHud";
 import { ShareSheet } from "../Share/ShareSheet";
-import { ShareLink } from "../Share/SharePrompt";
+import { GameEndModal } from "../GameHud/GameEndModal";
 import { all63Moment } from "../Share/shareMoments";
 import "./SederSortScreen.css";
 
@@ -63,6 +63,7 @@ export function SederSortScreen() {
   const { recordSortCompletion, recordSortProgress } = useGameStats();
   const [{ placed, pool }, setState] = useState(initState);
   const [sharing, setSharing] = useState(false);
+  const [endClosed, setEndClosed] = useState(false);
   const [drag, setDrag] = useState<DragState | null>(null);
   const [hoverBin, setHoverBin] = useState<string | null>(null);
   const [rejectBin, setRejectBin] = useState<string | null>(null);
@@ -89,6 +90,8 @@ export function SederSortScreen() {
   }, [placedCount]);
 
   function handleReset() {
+    // A fresh round shows the finished-card again.
+    setEndClosed(false);
     setState(initState());
     setDrag(null);
     setHoverBin(null);
@@ -249,17 +252,13 @@ export function SederSortScreen() {
         </div>
       )}
 
-      {completed && (
-        <div className="modal-scrim">
-          <div className="modal modal--sm game__end">
-            <div className="popup__mark">✓</div>
-            <div className="popup__text">{t("sederSort.allSorted", { total: TOTAL })}</div>
-            <button className="popup__restart" onClick={handleReset}>
-              {t("playAgain")}
-            </button>
-            <ShareLink onClick={() => setSharing(true)} />
-          </div>
-        </div>
+      {completed && !endClosed && (
+        <GameEndModal
+          text={t("sederSort.allSorted", { total: TOTAL })}
+          onPlayAgain={handleReset}
+          onShare={() => setSharing(true)}
+          onClose={() => setEndClosed(true)}
+        />
       )}
       {sharing && <ShareSheet moment={all63Moment("sederSort")} onClose={() => setSharing(false)} />}
     </div>

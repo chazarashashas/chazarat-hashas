@@ -31,9 +31,18 @@
   text-align: center;
 }
 
+/* Equal columns, each as wide as the longest label, so the sliding thumb
+   (one column wide) lands on one option instead of cutting across its
+   neighbour — "Streak | Quiz" used to sit half under the thumb. */
 .switch {
   position: relative;
-  display: inline-flex;
+  display: inline-grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  /* A definite width is what makes the 1fr columns equal — left to size
+     themselves, each column takes its own label's width and the thumb
+     lands across both. */
+  min-width: 160px;
   background: var(--surface-hi);
   border: 1.5px solid var(--border);
   border-radius: var(--radius-pill);
@@ -45,6 +54,7 @@
   top: 2px;
   inset-inline-start: 2px;
   bottom: 2px;
+  width: calc((100% - 4px) / var(--switch-count, 2));
   background: var(--brand);
   border-radius: var(--radius-pill);
   transition: transform 0.2s ease;
@@ -52,6 +62,7 @@
 
 .switch__option {
   position: relative;
+  text-align: center;
   z-index: 1;
   border: none;
   background: transparent;
@@ -89,10 +100,15 @@
   text-overflow: ellipsis;
 }
 
-.pill--reject {
-  animation: panel-wobble 0.3s ease;
+/* A wrong guess: two wobbles and a stronger red, held ~0.9s by the
+   screen — the old single 0.3s flash was easy to miss entirely. */
+.pill.pill--reject {
+  animation: panel-wobble 0.3s ease 0s 2;
   border-color: var(--bad);
+  border-width: 2px;
   background: var(--bad-bg);
+  color: var(--bad);
+  font-weight: 700;
 }
 
 .mishna-narrow-select {
@@ -342,4 +358,16 @@
   color: var(--muted);
   font-weight: 600;
   margin: 2px 0 16px;
+}
+
+/* A wrong guess used to be a 0.3s wobble that was easy to miss. It now
+   holds long enough to register, and says what it cost. */
+.mishna-wrong-note {
+  margin: 0 0 8px;
+  font-family: var(--font-heading);
+  font-size: var(--fs-13);
+  font-weight: 700;
+  color: var(--bad);
+  text-align: center;
+  animation: panel-pop 0.2s ease;
 }

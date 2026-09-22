@@ -97,17 +97,39 @@ export function MapOfShasScreen({ onOpenNotes }: MapOfShasScreenProps) {
     setLevel("mishnayot");
   }
 
-  async function openMishnah(mi: number) {
+  function openMishnah(mi: number) {
+    if (!masechet || !perek) {
+      setMishnah(mi);
+      setLevel("text");
+      return;
+    }
+    void loadMishna(masechet, perek, mi);
+  }
+
+  /** Loads one mishna's text into the reader, from wherever it sits. */
+  async function loadMishna(m: Masechet, p: number, mi: number) {
+    setPerek(p);
     setMishnah(mi);
     setLevel("text");
-    if (!masechet || !perek) return;
     setTextState({ status: "loading", text: "", error: "" });
     try {
-      const text = await fetchMishna(masechet.en, perek, mi);
+      const text = await fetchMishna(m.en, p, mi);
       setTextState({ status: "loaded", text, error: "" });
     } catch (err) {
       setTextState({ status: "error", text: "", error: friendlyError(err, "explore-text") });
     }
+  }
+
+  /** The mishna before or after this one, running on into the next perek
+      rather than stopping at its end — learning doesn't stop there either.
+      Null at the very start and end of the masechet. */
+  function neighbourMishna(step: 1 | -1): { perek: number; mishnah: number } | null {
+    if (!masechet || perek == null || mishnah == null) return null;
+    const next = mishnah + step;
+    if (next >= 1 && next <= getMishnayotCount(masechet.en, perek)) return { perek, mishnah: next };
+    const nextPerek = perek + step;
+    if (nextPerek < 1 || nextPerek > masechet.perakim) return null;
+    return { perek: nextPerek, mishnah: step === 1 ? 1 : getMishnayotCount(masechet.en, nextPerek) };
   }
 
   function goTo(target: Level) {
@@ -219,6 +241,7 @@ export function MapOfShasScreen({ onOpenNotes }: MapOfShasScreenProps) {
         {level === "perakim" && masechet && seder && (
           <div
             className="map-grid map-grid--perakim"
+            dir="rtl"
             style={{ ["--tile-hue" as string]: getSederHue(seder.id) }}
           >
             {Array.from({ length: masechet.perakim }, (_, i) => i + 1).map((p) => {
@@ -246,7 +269,9 @@ export function MapOfShasScreen({ onOpenNotes }: MapOfShasScreenProps) {
 
         {level === "mishnayot" && masechet && perek != null && (
           <>
-            <div className="map-grid map-grid--mishnayot">
+            {/* Hebrew letters read right to left, so the grid fills that way
+                in either interface language. */}
+            <div className="map-grid map-grid--mishnayot" dir="rtl">
               {Array.from({ length: getMishnayotCount(masechet.en, perek) }, (_, i) => i + 1).map((mi) => (
                 <button
                   key={mi}
@@ -284,6 +309,24 @@ export function MapOfShasScreen({ onOpenNotes }: MapOfShasScreenProps) {
                 <TranslationReveal key={`${masechet.en}.${perek}.${mishnah}`} masechetEn={masechet.en} perek={perek} mishnah={mishnah} />
               </>
             )}
+            {/* Straight on to the next mishna, over the end of a perek, instead
+                of going back out to the grid each time. */}
+            <div className="map-text-nav">
+              {(["prev", "next"] as const).map((which) => {
+                const target = neighbourMishna(which === "next" ? 1 : -1);
+                const forward = which === "next";
+                return (
+                  <button
+                    key={which}
+                    className="btn btn--secondary btn--compact map-text-nav__btn"
+                    disabled={!target}
+                    onClick={() => target && loadMishna(masechet, target.perek, target.mishnah)}
+                  >
+                    {forward === (dir === "ltr") ? `${t(`map.${which}Mishna`)} ›` : `‹ ${t(`map.${which}Mishna`)}`}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         )}
 

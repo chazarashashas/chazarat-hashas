@@ -17,7 +17,9 @@
     "perakimCount_two": "שני פרקים",
     "perakimCount_other": "{{count}} פרקים",
     "viewNote": "הצג או ערוך את ההערה לפרק הזה",
-    "addNote": "הוסף הערה לפרק הזה"
+    "addNote": "הוסף הערה לפרק הזה",
+    "prevMishna": "הקודמת",
+    "nextMishna": "הבאה"
   },
   "notes": {
     "title": "סימנים והערות",

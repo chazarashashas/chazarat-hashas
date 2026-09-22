@@ -39,7 +39,8 @@
     "bonusEarned": "★ פרק {{perek}} — הרווחת בונוס!",
     "bonusQuestion": "בונוס: איזה פרק? <tag>נקודה נוספת</tag>",
     "finishQuiz": "סיום החידון",
-    "nextCard": "השאלה הבאה"
+    "nextCard": "השאלה הבאה",
+    "wrongPenalty": "לא זה — פחות {{seconds}} שניות."
   },
   "sederSort": {
     "allSorted": "כל {{total}} המסכתות מוינו"
@@ -78,5 +79,7 @@
   "matchBoard": {
     "orderLabel": "לפי הסדר",
     "allMatched": "כל {{total}} במקומם"
-  }
+  },
+  "sedarimHeader": "סדרים",
+  "wholeSeder": "כל {{seder}}"
 }

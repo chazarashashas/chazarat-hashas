@@ -123,7 +123,7 @@ function Switch<T extends string>({
     <div className={"switch" + (size ? " switch--" + size : "")}>
       <div
         className="switch__thumb"
-        style={{ width: `${100 / options.length}%`, transform: `translateX(${index * step}%)` }}
+        style={{ ["--switch-count" as string]: options.length, transform: `translateX(${index * step}%)` }}
       />
       {options.map((o) => (
         <button
@@ -313,7 +313,7 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
   function handleWrongGuess(key: string) {
     setWrongFlash(key);
     setStreak(0);
-    window.setTimeout(() => setWrongFlash((prev) => (prev === key ? null : prev)), 300);
+    window.setTimeout(() => setWrongFlash((prev) => (prev === key ? null : prev)), 900);
     if (mode === "quiz") {
       setCard((c) => ({ ...c, failed: true }));
     } else {
@@ -432,11 +432,13 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
                 onChange={(e) => handleNarrowChange(e.target.value)}
               >
                 <option value="">{t("allOfShas")}</option>
-                {SEDARIM.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {name(s)}
-                  </option>
-                ))}
+                <optgroup label={t("sedarimHeader")}>
+                  {SEDARIM.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {name(s)}
+                    </option>
+                  ))}
+                </optgroup>
               </select>
             </div>
           ) : (
@@ -448,12 +450,17 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
                   value={narrowTo}
                   onChange={(e) => handleNarrowChange(e.target.value)}
                 >
-                  <option value="">{name(activeSeder)}</option>
-                  {activeSeder.masechtot.map((m) => (
-                    <option key={m.en} value={m.en}>
-                      {name(m)}
-                    </option>
-                  ))}
+                  {/* The whole seder reads as its own choice, and the seder's
+                      name heads the masechtot under it — otherwise "Nashim"
+                      sat in the list looking like one more masechet. */}
+                  <option value="">{t("wholeSeder", { seder: name(activeSeder) })}</option>
+                  <optgroup label={name(activeSeder)}>
+                    {activeSeder.masechtot.map((m) => (
+                      <option key={m.en} value={m.en}>
+                        {name(m)}
+                      </option>
+                    ))}
+                  </optgroup>
                 </select>
               </div>
             )
@@ -545,6 +552,11 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
             ) : !sederDone ? (
               <div className="mishna-step">
                 <div className="mishna-step-label">{t("mishnaId.whichSeder")}</div>
+                {wrongFlash && mode === "streak" && (
+                  <p className="mishna-wrong-note" role="status">
+                    {t("mishnaId.wrongPenalty", { seconds: TIME_BONUS_SECONDS })}
+                  </p>
+                )}
                 <div className="pill-row pill-row--nowrap mishna-seder-choice">
                   {SEDARIM.map((s) => (
                     <button
@@ -561,6 +573,11 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
             ) : !masechetDone ? (
               <div className="mishna-step">
                 <div className="mishna-step-label">{t("mishnaId.whichMasechet")}</div>
+                {wrongFlash && mode === "streak" && (
+                  <p className="mishna-wrong-note" role="status">
+                    {t("mishnaId.wrongPenalty", { seconds: TIME_BONUS_SECONDS })}
+                  </p>
+                )}
                 <div className="pill-row">
                   {card.seder.masechtot.map((m) => (
                     <button

@@ -39,7 +39,8 @@
     "bonusEarned": "★ Perek {{perek}} — bonus earned!",
     "bonusQuestion": "Bonus: which perek? <tag>extra credit</tag>",
     "finishQuiz": "Finish quiz",
-    "nextCard": "Next card"
+    "nextCard": "Next card",
+    "wrongPenalty": "Not that one — {{seconds}} seconds off."
   },
   "sederSort": {
     "allSorted": "All {{total}} masechtot sorted"
@@ -78,5 +79,7 @@
   "matchBoard": {
     "orderLabel": "Order",
     "allMatched": "All {{total}} matched"
-  }
+  },
+  "sedarimHeader": "Sedarim",
+  "wholeSeder": "All of {{seder}}"
 }

@@ -9,7 +9,7 @@ import type { ViewState } from "../../types/viewState";
 import { getSederHue } from "../../utils/sederHue";
 import { GameHud } from "../GameHud/GameHud";
 import { ShareSheet } from "../Share/ShareSheet";
-import { ShareLink } from "../Share/SharePrompt";
+import { GameEndModal } from "../GameHud/GameEndModal";
 import { orderMoment } from "../Share/shareMoments";
 import "./MatchBoard.css";
 
@@ -75,11 +75,21 @@ export function MatchBoard({ view, state, onPlace, onReset, clearedSederIds }: M
   const poolLabel = isShasView ? t("shas") : viewSeder ? nameOf(viewSeder) : view.label;
   const [drag, setDrag] = useState<DragState | null>(null);
   const [sharing, setSharing] = useState(false);
+  // Boards whose finished-card has been closed — per board, so closing it
+  // on one seder does not hide it on the next.
+  const [endClosed, setEndClosed] = useState<string[]>([]);
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
   const [rejectIndex, setRejectIndex] = useState<number | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const completed = placed.every((p) => p !== null);
+  const endHidden = endClosed.includes(view.id);
+
+  /** Play again, from the card or the ↺ — a fresh round shows the card again. */
+  function restart() {
+    setEndClosed((prev) => prev.filter((id) => id !== view.id));
+    onReset();
+  }
   const placedCount = placed.filter((p) => p !== null).length;
 
   function attemptPlace(id: string, slotIndex: number) {
@@ -157,7 +167,7 @@ export function MatchBoard({ view, state, onPlace, onReset, clearedSederIds }: M
   return (
     <div className="stage">
       <div className="panel board-card">
-        <button className="restart-icon" title={t("restart")} onClick={onReset}>
+        <button className="restart-icon" title={t("restart")} onClick={restart}>
           ↺
         </button>
         <h2 className="panel__title">{title}</h2>
@@ -243,17 +253,13 @@ export function MatchBoard({ view, state, onPlace, onReset, clearedSederIds }: M
         </div>
       )}
 
-      {completed && (
-        <div className="modal-scrim">
-          <div className="modal modal--sm game__end">
-            <div className="popup__mark">✓</div>
-            <div className="popup__text">{t("matchBoard.allMatched", { total: view.items.length })}</div>
-            <button className="popup__restart" onClick={onReset}>
-              {t("playAgain")}
-            </button>
-            <ShareLink onClick={() => setSharing(true)} />
-          </div>
-        </div>
+      {completed && !endHidden && (
+        <GameEndModal
+          text={t("matchBoard.allMatched", { total: view.items.length })}
+          onPlayAgain={restart}
+          onShare={() => setSharing(true)}
+          onClose={() => setEndClosed((prev) => [...prev, view.id])}
+        />
       )}
       {sharing && (
         <ShareSheet

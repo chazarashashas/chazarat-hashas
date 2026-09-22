@@ -317,3 +317,21 @@
     grid-template-columns: repeat(6, 1fr);
   }
 }
+
+/* Straight on to the next mishna from the reader, so a perek can be read
+   through without going back to the grid. */
+.map-text-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.map-text-nav__btn {
+  min-width: 96px;
+}
+
+.map-text-nav__btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

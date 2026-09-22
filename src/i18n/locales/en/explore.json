@@ -16,7 +16,9 @@
     "perakimCount_one": "{{count}} perakim",
     "perakimCount_other": "{{count}} perakim",
     "viewNote": "View/edit note for this perek",
-    "addNote": "Add note for this perek"
+    "addNote": "Add note for this perek",
+    "prevMishna": "Previous",
+    "nextMishna": "Next"
   },
   "notes": {
     "title": "Mishna Notes",
