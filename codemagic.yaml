@@ -1,0 +1,67 @@
+# Builds the iOS app in the cloud and sends it to TestFlight, so releasing
+# for iPhone needs no Mac. Android keeps being built in Android Studio.
+#
+# Before the first run, set these up in Codemagic (codemagic.io):
+#   1. Connect this GitHub repository.
+#   2. Teams → Integrations → App Store Connect: add an API key from
+#      App Store Connect → Users and Access → Integrations. Name it
+#      "chazarat-hashas-asc" so the `app_store_connect:` line below finds it.
+#   3. Add a group of environment variables named "web" holding
+#      VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY and (optional)
+#      VITE_SENTRY_DSN — the same values the website builds with. Mark the
+#      Supabase anon key as secure; it is public, but there's no reason to
+#      print it in build logs.
+#
+# Codemagic's free tier covers a build of this size.
+
+workflows:
+  ios:
+    name: iOS — TestFlight
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    integrations:
+      app_store_connect: chazarat-hashas-asc
+    environment:
+      groups:
+        - web
+      vars:
+        BUNDLE_ID: "org.chazarashashas.app"
+        XCODE_SCHEME: "App"
+      node: 22
+      xcode: latest
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: org.chazarashashas.app
+    scripts:
+      - name: Install dependencies
+        script: npm ci
+      - name: Check types and tests
+        script: |
+          npx tsc -p tsconfig.app.json --noEmit
+          npx vitest run
+      - name: Build the web app and copy it into the iOS project
+        script: |
+          npm run build
+          npx cap sync ios
+      - name: Take the build number from Codemagic's own counter
+        script: |
+          # Every TestFlight upload needs a higher build number than the last.
+          cd ios/App
+          agvtool new-version -all $(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_APPLE_ID" 2>/dev/null || echo 0) + 1))
+      - name: Set up signing
+        script: xcode-project use-profiles
+      - name: Build the app
+        script: |
+          xcode-project build-ipa \
+            --project "ios/App/App.xcodeproj" \
+            --scheme "$XCODE_SCHEME"
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+        # Left off on purpose: a release to the public App Store stays a
+        # deliberate button press in App Store Connect, not a git push.
+        submit_to_app_store: false

@@ -138,5 +138,8 @@
     "password": "Password",
     "forgot": "Forgot it?",
     "accountCreated": "Account created — check your email to confirm it, then log in."
+  },
+  "apple": {
+    "continue": "Continue with Apple"
   }
 }

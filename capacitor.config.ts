@@ -15,13 +15,14 @@ const config: CapacitorConfig = {
       backgroundColor: '#f5f0e4',
       androidScaleType: 'CENTER_INSIDE',
     },
-    // Native Google sign-in only. Every other provider is left out so its
-    // SDK (Facebook's especially) never ships in the app.
+    // Google and Apple sign-in only. Every other provider is left out so
+    // its SDK (Facebook's especially) never ships in the app. Apple is
+    // used on iPhone, where Apple requires it alongside Google.
     SocialLogin: {
       providers: {
         google: true,
         facebook: false,
-        apple: false,
+        apple: true,
         twitter: false,
       },
       logLevel: 1,

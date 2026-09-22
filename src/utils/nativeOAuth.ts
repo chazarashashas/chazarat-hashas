@@ -56,6 +56,31 @@ export async function startNativeGoogleSignIn(supabase: SupabaseClient): Promise
   return startBrowserGoogleSignIn(supabase);
 }
 
+/**
+ * Sign in with Apple, inside the iOS app: Apple's own sheet over the app,
+ * whose identity token Supabase turns into a session. Apple asks for it on
+ * any app that offers another service's sign-in (App Store rule 4.8), and
+ * iPhone users expect it. On iOS the sheet is native, so nothing leaves
+ * the app; anywhere else the caller uses the website's redirect instead.
+ */
+export async function startNativeAppleSignIn(supabase: SupabaseClient): Promise<string | null> {
+  try {
+    // The plugin needs no client id on iOS — the app's own bundle id and
+    // its Sign In with Apple capability are what Apple checks.
+    await SocialLogin.initialize({ apple: { redirectUrl: "" } });
+    const rawNonce = randomNonce();
+    const res = await SocialLogin.login({ provider: "apple", options: { nonce: await sha256Hex(rawNonce) } });
+    const idToken = (res.result as { idToken?: string | null }).idToken;
+    if (!idToken) return i18n.t("shell:errors.signInIncomplete");
+    const { error } = await supabase.auth.signInWithIdToken({ provider: "apple", token: idToken, nonce: rawNonce });
+    return error ? error.message : null;
+  } catch (err) {
+    if (isCancel(err)) return null;
+    console.error("[apple] the sign-in sheet failed:", err);
+    return i18n.t("shell:errors.signInIncomplete");
+  }
+}
+
 /** Google won't sign in inside an app's own web view, so this opens the
     sign-in page in the phone's browser (a Chrome tab), which returns to the
     app through NATIVE_OAUTH_CALLBACK. */
@@ -116,4 +141,12 @@ export function listenForNativeOAuth(supabase: SupabaseClient): () => void {
 
 export function isNativeApp(): boolean {
   return Capacitor.isNativePlatform();
+}
+
+/** Sign in with Apple is offered everywhere except the Android app, where
+    it would be a stray Apple button on a phone that has no Apple account.
+    Apple requires it in the iOS app; the website shows it too, for people
+    who already have an Apple account. */
+export function appleSignInAvailable(): boolean {
+  return Capacitor.getPlatform() !== "android";
 }

@@ -732,3 +732,40 @@
   font-size: var(--fs-12);
   color: var(--muted);
 }
+
+/* Sign in with Apple, beside the Google button. Apple's guidelines want
+   its own mark and full-width shape; the app's ink carries the logo so it
+   reads in both light and dark. */
+.apple-signin-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 48px;
+  margin-top: 10px;
+  background: var(--surface-hi);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  padding: 15px 18px;
+  font-family: var(--font-heading);
+  font-size: var(--fs-14);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.apple-signin-btn:hover:not(:disabled) {
+  border-color: var(--ink);
+}
+
+.apple-signin-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.apple-signin-btn--demoted {
+  min-height: 42px;
+  margin-top: 8px;
+  font-size: var(--fs-13);
+}

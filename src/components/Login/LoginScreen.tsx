@@ -16,6 +16,7 @@ import { ConfirmModal } from "../ConfirmModal/ConfirmModal";
 import { NavIcon } from "../Icon/NavIcon";
 import { ALL_NAV_ITEMS, useNavLabels } from "../../utils/navItems";
 import { HEBREW_ENABLED, setUiLanguage, useDirection, useLocale, useName } from "../../i18n";
+import { appleSignInAvailable } from "../../utils/nativeOAuth";
 import "./LoginScreen.css";
 
 /** Labels and descriptions live in account:reset.items.<key>. */
@@ -142,6 +143,28 @@ function GoogleButton({
         />
       </svg>
       {t("google.continue")}
+    </button>
+  );
+}
+
+/** Sign in with Apple, beside the Google button. Apple's own mark, drawn
+    here rather than fetched, and Apple's wording. Hidden in the Android
+    app (see appleSignInAvailable). */
+function AppleButton({ onClick, disabled, demoted }: { onClick: () => void; disabled?: boolean; demoted?: boolean }) {
+  const { t } = useTranslation("account");
+  return (
+    <button
+      className={"btn btn--secondary btn--block apple-signin-btn" + (demoted ? " apple-signin-btn--demoted" : "")}
+      onClick={onClick}
+      disabled={disabled}
+    >
+      <svg viewBox="0 0 24 24" width={demoted ? "16" : "19"} height={demoted ? "16" : "19"} aria-hidden="true">
+        <path
+          fill="currentColor"
+          d="M17.05 12.54c-.02-2.3 1.88-3.4 1.96-3.45-1.07-1.56-2.73-1.78-3.32-1.8-1.41-.14-2.76.83-3.48.83-.72 0-1.83-.81-3-.79-1.54.02-2.96.9-3.75 2.28-1.6 2.78-.41 6.89 1.15 9.14.76 1.1 1.67 2.34 2.86 2.3 1.15-.05 1.58-.74 2.97-.74 1.39 0 1.78.74 3 .72 1.24-.02 2.02-1.12 2.78-2.23.88-1.28 1.24-2.52 1.26-2.58-.03-.01-2.42-.93-2.44-3.68zM14.8 5.5c.63-.77 1.06-1.83.94-2.9-.91.04-2.02.61-2.67 1.37-.58.68-1.09 1.77-.95 2.81 1.02.08 2.05-.51 2.68-1.28z"
+        />
+      </svg>
+      {t("apple.continue")}
     </button>
   );
 }
@@ -860,6 +883,17 @@ export function LoginScreen({
     }
   }
 
+  async function handleAppleSignIn() {
+    setError(null);
+    setMessage(null);
+    setBusy(true);
+    const result = await auth.signInWithApple();
+    if (result) {
+      setBusy(false);
+      setError(result);
+    }
+  }
+
   async function handleGoogleSignIn() {
     setError(null);
     setMessage(null);
@@ -939,6 +973,7 @@ export function LoginScreen({
             )}
 
             <GoogleButton onClick={handleGoogleSignIn} disabled={!supabaseConfigured || busy} />
+            {appleSignInAvailable() && <AppleButton onClick={handleAppleSignIn} disabled={!supabaseConfigured || busy} />}
 
             <div className="login-divider">
               <span>{t("signIn.or")}</span>
@@ -1118,6 +1153,7 @@ export function LoginScreen({
             </div>
 
             <GoogleButton demoted onClick={handleGoogleSignIn} disabled={!supabaseConfigured || busy} />
+            {appleSignInAvailable() && <AppleButton demoted onClick={handleAppleSignIn} disabled={!supabaseConfigured || busy} />}
           </>
         )}
       </div>

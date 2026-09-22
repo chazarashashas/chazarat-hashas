@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import type { Session } from "@supabase/supabase-js";
 import { supabase, supabaseConfigured } from "./supabase";
 import { flushLocalDataToCloud } from "./useCloudSync";
-import { isNativeApp, listenForNativeOAuth, startNativeGoogleSignIn } from "./nativeOAuth";
+import { isNativeApp, listenForNativeOAuth, startNativeAppleSignIn, startNativeGoogleSignIn } from "./nativeOAuth";
 
 /** Set right before redirecting to Google, cleared on return whether
     sign-in worked or not (see App.tsx's silent-failure check). The one
@@ -77,6 +77,7 @@ interface AuthContextValue extends AuthState {
   signUp(email: string, password: string, username: string, firstName: string, lastName: string): Promise<string | null>;
   signIn(email: string, password: string): Promise<string | null>;
   signInWithGoogle(): Promise<string | null>;
+  signInWithApple(): Promise<string | null>;
   resetPassword(email: string): Promise<string | null>;
   updatePassword(newPassword: string): Promise<string | null>;
   signOut(): Promise<void>;
@@ -199,6 +200,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return error ? error.message : null;
   }
 
+  /** Sign in with Apple. In the iOS app it's Apple's own sheet over the
+      app; on the website it's the same redirect the Google button uses. */
+  async function signInWithApple(): Promise<string | null> {
+    if (!supabase) return "Accounts aren't connected yet.";
+    if (isNativeApp()) return startNativeAppleSignIn(supabase);
+    sessionStorage.setItem(OAUTH_PENDING_KEY, "1");
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "apple",
+      options: { redirectTo: window.location.origin },
+    });
+    if (error) sessionStorage.removeItem(OAUTH_PENDING_KEY);
+    return error ? error.message : null;
+  }
+
   /** Sends a password-reset email via Supabase; the link it contains
       brings the user back here already signed in, which the listener
       above marks as isPasswordRecovery rather than a normal sign-in. */
@@ -300,6 +315,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signUp,
     signIn,
     signInWithGoogle,
+    signInWithApple,
     resetPassword,
     updatePassword,
     signOut,
