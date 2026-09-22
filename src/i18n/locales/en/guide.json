@@ -1,1 +1,56 @@
-{}
+{
+  "header": {
+    "title": "How to Use Chazarat Hashas",
+    "subtitle": "A guide for the talmid",
+    "intro": "The purpose of this app is to help you organize Shas in your mind. Every feature was built with that as its first and primary goal. Here is how the app is meant to be used, step by step.",
+    "download": "Download"
+  },
+  "sederPillsLabel": "The six sedarim",
+  "stepNavButton": "{{label}} →",
+  "steps": {
+    "sedarim": {
+      "title": "Learn the Sedarim",
+      "p1": "Shas is divided into six sections, each called a Seder. Start by learning their names and their order. The best-known way to remember them is the mnemonic <b>Zman Nakat</b>: <b>Z</b>eraim, <b>M</b>oed, <b>N</b>ashim, <b>N</b>ezikin, <b>K</b>odashim, <b>T</b>aharot. Use <b>Explore Shas</b> to see the six Sedarim laid out and get familiar with them.",
+      "p2": "Once you know the Sedarim, go to the games to review them. <b>Sidrei Hamishna</b> tests you on the order of the six Sedarim. When you can put them in order without hesitating, you are ready to move on to the Masechtot."
+    },
+    "masechtot": {
+      "title": "Learn the Masechtot",
+      "p1": "Each Seder is divided into Masechtot. Make up your own mnemonic, story, song, or any other method that helps you commit the Masechtot of each Seder to memory. For example, a cute one I use for Moed: <i>“On Shabbos we can use Eruvin because they have a tzuras hapesach (Pesachim).”</i> Every talmid will find his own way.",
+      "p2": "At this point there are two paths, and both are fine. After you know the names and order of the Masechtot in Seder Zeraim, you can either continue to the Masechtot of the other five Sedarim, or go one level deeper in Zeraim and start learning Masechet Berachot (Step 3).",
+      "gamesIntro": "To review the Masechtot, use the games:",
+      "sidrei": "<b>Sidrei Hamishna</b> — select a Seder at the bottom to test yourself on the order of its Masechtot.",
+      "chazara": "<b>Mishna Chazara</b> — once you feel confident, see whether you can put them in order <i>by heart</i>, with nothing in front of you.",
+      "dash": "<b>Shas Dash</b> — this one is meant to test you. Keep track of your score and compare how you actually did with how you thought you would. Try it once a day, and before you know it you will be getting a perfect score every time.",
+      "sort": "<b>Seder Sort</b> — in between Shas Dash attempts, practice here to bring your score up.",
+      "calloutTitle": "Away from a screen",
+      "calloutBody": "On the <b>Resources</b> page you can download worksheets and print them, so you can review in the beis medrash without a phone or a computer."
+    },
+    "perakim": {
+      "title": "Name the Perakim",
+      "p1": "After you have mastered the structure of the Sedarim and Masechtot, it is time to structure the Perakim. This is by far the most personal and exciting part, because this is where you make Shas <i>yours</i>.",
+      "p2": "Take the fourth Perek of Peah, for example. The Masechet is about the laws of Peah, but nearly every Mishna in that Perek contains the word <i>ne'eman</i>. You might choose to call that Perek “Ne’emanus” or “trustworthiness”. Giving a Perek a name does several things at once:",
+      "value": "It defines the value Chazal are teaching through that Perek.",
+      "order": "It creates order. Once I know the fourth Perek of Peah is about not only Peah but also Ne'emanus, I can place the Mishnayot of that chapter in my mind, and when a Mishna is quoted somewhere in Shas, I know where to find it.",
+      "connects": "It connects concepts for later learning. The first Perek of Gittin and the sixth Perek of Shviis both discuss the borders and geography of Eretz Yisrael. Someone who later wants to study the halachic boundaries of the land can go back and see which Perakim treat the same idea in different areas of halacha.",
+      "p3": "Go through a Masechet and give each of its Perakim a name in <b>Mishna Notes</b>. There you can also view all of the names you have given in one place and print them, for a single Masechet, a whole Seder, or all of Shas.",
+      "p4": "Then head to the <b>Mishna Quiz</b>. You will be surprised: sooner or later you will be able to place any Mishna in the correct Seder, Masechet, and even the right Perek."
+    },
+    "concepts": {
+      "title": "Note the concepts",
+      "p1": "There is a second kind of note built into the app. On each Mishna, write down every concept that appears in it. If you already know the concepts, amazing, now you are building a map of which concepts appear where in Shas. If you do not know what a concept means, do not get stuck. Make a note and keep going.",
+      "p2": "In the <b>Mishna Notes</b> section you can view all of your notes in one place and print them. You can view them for a single Masechet, a whole Seder, or all of Shas, and the app records for you which Mishna each note came from. Now is the time to head to the beis medrash, find time with your rebbe or chevrusa, learn each concept properly, and review your learning together."
+    },
+    "pace": {
+      "title": "Set your pace",
+      "p1": "As you explore the app you will find more features that encourage you to keep learning. In <b>My Siyumim</b> you can play with how much you need to learn each day to finish Shas in a year, or in two, and then set that pace in <b>Daily Limmud</b>. Some prefer to go slower and know each Mishna really well before moving on. Others prefer to go faster and gain a wider view of each Seder first, then review it the following year. Both work, choose the one you will actually keep to."
+    },
+    "together": {
+      "title": "Learn with others",
+      "p1": "Use the <b>Chevrusa</b> feature to learn together with a friend, or the <b>Chabura</b> feature to learn with a group."
+    }
+  },
+  "closing": "Stay consistent, and keep on learning!",
+  "revisit": "You can always find this guide again from the navigation.",
+  "printTitle": "Print the Guide",
+  "translationNotice": "English translations, where shown, are pulled live from <link>Sefaria</link> and belong to their own translators, each under their own license — English is always optional and off by default. So far on this device: "
+}

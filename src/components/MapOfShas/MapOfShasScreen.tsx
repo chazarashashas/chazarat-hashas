@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useDirection, useName } from "../../i18n";
 import { SEDARIM, type Masechet } from "../../data/shas";
 import { getPerekName, getMishnayotCount } from "../../data/perekInfo";
 import { fetchMishna } from "../../utils/sefaria";
@@ -45,6 +47,13 @@ interface MapOfShasScreenProps {
  * Progress use — a visual sense of where in Shas you are, not just a list.
  */
 export function MapOfShasScreen({ onOpenNotes }: MapOfShasScreenProps) {
+  const { t, i18n } = useTranslation(["explore", "common"]);
+  const name = useName();
+  const dir = useDirection();
+  // Hebrew shows each name once, in Hebrew — no transliteration beside it.
+  const isHe = i18n.language === "he";
+  // The crumb separator points back toward the parent, as "‹" does in English.
+  const crumbSep = dir === "rtl" ? "›" : "‹";
   const progress = useLearningProgress();
   const { getPerekNote, setPerekNote } = usePerekNotes();
 
@@ -61,7 +70,9 @@ export function MapOfShasScreen({ onOpenNotes }: MapOfShasScreenProps) {
 
   const searchMatches =
     search.trim().length > 0
-      ? ALL_MASECHTOT_FLAT.filter((m) => m.en.toLowerCase().includes(search.trim().toLowerCase())).slice(0, 8)
+      ? ALL_MASECHTOT_FLAT.filter(
+          (m) => m.en.toLowerCase().includes(search.trim().toLowerCase()) || m.he.includes(search.trim()),
+        ).slice(0, 8)
       : [];
 
   /** Opens straight into a masechet's perakim from the all-masechtot
@@ -118,7 +129,7 @@ export function MapOfShasScreen({ onOpenNotes }: MapOfShasScreenProps) {
     <div className="stage">
       <div className="panel map-panel">
         <div className="screen-head">
-          <h1 className="screen-head__title">Explore Shas</h1>
+          <h1 className="screen-head__title">{t("map.title")}</h1>
         </div>
 
         <div className="map-search">
@@ -126,50 +137,52 @@ export function MapOfShasScreen({ onOpenNotes }: MapOfShasScreenProps) {
             className="map-search__input"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Jump to a masechet…"
+            placeholder={t("map.searchPlaceholder")}
           />
           {search.trim() !== "" && searchMatches.length === 0 && (
             <div className="map-search__results">
-              <p className="state state--empty">No masechet matches that.</p>
+              <p className="state state--empty">{t("map.noMatches")}</p>
             </div>
           )}
           {searchMatches.length > 0 && (
             <div className="map-search__results">
               {searchMatches.map((m) => (
                 <button key={m.en} className="map-search__result" onClick={() => jumpToMasechet(m)}>
-                  <span>{m.en}</span>
-                  <span className="map-search__result-he" dir="rtl">
-                    {m.he}
-                  </span>
+                  <span>{name(m)}</span>
+                  {!isHe && (
+                    <span className="map-search__result-he" dir="rtl">
+                      {m.he}
+                    </span>
+                  )}
                 </button>
               ))}
             </div>
           )}
         </div>
 
-        <div className="map-breadcrumb" dir="ltr">
+        <div className="map-breadcrumb" dir={dir}>
           {masechet && (
             <>
               <button className="pill pill--compact map-crumb" onClick={() => goTo("masechtot")}>
-                Shas
+                {t("map.shas")}
               </button>
-              <span className="map-crumb-sep">‹</span>
+              <span className="map-crumb-sep">{crumbSep}</span>
               <button className="pill pill--compact map-crumb" onClick={() => goTo("perakim")}>
-                {masechet.en}
+                {name(masechet)}
               </button>
             </>
           )}
           {perek != null && (
             <>
-              <span className="map-crumb-sep">‹</span>
+              <span className="map-crumb-sep">{crumbSep}</span>
               <button className="pill pill--compact map-crumb" onClick={() => goTo("mishnayot")}>
-                Perek {hebrewNumeral(perek)}
+                {t("map.perek", { num: hebrewNumeral(perek) })}
               </button>
             </>
           )}
           {mishnah != null && (
             <>
-              <span className="map-crumb-sep">‹</span>
+              <span className="map-crumb-sep">{crumbSep}</span>
               <span className="pill pill--compact map-crumb map-crumb--current">משנה {hebrewNumeral(mishnah)}</span>
             </>
           )}
@@ -181,7 +194,7 @@ export function MapOfShasScreen({ onOpenNotes }: MapOfShasScreenProps) {
               <div key={s.id} className="map-seder-group">
                 <div className="map-seder-group__label" style={{ ["--tile-hue" as string]: getSederHue(s.id) }}>
                   <span dir="rtl">{s.he}</span>
-                  <span>{s.en}</span>
+                  {!isHe && <span>{s.en}</span>}
                 </div>
                 <div className="map-grid map-grid--masechtot" style={{ ["--tile-hue" as string]: getSederHue(s.id) }}>
                   {s.masechtot.map((m) => (
@@ -193,8 +206,8 @@ export function MapOfShasScreen({ onOpenNotes }: MapOfShasScreenProps) {
                       <span className="map-tile__he" dir="rtl">
                         {m.he}
                       </span>
-                      <span className="map-tile__en">{m.en}</span>
-                      <span className="map-tile__sub">{m.perakim} perakim</span>
+                      {!isHe && <span className="map-tile__en">{m.en}</span>}
+                      <span className="map-tile__sub">{t("map.perakimCount", { count: m.perakim })}</span>
                     </button>
                   ))}
                 </div>
@@ -250,16 +263,16 @@ export function MapOfShasScreen({ onOpenNotes }: MapOfShasScreenProps) {
               ))}
             </div>
             <button className="btn btn--quiet map-note-link" onClick={() => setNoteOpen(true)}>
-              {getPerekNote(masechet.en, perek) ? "View/edit note" : "Add note"} for this perek
+              {getPerekNote(masechet.en, perek) ? t("map.viewNote") : t("map.addNote")}
             </button>
           </>
         )}
 
         {level === "text" && masechet && perek != null && mishnah != null && (
           <div className="card map-text-block">
-            {textState.status === "loading" && <p className="state state--loading">Loading…</p>}
+            {textState.status === "loading" && <p className="state state--loading">{t("common:loading")}</p>}
             {textState.status === "error" && (
-              <p className="state state--error" dir="ltr">
+              <p className="state state--error" dir={dir}>
                 {textState.error}
               </p>
             )}

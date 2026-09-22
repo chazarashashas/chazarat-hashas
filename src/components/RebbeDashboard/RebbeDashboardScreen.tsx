@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import i18n, { useDirection, useLocale } from "../../i18n";
 import { useChevrusa, type Group } from "../../utils/useChevrusa";
 import { useRebbeChabura, standingsBySilence, historyFor, type StudentStanding } from "../../utils/useRebbeChabura";
 import type { SubmissionActivity } from "../../utils/useDailySubmission";
@@ -15,25 +17,27 @@ function initials(name: string | null, username: string | null): string {
 function timeAgoLabel(sentAt: string | null): string {
   if (!sentAt) return "";
   const mins = Math.max(0, Math.round((Date.now() - new Date(sentAt).getTime()) / 60000));
-  if (mins < 1) return "just now";
-  if (mins < 60) return `${mins} minute${mins === 1 ? "" : "s"} ago`;
+  if (mins < 1) return i18n.t("groups:rebbe.time.justNow");
+  if (mins < 60) return i18n.t("groups:rebbe.time.minutes", { count: mins });
   const hours = Math.round(mins / 60);
-  if (hours < 24) return `${hours} hour${hours === 1 ? "" : "s"} ago`;
+  if (hours < 24) return i18n.t("groups:rebbe.time.hours", { count: hours });
   const days = Math.round(hours / 24);
-  return `${days} day${days === 1 ? "" : "s"} ago`;
+  return i18n.t("groups:rebbe.time.days", { count: days });
 }
 
 function StatusLine({ standing }: { standing: StudentStanding }) {
-  if (standing.daysQuiet === null) return <span className="rebbe-row__status">Sent {timeAgoLabel(standing.lastSentAt)}</span>;
-  if (!isFinite(standing.daysQuiet)) return <span className="rebbe-row__status">Nothing sent yet</span>;
+  const { t } = useTranslation("groups");
+  if (standing.daysQuiet === null)
+    return <span className="rebbe-row__status">{t("rebbe.sentAgo", { time: timeAgoLabel(standing.lastSentAt) })}</span>;
+  if (!isFinite(standing.daysQuiet)) return <span className="rebbe-row__status">{t("rebbe.nothingYet")}</span>;
   return (
-    <span className="rebbe-row__status rebbe-row__status--quiet">
-      Nothing sent for {standing.daysQuiet} day{standing.daysQuiet === 1 ? "" : "s"}
-    </span>
+    <span className="rebbe-row__status rebbe-row__status--quiet">{t("rebbe.quietFor", { count: standing.daysQuiet })}</span>
   );
 }
 
 function InviteAndJoinPanel({ group, onSent }: { group: Group; onSent: () => void }) {
+  const { t } = useTranslation("groups");
+  const direction = useDirection();
   const { addMembers, rotateJoinCode } = useChevrusa();
   const [email, setEmail] = useState("");
   const [busy, setBusy] = useState(false);
@@ -62,14 +66,14 @@ function InviteAndJoinPanel({ group, onSent }: { group: Group; onSent: () => voi
   return (
     <div className="rebbe-invite">
       <label className="login-field">
-        <span className="login-field__label">Invite by email</span>
+        <span className="login-field__label">{t("rebbe.inviteLabel")}</span>
         <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="student@example.com" />
       </label>
       <button className="restart" disabled={busy || !email.trim()} onClick={handleInvite}>
-        {busy ? "Sending…" : "Invite"}
+        {busy ? t("rebbe.sending") : t("rebbe.invite")}
       </button>
       {error && (
-        <p className="login-error" dir="ltr">
+        <p className="login-error" dir={direction}>
           {error}
         </p>
       )}
@@ -77,23 +81,23 @@ function InviteAndJoinPanel({ group, onSent }: { group: Group; onSent: () => voi
       <div className="rebbe-joincode">
         {group.joinCode ? (
           <>
-            <p className="rebbe-joincode__label">Join code</p>
+            <p className="rebbe-joincode__label">{t("rebbe.joinCode")}</p>
             <p className="rebbe-joincode__code">{group.joinCode}</p>
             <div className="rebbe-joincode__actions">
               <button
                 className="rebbe-joincode__link"
                 onClick={() => navigator.clipboard?.writeText(group.joinCode ?? "")}
               >
-                Copy
+                {t("rebbe.copy")}
               </button>
               <button className="rebbe-joincode__link" onClick={handleRotate} disabled={rotating}>
-                {rotating ? "…" : "New code"}
+                {rotating ? "…" : t("rebbe.newCode")}
               </button>
             </div>
           </>
         ) : (
           <button className="restart" disabled={rotating} onClick={handleRotate}>
-            {rotating ? "…" : "Generate a join code"}
+            {rotating ? "…" : t("rebbe.generateCode")}
           </button>
         )}
       </div>
@@ -112,25 +116,24 @@ function StudentDetail({
   history: ReturnType<typeof historyFor>;
   onBack: () => void;
 }) {
-  const name = standing.student.firstName ?? standing.student.username ?? "Student";
+  const { t } = useTranslation("groups");
+  const name = standing.student.firstName ?? standing.student.username ?? t("rebbe.student");
   const sentDays = history.length;
   return (
     <div className="rebbe-detail">
       <button className="rebbe-back" onClick={onBack}>
-        ← Back
+        {t("rebbe.back")}
       </button>
       <div className="rebbe-detail__head">
         <div className="rebbe-detail__avatar">{initials(standing.student.firstName, standing.student.username)}</div>
         <div>
           <p className="rebbe-detail__name">{name}</p>
-          <p className="rebbe-detail__sub">
-            Sent {sentDays} of the last {Math.min(30, sentDays || 7)} days
-          </p>
+          <p className="rebbe-detail__sub">{t("rebbe.sentOfLast", { sent: sentDays, days: Math.min(30, sentDays || 7) })}</p>
         </div>
       </div>
       <div className="rebbe-detail__days">
         {history.length === 0 ? (
-          <p className="chevrusa-empty">Nothing sent yet for {group.name ?? group.masechetEn}.</p>
+          <p className="chevrusa-empty">{t("rebbe.nothingSentFor", { name: group.name ?? group.masechetEn })}</p>
         ) : (
           history.map((day) => (
             <div key={day.date} className="rebbe-day-card">
@@ -140,7 +143,9 @@ function StudentDetail({
               </div>
               {day.activities.map((a) => (
                 <p key={a.key} className="rebbe-day-card__line">
-                  <strong>{a.label}:</strong> {a.detail}
+                  {/* The label is stored in the student's report; name it by
+                      its key so the rebbe reads it in his own language. */}
+                  <strong>{t(`activity.${a.key}`, { defaultValue: a.label })}:</strong> {a.detail}
                 </p>
               ))}
             </div>
@@ -156,6 +161,8 @@ interface RebbeDashboardScreenProps {
 }
 
 export function RebbeDashboardScreen({ shiurim }: RebbeDashboardScreenProps) {
+  const { t } = useTranslation("groups");
+  const locale = useLocale();
   const [shiurId, setShiurId] = useState(shiurim[0]?.id ?? "");
   const group = shiurim.find((g) => g.id === shiurId) ?? shiurim[0];
   const { students, submissions, refresh } = useRebbeChabura(group?.id ?? null);
@@ -211,7 +218,10 @@ export function RebbeDashboardScreen({ shiurim }: RebbeDashboardScreenProps) {
           <div>
             <h1 className="screen-head__title rebbe-title">{group.name ?? group.masechetEn}</h1>
             <p className="rebbe-sub">
-              {students.length} student{students.length === 1 ? "" : "s"} · {new Date().toLocaleDateString(undefined, { weekday: "long", month: "short", day: "numeric" })}
+              {t("rebbe.subtitle", {
+                count: students.length,
+                date: new Date().toLocaleDateString(locale, { weekday: "long", month: "short", day: "numeric" }),
+              })}
             </p>
           </div>
           {shiurim.length > 1 && (
@@ -225,20 +235,20 @@ export function RebbeDashboardScreen({ shiurim }: RebbeDashboardScreenProps) {
           )}
           <div className="pill-row rebbe-view-pills">
             <button className={"pill" + (view === "today" ? " pill--active" : "")} onClick={() => setView("today")}>
-              Today
+              {t("rebbe.viewToday")}
             </button>
             <button className={"pill" + (view === "week" ? " pill--active" : "")} onClick={() => setView("week")}>
-              Week
+              {t("rebbe.viewWeek")}
             </button>
             <button className={"pill" + (view === "grid" ? " pill--active" : "")} onClick={() => setView("grid")}>
-              Grid
+              {t("rebbe.viewGrid")}
             </button>
           </div>
         </div>
 
         {students.length === 0 ? (
           <>
-            <p className="panel__subtitle">Add your first students to get started — invite by email, or share a join code.</p>
+            <p className="panel__subtitle">{t("rebbe.empty")}</p>
             <InviteAndJoinPanel group={group} onSent={refresh} />
           </>
         ) : view === "grid" ? (
@@ -248,22 +258,22 @@ export function RebbeDashboardScreen({ shiurim }: RebbeDashboardScreenProps) {
             <div className="rebbe-summary">
               <div className="rebbe-summary__figure rebbe-summary__figure--sent">
                 <p className="rebbe-summary__num">{sentToday}</p>
-                <p className="rebbe-summary__label">sent today</p>
+                <p className="rebbe-summary__label">{t("rebbe.sentToday")}</p>
               </div>
               <div className="rebbe-summary__figure rebbe-summary__figure--wait">
                 <p className="rebbe-summary__num">{notYetToday}</p>
-                <p className="rebbe-summary__label">not yet today</p>
+                <p className="rebbe-summary__label">{t("rebbe.notYetToday")}</p>
               </div>
               <div className="rebbe-summary__figure rebbe-summary__figure--quiet">
                 <p className="rebbe-summary__num">{quiet3Plus}</p>
-                <p className="rebbe-summary__label">quiet 3+ days</p>
+                <p className="rebbe-summary__label">{t("rebbe.quiet3")}</p>
               </div>
             </div>
 
             <div className="rebbe-list-head">
-              <span>Quiet longest first</span>
+              <span>{t("rebbe.quietFirst")}</span>
               <button className="rebbe-sort-toggle" onClick={() => setSortByName((v) => !v)}>
-                {sortByName ? "Sort by silence" : "Sort by name"}
+                {sortByName ? t("rebbe.sortBySilence") : t("rebbe.sortByName")}
               </button>
             </div>
 
@@ -279,17 +289,20 @@ export function RebbeDashboardScreen({ shiurim }: RebbeDashboardScreenProps) {
                   <button
                     key={s.student.userId}
                     className="rebbe-row"
-                    style={{ borderLeftColor: ruleColor }}
+                    style={{ borderInlineStartColor: ruleColor }}
                     onClick={() => setSelectedStudent(s.student.userId)}
                   >
                     <span className="rebbe-row__avatar">{initials(s.student.firstName, s.student.username)}</span>
                     <span className="rebbe-row__body">
-                      <span className="rebbe-row__name">{s.student.firstName ?? s.student.username ?? "Student"}</span>
+                      <span className="rebbe-row__name">{s.student.firstName ?? s.student.username ?? t("rebbe.student")}</span>
                       <StatusLine standing={s} />
                     </span>
                     <span className="rebbe-row__figures">
                       {view === "week" ? (
-                        <span className="rebbe-row__week" title={`${sentDatesByStudent.get(s.student.userId)?.size ?? 0}/7 sent`}>
+                        <span
+                          className="rebbe-row__week"
+                          title={t("rebbe.weekSent", { n: sentDatesByStudent.get(s.student.userId)?.size ?? 0 })}
+                        >
                           {weekDays.map((d) => (
                             <span
                               key={d}
@@ -316,7 +329,7 @@ export function RebbeDashboardScreen({ shiurim }: RebbeDashboardScreenProps) {
             </div>
 
             <details className="rebbe-invite-details">
-              <summary>Add or manage students</summary>
+              <summary>{t("rebbe.manage")}</summary>
               <InviteAndJoinPanel group={group} onSent={refresh} />
             </details>
           </>
@@ -326,6 +339,9 @@ export function RebbeDashboardScreen({ shiurim }: RebbeDashboardScreenProps) {
   );
 }
 
+/** `label` stays English: it heads the CSV export's columns, a
+    spreadsheet file that keeps English headers. On screen, `key` names
+    the column through groups:rebbe.grid. */
 const GRID_ACTIVITIES: { key: SubmissionActivity["key"]; label: string; unit: string }[] = [
   { key: "limmud", label: "Limmud", unit: "mishnayot" },
   { key: "quiz", label: "Quiz", unit: "grade" },
@@ -400,6 +416,7 @@ export function RebbeGrid({
   students: { userId: string; firstName: string | null; username: string | null }[];
   submissions: ReturnType<typeof useRebbeChabura>["submissions"];
 }) {
+  const { t } = useTranslation("groups");
   const [mobileActivity, setMobileActivity] = useState<SubmissionActivity["key"]>(GRID_ACTIVITIES[0].key);
   const today = localDateStr();
   const todaysByStudent = new Map<string, Map<string, SubmissionActivity>>();
@@ -423,11 +440,11 @@ export function RebbeGrid({
         <table className="rebbe-grid">
           <thead>
             <tr>
-              <th className="rebbe-grid__student-col">Student</th>
+              <th className="rebbe-grid__student-col">{t("rebbe.student")}</th>
               {GRID_ACTIVITIES.map((a) => (
                 <th key={a.key}>
-                  <span className="rebbe-grid__col-label">{a.label}</span>
-                  <span className="rebbe-grid__col-unit">{a.unit}</span>
+                  <span className="rebbe-grid__col-label">{t(`rebbe.grid.${a.key}`)}</span>
+                  <span className="rebbe-grid__col-unit">{t(`rebbe.grid.${a.key}Unit`)}</span>
                 </th>
               ))}
             </tr>
@@ -439,7 +456,7 @@ export function RebbeGrid({
                 <tr key={st.userId}>
                   <td className="rebbe-grid__student-col">
                     <span className="rebbe-grid__avatar">{initials(st.firstName, st.username)}</span>
-                    {st.firstName ?? st.username ?? "Student"}
+                    {st.firstName ?? st.username ?? t("rebbe.student")}
                   </td>
                   {GRID_ACTIVITIES.map((a) => {
                     const entry = figures?.get(a.key);
@@ -455,13 +472,13 @@ export function RebbeGrid({
           </tbody>
           <tfoot>
             <tr className="rebbe-grid__avg-row">
-              <td className="rebbe-grid__student-col">Shiur average</td>
+              <td className="rebbe-grid__student-col">{t("rebbe.shiurAverage")}</td>
               {averages.map((a) => (
                 <td key={a.key}>
                   {a.avg ? (
                     <>
                       {a.avg}
-                      <span className="rebbe-grid__avg-count"> · {a.count} of {students.length}</span>
+                      <span className="rebbe-grid__avg-count">{t("rebbe.avgCount", { n: a.count, total: students.length })}</span>
                     </>
                   ) : (
                     "—"
@@ -472,9 +489,9 @@ export function RebbeGrid({
           </tfoot>
         </table>
         <div className="rebbe-grid__foot">
-          <p className="rebbe-grid__legend">Em-dash means nothing attempted today, not a zero.</p>
+          <p className="rebbe-grid__legend">{t("rebbe.legend")}</p>
           <button className="rebbe-grid__csv" onClick={() => downloadCsv(students, todaysByStudent)}>
-            Export CSV
+            {t("rebbe.exportCsv")}
           </button>
         </div>
       </div>
@@ -487,7 +504,7 @@ export function RebbeGrid({
               className={"pill" + (mobileActivity === a.key ? " pill--active" : "")}
               onClick={() => setMobileActivity(a.key)}
             >
-              {a.label}
+              {t(`rebbe.grid.${a.key}`)}
             </button>
           ))}
         </div>
@@ -497,7 +514,7 @@ export function RebbeGrid({
             return (
               <div key={st.userId} className="rebbe-grid-mobile__row">
                 <span className="rebbe-grid__avatar">{initials(st.firstName, st.username)}</span>
-                <span className="rebbe-grid-mobile__name">{st.firstName ?? st.username ?? "Student"}</span>
+                <span className="rebbe-grid-mobile__name">{st.firstName ?? st.username ?? t("rebbe.student")}</span>
                 <span className={entry ? "rebbe-grid-mobile__figure" : "rebbe-grid-mobile__figure rebbe-grid__empty"}>
                   {entry?.figure ?? "—"}
                 </span>
@@ -509,7 +526,7 @@ export function RebbeGrid({
           const avg = averages.find((a) => a.key === mobileActivity);
           return avg?.avg ? (
             <p className="rebbe-grid-mobile__avg">
-              Shiur average: {avg.avg} · {avg.count} of {students.length}
+              {t("rebbe.mobileAverage", { avg: avg.avg, n: avg.count, total: students.length })}
             </p>
           ) : null;
         })()}

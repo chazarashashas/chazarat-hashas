@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useLocale } from "../../i18n";
 import { useEscapeKey } from "../../utils/useEscapeKey";
 import "./CertificateView.css";
 
@@ -10,8 +12,8 @@ interface CertificateViewProps {
   onClose: () => void;
 }
 
-function todayFormatted(): string {
-  return new Date().toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
+function todayFormatted(locale: string | undefined): string {
+  return new Date().toLocaleDateString(locale, { year: "numeric", month: "long", day: "numeric" });
 }
 
 /**
@@ -21,6 +23,8 @@ function todayFormatted(): string {
  * all of Shas.
  */
 export function CertificateView({ masechetEn, masechetHe, defaultName, onClose }: CertificateViewProps) {
+  const { t, i18n } = useTranslation(["siyumim", "common"]);
+  const locale = useLocale();
   const [name, setName] = useState(defaultName);
   const isFullShas = masechetEn === null;
   useEscapeKey(onClose);
@@ -28,29 +32,31 @@ export function CertificateView({ masechetEn, masechetHe, defaultName, onClose }
   return (
     <div className="cert-overlay">
       <div className="cert-controls no-print">
-        <h2>Certificate of Siyum</h2>
+        <h2>{t("certificate.title")}</h2>
         <label className="cert-name-field">
-          <span>Name on certificate</span>
-          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" />
+          <span>{t("certificate.nameLabel")}</span>
+          <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t("certificate.namePlaceholder")} />
         </label>
         <div className="cert-actions">
           <button className="restart print-btn" onClick={() => window.print()}>
-            Print
+            {t("common:print")}
           </button>
           <button className="print-close" onClick={onClose}>
-            Close
+            {t("common:close")}
           </button>
         </div>
       </div>
 
       <div className="cert-page">
         <div className="cert-border">
-          <img src="/logo/lockup-stacked.svg" alt="Chazarat Hashas" className="cert-logo" />
+          <img src="/logo/lockup-stacked.svg" alt={t("certificate.logoAlt")} className="cert-logo" />
           <p className={"cert-subject" + (isFullShas ? " cert-subject--shas" : "")} dir="rtl">
             {isFullShas ? "סיום כל הש״ס" : `סיום מסכת ${masechetHe}`}
           </p>
-          {!isFullShas && <p className="cert-subject-en">{masechetEn}</p>}
-          <p className="cert-lead">completed by</p>
+          {/* The Hebrew line above already names the masechet — the
+              Hebrew interface shows it once. */}
+          {!isFullShas && i18n.language !== "he" && <p className="cert-subject-en">{masechetEn}</p>}
+          <p className="cert-lead">{t("certificate.completedBy")}</p>
           <p className="cert-name">{name || "—"}</p>
           <span className="cert-rule" aria-hidden="true" />
           {!isFullShas && (
@@ -58,7 +64,7 @@ export function CertificateView({ masechetEn, masechetHe, defaultName, onClose }
               הַדְרָן עֲלָךְ {masechetHe}
             </p>
           )}
-          <p className="cert-date">{todayFormatted()}</p>
+          <p className="cert-date">{todayFormatted(locale)}</p>
         </div>
       </div>
     </div>

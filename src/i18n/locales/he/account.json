@@ -1,1 +1,144 @@
-{}
+{
+  "title": "החשבון שלי",
+  "reset": {
+    "title": "איפוס ההתקדמות",
+    "done": "בוצע איפוס ✓",
+    "items": {
+      "daily_limmud": {
+        "label": "לימוד יומי ורצף",
+        "desc": "המקום שלך בסדר הש״ס, כל מה שסיימת, והרצף שלך."
+      },
+      "notes": {
+        "label": "סימנים והערות ומחברת",
+        "desc": "כל שם שנתת לפרק, כל רשומה במחברת, וכל משפט סיכום למסכת."
+      },
+      "concepts": {
+        "label": "מושגים לחזרה",
+        "desc": "כל מה ששמרת כדי לחזור אליו אחר כך."
+      },
+      "game_stats": {
+        "label": "נתוני משחקי התרגול",
+        "desc": "השיאים ומספר המשחקים בחידון משנה, מרוץ הש״ס, זיכרון מסכתות, מיון לסדרים וסדרי המשנה."
+      },
+      "everything": {
+        "label": "כל מה שלמעלה",
+        "desc": "מתחילים מחדש, כאילו מעולם לא פתחת את האפליקציה. החשבון שלך וכל חברותא או חבורה שאתה חבר בהן נשארים."
+      }
+    },
+    "confirmTitle": "לאפס: {{name}}?",
+    "confirmTitleEverything": "לאפס הכול?",
+    "confirmBody": "אי אפשר לבטל את זה.",
+    "confirmLabel": "כן, לאפס"
+  },
+  "google": {
+    "continue": "המשך עם Google"
+  },
+  "bottomBar": {
+    "title": "הסרגל התחתון שלך",
+    "moveEarlier": "הזז את {{name}} מקום אחד קודם",
+    "moveLater": "הזז את {{name}} מקום אחד הלאה",
+    "remove": "הסר את {{name}} מהסרגל התחתון"
+  },
+  "sync": {
+    "savedJustNow": "נשמר זה עתה",
+    "savedSecondsAgo": "נשמר לפני {{seconds}} שניות",
+    "savedMinutesAgo": "נשמר לפני {{minutes}} דק׳",
+    "savedHoursAgo": "נשמר לפני {{hours}} שע׳",
+    "retrying": "עוד לא נשמר — מנסה שוב…",
+    "error": "השמירה לא הצליחה — בדוק את החיבור",
+    "saving": "שומר…"
+  },
+  "report": {
+    "link": "דיווח על תקלה",
+    "prompt": "(תאר כאן מה קרה — ככל שיש יותר פרטים, קל יותר לאתר את התקלה.)"
+  },
+  "profile": {
+    "viaGoogle": " · דרך Google",
+    "edit": "עריכת פרופיל",
+    "signOut": "יציאה",
+    "firstName": "שם פרטי",
+    "lastName": "שם משפחה",
+    "username": "שם משתמש",
+    "city": "עיר",
+    "cityPlaceholder": "למשל בני ברק",
+    "country": "מדינה",
+    "countryPlaceholder": "למשל ישראל",
+    "saving": "שומר…"
+  },
+  "stats": {
+    "title": "הש״ס שלך",
+    "shasPercent": "מהש״ס נלמדו",
+    "dayStreak": "ימי רצף",
+    "longestStreak": "הרצף הארוך ביותר",
+    "mishnayotLearned": "משניות נלמדו",
+    "perekNotes": "הערות לפרקים",
+    "conceptsAndSentences": "מושגים ומשפטים",
+    "viewBreakdown": "לפירוט המלא בהסיומים שלי ←"
+  },
+  "groups": {
+    "title": "חברותא וחבורה",
+    "empty": "עוד אין לך חברותא או חבורה.",
+    "chabura": "חבורה",
+    "chevrusa": "חברותא",
+    "sub_one": "{{masechet}} · חבר אחד",
+    "sub_two": "{{masechet}} · שני חברים",
+    "sub_other": "{{masechet}} · {{count}} חברים",
+    "goTo": "לחברותא וחבורה ←"
+  },
+  "practice": {
+    "title": "תרגול",
+    "quizBest": "השיא בחידון משנה",
+    "quizBestGraded": "השיא בחידון משנה ({{grade}})",
+    "dashBest": "השיא במרוץ הש״ס",
+    "chazaraBest": "השיא בזיכרון מסכתות",
+    "sortCompletions": "סבבים שהושלמו במיון לסדרים"
+  },
+  "liluy": {
+    "title": "לעילוי נשמת",
+    "managing_one": "אתה מנהל סיום אחד.",
+    "managing_two": "אתה מנהל שני סיומים.",
+    "managing_other": "אתה מנהל {{count}} סיומים.",
+    "goTo": "לעמוד לעילוי נשמת ←"
+  },
+  "deleteAccount": {
+    "link": "מחיקת החשבון",
+    "title": "למחוק את החשבון לצמיתות?",
+    "body": "אי אפשר לבטל את זה. הקלד DELETE לאישור.",
+    "confirmLabel": "אישור מחיקה",
+    "busyLabel": "מוחק…"
+  },
+  "newPassword": {
+    "title": "קביעת סיסמה חדשה",
+    "tooShort": "הסיסמה צריכה להכיל לפחות {{min}} תווים.",
+    "mismatch": "הסיסמאות אינן תואמות.",
+    "doneLabel": "הסיסמה נקבעה",
+    "doneBody": "הסיסמה שלך עודכנה. אתה מחובר בתור {{email}}.",
+    "intro": "בחר סיסמה חדשה עבור {{email}}.",
+    "newPassword": "סיסמה חדשה",
+    "confirmPassword": "אימות סיסמה",
+    "submit": "קביעת סיסמה"
+  },
+  "signIn": {
+    "notConnected": "החשבונות עוד לא מחוברים — בבנייה. ההערות וההתקדמות שלך כבר נשמרות במכשיר הזה; כשזה יעלה לאוויר, הכניסה תעביר אותן לחשבון.",
+    "notConnectedShort": "החשבונות עוד לא מחוברים",
+    "onThisDevice": "במכשיר הזה כרגע",
+    "dayStreak": "ימי רצף",
+    "mishnayot": "משניות",
+    "notes": "הערות",
+    "or": "או",
+    "useEmail": "להשתמש בכתובת מייל במקום",
+    "reassurance": "הכניסה לא משנה דבר ממה שכבר למדת — ההתקדמות במכשיר הזה מתמזגת לחשבון שלך.",
+    "back": "→ חזרה",
+    "resetSent": "בדוק את המייל שלך — שלחנו קישור לאיפוס.",
+    "email": "מייל",
+    "pleaseWait": "רק רגע…",
+    "sendReset": "שליחת קישור לאיפוס",
+    "logIn": "כניסה",
+    "createAccount": "יצירת חשבון",
+    "firstNamePlaceholder": "מוצג כשאתה מחובר — למשל יונה",
+    "lastNamePlaceholder": "למשל כהן",
+    "password": "סיסמה",
+    "forgot": "שכחת?",
+    "accountCreated": "החשבון נוצר — אשר אותו דרך המייל ששלחנו, ואז היכנס."
+  }
+}

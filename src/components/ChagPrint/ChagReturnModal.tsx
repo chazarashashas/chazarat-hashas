@@ -1,14 +1,18 @@
 import { useState } from "react";
-import { shortDayLabel, type ChagStretch } from "../../utils/chagCalendar";
+import { useTranslation } from "react-i18next";
+import i18n, { useDirection } from "../../i18n";
+import type { ChagStretch } from "../../utils/chagCalendar";
 import { sequenceItems, upcomingDayRanges, type MishnaRef } from "../../utils/dailyProjection";
 import { useLearningProgress } from "../../utils/useLearningProgress";
 import { useEscapeKey } from "../../utils/useEscapeKey";
-import { itemsMeta, stretchName } from "./chagPrintModel";
+import { dayTitle, itemsMeta, shortDay, stretchName } from "./chagPrintModel";
 import "./ChagPrint.css";
 
 const WORDS = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve"];
 
 function word(n: number): string {
+  // Hebrew counts in digits: its number words change with gender.
+  if (i18n.language === "he") return String(n);
   return WORDS[n] ?? String(n);
 }
 
@@ -21,7 +25,9 @@ function listItems(items: MishnaRef[], perekUnit: boolean): string {
   const parts = perekUnit
     ? itemsMeta(items, true).split(" · ").slice(0, -1)
     : itemsMeta(items, false).split(" · ");
-  return parts.length <= 1 ? parts.join("") : `${parts.slice(0, -1).join(", ")} and ${parts[parts.length - 1]}`;
+  return parts.length <= 1
+    ? parts.join("")
+    : i18n.t("print:meta.and", { list: parts.slice(0, -1).join(", "), last: parts[parts.length - 1] });
 }
 
 interface Props {
@@ -38,15 +44,17 @@ interface Props {
  */
 export function ChagReturnModal({ stretch, onClose, onCatchUp }: Props) {
   const progress = useLearningProgress();
+  const { t } = useTranslation(["print", "common"]);
+  const dir = useDirection();
   useEscapeKey(onClose);
   const perekUnit = progress.pace.unit === "perakim";
   const ranges = upcomingDayRanges(progress.position, progress.pace, stretch.days.length);
   const due = stretch.days
-    .map((d, i) => ({ date: d.date, title: capitalize(d.title), items: ranges[i] ? sequenceItems(ranges[i]) : [] }))
+    .map((d, i) => ({ date: d.date, title: capitalize(dayTitle(d.title)), items: ranges[i] ? sequenceItems(ranges[i]) : [] }))
     .filter((d) => d.items.length > 0);
   const all = due.flatMap((d) => d.items);
   const count = perekUnit ? new Set(all.map((m) => `${m.masechetEn}.${m.perek}`)).size : all.length;
-  const unit = perekUnit ? (count === 1 ? "perek" : "perakim") : count === 1 ? "mishnah" : "mishnayot";
+  const dueKey = perekUnit ? (count === 1 ? "duePerek" : "duePerakim") : count === 1 ? "dueMishnah" : "dueMishnayot";
   const [choosing, setChoosing] = useState(false);
   const [picked, setPicked] = useState<Set<string>>(new Set());
   const streak = progress.streak.current;
@@ -63,39 +71,39 @@ export function ChagReturnModal({ stretch, onClose, onCatchUp }: Props) {
     onCatchUp();
   }
 
-  const allLabel = count === 1 ? "Yes — mark it learned" : count === 2 ? "Yes — mark both learned" : `Yes — mark all ${word(count)} learned`;
+  const allLabel = count === 1 ? t("return.markIt") : count === 2 ? t("return.markBoth") : t("return.markAllCount", { words: word(count) });
 
   return (
     <div className="modal-scrim modal-scrim--top">
-      <div className="modal modal--md chag-return" role="dialog" aria-label="Your streak is safe">
+      <div className="modal modal--md chag-return" role="dialog" aria-label={t("return.title")}>
         <div className="chag-return__head">
           <span className="chag-tile chag-tile--good" aria-hidden="true">
             ✓
           </span>
           <div>
-            <h2 className="chag-return__title">Your streak is safe</h2>
+            <h2 className="chag-return__title">{t("return.title")}</h2>
             <p className="chag-return__sub">
               {stretchName(stretch)}
-              {streak > 0 ? ` · ${streak} ${streak === 1 ? "day" : "days"} held` : ""}
+              {streak > 0 ? ` · ${t("return.daysHeld", { count: streak })}` : ""}
             </p>
           </div>
         </div>
 
         {due.length === 0 ? (
           <button className="btn btn--primary btn--block chag-return__done" onClick={onClose}>
-            Back to learning
+            {t("return.backToLearning")}
           </button>
         ) : (
           <>
             <p className="chag-return__lead">
-              {capitalize(word(count))} {unit} came due while you were away.
+              {t(`return.${dueKey}`, { words: capitalize(word(count)) })}
             </p>
             <div className="chag-return__due">
               {due.map((d) => (
                 <div key={d.date}>
                   <div className="chag-return__day">
                     <span className="chag-return__day-title">{d.title}</span>
-                    <span className="chag-return__day-date">{shortDayLabel(d.date)}</span>
+                    <span className="chag-return__day-date">{shortDay(d.date)}</span>
                   </div>
                   <div className="chag-return__chips">
                     {(perekUnit ? itemsMeta(d.items, true).split(" · ").slice(0, -1) : itemsMeta(d.items, false).split(" · ")).map((c) => (
@@ -125,16 +133,16 @@ export function ChagReturnModal({ stretch, onClose, onCatchUp }: Props) {
                       ~
                     </span>
                     <span className="chag-option__text">
-                      <span className="chag-option__title">Some of them — let me choose</span>
+                      <span className="chag-option__title">{t("return.letMeChoose")}</span>
                     </span>
                   </button>
                 )}
                 <button className="chag-option" onClick={catchUp}>
                   <span className="chag-tile chag-tile--navy" aria-hidden="true">
-                    →
+                    {dir === "rtl" ? "←" : "→"}
                   </span>
                   <span className="chag-option__text">
-                    <span className="chag-option__title">Not yet — let's catch up now</span>
+                    <span className="chag-option__title">{t("return.catchUp")}</span>
                   </span>
                 </button>
               </div>
@@ -174,10 +182,10 @@ export function ChagReturnModal({ stretch, onClose, onCatchUp }: Props) {
                   disabled={picked.size === 0}
                   onClick={() => markAll(due.filter((d) => picked.has(d.date)))}
                 >
-                  Mark {picked.size === 0 ? "them" : picked.size === due.length ? "all" : "these"} learned
+                  {picked.size === 0 ? t("return.markThem") : picked.size === due.length ? t("return.markAll") : t("return.markThese")}
                 </button>
                 <button className="chag-return__back" onClick={() => setChoosing(false)}>
-                  Back
+                  {t("common:back")}
                 </button>
               </div>
             )}

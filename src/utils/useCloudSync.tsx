@@ -38,7 +38,13 @@ export const SYNC_KEYS = [
   "showEnglish",
   "nishmatHiddenSiyumim",
   "bottomBarIds",
+  "uiLanguage",
 ] as const;
+
+/** Device settings rather than personal data: synced so a new phone picks
+    them up, but not wiped on sign-out — signing out shouldn't switch the
+    app's language under you. */
+const KEEP_ON_SIGN_OUT = new Set<string>(["uiLanguage"]);
 
 export type SyncBlob = Partial<Record<(typeof SYNC_KEYS)[number], unknown>>;
 
@@ -226,6 +232,9 @@ export function mergeBlobs(local: SyncBlob, cloud: SyncBlob): SyncBlob {
     bottomBarIds: isEmptyValue(local.bottomBarIds)
       ? ((cloud.bottomBarIds as string[] | undefined) ?? DEFAULT_BOTTOM_BAR_IDS)
       : (local.bottomBarIds as string[]),
+    // Same rule: a choice made on this device stands; a device that never
+    // chose takes the account's (a new phone set up in Hebrew stays Hebrew).
+    uiLanguage: local.uiLanguage ?? cloud.uiLanguage,
   };
 }
 
@@ -443,7 +452,7 @@ export function SyncStatusProvider({
     if (!wasSignedInRef.current) return;
     wasSignedInRef.current = false;
     for (const key of SYNC_KEYS) {
-      localStorage.removeItem(PREFIX + key);
+      if (!KEEP_ON_SIGN_OUT.has(key)) localStorage.removeItem(PREFIX + key);
     }
     localStorage.removeItem(RESET_SEEN_KEY);
     window.dispatchEvent(new Event(STORAGE_SYNC_EVENT));

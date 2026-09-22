@@ -3,6 +3,7 @@ import { supabase } from "./supabase";
 import { useAuth } from "./useAuth";
 import { useLocalStorageState } from "./useLocalStorageState";
 import { localDateStr } from "./localDate";
+import i18n from "../i18n";
 
 export type Visibility = "public" | "private";
 
@@ -62,14 +63,14 @@ function slug(): string {
 
 function friendlyError(message: string): string {
   const lower = message.toLowerCase();
-  if (lower.includes("duplicate key")) return "Someone just took this perek — pick another.";
+  if (lower.includes("duplicate key")) return i18n.t("siyumim:errors.duplicate");
   if (lower.includes("row-level security") || lower.includes("permission denied")) {
-    return "You don't have permission to do that.";
+    return i18n.t("siyumim:errors.permission");
   }
   if (lower.includes("failed to fetch") || lower.includes("network")) {
-    return "Couldn't reach the server — check your connection and try again.";
+    return i18n.t("siyumim:errors.network");
   }
-  return "Something went wrong. Please try again.";
+  return i18n.t("siyumim:errors.generic");
 }
 
 function mapSiyum(row: Record<string, unknown>): Siyum {
@@ -153,7 +154,7 @@ export function useSiyumim() {
     setMyQueuedPerakim(
       (data ?? []).map((row) => ({
         ...mapClaim(row),
-        dedication: (row.nishmat_siyumim as { dedication?: string } | null)?.dedication ?? "a siyum",
+        dedication: (row.nishmat_siyumim as { dedication?: string } | null)?.dedication ?? i18n.t("siyumim:fallbackDedication"),
       })),
     );
   }, [myClaimRefs]);
@@ -192,7 +193,7 @@ export function useSiyumim() {
     targetDate: string,
     visibility: Visibility,
   ): Promise<{ siyum: Siyum | null; error: string | null }> {
-    if (!supabase || !session) return { siyum: null, error: "Log in first to start a siyum." };
+    if (!supabase || !session) return { siyum: null, error: i18n.t("siyumim:errors.logInToStart") };
     const { data, error } = await supabase
       .from("nishmat_siyumim")
       .insert({
@@ -205,7 +206,7 @@ export function useSiyumim() {
       })
       .select("*")
       .single();
-    if (error || !data) return { siyum: null, error: error ? friendlyError(error.message) : "Couldn't create it." };
+    if (error || !data) return { siyum: null, error: error ? friendlyError(error.message) : i18n.t("siyumim:errors.couldntCreate") };
     await refreshMine();
     return { siyum: mapSiyum(data), error: null };
   }
@@ -239,7 +240,7 @@ export function useSiyumim() {
     email: string,
     anonymous: boolean,
   ): Promise<{ claim: PerekClaim | null; error: string | null }> {
-    if (!supabase) return { claim: null, error: "Accounts aren't connected yet." };
+    if (!supabase) return { claim: null, error: i18n.t("siyumim:errors.notConnected") };
     const { data, error } = await supabase
       .from("nishmat_perakim")
       .insert({
@@ -253,7 +254,7 @@ export function useSiyumim() {
       })
       .select("*")
       .single();
-    if (error || !data) return { claim: null, error: error ? friendlyError(error.message) : "Couldn't claim it." };
+    if (error || !data) return { claim: null, error: error ? friendlyError(error.message) : i18n.t("siyumim:errors.couldntClaim") };
     const claim = mapClaim(data);
     setMyClaimRefs((prev) => [
       ...prev,
@@ -274,40 +275,40 @@ export function useSiyumim() {
       trusted, since RLS doesn't enforce it and the token is only ever
       known to whoever legitimately holds it. */
   async function markLearned(claim: PerekClaim): Promise<string | null> {
-    if (!supabase) return "Accounts aren't connected yet.";
+    if (!supabase) return i18n.t("siyumim:errors.notConnected");
     const { data, error } = await supabase.rpc("nishmat_mark_learned", {
       p_claim_id: claim.id,
       p_token: tokenFor(claim.id) ?? "",
     });
     if (error) return friendlyError(error.message);
-    if (!data) return "This claim isn't yours to update.";
+    if (!data) return i18n.t("siyumim:errors.notYoursToUpdate");
     setMyClaimRefs((prev) => prev.filter((c) => c.id !== claim.id));
     await refreshMyQueued();
     return null;
   }
 
   async function addToDailyLimmud(claim: PerekClaim): Promise<string | null> {
-    if (!supabase) return "Accounts aren't connected yet.";
+    if (!supabase) return i18n.t("siyumim:errors.notConnected");
     const { data, error } = await supabase.rpc("nishmat_toggle_queue", {
       p_claim_id: claim.id,
       p_token: tokenFor(claim.id) ?? "",
       p_queued: true,
     });
     if (error) return friendlyError(error.message);
-    if (!data) return "This claim isn't yours to update.";
+    if (!data) return i18n.t("siyumim:errors.notYoursToUpdate");
     await refreshMyQueued();
     return null;
   }
 
   /** Releases a claim you can't get to — back to open for someone else. */
   async function releaseClaim(claim: PerekClaim): Promise<string | null> {
-    if (!supabase) return "Accounts aren't connected yet.";
+    if (!supabase) return i18n.t("siyumim:errors.notConnected");
     const { data, error } = await supabase.rpc("nishmat_release_claim", {
       p_claim_id: claim.id,
       p_token: tokenFor(claim.id) ?? "",
     });
     if (error) return friendlyError(error.message);
-    if (!data) return "This claim isn't yours to release.";
+    if (!data) return i18n.t("siyumim:errors.notYoursToRelease");
     setMyClaimRefs((prev) => prev.filter((c) => c.id !== claim.id));
     await refreshMyQueued();
     return null;

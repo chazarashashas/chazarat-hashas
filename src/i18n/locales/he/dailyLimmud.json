@@ -1,1 +1,110 @@
-{}
+{
+  "title": "הלימוד של היום",
+  "streak": {
+    "days_one": "יום אחד",
+    "days_two": "יומיים",
+    "days_other": "{{count}} ימים",
+    "best": "שיא {{count}}",
+    "confirmHead": "יום {{count}} ברצף"
+  },
+  "englishSwitch": {
+    "on": "תרגום לאנגלית מוצג",
+    "off": "תרגום לאנגלית"
+  },
+  "pace": {
+    "mishnayotPerDay_one": "משנה אחת ליום",
+    "mishnayotPerDay_two": "שתי משניות ליום",
+    "mishnayotPerDay_other": "{{count}} משניות ליום",
+    "perakimPerDay_one": "פרק אחד ליום",
+    "perakimPerDay_two": "שני פרקים ליום",
+    "perakimPerDay_other": "{{count}} פרקים ליום",
+    "groupTwoPerDay": "2 ליום",
+    "optionOneMishna": "משנה אחת ביום",
+    "optionTwoMishnayot": "שתי משניות ביום",
+    "optionOnePerek": "פרק אחד ביום"
+  },
+  "settings": {
+    "yourOwnLearning": "הלימוד שלך",
+    "startHint": "מתחילים במסכת {{masechet}} — אפשר להתחיל ממסכת אחרת",
+    "learningFor": "הלימוד עבור",
+    "myOwnLearning": "הלימוד שלי",
+    "you": "אתה",
+    "someone": "מישהו",
+    "pace": "קצב",
+    "startFrom": "להתחיל מ־",
+    "chaburaPaceNote": "השיעור קובע את הקצב שלו — אותו קצב לכל המשתתפים.",
+    "chevrusaPaceNote": "קצב החברותא נקבע כשהיא התחילה."
+  },
+  "startPicker": {
+    "masechet": "מסכת",
+    "perek": "פרק",
+    "learningHereNow": "כאן אתה לומד עכשיו",
+    "startHere": "התחל כאן",
+    "learnedStaysMarked": "מה שכבר למדת נשאר מסומן."
+  },
+  "finished": {
+    "masechet": "סיימת את מסכת {{masechet}}!",
+    "continueTo": "המשך למסכת {{masechet}}",
+    "orPickDifferent": "או בחר מסכת אחרת:",
+    "choose": "בחר…",
+    "endOfShas": "הגעת לסוף הש״ס בלימוד היומי!",
+    "chooseNext": "בחר את המסכת הבאה ללימוד:",
+    "group": "סיימת את מסכת {{masechet}}! הלימוד של {{group}} הושלם.",
+    "thisGroup": "החברותא או החבורה הזו"
+  },
+  "fallbackChaburaName": "החבורה שלנו",
+  "breadcrumb": {
+    "perek": "פרק {{num}}",
+    "mishna": "משנה {{num}}"
+  },
+  "english": {
+    "notLoading": "התרגום לאנגלית לא נטען כרגע."
+  },
+  "mark": {
+    "done": "סומן כנלמד",
+    "action": "סמן כנלמד",
+    "perekComplete": "פרק {{num}} במסכת {{masechet}} הושלם.",
+    "leftInPerek_one": "עוד משנה אחת בפרק הזה.",
+    "leftInPerek_two": "עוד שתי משניות בפרק הזה.",
+    "leftInPerek_other": "עוד {{count}} משניות בפרק הזה."
+  },
+  "nudge": {
+    "text": "{{days}} ימים של לימוד — שווה לשמור עליהם.",
+    "action": "שמור את הרצף שלי ←"
+  },
+  "siyumim": {
+    "ariaLabel": "פרקים לסיומים",
+    "title": "לסיומים",
+    "sub_one": "פרק שקיבלת על עצמך לסיום, נוסף על הלימוד של היום.",
+    "sub_two": "שני פרקים שקיבלת על עצמך לסיומים, נוסף על הלימוד של היום.",
+    "sub_other": "{{count}} פרקים שקיבלת על עצמך לסיומים, נוסף על הלימוד של היום.",
+    "dedication": "לעילוי נשמת {{dedication}}",
+    "marking": "מסמן…",
+    "markPerek": "סמן את הפרק כנלמד"
+  },
+  "notes": {
+    "namePerek": "תן שם לפרק",
+    "viewNote": "הצג הערה",
+    "addNote": "הוסף הערה",
+    "flagConcept": "סמן מושג",
+    "savedToReview_one": "מושג אחד שמור לחזרה",
+    "savedToReview_two": "שני מושגים שמורים לחזרה",
+    "savedToReview_other": "{{count}} מושגים שמורים לחזרה",
+    "openAll": "← לצפייה ולהדפסה של כל ההערות שלך בסימנים והערות"
+  },
+  "modal": {
+    "label": "{{masechet}} — פרק <1>{{num}}</1>",
+    "conceptName": "שם המושג",
+    "conceptNote": "מה לזכור עליו",
+    "saveConcept": "שמור מושג",
+    "viewAllConcepts": "← לכל המושגים בסימנים והערות",
+    "perekNotePlaceholder": "השם או הסימן שלי לפרק הזה, למשל \"דיני זימון\"",
+    "saveNote": "שמור הערה",
+    "openInNotes": "← פתח בסימנים והערות"
+  },
+  "reveal": {
+    "retry": "נסה שוב — תרגום לאנגלית",
+    "show": "תרגום לאנגלית",
+    "hide": "הסתר תרגום לאנגלית"
+  }
+}

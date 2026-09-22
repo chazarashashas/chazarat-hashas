@@ -1,13 +1,16 @@
 import { useState } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
-import { SEDARIM } from "../../data/shas";
+import { useTranslation } from "react-i18next";
+import { SEDARIM, type Masechet, type Seder } from "../../data/shas";
+import { useName } from "../../i18n";
+import { useNavLabels } from "../../utils/navItems";
 import type { MatchView } from "../../data/matchViews";
 import type { ViewState } from "../../types/viewState";
 import { getSederHue } from "../../utils/sederHue";
 import { GameHud } from "../GameHud/GameHud";
 import { ShareSheet } from "../Share/ShareSheet";
 import { ShareLink } from "../Share/SharePrompt";
-import { numberWords, orderMoment } from "../Share/shareMoments";
+import { orderMoment } from "../Share/shareMoments";
 import "./MatchBoard.css";
 
 /** Which seder a slot/chip belongs to, found from the item name itself
@@ -20,6 +23,13 @@ function hueForItem(viewId: string, itemName: string): string {
       : SEDARIM.find((s) => s.masechtot.some((m) => m.en === itemName));
   return getSederHue(seder?.id);
 }
+
+/** Slots and chips are keyed by English name (see matchViews.ts); this
+    finds the seder or masechet to show it by. */
+const ITEM_BY_EN = new Map<string, Seder | Masechet>([
+  ...SEDARIM.map((s): [string, Seder] => [s.en, s]),
+  ...SEDARIM.flatMap((s) => s.masechtot.map((m): [string, Masechet] => [m.en, m])),
+]);
 
 interface MatchBoardProps {
   view: MatchView;
@@ -47,6 +57,22 @@ const TAP_MOVE_THRESHOLD = 6;
 
 export function MatchBoard({ view, state, onPlace, onReset, clearedSederIds }: MatchBoardProps) {
   const { placed, pool } = state;
+  const { t } = useTranslation("games");
+  const nameOf = useName();
+  const navLabels = useNavLabels();
+  const shown = (en: string): string => {
+    const item = ITEM_BY_EN.get(en);
+    return item ? nameOf(item) : en;
+  };
+  // The view's title and pool label, in the interface's language.
+  const viewSeder = SEDARIM.find((s) => s.id === view.id);
+  const isShasView = view.id === "sedarim";
+  const title = isShasView
+    ? navLabels.item({ id: "sedarim", label: view.title })
+    : viewSeder
+      ? nameOf(viewSeder)
+      : view.title;
+  const poolLabel = isShasView ? t("shas") : viewSeder ? nameOf(viewSeder) : view.label;
   const [drag, setDrag] = useState<DragState | null>(null);
   const [sharing, setSharing] = useState(false);
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
@@ -131,12 +157,12 @@ export function MatchBoard({ view, state, onPlace, onReset, clearedSederIds }: M
   return (
     <div className="stage">
       <div className="panel board-card">
-        <button className="restart-icon" title="Restart" onClick={onReset}>
+        <button className="restart-icon" title={t("restart")} onClick={onReset}>
           ↺
         </button>
-        <h2 className="panel__title">{view.title}</h2>
+        <h2 className="panel__title">{title}</h2>
 
-        <GameHud doing={view.title} progress={placedCount / placed.length} worth={`${placedCount} / ${placed.length}`} />
+        <GameHud doing={title} progress={placedCount / placed.length} worth={`${placedCount} / ${placed.length}`} />
 
         <div className="board-progress">
           {SEDARIM.map((seder) => (
@@ -144,7 +170,7 @@ export function MatchBoard({ view, state, onPlace, onReset, clearedSederIds }: M
               key={seder.id}
               className={"board-progress__sq" + (clearedSederIds.has(seder.id) ? " board-progress__sq--done" : "")}
               style={{ ["--sq-hue" as string]: getSederHue(seder.id) }}
-              title={seder.en}
+              title={nameOf(seder)}
             />
           ))}
         </div>
@@ -152,7 +178,7 @@ export function MatchBoard({ view, state, onPlace, onReset, clearedSederIds }: M
         <div className="board-cols">
           <div className="board-col">
             <div className="board-col__stack">
-              <div className="board-col__label">Order</div>
+              <div className="board-col__label">{t("matchBoard.orderLabel")}</div>
               {placed.map((filledId, i) => {
                 const isFilled = filledId !== null;
                 const className =
@@ -170,7 +196,7 @@ export function MatchBoard({ view, state, onPlace, onReset, clearedSederIds }: M
                     onClick={() => handleSlotTap(i)}
                   >
                     <span className="slot__num">{i + 1}</span>
-                    <span className="slot__label">{isFilled ? filledId : ""}</span>
+                    <span className="slot__label">{isFilled ? shown(filledId) : ""}</span>
                     {isFilled && <span className="slot__check">✓</span>}
                   </div>
                 );
@@ -180,7 +206,7 @@ export function MatchBoard({ view, state, onPlace, onReset, clearedSederIds }: M
 
           <div className="board-col">
             <div className="board-col__stack">
-              <div className="board-col__label">{view.label}</div>
+              <div className="board-col__label">{poolLabel}</div>
               {pool.map((id) => {
                 const isDragging = drag?.id === id;
                 return (
@@ -195,7 +221,7 @@ export function MatchBoard({ view, state, onPlace, onReset, clearedSederIds }: M
                     onPointerUp={(e) => handlePointerUp(e, id)}
                     onPointerCancel={(e) => handlePointerUp(e, id)}
                   >
-                    {id}
+                    {shown(id)}
                   </div>
                 );
               })}
@@ -213,7 +239,7 @@ export function MatchBoard({ view, state, onPlace, onReset, clearedSederIds }: M
             width: drag.width,
           }}
         >
-          {drag.id}
+          {shown(drag.id)}
         </div>
       )}
 
@@ -221,9 +247,9 @@ export function MatchBoard({ view, state, onPlace, onReset, clearedSederIds }: M
         <div className="modal-scrim">
           <div className="modal modal--sm game__end">
             <div className="popup__mark">✓</div>
-            <div className="popup__text">All {view.items.length} matched</div>
+            <div className="popup__text">{t("matchBoard.allMatched", { total: view.items.length })}</div>
             <button className="popup__restart" onClick={onReset}>
-              Play again
+              {t("playAgain")}
             </button>
             <ShareLink onClick={() => setSharing(true)} />
           </div>
@@ -231,10 +257,7 @@ export function MatchBoard({ view, state, onPlace, onReset, clearedSederIds }: M
       )}
       {sharing && (
         <ShareSheet
-          moment={orderMoment(
-            view.items.length,
-            view.id === "shas" ? `the ${numberWords(view.items.length)} sedarim` : `the ${numberWords(view.items.length)} masechtot of Seder ${view.label}`,
-          )}
+          moment={orderMoment(view.items.length, isShasView ? { kind: "sedarim" } : { kind: "seder", sederId: view.id })}
           onClose={() => setSharing(false)}
         />
       )}

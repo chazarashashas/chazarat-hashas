@@ -1,1 +1,82 @@
-{}
+{
+  "restart": "Restart",
+  "start": "Start",
+  "playAgain": "Play again",
+  "paused": "Paused",
+  "pause": "Pause",
+  "resume": "Resume",
+  "allOfShas": "All of Shas",
+  "shas": "Shas",
+  "mishnaId": {
+    "modeLabel": "Mode",
+    "modeStreak": "🔥 Streak",
+    "modeQuiz": "Quiz",
+    "practiceLabel": "Practice",
+    "practiceMasechet": "Masechet",
+    "practicePerek": "Perek",
+    "poolLabel": "Pool",
+    "hudStreak": "Streak",
+    "hudCard": "Card {{number}} of {{total}}",
+    "hudQuiz": "Quiz",
+    "perekBonus": "★ {{bonus}} perek bonus",
+    "grade": {
+      "a": "A",
+      "b": "B",
+      "c": "C",
+      "d": "D",
+      "f": "F"
+    },
+    "quizComplete": "Quiz complete",
+    "englishWithheld": "English becomes available once you have located it.",
+    "timesUp": "Time's up — it was {{seder}} › {{masechet}} › Perek {{perek}}.",
+    "notQuite": "Not quite — it was {{seder}} › {{masechet}} › Perek {{perek}}.",
+    "viewNote": "View note",
+    "addNote": "Add note",
+    "whichSeder": "Which seder?",
+    "whichMasechet": "Which masechet?",
+    "located": "Located — {{seder}} › {{masechet}}.",
+    "locatedWithPerek": "Located — {{seder}} › {{masechet}} › Perek {{perek}}.",
+    "bonusEarned": "★ Perek {{perek}} — bonus earned!",
+    "bonusQuestion": "Bonus: which perek? <tag>extra credit</tag>",
+    "finishQuiz": "Finish quiz",
+    "nextCard": "Next card"
+  },
+  "sederSort": {
+    "allSorted": "All {{total}} masechtot sorted"
+  },
+  "recall": {
+    "placeholder": "Type a masechet…",
+    "readyScope": "{{scope}} — {{total}} masechtot",
+    "allFound": "All of them!",
+    "timesUp": "Time's up",
+    "foundSummary": "You found {{found}} of {{total}} in {{scope}}.",
+    "stillToFind": "Still to find:"
+  },
+  "dash": {
+    "best": "BEST {{best}}",
+    "crossingLabel": "{{seconds}} second crossing",
+    "crossingSeconds": "{{seconds}}s",
+    "livesLabel": "{{lives}} of {{total}} lives left",
+    "ledgerLabel": "{{caught}} of {{total}} masechtot caught",
+    "tallyLabel": "{{seder}} {{done}} of {{total}}",
+    "caught": "{{masechet}} is {{seder}}",
+    "caughtWithBonus": "{{masechet}} is {{seder}} · +{{bonus}}",
+    "landed": "Landed in {{landed}} — {{masechet}} is {{seder}}",
+    "endWon": "All of Shas",
+    "endLost": "Out of lives",
+    "endWonSub": "All {{total}} masechtot · Score {{score}}",
+    "endLostSub": "Score {{score}} · Best {{best}}",
+    "pauseTitle": "Pause (Space / ←)",
+    "resumeTitle": "Resume (Space / ←)",
+    "upTitle": "Up (↑)",
+    "upLabel": "Move up",
+    "downTitle": "Down (↓)",
+    "downLabel": "Move down",
+    "lockTitle": "Lock in (→)",
+    "lock": "Lock in"
+  },
+  "matchBoard": {
+    "orderLabel": "Order",
+    "allMatched": "All {{total}} matched"
+  }
+}

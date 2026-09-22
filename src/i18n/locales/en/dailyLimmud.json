@@ -1,1 +1,104 @@
-{}
+{
+  "title": "Today's limmud",
+  "streak": {
+    "days_one": "{{count}} days",
+    "days_other": "{{count}} days",
+    "best": "best {{count}}",
+    "confirmHead": "Streak day {{count}}"
+  },
+  "englishSwitch": {
+    "on": "English on",
+    "off": "English"
+  },
+  "pace": {
+    "mishnayotPerDay_one": "{{count}} mishnah/day",
+    "mishnayotPerDay_other": "{{count}} mishnayot/day",
+    "perakimPerDay_one": "{{count}} perek/day",
+    "perakimPerDay_other": "{{count}} perakim/day",
+    "groupTwoPerDay": "2/day",
+    "optionOneMishna": "1 Mishna a day",
+    "optionTwoMishnayot": "2 Mishnayot a day",
+    "optionOnePerek": "1 Perek a day"
+  },
+  "settings": {
+    "yourOwnLearning": "Your own learning",
+    "startHint": "Starting at {{masechet}} — start from a different masechet",
+    "learningFor": "Learning for",
+    "myOwnLearning": "My own learning",
+    "you": "You",
+    "someone": "Someone",
+    "pace": "Pace",
+    "startFrom": "Start from",
+    "chaburaPaceNote": "The shiur sets its own pace — the same for everyone in it.",
+    "chevrusaPaceNote": "A chevrusa's pace was agreed when it started."
+  },
+  "startPicker": {
+    "masechet": "Masechet",
+    "perek": "Perek",
+    "learningHereNow": "You're learning here now",
+    "startHere": "Start here",
+    "learnedStaysMarked": "What you've already learned stays marked."
+  },
+  "finished": {
+    "masechet": "You finished {{masechet}}!",
+    "continueTo": "Continue to {{masechet}}",
+    "orPickDifferent": "or pick a different masechet:",
+    "choose": "Choose…",
+    "endOfShas": "You've reached the end of Shas in Daily Limmud!",
+    "chooseNext": "Choose a masechet to learn next:",
+    "group": "You've finished {{masechet}}! Nothing left to learn for {{group}}.",
+    "thisGroup": "this chevrusa/chabura"
+  },
+  "fallbackChaburaName": "Our chabura",
+  "breadcrumb": {
+    "perek": "Perek {{num}}",
+    "mishna": "Mishna {{num}}"
+  },
+  "english": {
+    "notLoading": "English is not loading right now."
+  },
+  "mark": {
+    "done": "Marked as learned",
+    "action": "Mark as learned",
+    "perekComplete": "Perek {{num}} of {{masechet}} complete.",
+    "leftInPerek_one": "{{count}} mishnah left in this perek.",
+    "leftInPerek_other": "{{count}} mishnahs left in this perek."
+  },
+  "nudge": {
+    "text": "{{days}} days is worth keeping.",
+    "action": "Save my streak →"
+  },
+  "siyumim": {
+    "ariaLabel": "Perakim for siyumim",
+    "title": "For siyumim",
+    "sub_one": "A perek you took on for a siyum, on top of today's learning.",
+    "sub_other": "{{count}} perakim you took on for siyumim, on top of today's learning.",
+    "dedication": "L'Iluy Nishmat: {{dedication}}",
+    "marking": "Marking…",
+    "markPerek": "Mark perek learned"
+  },
+  "notes": {
+    "namePerek": "Name this perek",
+    "viewNote": "View note",
+    "addNote": "Add note",
+    "flagConcept": "Flag a concept",
+    "savedToReview_one": "{{count}} saved to review",
+    "savedToReview_other": "{{count}} saved to review",
+    "openAll": "→ View or print all your notes in Mishna Notes"
+  },
+  "modal": {
+    "label": "{{masechet}} — Perek <1>{{num}}</1>",
+    "conceptName": "Concept name",
+    "conceptNote": "What to remember about it",
+    "saveConcept": "Save concept",
+    "viewAllConcepts": "→ View all concepts in Mishna Notes",
+    "perekNotePlaceholder": "My name or memory cue for this perek, e.g. \"the laws of Zimmun\"",
+    "saveNote": "Save note",
+    "openInNotes": "→ Open in Mishna Notes"
+  },
+  "reveal": {
+    "retry": "Try again — English",
+    "show": "English",
+    "hide": "Hide English"
+  }
+}

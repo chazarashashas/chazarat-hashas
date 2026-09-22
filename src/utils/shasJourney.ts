@@ -2,6 +2,7 @@ import { SEDARIM, type Masechet, type Seder } from "../data/shas";
 import { getMishnayotCount } from "../data/perekInfo";
 import { getSederHue } from "./sederHue";
 import type { FlipScope } from "../components/FlipCounter/FlipCounter";
+import i18n from "../i18n";
 
 interface ProgressLike {
   isCompleted: (item: { masechetEn: string; perek: number; mishnah: number }) => boolean;
@@ -88,35 +89,38 @@ export function buildJourneyScopes(progress: ProgressLike, masechetEn?: string):
     }
   }
 
+  // Built during render, so i18n.t here follows the interface's language.
+  const name = (item: { he: string; en: string }) => (i18n.language === "he" ? item.he : item.en);
+  const unit = i18n.t("shell:journey.unit");
   return [
     {
       key: "Masechet",
-      title: masechet.en,
-      context: seder.en,
+      title: name(masechet),
+      context: name(seder),
       percent: progress.masechetPercent(masechet.en, masechet.perakim),
       doneCount: mDone,
       totalCount: mTotal,
-      unit: "mishnayot",
+      unit,
       hue,
     },
     {
       key: "Seder",
-      title: seder.en,
-      context: `${seder.masechtot.length} masechtot`,
+      title: name(seder),
+      context: i18n.t("shell:journey.masechtot", { count: seder.masechtot.length }),
       percent: progress.sederPercent(seder.id),
       doneCount: sDone,
       totalCount: sTotal,
-      unit: "mishnayot",
+      unit,
       hue,
     },
     {
       key: "Shas",
-      title: "Kol HaShas",
-      context: "all six sedarim",
+      title: i18n.t("shell:journey.kolHaShas"),
+      context: i18n.t("shell:journey.allSedarim"),
       percent: progress.shasPercent(),
       doneCount: shasDone,
       totalCount: shasTotal,
-      unit: "mishnayot",
+      unit,
       hue: "var(--gold)",
     },
   ];

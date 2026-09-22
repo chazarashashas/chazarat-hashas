@@ -1,4 +1,5 @@
 import { forwardRef } from "react";
+import { useDirection } from "../../i18n";
 import { BrandMark } from "../BrandMark";
 import { getSederHue } from "../../utils/sederHue";
 import { GRID_MASECHTOT, SITE, type ShareMoment } from "./shareMoments";
@@ -28,13 +29,16 @@ function Squares() {
  * 1080 × 1080. Rounded, 20px, on every kind.
  */
 export const ShareCard = forwardRef<HTMLDivElement, Props>(function ShareCard({ moment, name, withFigure }, ref) {
+  // The card reads in the interface's direction; its Hebrew pieces (and
+  // the grid, in Shas order) keep their own rtl.
+  const dir = useDirection();
   const c = moment.card;
   const sub = [c.sub, name].filter(Boolean).join(" · ");
   const lit = c.lit ? new Set(c.lit) : null;
 
   if (moment.kind === "challenge") {
     return (
-      <div ref={ref} className="share-card share-card--challenge">
+      <div ref={ref} className="share-card share-card--challenge" dir={dir}>
         <div className="share-card__top">
           <Squares />
           <span className="share-card__he" lang="he" dir="rtl">
@@ -68,7 +72,7 @@ export const ShareCard = forwardRef<HTMLDivElement, Props>(function ShareCard({ 
   if (moment.kind === "step") {
     const pct = c.stepDone ? Math.max(1.6, (c.stepDone / 63) * 100) : null;
     return (
-      <div ref={ref} className="share-card share-card--step">
+      <div ref={ref} className="share-card share-card--step" dir={dir}>
         <div className="share-card__letter" lang="he" dir="rtl" aria-hidden="true">
           {c.letter}
         </div>
@@ -105,7 +109,7 @@ export const ShareCard = forwardRef<HTMLDivElement, Props>(function ShareCard({ 
 
   if (moment.kind === "ceremony") {
     return (
-      <div ref={ref} className="share-card share-card--ceremony">
+      <div ref={ref} className="share-card share-card--ceremony" dir={dir}>
         <div className="share-card__frame">
           <BrandMark variant="reversed" className="share-card__mark share-card__mark--bright" />
           <div className="share-card__center">
@@ -125,7 +129,7 @@ export const ShareCard = forwardRef<HTMLDivElement, Props>(function ShareCard({ 
   }
 
   return (
-    <div ref={ref} className="share-card share-card--plain">
+    <div ref={ref} className="share-card share-card--plain" dir={dir}>
       <div className="share-card__letter" lang="he" dir="rtl" aria-hidden="true">
         {c.letter}
       </div>

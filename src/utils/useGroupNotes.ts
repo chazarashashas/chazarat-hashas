@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "./supabase";
 import { useAuth } from "./useAuth";
+import i18n from "../i18n";
 
 export interface GroupNoteComment {
   id: string;
@@ -25,9 +26,9 @@ export interface GroupNote {
 function friendlyNoteError(message: string): string {
   const lower = message.toLowerCase();
   if (lower.includes("row-level security") || lower.includes("permission denied")) {
-    return "You don't have permission to do that.";
+    return i18n.t("groups:errors.permission");
   }
-  return "Couldn't save that — please try again.";
+  return i18n.t("groups:errors.noteSave");
 }
 
 /** Shared notes for one chevrusa/chabura's masechet — every note carries
@@ -63,13 +64,13 @@ export function useGroupNotes(groupId: string, masechetEn: string) {
     const { data: profiles } = authorIds.length
       ? await supabase.from("profiles").select("id, username, first_name").in("id", authorIds)
       : { data: [] as { id: string; username: string | null; first_name: string | null }[] };
-    const nameById = new Map((profiles ?? []).map((p) => [p.id, p.first_name ?? p.username ?? "Someone"]));
+    const nameById = new Map((profiles ?? []).map((p) => [p.id, p.first_name ?? p.username ?? i18n.t("groups:someone")]));
 
     setNotes(
       (noteRows ?? []).map((n) => ({
         id: n.id as string,
         authorId: n.author_id as string,
-        authorName: n.author_id === session.user.id ? "You" : (nameById.get(n.author_id as string) ?? "Someone"),
+        authorName: n.author_id === session.user.id ? i18n.t("groups:you") : (nameById.get(n.author_id as string) ?? i18n.t("groups:someone")),
         perek: n.perek as number,
         mishnah: n.mishnah as number,
         body: n.body as string,
@@ -80,7 +81,7 @@ export function useGroupNotes(groupId: string, masechetEn: string) {
           .map((c) => ({
             id: c.id as string,
             authorId: c.author_id as string,
-            authorName: c.author_id === session.user.id ? "You" : (nameById.get(c.author_id as string) ?? "Someone"),
+            authorName: c.author_id === session.user.id ? i18n.t("groups:you") : (nameById.get(c.author_id as string) ?? i18n.t("groups:someone")),
             body: c.body as string,
             createdAt: c.created_at as string,
           })),
@@ -97,8 +98,8 @@ export function useGroupNotes(groupId: string, masechetEn: string) {
   }, [refresh]);
 
   async function addNote(perek: number, mishnah: number, body: string): Promise<string | null> {
-    if (!supabase || !session) return "Accounts aren't connected yet.";
-    if (!body.trim()) return "Write something first.";
+    if (!supabase || !session) return i18n.t("groups:errors.notConnected");
+    if (!body.trim()) return i18n.t("groups:errors.writeSomething");
     const { error } = await supabase
       .from("group_notes")
       .insert({ group_id: groupId, masechet_en: masechetEn, author_id: session.user.id, perek, mishnah, body: body.trim() });
@@ -108,8 +109,8 @@ export function useGroupNotes(groupId: string, masechetEn: string) {
   }
 
   async function editNote(noteId: string, body: string): Promise<string | null> {
-    if (!supabase) return "Accounts aren't connected yet.";
-    if (!body.trim()) return "Write something first.";
+    if (!supabase) return i18n.t("groups:errors.notConnected");
+    if (!body.trim()) return i18n.t("groups:errors.writeSomething");
     const { error } = await supabase
       .from("group_notes")
       .update({ body: body.trim(), edited_at: new Date().toISOString() })
@@ -120,8 +121,8 @@ export function useGroupNotes(groupId: string, masechetEn: string) {
   }
 
   async function addComment(noteId: string, body: string): Promise<string | null> {
-    if (!supabase || !session) return "Accounts aren't connected yet.";
-    if (!body.trim()) return "Write something first.";
+    if (!supabase || !session) return i18n.t("groups:errors.notConnected");
+    if (!body.trim()) return i18n.t("groups:errors.writeSomething");
     const { error } = await supabase
       .from("group_note_comments")
       .insert({ note_id: noteId, author_id: session.user.id, body: body.trim() });

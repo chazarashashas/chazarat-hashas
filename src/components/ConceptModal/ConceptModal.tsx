@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { Trans, useTranslation } from "react-i18next";
+import { findMasechet } from "../../data/shas";
+import { useName } from "../../i18n";
 import { hebrewNumeral } from "../../utils/hebrewNumeral";
 import { useEscapeKey } from "../../utils/useEscapeKey";
 import "./ConceptModal.css";
@@ -18,6 +21,9 @@ interface ConceptModalProps {
     PerekNoteModal already gets, so the reading screen isn't carrying a
     form under every mishnah whether or not it's being used. */
 export function ConceptModal({ masechetEn, perek, onSave, onClose, onOpenNotes }: ConceptModalProps) {
+  const { t } = useTranslation(["dailyLimmud", "common"]);
+  const name = useName();
+  const masechet = findMasechet(masechetEn);
   const [title, setTitle] = useState("");
   const [note, setNote] = useState("");
   useEscapeKey(onClose);
@@ -31,31 +37,36 @@ export function ConceptModal({ masechetEn, perek, onSave, onClose, onOpenNotes }
   return (
     <div className="modal-scrim" onClick={onClose}>
       <div className="modal modal--sm concept-modal" onClick={(e) => e.stopPropagation()}>
-        <button className="icon-btn modal__close" onClick={onClose} title="Close" aria-label="Close">
+        <button className="icon-btn modal__close" onClick={onClose} title={t("common:close")} aria-label={t("common:close")}>
           ✕
         </button>
         <p className="concept-modal__label">
-          {masechetEn} — Perek <span dir="rtl">{hebrewNumeral(perek)}</span>
+          <Trans
+            t={t}
+            i18nKey="modal.label"
+            values={{ masechet: masechet ? name(masechet) : masechetEn, num: hebrewNumeral(perek) }}
+            components={{ 1: <span dir="rtl" /> }}
+          />
         </p>
         <input
           className="concept-modal__input"
           autoFocus
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="Concept name"
+          placeholder={t("modal.conceptName")}
         />
         <textarea
           className="concept-modal__textarea"
           value={note}
           onChange={(e) => setNote(e.target.value)}
-          placeholder="What to remember about it"
+          placeholder={t("modal.conceptNote")}
         />
         <button className="restart" disabled={!title.trim()} onClick={handleSave}>
-          Save concept
+          {t("modal.saveConcept")}
         </button>
         {onOpenNotes && (
           <button className="concept-modal__open-notes" onClick={onOpenNotes}>
-            → View all concepts in Mishna Notes
+            {t("modal.viewAllConcepts")}
           </button>
         )}
       </div>

@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { SEDARIM } from "../../data/shas";
+import { useTranslation } from "react-i18next";
+import { useDirection, useName } from "../../i18n";
+import { SEDARIM, findMasechet } from "../../data/shas";
 import { useAuth } from "../../utils/useAuth";
 import { useChevrusa, type PendingInvite, type SentInvite, type GroupPace } from "../../utils/useChevrusa";
 import { GroupCard } from "../GroupCard/GroupCard";
@@ -15,21 +17,17 @@ import {
 import { CreateCard, FieldInset, PaceSegment, CreateCta, InviteQueueRow } from "../GroupCreateCard/GroupCreateCard";
 import "./ChevrusaScreen.css";
 
-const PACE_OPTIONS: { value: GroupPace; label: string }[] = [
-  { value: "1", label: "1 Mishna a day" },
-  { value: "2", label: "2 Mishnayot a day" },
-  { value: "perek", label: "1 Perek a day" },
-];
-
 function MasechetSelect({ value, onChange }: { value: string; onChange: (value: string) => void }) {
+  const { t } = useTranslation("groups");
+  const name = useName();
   return (
     <select value={value} onChange={(e) => onChange(e.target.value)}>
-      <option value="">Choose a masechet…</option>
+      <option value="">{t("chooseMasechet")}</option>
       {SEDARIM.map((seder) => (
-        <optgroup key={seder.id} label={seder.en}>
+        <optgroup key={seder.id} label={name(seder)}>
           {seder.masechtot.map((m) => (
             <option key={m.en} value={m.en}>
-              {m.en}
+              {name(m)}
             </option>
           ))}
         </optgroup>
@@ -39,8 +37,9 @@ function MasechetSelect({ value, onChange }: { value: string; onChange: (value: 
 }
 
 function ErrorRow({ message }: { message: string }) {
+  const direction = useDirection();
   return (
-    <div className="callout callout--bad chevrusa-error" dir="ltr">
+    <div className="callout callout--bad chevrusa-error" dir={direction}>
       <span className="chevrusa-error__dot" aria-hidden="true" />
       {message}
     </div>
@@ -64,8 +63,20 @@ interface ChevrusaScreenProps {
 
 export function ChevrusaScreen({ onOpenLogin }: ChevrusaScreenProps) {
   const { session } = useAuth();
+  const { t } = useTranslation(["groups", "common"]);
+  const name = useName();
+  const masechetName = (masechetEn: string) => {
+    const m = findMasechet(masechetEn);
+    return m ? name(m) : masechetEn;
+  };
   const { groups, pendingInvites, sentInvites, createGroup, addMembers, acceptInvite, declineInvite, cancelInvite, leaveGroup } =
     useChevrusa();
+
+  const paceOptions: { value: GroupPace; label: string }[] = [
+    { value: "1", label: t("pace.optionOne") },
+    { value: "2", label: t("pace.optionTwo") },
+    { value: "perek", label: t("pace.optionPerek") },
+  ];
 
   const [inviteValue, setInviteValue] = useState("");
   const [masechetValue, setMasechetValue] = useState("");
@@ -120,37 +131,34 @@ export function ChevrusaScreen({ onOpenLogin }: ChevrusaScreenProps) {
     return (
       <div className="stage">
         <div className="panel">
-          <h1 className="gate2-title">Chevrusa</h1>
-          <p className="gate2-subtitle">One partner, one masechet, each of you learning when the day allows.</p>
+          <h1 className="gate2-title">{t("chevrusa.title")}</h1>
+          <p className="gate2-subtitle">{t("chevrusa.subtitle")}</p>
 
           <div className="gate2-facts">
-            <FactCard head="Invite by email, and you are set" body="Once they accept, they see your progress on the masechet and you see theirs.">
-              <InviteRowPreview email="yehuda.klein@…" pillLabel="Accepted" />
+            <FactCard head={t("chevrusa.factInviteHead")} body={t("chevrusa.factInviteBody")}>
+              <InviteRowPreview email="yehuda.klein@…" pillLabel={t("chevrusa.accepted")} />
             </FactCard>
-            <FactCard head="A dot for each day you learn" body="Enough to know your chevrusa is in it with you.">
-              <WeekDotsPreview pattern={[true, true, false, true, true, false, true]} note="both, 5 of 7" />
+            <FactCard head={t("chevrusa.factDotsHead")} body={t("chevrusa.factDotsBody")}>
+              <WeekDotsPreview pattern={[true, true, false, true, true, false, true]} note={t("chevrusa.dotsNote")} />
             </FactCard>
-            <FactCard
-              head="A nudge, with a line if you want one"
-              body="One tap sends chizuk. Adding a sentence of your own is usually the part that lands."
-            >
-              <NudgeCardPreview from="Yehuda sent you chizuk" text="Perek beis is where it clicks. Worth pushing through." />
+            <FactCard head={t("gate.nudgeHead")} body={t("chevrusa.factNudgeBody")}>
+              <NudgeCardPreview from={t("chevrusa.nudgeFrom")} text={t("chevrusa.nudgeText")} />
             </FactCard>
-            <FactCard head="Notes you both write" body="Every note carries whose it is. Edit your own, reply under either.">
+            <FactCard head={t("chevrusa.factNotesHead")} body={t("chevrusa.factNotesBody")}>
               <NoteCardPreview
-                author="You"
-                source="Berachot 1:1 · this morning"
-                body="The three watches are the key to the whole sugya."
-                replyAuthor="Yehuda"
-                reply="That framing helped — I had it as one list."
+                author={t("you")}
+                source={t("chevrusa.noteSource")}
+                body={t("chevrusa.noteBody")}
+                replyAuthor={t("chevrusa.noteReplyAuthor")}
+                reply={t("chevrusa.noteReply")}
               />
             </FactCard>
           </div>
 
           {onOpenLogin && (
             <GateCTA
-              heading="Ready to start one?"
-              body="A name and an email is all it takes."
+              heading={t("gate.readyHeading")}
+              body={t("gate.readyBody")}
               onAction={() => onOpenLogin("signUp")}
             />
           )}
@@ -166,60 +174,55 @@ export function ChevrusaScreen({ onOpenLogin }: ChevrusaScreenProps) {
   return (
     <div className="stage">
       <div className="panel">
-        <h1 className="panel__title">Chevrusa</h1>
+        <h1 className="panel__title">{t("chevrusa.title")}</h1>
 
         <ReceivedNudges />
 
-        <CreateCard heading="Start a chevrusa" subtitle="Pick the masechet and send one invitation. They see your progress on it once they accept.">
+        <CreateCard heading={t("chevrusa.createHeading")} subtitle={t("chevrusa.createSubtitle")}>
           <div className="create-card__fields">
-            <FieldInset label="Masechet to learn together" select hint="Anywhere in Shas — it need not follow your own sequential limmud.">
+            <FieldInset label={t("masechetField")} select hint={t("masechetHint")}>
               <MasechetSelect value={masechetValue} onChange={setMasechetValue} />
             </FieldInset>
 
-            <FieldInset label="Who are you learning with">
+            <FieldInset label={t("chevrusa.partnerField")}>
               <input
                 type="email"
                 value={inviteValue}
                 onChange={(e) => setInviteValue(e.target.value)}
-                placeholder="Their email address…"
+                placeholder={t("chevrusa.partnerPlaceholder")}
               />
             </FieldInset>
 
-            <PaceSegment
-              options={PACE_OPTIONS}
-              value={invitePace}
-              onChange={setInvitePace}
-              hint="A shared target, not a rule — nobody is held to it and nobody is told when it slips."
-            />
+            <PaceSegment options={paceOptions} value={invitePace} onChange={setInvitePace} hint={t("pace.hint")} />
           </div>
 
           {error && <ErrorRow message={error} />}
 
           <CreateCta
-            label={busy ? "Sending…" : "Send the invitation"}
-            note="One invitation, and nothing sent to anyone else."
+            label={busy ? t("chevrusa.sending") : t("chevrusa.send")}
+            note={t("chevrusa.sendNote")}
             disabled={busy || !inviteValue || !masechetValue}
             onClick={handleSendInvite}
           />
         </CreateCard>
 
         <div className="chevrusa-section">
-          <p className="section-title">Waiting for you</p>
+          <p className="section-title">{t("waitingForYou")}</p>
           {chevrusaPending.length === 0 ? (
-            <p className="state state--empty">No pending invites.</p>
+            <p className="state state--empty">{t("noPending")}</p>
           ) : (
             chevrusaPending.map((inv) => (
               <InviteQueueRow
                 key={inv.id}
                 waitingOnMe
-                title={inv.fromName ? `${inv.fromName}` : "Someone"}
-                detail={`Chevrusa on ${inv.masechetEn}`}
+                title={inv.fromName ? `${inv.fromName}` : t("someone")}
+                detail={t("chevrusa.inviteDetail", { masechet: masechetName(inv.masechetEn) })}
               >
                 <button className="invite-queue-row__accept" onClick={() => handleAccept(inv)}>
-                  Accept
+                  {t("accept")}
                 </button>
                 <button className="invite-queue-row__text-btn" onClick={() => handleDecline(inv)}>
-                  Decline
+                  {t("decline")}
                 </button>
               </InviteQueueRow>
             ))
@@ -227,11 +230,9 @@ export function ChevrusaScreen({ onOpenLogin }: ChevrusaScreenProps) {
         </div>
 
         <div className="chevrusa-section">
-          <p className="section-title">Your chevrusos</p>
+          <p className="section-title">{t("chevrusa.yoursTitle")}</p>
           {chevrusot.length === 0 ? (
-            <p className="state state--empty">
-              Not paired with anyone yet. Each pairing you make will show its own masechet here.
-            </p>
+            <p className="state state--empty">{t("chevrusa.yoursEmpty")}</p>
           ) : (
             chevrusot.map((g) => (
               <GroupCard key={g.id} group={g} meId={session.user.id} onLeave={handleLeave} onAddMembers={handleAddMembers} />
@@ -240,19 +241,19 @@ export function ChevrusaScreen({ onOpenLogin }: ChevrusaScreenProps) {
         </div>
 
         <div className="chevrusa-section">
-          <p className="section-title">Invitations you've sent</p>
+          <p className="section-title">{t("sentTitle")}</p>
           {chevrusaSent.length === 0 ? (
-            <p className="state state--empty">No outstanding invites.</p>
+            <p className="state state--empty">{t("noOutstanding")}</p>
           ) : (
             chevrusaSent.map((inv) => (
               <InviteQueueRow
                 key={inv.id}
                 waitingOnMe={false}
                 title={inv.invitedEmail}
-                detail={inv.status === "declined" ? "Declined" : "Waiting for them to accept"}
+                detail={inv.status === "declined" ? t("declined") : t("waitingForThem")}
               >
                 <button className="invite-queue-row__text-btn" onClick={() => handleCancel(inv)}>
-                  Cancel
+                  {t("common:cancel")}
                 </button>
               </InviteQueueRow>
             ))

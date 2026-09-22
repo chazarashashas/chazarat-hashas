@@ -23,5 +23,90 @@
     "myMishna": "My Mishna",
     "practice": "Practice",
     "more": "More"
-  }
+  },
+  "errors": {
+    "load": "Couldn't load this — try again.",
+    "offline": "You're offline — this will load when you're back.",
+    "generic": "Something went wrong — try again.",
+    "googleStart": "Couldn't start Google sign-in.",
+    "signInIncomplete": "Sign-in didn't complete. Try again or use email.",
+    "googleFailed": "Google sign-in failed ({{code}})."
+  },
+  "errorFallback": {
+    "title": "Something went wrong",
+    "body": "The app hit a problem it couldn't recover from. Your progress is safe — reloading usually fixes this.",
+    "reload": "Reload"
+  },
+  "announcement": {
+    "closeLabel": "Close message"
+  },
+  "confirm": {
+    "working": "Working…"
+  },
+  "gate": {
+    "edit": "Edit",
+    "addComment": "Add a comment",
+    "learnedToday": "learned today",
+    "notYetToday": "not yet today",
+    "sendToday": "Send today's learning",
+    "oneSendADay": "one send a day",
+    "logInOrSignUp": "Log in or sign up",
+    "createAccount": "Create an account",
+    "haveAccount": "I already have one",
+    "weekDays": "S M T W T F S",
+    "weekLabel": "Learned {{learned}} of the last {{total}} days"
+  },
+  "firstOpen": {
+    "offerHeading": "Start with an account, or just start",
+    "offerBody": "An account keeps your place across your phone and laptop, and is what lets you learn with a chevrusa or split a siyum. Everything else works without one.",
+    "keepDays_one": "Keep your {{count}} day",
+    "keepDays_other": "Keep your {{count}} days",
+    "keepStarted": "Keep what you've started",
+    "streakClause_one": "your {{count}}-day streak",
+    "streakClause_other": "your {{count}}-day streak",
+    "mishnayotClause_one": "{{count}} mishna",
+    "mishnayotClause_other": "{{count}} mishnayot",
+    "notesClause_one": "{{count}} note",
+    "notesClause_other": "{{count}} notes",
+    "yourProgress": "your progress",
+    "listSeparator": ", ",
+    "listLast": "{{rest}} and {{last}}",
+    "keepBody": "{{items}} live on this device. Clear your browser and they're gone. An account keeps them, and works on your phone too.",
+    "google": "Continue with Google",
+    "email": "Use an email address",
+    "dismiss": "Not right now"
+  },
+  "progressTracks": {
+    "nextMasechet": "Next masechet",
+    "trackLabel": "{{title}}, {{percent}} percent",
+    "shas": "Shas",
+    "streak_one": "{{count}}-day streak",
+    "streak_other": "{{count}}-day streak",
+    "startStreak": "Learn today to start a streak"
+  },
+  "progressHeader": {
+    "howToUse": "How to use this app",
+    "upNext": "Up next",
+    "upNextRef": "{{masechet}} {{perek}}:{{mishnah}}",
+    "kolHashas": "Kol HaShas!",
+    "goToLimmud": "Go to Daily Limmud"
+  },
+  "flipCounter": {
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "count": "{{done}} of {{total}} {{unit}}",
+    "scope": {
+      "Masechet": "Masechet",
+      "Seder": "Seder",
+      "Shas": "Shas"
+    }
+  },
+  "journey": {
+    "unit": "mishnayot",
+    "masechtot_one": "{{count}} masechet",
+    "masechtot_other": "{{count}} masechtot",
+    "kolHaShas": "Kol HaShas",
+    "allSedarim": "all six sedarim"
+  },
+  "brandMark": "Chazarat Hashas mark"
 }

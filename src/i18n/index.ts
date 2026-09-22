@@ -2,15 +2,15 @@ import i18n from "i18next";
 import { initReactI18next, useTranslation } from "react-i18next";
 import { en } from "./locales/en";
 import { he } from "./locales/he";
+import { LOCAL_WRITE_EVENT, STORAGE_SYNC_EVENT } from "../utils/useLocalStorageState";
 
 /**
- * The Hebrew interface. Off until every screen has its Hebrew — a
- * half-translated app reads as broken. While off, everyone sees English;
- * `?lang=he` on the address still previews it, for checking the drafts.
- * The completeness test (i18n.test.ts) refuses to pass with this on and
- * any Hebrew string missing.
+ * The Hebrew interface: on. Turning it off sends everyone back to English
+ * (`?lang=he` still previews it). The completeness test (i18n.test.ts)
+ * refuses to pass with this on and any Hebrew string missing, so a new
+ * English string without its Hebrew fails the build.
  */
-export const HEBREW_ENABLED = false;
+export const HEBREW_ENABLED = true;
 
 export type UiLanguage = "en" | "he";
 
@@ -76,6 +76,9 @@ void i18n.use(initReactI18next).init({
   lng: resolveLanguage(),
   fallbackLng: "en",
   defaultNS: "common",
+  // Shared words (Cancel, Save…) resolve from common when a screen's own
+  // namespace lacks them — matches fallbackNS in i18next.d.ts.
+  fallbackNS: "common",
   ns: Object.keys(en),
   interpolation: { escapeValue: false }, // React already escapes
   returnNull: false,
@@ -83,11 +86,20 @@ void i18n.use(initReactI18next).init({
 applyToDocument(i18n.language);
 i18n.on("languageChanged", applyToDocument);
 
-/** Switch languages and remember it (My Account's switch). */
+// Signing in on a new device brings the account's choice down (cloud sync
+// writes it to storage and announces it) — follow it.
+window.addEventListener(STORAGE_SYNC_EVENT, () => {
+  const next = resolveLanguage();
+  if (next !== i18n.language) void i18n.changeLanguage(next);
+});
+
+/** Switch languages and remember it — on this device, and (through cloud
+    sync) on the account. My Account's switch. */
 export function setUiLanguage(lang: UiLanguage) {
   try {
     localStorage.setItem(LANGUAGE_KEY, JSON.stringify(lang));
     sessionStorage.removeItem(PREVIEW_KEY);
+    window.dispatchEvent(new Event(LOCAL_WRITE_EVENT));
   } catch {
     // Storage blocked — the switch still applies for this visit.
   }

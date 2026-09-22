@@ -1,4 +1,7 @@
 import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import i18n, { useDirection, useName } from "../../i18n";
+import { findMasechet } from "../../data/shas";
 import type { Group, GroupMember, GroupPace } from "../../utils/useChevrusa";
 import { useGroupNudges } from "../../utils/useGroupNudges";
 import { useEscapeKey } from "../../utils/useEscapeKey";
@@ -7,14 +10,14 @@ import { GroupNotes } from "./GroupNotes";
 import { localDateStr } from "../../utils/localDate";
 import "./GroupCard.css";
 
-const PACE_LABEL: Record<GroupPace, string> = { "1": "1 a day", "2": "2 a day", perek: "1 perek a day" };
+const PACE_LABEL_KEY: Record<GroupPace, "one" | "two" | "perek"> = { "1": "one", "2": "two", perek: "perek" };
 
 function todayStr(): string {
   return localDateStr();
 }
 
 function memberLabel(m: { firstName: string | null; username: string | null }): string {
-  return m.firstName ?? m.username ?? "Someone";
+  return m.firstName ?? m.username ?? i18n.t("groups:someone");
 }
 
 /** The inline composer for one member's Nudge pill — opens directly
@@ -30,6 +33,7 @@ function NudgeComposer({
   onSend: (note: string) => Promise<void>;
   onCancel: () => void;
 }) {
+  const { t } = useTranslation("groups");
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
   useEscapeKey(onCancel);
@@ -42,25 +46,23 @@ function NudgeComposer({
 
   return (
     <div className="nudge-composer">
-      <p className="nudge-composer__title">Nudge {name}</p>
-      <p className="nudge-composer__hint">
-        It arrives as a short word of chizuk from you. Add a line if you have one — that is usually the part that lands.
-      </p>
+      <p className="nudge-composer__title">{t("card.nudgeTitle", { name })}</p>
+      <p className="nudge-composer__hint">{t("card.nudgeHint")}</p>
       <input
         className="nudge-composer__input"
         autoFocus
         value={note}
         onChange={(e) => setNote(e.target.value)}
-        placeholder="Add a word of your own — optional"
+        placeholder={t("card.nudgePlaceholder")}
         maxLength={200}
         disabled={busy}
       />
       <div className="nudge-composer__actions">
         <button className="nudge-composer__send" disabled={busy} onClick={handleSend}>
-          {busy ? "Sending…" : "Send the nudge"}
+          {busy ? t("card.nudgeSending") : t("card.nudgeSend")}
         </button>
         <button className="nudge-composer__cancel" disabled={busy} onClick={onCancel}>
-          Not now
+          {t("card.notNow")}
         </button>
       </div>
     </div>
@@ -83,6 +85,10 @@ export function GroupCard({
   onLeave: (groupId: string) => void;
   onAddMembers: (groupId: string, email: string) => Promise<string | null>;
 }) {
+  const { t } = useTranslation("groups");
+  const direction = useDirection();
+  const name = useName();
+  const masechet = findMasechet(group.masechetEn);
   const today = todayStr();
   const [menuOpen, setMenuOpen] = useState(false);
   const [addEmail, setAddEmail] = useState("");
@@ -138,7 +144,8 @@ export function GroupCard({
     }
   }
 
-  const subParts = [group.name, `${group.members.length} people`, PACE_LABEL[group.pace]].filter(
+  const paceLabel = t(`pace.short.${PACE_LABEL_KEY[group.pace]}`);
+  const subParts = [group.name, t("card.people", { n: group.members.length }), paceLabel].filter(
     (p): p is string => Boolean(p),
   );
 
@@ -148,16 +155,20 @@ export function GroupCard({
     <div className="group-card">
       <div className="group-card__head">
         <div className="group-card__head-text">
-          <p className="group-card__masechet">{group.masechetEn}</p>
+          <p className="group-card__masechet">{masechet ? name(masechet) : group.masechetEn}</p>
           <p className="group-card__sub">
-            {group.isChabura ? subParts.join(" · ") : [partnerName ? `With ${memberLabel(partnerName)}` : null, PACE_LABEL[group.pace]].filter(Boolean).join(" · ")}
+            {group.isChabura
+              ? subParts.join(" · ")
+              : [partnerName ? t("card.withPartner", { name: memberLabel(partnerName) }) : null, paceLabel]
+                  .filter(Boolean)
+                  .join(" · ")}
           </p>
         </div>
         <div className="group-card__head-actions">
-          {group.isClass && <span className="group-card__class-badge">Class</span>}
+          {group.isClass && <span className="group-card__class-badge">{t("card.classBadge")}</span>}
           {group.joinCode && <span className="group-card__code-pill">{group.joinCode}</span>}
           <div className="group-card__menu">
-            <button className="group-card__menu-btn" aria-label="More" onClick={() => setMenuOpen((v) => !v)}>
+            <button className="group-card__menu-btn" aria-label={t("card.menu")} onClick={() => setMenuOpen((v) => !v)}>
               <DotsIcon />
             </button>
             {menuOpen && (
@@ -169,7 +180,7 @@ export function GroupCard({
                     onLeave(group.id);
                   }}
                 >
-                  Leave
+                  {t("card.leave")}
                 </button>
               </div>
             )}
@@ -184,17 +195,17 @@ export function GroupCard({
               <span
                 className={"group-member__dot" + (m.lastLearnedDate === today ? " group-member__dot--done" : "")}
                 role="img"
-                aria-label={m.lastLearnedDate === today ? "learned today" : "not yet today"}
+                aria-label={m.lastLearnedDate === today ? t("card.learnedToday") : t("card.notYetToday")}
               />
               <span className="group-member__name">
-                {m.userId === meId ? "You" : memberLabel(m)}
-                {m.role === "teacher" && <span className="group-member__role"> (Rebbe)</span>}
+                {m.userId === meId ? t("you") : memberLabel(m)}
+                {m.role === "teacher" && <span className="group-member__role">{t("card.rebbeRole")}</span>}
               </span>
               <span className={"group-member__state" + (m.lastLearnedDate === today ? " group-member__state--done" : "")}>
-                {m.lastLearnedDate === today ? "learned today" : "not yet today"}
+                {m.lastLearnedDate === today ? t("card.learnedToday") : t("card.notYetToday")}
               </span>
               {justNudged === m.userId ? (
-                <span className="group-member__nudged">Nudging</span>
+                <span className="group-member__nudged">{t("card.nudging")}</span>
               ) : (
                 canNudge(m) && (
                   <button
@@ -208,7 +219,7 @@ export function GroupCard({
                       setNudgeOpenFor(nudgeOpenFor === m.userId ? null : m.userId);
                     }}
                   >
-                    Nudge
+                    {t("card.nudge")}
                   </button>
                 )
               )}
@@ -225,13 +236,11 @@ export function GroupCard({
       </div>
 
       {nudgeError && (
-        <p className="login-error" dir="ltr">
+        <p className="login-error" dir={direction}>
           {nudgeError}
         </p>
       )}
-      {group.isClass && !iAmTeacher && (
-        <p className="group-card__class-note">Only you and the Rebbe can see your progress here.</p>
-      )}
+      {group.isClass && !iAmTeacher && <p className="group-card__class-note">{t("card.classNote")}</p>}
 
       {canInviteMore && (
         <div className="group-card__add-row">
@@ -239,15 +248,15 @@ export function GroupCard({
             type="email"
             value={addEmail}
             onChange={(e) => setAddEmail(e.target.value)}
-            placeholder="Add another by email…"
+            placeholder={t("card.addPlaceholder")}
           />
           <button className="group-card__add-confirm" disabled={addBusy || !addEmail} onClick={handleAdd}>
-            {addBusy ? "…" : "Invite"}
+            {addBusy ? "…" : t("card.invite")}
           </button>
         </div>
       )}
       {addError && (
-        <p className="login-error" dir="ltr">
+        <p className="login-error" dir={direction}>
           {addError}
         </p>
       )}
@@ -255,7 +264,7 @@ export function GroupCard({
       <GroupNotes
         groupId={group.id}
         masechetEn={group.masechetEn}
-        subtitle={group.isChabura ? "anyone writes, everyone can reply" : "either of you writes, both can reply"}
+        subtitle={group.isChabura ? t("card.notesSubtitleChabura") : t("card.notesSubtitleChevrusa")}
       />
     </div>
   );

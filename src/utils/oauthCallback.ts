@@ -1,3 +1,5 @@
+import i18n from "../i18n";
+
 /** Where Google sign-in returns to inside the Android app — a link only
     this app opens (see the intent filter in AndroidManifest.xml). It must
     also be listed in Supabase → Authentication → URL Configuration →
@@ -42,6 +44,6 @@ export function parseOAuthCallback(url: string): OAuthCallback {
     accessToken: hash.get("access_token"),
     refreshToken: hash.get("refresh_token"),
     code: query.get("code"),
-    error: description ? description.replace(/\+/g, " ") : code ? `Google sign-in failed (${code}).` : null,
+    error: description ? description.replace(/\+/g, " ") : code ? i18n.t("shell:errors.googleFailed", { code }) : null,
   };
 }

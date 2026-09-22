@@ -1,1 +1,221 @@
-{}
+{
+  "title": "My Siyumim",
+  "frequency": {
+    "month": "Every month",
+    "halfYear": "Twice a year",
+    "year": "Every year",
+    "twoYears": "Every 2 years",
+    "fiveYears": "Every 5 years"
+  },
+  "span": {
+    "day_one": "1 day",
+    "day_other": "{{count}} days",
+    "week_one": "1 week",
+    "week_other": "{{count}} weeks",
+    "month_one": "1 month",
+    "month_other": "{{count}} months",
+    "year_one": "1 year",
+    "year_other": "{{count}} years"
+  },
+  "countdown": {
+    "label": "Your next siyum",
+    "seder": "Seder {{name}}",
+    "daysUnit": "days",
+    "around": "around {{date}}",
+    "meta": "{{done}} of {{total}} mishnayot · {{remaining}} to go at {{pace}}",
+    "nextMasechet": "{{name}} finishes first — {{remaining}} mishnayot away, about {{span}}.",
+    "byAmount": "By daily amount",
+    "byFrequency": "By how often you finish",
+    "mishnayot": "Mishnayot",
+    "perakim": "Perakim",
+    "projection": "· Siyum haShas {{date}} · seder every {{span}}"
+  },
+  "stats": {
+    "perakimFinished": "perakim finished",
+    "masechtotCompleted": "masechtot completed",
+    "mishnayotLearned": "mishnayot learned"
+  },
+  "shasDone": {
+    "text": "You've completed all of Shas!",
+    "certificate": "Get your certificate"
+  },
+  "levelsTitle": "Where each level stands",
+  "logLearningButton": "+ Log learning",
+  "nishmatLink": {
+    "title": "L'Iluy Nishmat",
+    "sub": "Dedicate a full siyum on Shas to a neshama, or take a perek in someone else's →"
+  },
+  "aheadTitle": "Siyumim ahead",
+  "getCertificate": "Get certificate",
+  "perek": {
+    "label": "Perek {{numeral}}",
+    "labelNamed": "Perek {{numeral}} — {{name}}",
+    "row": "Perek <0>{{numeral}}</0>",
+    "rowNamed": "Perek <0>{{numeral}}</0> — {{name}}",
+    "ofMasechet": "{{masechet}} — Perek {{numeral}}"
+  },
+  "log": {
+    "title": "Log learning",
+    "sub": "Record a perek you learned outside the app — a shiur, a chevrusa, your own Mishnayot.",
+    "seder": "Seder",
+    "masechet": "Masechet",
+    "perek": "Perek",
+    "date": "Date",
+    "saved": "✓ Logged"
+  },
+  "certificate": {
+    "title": "Certificate of Siyum",
+    "nameLabel": "Name on certificate",
+    "namePlaceholder": "Your name",
+    "logoAlt": "Chazarat Hashas",
+    "completedBy": "completed by"
+  },
+  "nishmat": {
+    "title": "L'Iluy Nishmat",
+    "public": "Public",
+    "private": "Private",
+    "stat": {
+      "learned": "learned",
+      "taken": "taken",
+      "open": "still open"
+    },
+    "openSiyum": "Open siyum →",
+    "takePerek": "Take a perek →",
+    "hideTitle": "Hide this siyum from your list",
+    "hide": "Hide",
+    "gate": {
+      "sub": "A siyum haShas is {{total}} perakim. Split among enough people, it comes to one perek each.",
+      "boardHead": "All of Shas, one square per perek",
+      "boardBody": "Someone opens a siyum. Each square is one perek. People take the ones they can learn, and when the board fills the siyum is made.",
+      "boardStat": "{{taken}} of {{total}} taken",
+      "leadOne": "One is open right now. Anyone can look through them:",
+      "leadTwo": "Two are open right now. Anyone can look through them:",
+      "factAskHead": "One perek is the whole ask",
+      "factAskBody": "{{total}} perakim across six sedarim. At forty people that's thirteen each; at five hundred it's one.",
+      "factLimmudHead": "It appears in your daily limmud",
+      "factLimmudBody": "A perek you take arrives in Daily Limmud with the dedication on it, so it's learned in the ordinary run of things rather than remembered separately.",
+      "factReleaseHead": "A perek can be released",
+      "factReleaseBody": "If life gets in the way, hand it back and it returns to the board for someone else. Nobody is chased.",
+      "accountHeading": "Taking a perek needs an account",
+      "accountBody": "A perek you take is a commitment other people are counting on, so it has to belong to someone. Looking through a siyum needs nothing at all.",
+      "footer": "Nothing else here is closed — <0>look through the open siyumim</0>, or carry on with your own learning."
+    },
+    "startButton": "+ Start a siyum",
+    "startAccountHeading": "Starting a siyum needs an account",
+    "startAccountBody": "A siyum tracks who's taken which perek and who's already learned it — that only works if it's tied to your account, not just this device.",
+    "tabManaging": "Siyumim you're managing",
+    "tabHelping": "Help others finish theirs",
+    "helpingNote": "Take on a perek and it's yours to learn — every perek someone takes brings their siyum closer.",
+    "emptyManaging": "Siyumim you start appear here.",
+    "emptyHelping": "Public siyumim looking for help appear here — check back soon.",
+    "create": {
+      "title": "Start a siyum",
+      "dedicationLabel": "L'Iluy Nishmat",
+      "dedicationPlaceholder": "e.g. Yosef ben Rivka",
+      "occasionLabel": "Occasion (optional)",
+      "occasionPlaceholder": "e.g. shloshim, yahrzeit",
+      "targetDateLabel": "Target date (optional)",
+      "targetDatePlaceholder": "e.g. before the yahrzeit",
+      "visibilityLabel": "Visibility",
+      "privateNote": "Only reachable by whoever you share the link with.",
+      "publicNote": "Listed in-app for any user to find and help with.",
+      "creating": "Creating…",
+      "submit": "Create siyum"
+    }
+  },
+  "detail": {
+    "time": {
+      "justNow": "just now",
+      "minutes_one": "1m ago",
+      "minutes_other": "{{count}}m ago",
+      "hours_one": "1h ago",
+      "hours_other": "{{count}}h ago",
+      "days_one": "1d ago",
+      "days_other": "{{count}}d ago"
+    },
+    "someone": "Someone",
+    "activityTook": "{{who}} took {{masechet}} — Perek {{numeral}}",
+    "activityFinished": "{{who}} finished {{masechet}} — Perek {{numeral}}",
+    "recentActivity": "Recent activity",
+    "back": "← All siyumim",
+    "plaqueLabel": "L'iluy nishmat",
+    "scope": "All of Shas — 524 perakim",
+    "stat": {
+      "learned": "learned",
+      "taken": "taken, being learned",
+      "open": "still open"
+    },
+    "tileTitle": "{{masechet}} · perek {{perek}} — {{status}}",
+    "tileStatus": {
+      "learned": "learned",
+      "yours": "yours",
+      "taken": "taken",
+      "takenBy": "taken by {{name}}",
+      "open": "open"
+    },
+    "legend": {
+      "learned": "Learned",
+      "yours": "Yours",
+      "taken": "Taken",
+      "open": "Open"
+    },
+    "next": {
+      "label": "Take whichever comes next",
+      "value": "{{masechet}}, perek {{numeral}}",
+      "desc": "{{n}} mishnayot. It arrives in your Daily Limmud with the dedication on it.",
+      "take": "Take this perek"
+    },
+    "promise": "You can hand it back any time and it returns to the board.",
+    "shareLink": "Share link",
+    "copied": "Copied!",
+    "copy": "Copy",
+    "pickYourself": "Or pick one yourself",
+    "filter": {
+      "all": "All perakim",
+      "open": "Open only",
+      "yours": "Yours"
+    },
+    "openCount": "{{n}} open",
+    "tile": {
+      "open": "Open — tap to take",
+      "taken": "Taken",
+      "yours": "Yours — tap",
+      "queued": "In your Limmud",
+      "learned": "Learned ✓"
+    },
+    "nothingToClaim": "Nothing to claim.",
+    "claim": {
+      "invalid": "Enter your name and a valid email.",
+      "title": "Take on {{masechet}} — Perek {{numeral}}",
+      "nameLabel": "Name",
+      "namePlaceholder": "Your name",
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@example.com",
+      "anonymous": "Keep my name private — just show \"claimed\" to others",
+      "taking": "Taking it…"
+    },
+    "manage": {
+      "justClaimed": "This perek is yours. What would you like to do?",
+      "prompt": "What would you like to do?",
+      "marking": "Marking…",
+      "markLearned": "Mark as learned now",
+      "adding": "Adding…",
+      "addToLimmud": "Add to my Daily Limmud",
+      "release": "Release this perek",
+      "later": "I'll decide later"
+    }
+  },
+  "errors": {
+    "duplicate": "Someone just took this perek — pick another.",
+    "permission": "You don't have permission to do that.",
+    "network": "Couldn't reach the server — check your connection and try again.",
+    "generic": "Something went wrong. Please try again.",
+    "logInToStart": "Log in first to start a siyum.",
+    "couldntCreate": "Couldn't create it.",
+    "notConnected": "Accounts aren't connected yet.",
+    "couldntClaim": "Couldn't claim it.",
+    "notYoursToUpdate": "This claim isn't yours to update.",
+    "notYoursToRelease": "This claim isn't yours to release."
+  },
+  "fallbackDedication": "a siyum"
+}

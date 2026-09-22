@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from "react";
+import { Trans, useTranslation } from "react-i18next";
 import { SEDARIM } from "../../data/shas";
 import { fetchMishna } from "../../utils/sefaria";
 import { useLearningProgress } from "../../utils/useLearningProgress";
 import { usePerekNotes } from "../../utils/usePerekNotes";
 import { useGroupContexts } from "../../utils/useGroupContexts";
 import { localDateStr } from "../../utils/localDate";
-import { shortDayLabel, type ChagStretch } from "../../utils/chagCalendar";
+import type { ChagStretch } from "../../utils/chagCalendar";
 import type { MishnaRef } from "../../utils/dailyProjection";
-import { buildPrintDays, itemsMeta, sequenceIndex, stretchName, textKey, type GroupPlan } from "./chagPrintModel";
+import { buildPrintDays, chagName, dayTitle, itemsMeta, mishnayotCount, sequenceIndex, shortDay, textKey, type GroupPlan } from "./chagPrintModel";
 import { ChagPrintDocument, type PrintLayout } from "./ChagPrintDocument";
 import { ChagGreeting } from "./ChagGreeting";
 import { takePrintCardFocus } from "./printCardFocus";
@@ -15,9 +16,9 @@ import "./ChagPrint.css";
 
 const PERAKIM_BY_MASECHET = new Map(SEDARIM.flatMap((s) => s.masechtot.map((m) => [m.en, m.perakim] as const)));
 
-const LAYOUTS: { id: PrintLayout; label: string; sub: string }[] = [
-  { id: "each", label: "A page each", sub: "one sheet per day, titled" },
-  { id: "one", label: "All on one", sub: "every day on a single sheet" },
+const LAYOUTS: { id: PrintLayout; label: "each" | "one"; sub: "eachSub" | "oneSub" }[] = [
+  { id: "each", label: "each", sub: "eachSub" },
+  { id: "one", label: "one", sub: "oneSub" },
 ];
 
 /**
@@ -28,6 +29,7 @@ const LAYOUTS: { id: PrintLayout; label: string; sub: string }[] = [
  * what prints; a chevrusa or chabura is an add-on they can tick.
  */
 export function ChagPrintCard({ stretch }: { stretch: ChagStretch }) {
+  const { t } = useTranslation(["print", "common"]);
   const progress = useLearningProgress();
   const { getPerekNote } = usePerekNotes();
   const groupContexts = useGroupContexts();
@@ -77,7 +79,7 @@ export function ChagPrintCard({ stretch }: { stretch: ChagStretch }) {
   const chosen = days.filter((d) => selected.has(d.date));
   const needed = Array.from(new Set(chosen.flatMap((d) => d.tracks.flatMap((t) => t.items.map(textKey)))));
   const missing = needed.filter((k) => !(k in texts) && !failed.has(k));
-  const mishnayotCount = chosen.reduce((n, d) => n + d.tracks.reduce((m, t) => m + t.items.length, 0), 0);
+  const mishnayotTotal = chosen.reduce((n, d) => n + d.tracks.reduce((m, t) => m + t.items.length, 0), 0);
   const neededKey = needed.join("|");
 
   useEffect(() => {
@@ -130,33 +132,33 @@ export function ChagPrintCard({ stretch }: { stretch: ChagStretch }) {
 
   const cta =
     chosen.length === 0
-      ? "Pick a day to print"
+      ? t("card.cta.pickDay")
       : !ready
         ? failed.size > 0
-          ? "Couldn't load the mishnayot"
-          : "Getting the mishnayot ready…"
+          ? t("card.cta.loadFailed")
+          : t("card.cta.loading")
         : pageCount === null
-          ? "Laying out the pages…"
-          : `Print ${pageCount} ${pageCount === 1 ? "page" : "pages"}`;
+          ? t("card.cta.layingOut")
+          : t("card.cta.print", { count: pageCount });
 
   const meta =
     chosen.length === 0
-      ? "Nothing selected."
-      : `${mishnayotCount} ${mishnayotCount === 1 ? "mishnah" : "mishnayot"} · ${
-          layout === "one" ? "days under their own headings" : "each day on its own sheet, with the greeting"
-        } · Hebrew only${notes ? " · with your notes" : ""}`;
+      ? t("card.nothingSelected")
+      : `${mishnayotCount(mishnayotTotal)} · ${
+          layout === "one" ? t("card.layoutOneMeta") : t("card.layoutEachMeta")
+        } · ${t("card.hebrewOnly")}${notes ? ` · ${t("card.withNotes")}` : ""}`;
 
   const docProps = {
     days: chosen,
     layout,
     chag: stretch.chag,
-    stretchTitle: stretch.chag ? stretchName(stretch).replace(/^\w+ days of /, "") : "Shabbat",
+    stretchTitle: chagName(stretch),
     texts,
     noteFor: notes ? getPerekNote : null,
   };
 
   return (
-    <section ref={cardRef} className="card chag-card" aria-label="Print before yom tov">
+    <section ref={cardRef} className="card chag-card" aria-label={t("card.label")}>
       <ChagGreeting stretch={stretch} />
 
       <div className="chag-card__days">
@@ -174,10 +176,10 @@ export function ChagPrintCard({ stretch }: { stretch: ChagStretch }) {
                 {on ? "✓" : ""}
               </span>
               <span className="chag-day__text">
-                <span className="chag-day__title">My Mishnayot for {d.title}</span>
+                <span className="chag-day__title">{t("card.dayTitle", { title: dayTitle(d.title) })}</span>
                 <span className="chag-day__meta">
-                  <span className="chag-day__date">{shortDayLabel(d.date)}</span>
-                  {d.kind !== "erev" && <span className="chag-pill">{d.kind === "yomtov" ? "YOM TOV" : "SHABBAT"}</span>}
+                  <span className="chag-day__date">{shortDay(d.date)}</span>
+                  {d.kind !== "erev" && <span className="chag-pill">{d.kind === "yomtov" ? t("card.pillYomTov") : t("card.pillShabbat")}</span>}
                   {d.tracks.map((t, i) =>
                     t.label && t.items.length === 0 ? null : (
                       <span key={i} className="chag-day__items">
@@ -193,7 +195,7 @@ export function ChagPrintCard({ stretch }: { stretch: ChagStretch }) {
         })}
       </div>
 
-      <div className="chag-seg" role="radiogroup" aria-label="Layout">
+      <div className="chag-seg" role="radiogroup" aria-label={t("card.layoutLabel")}>
         {LAYOUTS.map((l) => (
           <button
             key={l.id}
@@ -202,8 +204,8 @@ export function ChagPrintCard({ stretch }: { stretch: ChagStretch }) {
             className={"chag-seg__opt" + (layout === l.id ? " chag-seg__opt--on" : "")}
             onClick={() => setLayout(l.id)}
           >
-            <span className="chag-seg__label">{l.label}</span>
-            <span className="chag-seg__sub">{l.sub}</span>
+            <span className="chag-seg__label">{t(`card.layout.${l.label}`)}</span>
+            <span className="chag-seg__sub">{t(`card.layout.${l.sub}`)}</span>
           </button>
         ))}
       </div>
@@ -212,7 +214,7 @@ export function ChagPrintCard({ stretch }: { stretch: ChagStretch }) {
         <span className="chag-box" aria-hidden="true">
           {notes ? "✓" : ""}
         </span>
-        Include my perek notes
+        {t("card.includeNotes")}
       </button>
       {groupContexts.map((g) => (
         <button
@@ -225,7 +227,7 @@ export function ChagPrintCard({ stretch }: { stretch: ChagStretch }) {
           <span className="chag-box" aria-hidden="true">
             {addedGroups.has(g.masechetEn) ? "✓" : ""}
           </span>
-          Also print {g.label}
+          {t("card.alsoPrint", { label: g.label })}
         </button>
       ))}
 
@@ -234,11 +236,11 @@ export function ChagPrintCard({ stretch }: { stretch: ChagStretch }) {
       </button>
       {failed.size > 0 ? (
         <p className="chag-card__meta">
-          Check your connection, then{" "}
-          <button className="chag-card__retry" onClick={() => (setFailed(new Set()), setRetryTick((t) => t + 1))}>
-            try again
-          </button>
-          .
+          <Trans
+            t={t}
+            i18nKey="card.retry"
+            components={{ 1: <button className="chag-card__retry" onClick={() => (setFailed(new Set()), setRetryTick((n) => n + 1))} /> }}
+          />
         </p>
       ) : (
         <p className="chag-card__meta">{meta}</p>
@@ -252,10 +254,10 @@ export function ChagPrintCard({ stretch }: { stretch: ChagStretch }) {
             <h2>{cta}</h2>
             <div className="print-actions">
               <button className="restart print-btn" onClick={() => window.print()}>
-                Print
+                {t("common:print")}
               </button>
               <button className="print-close" onClick={() => setPrinting(false)}>
-                Close
+                {t("common:close")}
               </button>
             </div>
           </div>

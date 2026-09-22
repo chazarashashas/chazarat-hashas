@@ -2,6 +2,22 @@
 
 One entry per PR, newest first.
 
+## Hebrew interface, part 2: the whole app, switched on
+
+- Every screen a learner sees is in Hebrew — 1,082 strings, one file per
+  area under src/i18n/locales. Drafts in Torah-world register
+  (GLOSSARY.md); to be corrected as reports come in.
+- Hebrew for a Hebrew phone or browser; a Language / שפה switch in My
+  Account (signed in or not) overrides it. The choice follows the account
+  to a new device and survives signing out.
+- Seder, masechet and perek names show in Hebrew from the data; perek
+  numbers as Hebrew letters. Mishna Chazara accepts typed Hebrew names.
+- The mishna's English translation stays English (lang="en" dir="ltr")
+  inside a Hebrew page. Admin stays English.
+- Fixed on the way: sharing a finished Shas board in Sidrei Hamishna
+  described it as a seder's masechtot.
+- The Android app picks this up at its next build.
+
 ## Hebrew interface, part 1: the groundwork
 
 - i18next + react-i18next, with the strings in one JSON file per area of

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useEscapeKey } from "../../utils/useEscapeKey";
 import "./ConfirmModal.css";
 
@@ -46,6 +47,7 @@ export function ConfirmModal({
   onConfirm,
   onCancel,
 }: ConfirmModalProps) {
+  const { t } = useTranslation(["shell", "common"]);
   const [typedValue, setTypedValue] = useState("");
   const popupRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<Element | null>(null);
@@ -121,13 +123,13 @@ export function ConfirmModal({
           disabled={confirmDisabled}
           onClick={onConfirm}
         >
-          {busy ? (busyLabel ?? "Working…") : confirmLabel}
+          {busy ? (busyLabel ?? t("confirm.working")) : confirmLabel}
         </button>
         <button className="confirm-modal__cancel" disabled={busy} onClick={onCancel}>
-          Cancel
+          {t("common:cancel")}
         </button>
         {error && (
-          <p className="confirm-modal__error" dir="ltr">
+          <p className="confirm-modal__error" dir="auto">
             {error}
           </p>
         )}

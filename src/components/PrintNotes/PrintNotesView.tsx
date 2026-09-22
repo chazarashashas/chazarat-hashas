@@ -1,5 +1,7 @@
 import { useState } from "react";
-import { SEDARIM } from "../../data/shas";
+import { Trans, useTranslation } from "react-i18next";
+import { useName } from "../../i18n";
+import { SEDARIM, findMasechet } from "../../data/shas";
 import { usePerekNotes } from "../../utils/usePerekNotes";
 import { useLearningProgress } from "../../utils/useLearningProgress";
 import { hebrewNumeral } from "../../utils/hebrewNumeral";
@@ -21,6 +23,8 @@ type ScopeType = "all" | "seder" | "masechet";
  * doesn't appear at all.
  */
 export function PrintNotesView({ initialMasechetEn, onClose }: PrintNotesViewProps) {
+  const { t } = useTranslation(["explore", "common"]);
+  const name = useName();
   const initialSeder = initialMasechetEn
     ? SEDARIM.find((s) => s.masechtot.some((m) => m.en === initialMasechetEn))
     : undefined;
@@ -36,7 +40,15 @@ export function PrintNotesView({ initialMasechetEn, onClose }: PrintNotesViewPro
   const sedarimInScope =
     scopeType === "all" ? SEDARIM : scopeType === "seder" ? [seder] : [SEDARIM.find((s) => s.masechtot.some((m) => m.en === masechetEn))!];
 
-  const scopeLabel = scopeType === "all" ? "all of Shas" : scopeType === "seder" ? seder.en : masechetEn;
+  const scopeMasechet = findMasechet(masechetEn);
+  const scopeLabel =
+    scopeType === "all"
+      ? t("print.scopeAll")
+      : scopeType === "seder"
+        ? name(seder)
+        : scopeMasechet
+          ? name(scopeMasechet)
+          : masechetEn;
 
   const groups = sedarimInScope
     .map((s) => {
@@ -61,18 +73,18 @@ export function PrintNotesView({ initialMasechetEn, onClose }: PrintNotesViewPro
   return (
     <div className="print-overlay">
       <div className="print-controls no-print">
-        <h2>Print Notes</h2>
+        <h2>{t("print.title")}</h2>
         <div className="print-scope-row">
           <select value={scopeType} onChange={(e) => setScopeType(e.target.value as ScopeType)}>
-            <option value="all">All of Shas</option>
-            <option value="seder">One Seder</option>
-            <option value="masechet">One Masechet</option>
+            <option value="all">{t("print.allOfShas")}</option>
+            <option value="seder">{t("print.oneSeder")}</option>
+            <option value="masechet">{t("print.oneMasechet")}</option>
           </select>
           {scopeType !== "all" && (
             <select value={sederId} onChange={(e) => setSederId(e.target.value)}>
               {SEDARIM.map((s) => (
                 <option key={s.id} value={s.id}>
-                  {s.en}
+                  {name(s)}
                 </option>
               ))}
             </select>
@@ -81,7 +93,7 @@ export function PrintNotesView({ initialMasechetEn, onClose }: PrintNotesViewPro
             <select value={masechetEn} onChange={(e) => setMasechetEn(e.target.value)}>
               {seder.masechtot.map((m) => (
                 <option key={m.en} value={m.en}>
-                  {m.en}
+                  {name(m)}
                 </option>
               ))}
             </select>
@@ -89,10 +101,10 @@ export function PrintNotesView({ initialMasechetEn, onClose }: PrintNotesViewPro
         </div>
         <div className="print-actions">
           <button className="restart print-btn" onClick={() => window.print()}>
-            Print
+            {t("common:print")}
           </button>
           <button className="print-close" onClick={onClose}>
-            Close
+            {t("common:close")}
           </button>
         </div>
       </div>
@@ -100,22 +112,27 @@ export function PrintNotesView({ initialMasechetEn, onClose }: PrintNotesViewPro
       <div className="print-content">
         <div className="print-header">
           <BrandMark variant="oneink" className="print-header__mark" />
-          <h1 className="print-title">Mishna Notes — {scopeLabel}</h1>
+          <h1 className="print-title">{t("print.heading", { scope: scopeLabel })}</h1>
         </div>
         {groups.length === 0 ? (
-          <p className="print-empty">No notes yet in {scopeLabel}.</p>
+          <p className="print-empty">{t("print.empty", { scope: scopeLabel })}</p>
         ) : (
           groups.map(({ seder: s, masechtot }) => (
             <div key={s.id} className="print-seder">
-              <h2 className="print-seder__title">{s.en}</h2>
+              <h2 className="print-seder__title">{name(s)}</h2>
               {masechtot.map(({ masechet, sentence, perakim }) => (
                 <div key={masechet.en} className="print-masechet">
-                  <h3 className="print-masechet__title">{masechet.en}</h3>
+                  <h3 className="print-masechet__title">{name(masechet)}</h3>
                   {sentence && <p className="print-sentence">{sentence}</p>}
                   {perakim.map(({ perek, note, concepts: perekConcepts }) => (
                     <div key={perek} className="print-perek">
                       <p className="print-perek__title">
-                        Perek <span dir="rtl">{hebrewNumeral(perek)}</span>
+                        <Trans
+                          t={t}
+                          i18nKey="print.perek"
+                          values={{ num: hebrewNumeral(perek) }}
+                          components={{ 1: <span dir="rtl" /> }}
+                        />
                       </p>
                       <div className="print-perek__content">
                         {note && <p className="print-note">{note}</p>}

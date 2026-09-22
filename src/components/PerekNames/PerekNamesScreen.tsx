@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { SEDARIM } from "../../data/shas";
+import { Trans, useTranslation } from "react-i18next";
+import i18n, { useDirection, useName } from "../../i18n";
+import { SEDARIM, findMasechet } from "../../data/shas";
 import { getPerekName } from "../../data/perekInfo";
 import { hebrewNumeral } from "../../utils/hebrewNumeral";
 import { getSederHue, getSederHueText } from "../../utils/sederHue";
 import { usePerekNotes } from "../../utils/usePerekNotes";
 import { useLearningProgress, type ConceptNote } from "../../utils/useLearningProgress";
 import { PrintNotesView } from "../PrintNotes/PrintNotesView";
-import { pluralize } from "../../utils/nudgeCopy";
 import "./PerekNamesScreen.css";
 
 type DocView = "notes" | "concepts";
@@ -27,13 +28,22 @@ function relativeDate(dateStr: string): string {
   const now = new Date();
   now.setHours(0, 0, 0, 0);
   const days = Math.round((now.getTime() - then.getTime()) / 86_400_000);
-  if (days <= 0) return "Today";
-  if (days === 1) return "Yesterday";
-  if (days < 7) return `${days} days ago`;
+  if (days <= 0) return i18n.t("explore:relativeDate.today");
+  if (days === 1) return i18n.t("explore:relativeDate.yesterday");
+  if (days < 7) return i18n.t("explore:relativeDate.daysAgo", { count: days });
   return dateStr;
 }
 
 export function PerekNamesScreen({ onOpenText }: PerekNamesScreenProps) {
+  const { t, i18n: instance } = useTranslation(["explore", "common"]);
+  const name = useName();
+  const dir = useDirection();
+  // Hebrew shows each name once, in Hebrew — no transliteration beside it.
+  const isHe = instance.language === "he";
+  const masechetName = (en: string) => {
+    const m = findMasechet(en);
+    return m ? name(m) : en;
+  };
   const [docView, setDocView] = useState<DocView>("notes");
   const [selectedSederId, setSelectedSederId] = useState<string>(SEDARIM[0].id);
   const [selectedMasechetEn, setSelectedMasechetEn] = useState<string>(SEDARIM[0].masechtot[0].en);
@@ -99,34 +109,31 @@ export function PerekNamesScreen({ onOpenText }: PerekNamesScreenProps) {
   return (
     <div className="stage">
       <div className="panel notes-panel">
-        <button className="restart-icon" title="Clear this masechet's notes" onClick={handleClear}>
+        <button className="restart-icon" title={t("notes.clearTitle")} onClick={handleClear}>
           ↺
         </button>
 
         <div className="screen-head notes-header">
           <div className="notes-header__left">
-            <h1 className="screen-head__title">Mishna Notes</h1>
-            <p className="screen-head__sub">
-              Give each perek a name only you would think of, so it sticks — "the laws of Zimmun," "who
-              is considered ne'eman."
-            </p>
+            <h1 className="screen-head__title">{t("notes.title")}</h1>
+            <p className="screen-head__sub">{t("notes.sub")}</p>
           </div>
           <div className="screen-head__aside notes-header__right">
             <button className="btn btn--quiet notes-print-link" onClick={() => setPrintOpen(true)}>
-              Print
+              {t("common:print")}
             </button>
             <div className="docview-toggle">
               <button
                 className={"pill pill--compact" + (docView === "notes" ? " pill--active" : "")}
                 onClick={() => setDocView("notes")}
               >
-                Perakim
+                {t("notes.tabPerakim")}
               </button>
               <button
                 className={"pill pill--compact" + (docView === "concepts" ? " pill--active" : "")}
                 onClick={() => setDocView("concepts")}
               >
-                Concepts
+                {t("notes.tabConcepts")}
               </button>
             </div>
           </div>
@@ -135,14 +142,11 @@ export function PerekNamesScreen({ onOpenText }: PerekNamesScreenProps) {
         {docView === "concepts" ? (
           <div className="concepts-tab">
             <div className="concepts-tab__head">
-              <h2 className="concepts-tab__title">Concepts to review</h2>
-              <span className="concepts-tab__count">{pluralize(concepts.length, "saved", "saved")}</span>
+              <h2 className="concepts-tab__title">{t("notes.conceptsToReview")}</h2>
+              <span className="concepts-tab__count">{t("notes.savedCount", { count: concepts.length })}</span>
             </div>
             {sortedConcepts.length === 0 ? (
-              <p className="state state--empty">
-                No concepts saved yet — add one from Daily Limmud while you're learning, and it'll
-                show up here with the mishnah it came from.
-              </p>
+              <p className="state state--empty">{t("notes.conceptsEmpty")}</p>
             ) : (
               <div className="concepts-tab__list">
                 {sortedConcepts.map((c) => {
@@ -165,12 +169,12 @@ export function PerekNamesScreen({ onOpenText }: PerekNamesScreenProps) {
                             ["--pill-hue" as string]: getSederHue(sederId),
                             ["--pill-ink" as string]: getSederHueText(sederId),
                           }}
-                          dir="ltr"
+                          dir={dir}
                         >
-                          {c.masechetEn} <span dir="rtl">{hebrewNumeral(c.perek)}:{hebrewNumeral(c.mishnah)}</span>
+                          {masechetName(c.masechetEn)} <span dir="rtl">{hebrewNumeral(c.perek)}:{hebrewNumeral(c.mishnah)}</span>
                         </span>
                         <button className="btn btn--quiet concept-card__goto" onClick={() => handleGoToConcept(c)}>
-                          Go to it →
+                          {t("notes.goToConcept")}
                         </button>
                       </div>
                     </div>
@@ -199,7 +203,7 @@ export function PerekNamesScreen({ onOpenText }: PerekNamesScreenProps) {
                     <span className="seder-pill__he" dir="rtl">
                       {seder.he}
                     </span>
-                    <span className="seder-pill__en">{seder.en}</span>
+                    {!isHe && <span className="seder-pill__en">{seder.en}</span>}
                   </button>
                 );
               })}
@@ -216,11 +220,11 @@ export function PerekNamesScreen({ onOpenText }: PerekNamesScreenProps) {
                   return (
                     <button
                       key={m.en}
-                      title={m.en}
+                      title={name(m)}
                       className={"pill pill--compact masechet-chip" + (active ? " pill--active masechet-chip--active" : "")}
                       onClick={() => handleSelectMasechet(m.en)}
                     >
-                      <span className="masechet-chip__label">{m.en}</span>
+                      <span className="masechet-chip__label">{name(m)}</span>
                       {count > 0 && <span className="masechet-chip__badge">{count}</span>}
                     </button>
                   );
@@ -230,15 +234,14 @@ export function PerekNamesScreen({ onOpenText }: PerekNamesScreenProps) {
 
             <div className="callout concepts-band">
               <div className="concepts-band__head">
-                <span className="concepts-band__title">Concepts to review</span>
+                <span className="concepts-band__title">{t("notes.conceptsToReview")}</span>
                 <button className="btn btn--quiet concepts-band__all" onClick={() => setDocView("concepts")}>
-                  {pluralize(concepts.length, "saved", "saved")} in all →
+                  {t("notes.savedInAll", { count: concepts.length })}
                 </button>
               </div>
               {filteredConcepts.length === 0 ? (
                 <p className="concepts-band__empty">
-                  Nothing saved from {selectedMasechet.en} yet. Anything you flag while learning lands
-                  here, tagged with the mishnah it came from.
+                  {t("notes.masechetEmpty", { masechet: name(selectedMasechet) })}
                 </p>
               ) : (
                 filteredConcepts.map((c) => (
@@ -250,9 +253,9 @@ export function PerekNamesScreen({ onOpenText }: PerekNamesScreenProps) {
                         ["--pill-hue" as string]: getSederHue(selectedSederId),
                         ["--pill-ink" as string]: getSederHueText(selectedSederId),
                       }}
-                      dir="ltr"
+                      dir={dir}
                     >
-                      {c.masechetEn} <span dir="rtl">{hebrewNumeral(c.perek)}:{hebrewNumeral(c.mishnah)}</span>
+                      {masechetName(c.masechetEn)} <span dir="rtl">{hebrewNumeral(c.perek)}:{hebrewNumeral(c.mishnah)}</span>
                     </span>
                     <span className="concepts-band__row-date">{relativeDate(c.date)}</span>
                   </button>
@@ -263,14 +266,19 @@ export function PerekNamesScreen({ onOpenText }: PerekNamesScreenProps) {
             <div className="card notes-page">
               <div className="notes-page__header">
                 <div className="notes-page__id">
-                  <h2 className="notes-page__masechet">{selectedMasechet.en}</h2>
+                  <h2 className="notes-page__masechet">{name(selectedMasechet)}</h2>
                   <p className="notes-page__meta">
-                    {selectedSeder.en} · {pluralize(selectedMasechet.perakim, "perek", "perakim")}
+                    {name(selectedSeder)} · {t("notes.perakimCount", { count: selectedMasechet.perakim })}
                   </p>
                 </div>
                 <div className="notes-page__progress">
                   <span className="notes-page__progress-text">
-                    <strong>{namedCount}</strong> named of {selectedMasechet.perakim}
+                    <Trans
+                      t={t}
+                      i18nKey="notes.namedOf"
+                      values={{ named: namedCount, total: selectedMasechet.perakim }}
+                      components={[<strong />]}
+                    />
                   </span>
                   <div className="notes-progress-bar">
                     <div
@@ -282,11 +290,11 @@ export function PerekNamesScreen({ onOpenText }: PerekNamesScreenProps) {
               </div>
 
               <div className="notes-page__sentence">
-                <label className="notes-page__sentence-label">This masechet, in your own words</label>
+                <label className="notes-page__sentence-label">{t("notes.sentenceLabel")}</label>
                 <input
                   value={masechetSentences[selectedMasechet.en] ?? ""}
                   onChange={(e) => updateSentence(selectedMasechet.en, e.target.value)}
-                  placeholder="This masechet is about…"
+                  placeholder={t("notes.sentencePlaceholder")}
                 />
               </div>
 
@@ -298,7 +306,7 @@ export function PerekNamesScreen({ onOpenText }: PerekNamesScreenProps) {
                   const notebookValue = getPerekNotebook(selectedMasechet.en, n);
                   const hasNotebook = notebookValue.trim().length > 0;
                   const isExpanded = expandedPerek === n;
-                  const moreLabel = isExpanded ? "Close" : hasNotebook ? "Notes" : "More notes";
+                  const moreLabel = isExpanded ? t("common:close") : hasNotebook ? t("notes.notebook") : t("notes.more");
                   return (
                     <div key={n} className="notes-row-wrap">
                       <div className="notes-row">
@@ -315,7 +323,7 @@ export function PerekNamesScreen({ onOpenText }: PerekNamesScreenProps) {
                           className={"notes-row__input" + (named ? " notes-row__input--filled" : "")}
                           value={value}
                           onChange={(e) => updatePerekNote(selectedMasechet.en, n - 1, e.target.value)}
-                          placeholder="Name this perek in your own words"
+                          placeholder={t("notes.rowPlaceholder")}
                         />
                         <button
                           className={"notes-row__more" + (isExpanded ? " notes-row__more--open" : "")}
@@ -328,28 +336,33 @@ export function PerekNamesScreen({ onOpenText }: PerekNamesScreenProps) {
                         <div className="notes-expand">
                           <div className="notes-expand__head">
                             <span className="notes-expand__title">
-                              Perek <span dir="rtl">{hebrewNumeral(n)}</span>
+                              <Trans
+                                t={t}
+                                i18nKey="notes.perekHeading"
+                                values={{ num: hebrewNumeral(n) }}
+                                components={{ 1: <span dir="rtl" /> }}
+                              />
                               {traditionalName ? ` · ${traditionalName}` : ""}
                             </span>
-                            <span className="notes-expand__saves">Saves as you type</span>
+                            <span className="notes-expand__saves">{t("notes.savesAsYouType")}</span>
                           </div>
                           <textarea
                             className="notes-expand__textarea"
                             autoFocus
                             value={notebookValue}
                             onChange={(e) => setPerekNotebookEntry(selectedMasechet.en, n, e.target.value)}
-                            placeholder="Write as much as you want…"
+                            placeholder={t("notes.notebookPlaceholder")}
                           />
                           <div className="notes-expand__foot">
                             {onOpenText ? (
                               <button className="btn btn--quiet notes-expand__read" onClick={onOpenText}>
-                                Read the Mishnayot →
+                                {t("notes.readMishnayot")}
                               </button>
                             ) : (
                               <span />
                             )}
                             <button className="btn btn--primary btn--compact notes-expand__done" onClick={() => setExpandedPerek(null)}>
-                              Done
+                              {t("common:done")}
                             </button>
                           </div>
                         </div>

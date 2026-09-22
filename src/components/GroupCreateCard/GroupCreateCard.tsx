@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import { NavIcon } from "../Icon/NavIcon";
 import "./GroupCreateCard.css";
 
@@ -69,9 +70,10 @@ export function PaceSegment<T extends string>({
   onChange: (value: T) => void;
   hint: string;
 }) {
+  const { t } = useTranslation("groups");
   return (
     <div className="create-field">
-      <p className="create-field__label">Pace</p>
+      <p className="create-field__label">{t("pace.label")}</p>
       <div className="pace-segment">
         {options.map((opt) => (
           <button
@@ -103,13 +105,14 @@ export function InviteRepeaterRow({
   onRemove?: () => void;
   placeholder: string;
 }) {
+  const { t } = useTranslation("groups");
   return (
     <div className="invite-repeater-row">
       <div className="create-field__inset invite-repeater-row__inset">
         <input type="email" value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} />
       </div>
       {onRemove && (
-        <button className="invite-repeater-row__remove" onClick={onRemove} aria-label="Remove this address">
+        <button className="invite-repeater-row__remove" onClick={onRemove} aria-label={t("createCard.removeAddress")}>
           <NavIcon id="close" size={14} weight={2.3} />
         </button>
       )}
@@ -146,11 +149,12 @@ export function JoinByCodeCard({
   busy: boolean;
   joined: boolean;
 }) {
+  const { t } = useTranslation("groups");
   return (
     <div className="join-code-card">
       <div className="join-code-card__text">
         <p className="join-code-card__heading">{heading}</p>
-        <p className="join-code-card__sub">Whoever started it can send you the code.</p>
+        <p className="join-code-card__sub">{t("createCard.joinSub")}</p>
       </div>
       <div className="join-code-card__action">
         <input
@@ -162,7 +166,7 @@ export function JoinByCodeCard({
           maxLength={6}
         />
         <button className="join-code-card__btn" disabled={busy || !value.trim()} onClick={onJoin}>
-          {busy ? "…" : joined ? "Joined ✓" : "Join"}
+          {busy ? "…" : joined ? t("createCard.joined") : t("createCard.join")}
         </button>
       </div>
     </div>

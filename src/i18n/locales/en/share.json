@@ -1,1 +1,131 @@
-{}
+{
+  "invite": {
+    "joinDaily": "Come join me in our daily learning",
+    "joinDailyLine": "Come join me in our daily learning — {{site}}",
+    "learnWithMe": "Come learn with me",
+    "learnWithMeLine": "Come learn with me — {{site}}",
+    "ifICanLine": "If I can do it, so can you — {{site}}",
+    "learnShasWithUs": "Come learn Shas with us",
+    "learnItWithMe": "Come learn it along with me",
+    "learnItWithMeLine": "Come learn it along with me — {{site}}",
+    "learnWithUsLine": "Learn with us — {{site}}",
+    "comeLearnWithUsLine": "Come learn with us — {{site}}"
+  },
+  "sheetHead": {
+    "invite": "Share and invite",
+    "siyum": "Share the siyum"
+  },
+  "games": {
+    "dash": "Shas Dash",
+    "quiz": "Mishna Quiz",
+    "chazara": "Mishna Chazara",
+    "sederSort": "Seder Sort",
+    "sidrei": "Sidrei Hamishna"
+  },
+  "streak": {
+    "status": "{{words}} days of daily Mishna.",
+    "bannerHead": "{{words}} days of daily limmud",
+    "bannerBodyDefault": "Day after day of learning.",
+    "sheetHead": "Share {{words}} days",
+    "cardHead": "days of daily limmud",
+    "span": {
+      "week": "a full week",
+      "month": "a full month",
+      "halfYear": "half a year",
+      "year": "a full year"
+    },
+    "spanBody": {
+      "week": "A full week of learning.",
+      "month": "A full month of learning.",
+      "halfYear": "Half a year of learning.",
+      "year": "A full year of learning."
+    }
+  },
+  "best": {
+    "line": {
+      "dash": "If I can place {{value}} masechtot, so can you.",
+      "quiz": "If I can place {{value}} of {{outOf}} mishnayot, so can you.",
+      "chazara": "If I can recall {{value}} masechtot, so can you."
+    },
+    "head": {
+      "dash": "masechtot placed",
+      "quiz": "of {{outOf}} mishnayot placed",
+      "chazara": "masechtot recalled"
+    },
+    "bannerHead": "A new best — {{score}}",
+    "bannerHeadOutOf": "A new best — {{score}} of {{outOf}}",
+    "bannerBody": {
+      "dash": "{{game}}: {{value}} masechtot placed, every one correct. Send it out and bring someone in.",
+      "quiz": "{{game}}: {{value}} mishnayot placed. Send it out and bring someone in.",
+      "chazara": "{{game}}: {{value}} masechtot recalled. Send it out and bring someone in."
+    }
+  },
+  "all63": {
+    "status": "All 63 masechtot, each in its own seder.",
+    "bannerHead": "All 63 masechtot",
+    "bannerBody": "Every masechet in Shas, each one in its own seder.",
+    "cardHead": "all placed"
+  },
+  "order": {
+    "status": "{{what}}, in order.",
+    "bannerHead": "{{what}}, in order",
+    "bannerBody": "Sidrei Hamishna.",
+    "cardHead": "in order",
+    "whatSedarim": "the {{words}} sedarim",
+    "whatSeder": "the {{words}} masechtot of Seder {{seder}}"
+  },
+  "masechet": {
+    "status": "{{words}} of the 63 — {{next}} next.",
+    "statusLast": "{{words}} of the 63.",
+    "bannerHead": "Mesayem Masechet {{masechet}}",
+    "bannerBody": "All {{mishnayot}} mishnayot. {{words}} of the 63.",
+    "stepLabel": "MESAYEM MASECHET",
+    "cardHead": "{{mishnayot}} mishnayot · {{perakim}} perakim",
+    "stepAhead": "{{next}} next — come learn it along with me"
+  },
+  "seder": {
+    "sub": "Seder {{seder}}",
+    "count": "{{words}} masechtot, {{mishnayot}} mishnayot.",
+    "bannerHead": "Siyum on Seder {{seder}}",
+    "bannerBody": "{{summary}} A sixth of Shas, complete.",
+    "cardSub": "{{masechtot}} masechtot · {{mishnayot}} mishnayot"
+  },
+  "shas": {
+    "status": "All six sedarim, 63 masechtot, every mishnah.",
+    "bannerHead": "Siyum haShas",
+    "bannerBody": "All six sedarim of the Mishna, complete.",
+    "cardSub": "6 sedarim · 63 masechtot"
+  },
+  "board": {
+    "status": "All 524 perakim of the Mishna, taken on.",
+    "bannerHead": "Every perek is taken",
+    "bannerBody": "All 524 perakim have someone learning them.",
+    "cardSub": "524 perakim · every one taken"
+  },
+  "chabura": {
+    "status": "Our chabura learned Masechet {{masechet}} together.",
+    "bannerHead": "{{group}} is mesayem {{masechet}}",
+    "bannerBody": "The whole shiur, together.",
+    "stepLabel": "SIYUM TOGETHER",
+    "stepAhead": "Learned together — come learn with us"
+  },
+  "prompt": {
+    "shareThis": "Share this",
+    "notNow": "Not now"
+  },
+  "sheet": {
+    "sub": "This is what goes out. Your name is not on it unless you add it.",
+    "statusLabel": "STATUS TEXT",
+    "statusLabelCopied": "✓ STATUS TEXT · COPIED",
+    "includeName": "Include my name",
+    "includeFigure": "Include the figure",
+    "imageAndText": "image + text",
+    "saveImage": "Save the image",
+    "more": "More…",
+    "nativeSheet": "native sheet",
+    "copyLink": "Copy link",
+    "imageFailed": "Couldn't make the image — try Save the image.",
+    "imageSaved": "Image saved — the text is already copied.",
+    "linkCopied": "Link copied."
+  }
+}

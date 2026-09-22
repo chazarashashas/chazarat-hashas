@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { fetchMishnaTranslation, type TranslationAttribution } from "../../utils/translation";
 import { TranslationAttributionLine } from "../TranslationAttribution/TranslationAttribution";
 import "./TranslationReveal.css";
@@ -33,6 +34,7 @@ interface TranslationRevealProps {
  * once while browsing is not a standing preference.
  */
 export function TranslationReveal({ masechetEn, perek, mishnah }: TranslationRevealProps) {
+  const { t } = useTranslation("dailyLimmud");
   const [state, setState] = useState<RevealState>({ status: "checking" });
 
   function check() {
@@ -58,7 +60,7 @@ export function TranslationReveal({ masechetEn, perek, mishnah }: TranslationRev
   if (state.status === "error") {
     return (
       <button className="translation-reveal-toggle" onClick={check}>
-        Try again — English
+        {t("reveal.retry")}
       </button>
     );
   }
@@ -66,20 +68,22 @@ export function TranslationReveal({ masechetEn, perek, mishnah }: TranslationRev
   if (state.status === "available") {
     return (
       <button className="translation-reveal-toggle" onClick={() => setState({ ...state, status: "open" })}>
-        <span className="translation-reveal-toggle__glyph">+</span> English
+        <span className="translation-reveal-toggle__glyph">+</span> {t("reveal.show")}
       </button>
     );
   }
 
   return (
     <div className="translation-reveal-panel">
-      <p className="translation-reveal-panel__text">{state.text}</p>
+      <p className="translation-reveal-panel__text" lang="en" dir="ltr">
+        {state.text}
+      </p>
       <TranslationAttributionLine attribution={state.attribution} variant="panel" />
       <button
         className="translation-reveal-toggle translation-reveal-toggle--hide"
         onClick={() => setState({ ...state, status: "available" })}
       >
-        <span className="translation-reveal-toggle__glyph">−</span> Hide English
+        <span className="translation-reveal-toggle__glyph">−</span> {t("reveal.hide")}
       </button>
     </div>
   );

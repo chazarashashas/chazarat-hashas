@@ -1,1 +1,64 @@
-{}
+{
+  "subject": {
+    "Zeraim": "Agriculture, tithes, and blessings",
+    "Moed": "Shabbat and the festivals",
+    "Nashim": "Marriage, divorce, and vows",
+    "Nezikin": "Civil law, courts, and ethics",
+    "Kodashim": "The Temple and its offerings",
+    "Taharot": "Ritual purity and impurity"
+  },
+  "map": {
+    "title": "Explore Shas",
+    "searchPlaceholder": "Jump to a masechet…",
+    "noMatches": "No masechet matches that.",
+    "shas": "Shas",
+    "perek": "Perek {{num}}",
+    "perakimCount_one": "{{count}} perakim",
+    "perakimCount_other": "{{count}} perakim",
+    "viewNote": "View/edit note for this perek",
+    "addNote": "Add note for this perek"
+  },
+  "notes": {
+    "title": "Mishna Notes",
+    "sub": "Give each perek a name only you would think of, so it sticks — \"the laws of Zimmun,\" \"who is considered ne'eman.\"",
+    "clearTitle": "Clear this masechet's notes",
+    "tabPerakim": "Perakim",
+    "tabConcepts": "Concepts",
+    "conceptsToReview": "Concepts to review",
+    "savedCount_one": "{{count}} saved",
+    "savedCount_other": "{{count}} saved",
+    "savedInAll_one": "{{count}} saved in all →",
+    "savedInAll_other": "{{count}} saved in all →",
+    "conceptsEmpty": "No concepts saved yet — add one from Daily Limmud while you're learning, and it'll show up here with the mishnah it came from.",
+    "goToConcept": "Go to it →",
+    "masechetEmpty": "Nothing saved from {{masechet}} yet. Anything you flag while learning lands here, tagged with the mishnah it came from.",
+    "perakimCount_one": "{{count}} perek",
+    "perakimCount_other": "{{count}} perakim",
+    "namedOf": "<0>{{named}}</0> named of {{total}}",
+    "sentenceLabel": "This masechet, in your own words",
+    "sentencePlaceholder": "This masechet is about…",
+    "more": "More notes",
+    "notebook": "Notes",
+    "rowPlaceholder": "Name this perek in your own words",
+    "perekHeading": "Perek <1>{{num}}</1>",
+    "savesAsYouType": "Saves as you type",
+    "notebookPlaceholder": "Write as much as you want…",
+    "readMishnayot": "Read the Mishnayot →"
+  },
+  "relativeDate": {
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "daysAgo_one": "{{count}} days ago",
+    "daysAgo_other": "{{count}} days ago"
+  },
+  "print": {
+    "title": "Print Notes",
+    "allOfShas": "All of Shas",
+    "oneSeder": "One Seder",
+    "oneMasechet": "One Masechet",
+    "scopeAll": "all of Shas",
+    "heading": "Mishna Notes — {{scope}}",
+    "empty": "No notes yet in {{scope}}.",
+    "perek": "Perek <1>{{num}}</1>"
+  }
+}

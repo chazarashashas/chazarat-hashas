@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import { NavIcon } from "../Icon/NavIcon";
 import "./SignedOutGate.css";
 
@@ -64,16 +65,16 @@ export function InviteRowPreview({ email, pillLabel }: { email: string; pillLabe
   );
 }
 
-const WEEK_DAYS = ["S", "M", "T", "W", "T", "F", "S"];
-
 export function WeekDotsPreview({ pattern, note }: { pattern: boolean[]; note: string }) {
-  const label = `Learned ${pattern.filter(Boolean).length} of the last ${pattern.length} days`;
+  const { t } = useTranslation("shell");
+  const weekDays = t("gate.weekDays").split(" ");
+  const label = t("gate.weekLabel", { learned: pattern.filter(Boolean).length, total: pattern.length });
   return (
     <div className="gate2-week" role="img" aria-label={label}>
       {pattern.map((on, i) => (
         <div className="gate2-week__col" key={i} aria-hidden="true">
           <span className={"gate2-week__dot" + (on ? " gate2-week__dot--on" : "")} />
-          <span className="gate2-week__day">{WEEK_DAYS[i]}</span>
+          <span className="gate2-week__day">{weekDays[i]}</span>
         </div>
       ))}
       <span className="gate2-week__note">{note}</span>
@@ -103,18 +104,19 @@ export function NoteCardPreview({
   replyAuthor: string;
   reply: string;
 }) {
+  const { t } = useTranslation("shell");
   return (
     <div className="gate2-note-card">
       <div className="gate2-note-card__head">
         <span className="gate2-note-card__author">{author}</span>
         <span className="gate2-note-card__source">{source}</span>
-        <span className="gate2-note-card__edit">Edit</span>
+        <span className="gate2-note-card__edit">{t("gate.edit")}</span>
       </div>
       <p className="gate2-note-card__body">{body}</p>
       <div className="gate2-note-card__reply">
         <span className="gate2-note-card__reply-author">{replyAuthor}</span> {reply}
       </div>
-      <span className="gate2-note-card__comment">Add a comment</span>
+      <span className="gate2-note-card__comment">{t("gate.addComment")}</span>
     </div>
   );
 }
@@ -127,6 +129,7 @@ export interface RosterRow {
 }
 
 export function RosterPreview({ rows }: { rows: RosterRow[] }) {
+  const { t } = useTranslation("shell");
   return (
     <div className="gate2-roster">
       {rows.map((r) => (
@@ -134,7 +137,7 @@ export function RosterPreview({ rows }: { rows: RosterRow[] }) {
           <span className={"gate2-roster__dot" + (r.learned ? " gate2-roster__dot--on" : "")} aria-hidden="true" />
           <span className="gate2-roster__name">
             {r.name}
-            <span className="gate2-roster__sr"> — {r.learned ? "learned today" : "not yet today"}</span>
+            <span className="gate2-roster__sr"> — {r.learned ? t("gate.learnedToday") : t("gate.notYetToday")}</span>
           </span>
           <span className={"gate2-roster__val" + (r.valueMuted ? " gate2-roster__val--muted" : "")}>{r.value}</span>
         </div>
@@ -144,6 +147,7 @@ export function RosterPreview({ rows }: { rows: RosterRow[] }) {
 }
 
 export function BundlePreview({ chips, onSend }: { chips: { text: string; hue: string }[]; onSend?: () => void }) {
+  const { t } = useTranslation("shell");
   return (
     <div className="gate2-bundle">
       <div className="gate2-bundle__chips">
@@ -155,9 +159,9 @@ export function BundlePreview({ chips, onSend }: { chips: { text: string; hue: s
       </div>
       <div className="gate2-bundle__row">
         <button type="button" className="gate2-bundle__send" onClick={onSend}>
-          Send today's learning
+          {t("gate.sendToday")}
         </button>
-        <span className="gate2-bundle__hint">one send a day</span>
+        <span className="gate2-bundle__hint">{t("gate.oneSendADay")}</span>
       </div>
     </div>
   );
@@ -172,6 +176,7 @@ export function GateCTA({
   body: string;
   onAction: () => void;
 }) {
+  const { t } = useTranslation("shell");
   return (
     <div className="hero-card gate2-cta">
       <div className="gate2-cta__text">
@@ -179,7 +184,7 @@ export function GateCTA({
         <p className="gate2-cta__body">{body}</p>
       </div>
       <button className="gate2-cta__btn" onClick={onAction}>
-        <span>Log in or sign up</span>
+        <span>{t("gate.logInOrSignUp")}</span>
         <NavIcon id="arrow" size={15} weight={2.2} />
       </button>
     </div>
@@ -193,9 +198,9 @@ export function GateCTA({
 export function GateCTATwoButton({
   heading,
   body,
-  createLabel = "Create an account",
+  createLabel,
   onCreateAccount,
-  signInLabel = "I already have one",
+  signInLabel,
   onSignIn,
 }: {
   heading: string;
@@ -205,16 +210,17 @@ export function GateCTATwoButton({
   signInLabel?: string;
   onSignIn: () => void;
 }) {
+  const { t } = useTranslation("shell");
   return (
     <div className="gate2-cta gate2-cta--stacked">
       <p className="gate2-cta__heading">{heading}</p>
       <p className="gate2-cta__body">{body}</p>
       <div className="gate2-cta__actions">
         <button className="gate2-cta__btn gate2-cta__btn--primary" onClick={onCreateAccount}>
-          {createLabel}
+          {createLabel ?? t("gate.createAccount")}
         </button>
         <button className="gate2-cta__btn gate2-cta__btn--secondary" onClick={onSignIn}>
-          {signInLabel}
+          {signInLabel ?? t("gate.haveAccount")}
         </button>
       </div>
     </div>

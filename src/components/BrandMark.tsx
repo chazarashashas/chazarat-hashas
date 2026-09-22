@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 interface BrandMarkProps {
   /** "reversed" (brass tile, cream outlines — for navy backgrounds),
       "oneink" (single navy ink, no brass — for anything photocopied), or
@@ -11,12 +12,13 @@ interface BrandMarkProps {
     wide the outline stroke stops resolving; use a solid-tile treatment
     instead at that size. */
 export function BrandMark({ variant = "reversed", className }: BrandMarkProps) {
+  const { t } = useTranslation("shell");
   // The mark takes its colours from the page rather than carrying its
   // own: cream on navy, navy on cream, and the one brass tile from the
   // gold token.
   const outline = variant === "reversed" ? "var(--on-navy)" : "var(--ink)";
   return (
-    <svg viewBox="-5.5 0 355 281.2" role="img" aria-label="Chazarat Hashas mark" className={className}>
+    <svg viewBox="-5.5 0 355 281.2" role="img" aria-label={t("brandMark")} className={className}>
       {variant === "oneink" ? (
         <rect x="249.5" y="5.5" width="89" height="89" rx="22.5" fill="none" stroke={outline} strokeWidth="11" />
       ) : (

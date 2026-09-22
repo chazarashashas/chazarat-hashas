@@ -3,6 +3,7 @@ import { Capacitor } from "@capacitor/core";
 import { App as CapacitorApp } from "@capacitor/app";
 import { Browser } from "@capacitor/browser";
 import { SocialLogin } from "@capgo/capacitor-social-login";
+import i18n from "../i18n";
 import { NATIVE_OAUTH_CALLBACK, parseOAuthCallback, randomNonce, sha256Hex } from "./oauthCallback";
 
 /** The Google Cloud "Web application" OAuth client — the same Client ID set
@@ -63,7 +64,7 @@ async function startBrowserGoogleSignIn(supabase: SupabaseClient): Promise<strin
     provider: "google",
     options: { redirectTo: NATIVE_OAUTH_CALLBACK, skipBrowserRedirect: true },
   });
-  if (error || !data?.url) return error?.message ?? "Couldn't start Google sign-in.";
+  if (error || !data?.url) return error?.message ?? i18n.t("shell:errors.googleStart");
   await Browser.open({ url: data.url, toolbarColor: "#16233f" });
   return null;
 }
@@ -95,7 +96,7 @@ async function finish(supabase: SupabaseClient, url: string) {
     if (error) showError(error.message);
     return;
   }
-  showError("Sign-in didn't complete. Try again or use email.");
+  showError(i18n.t("shell:errors.signInIncomplete"));
 }
 
 /** Listens for the browser handing sign-in back to the app — while it's

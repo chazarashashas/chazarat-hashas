@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useDirection } from "../../i18n";
 import "./FlipCounter.css";
 
 export interface FlipScope {
@@ -20,6 +22,8 @@ interface FlipCounterProps {
 /** Three scopes (masechet -> seder -> Shas), opening on the narrowest.
     ‹ › step between them; chips jump directly. See HANDOFF30 §8. */
 export function FlipCounter({ scopes, large }: FlipCounterProps) {
+  const { t } = useTranslation("shell");
+  const dir = useDirection();
   const [index, setIndex] = useState(0);
   const scope = scopes[Math.min(index, scopes.length - 1)];
   if (!scope) return null;
@@ -29,11 +33,11 @@ export function FlipCounter({ scopes, large }: FlipCounterProps) {
       <div className="flip-counter__head">
         <button
           className="flip-counter__step"
-          aria-label="Zoom in"
+          aria-label={t("flipCounter.zoomIn")}
           disabled={index === 0}
           onClick={() => setIndex((i) => Math.max(0, i - 1))}
         >
-          ‹
+          {dir === "rtl" ? "›" : "‹"}
         </button>
         <div className="flip-counter__titles">
           <p className="flip-counter__title">{scope.title}</p>
@@ -41,11 +45,11 @@ export function FlipCounter({ scopes, large }: FlipCounterProps) {
         </div>
         <button
           className="flip-counter__step"
-          aria-label="Zoom out"
+          aria-label={t("flipCounter.zoomOut")}
           disabled={index === scopes.length - 1}
           onClick={() => setIndex((i) => Math.min(scopes.length - 1, i + 1))}
         >
-          ›
+          {dir === "rtl" ? "‹" : "›"}
         </button>
       </div>
 
@@ -58,7 +62,7 @@ export function FlipCounter({ scopes, large }: FlipCounterProps) {
       </div>
 
       <p className="flip-counter__count">
-        {scope.doneCount} of {scope.totalCount} {scope.unit}
+        {t("flipCounter.count", { done: scope.doneCount, total: scope.totalCount, unit: scope.unit })}
       </p>
 
       <div className="flip-counter__chips">
@@ -68,7 +72,7 @@ export function FlipCounter({ scopes, large }: FlipCounterProps) {
             className={"flip-counter__chip" + (i === index ? " flip-counter__chip--active" : "")}
             onClick={() => setIndex(i)}
           >
-            {s.key}
+            {t(`flipCounter.scope.${s.key as "Masechet" | "Seder" | "Shas"}`, { defaultValue: s.key })}
           </button>
         ))}
       </div>

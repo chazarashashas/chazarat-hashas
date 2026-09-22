@@ -1,1 +1,69 @@
-{}
+{
+  "subject": {
+    "Zeraim": "חקלאות, מעשרות וברכות",
+    "Moed": "שבת ומועדים",
+    "Nashim": "נישואין, גירושין ונדרים",
+    "Nezikin": "דיני ממונות, בתי דין ומידות",
+    "Kodashim": "בית המקדש והקרבנות",
+    "Taharot": "טומאה וטהרה"
+  },
+  "map": {
+    "title": "מפת הש״ס",
+    "searchPlaceholder": "חפש מסכת…",
+    "noMatches": "לא נמצאה מסכת בשם הזה.",
+    "shas": "ש״ס",
+    "perek": "פרק {{num}}",
+    "perakimCount_one": "פרק אחד",
+    "perakimCount_two": "שני פרקים",
+    "perakimCount_other": "{{count}} פרקים",
+    "viewNote": "הצג או ערוך את ההערה לפרק הזה",
+    "addNote": "הוסף הערה לפרק הזה"
+  },
+  "notes": {
+    "title": "סימנים והערות",
+    "sub": "תן לכל פרק שם שרק אתה היית חושב עליו, כדי שיישאר בזיכרון — \"דיני זימון\", \"מי נחשב נאמן\".",
+    "clearTitle": "נקה את ההערות של המסכת הזו",
+    "tabPerakim": "פרקים",
+    "tabConcepts": "מושגים",
+    "conceptsToReview": "מושגים לחזרה",
+    "savedCount_one": "מושג אחד שמור",
+    "savedCount_two": "שני מושגים שמורים",
+    "savedCount_other": "{{count}} מושגים שמורים",
+    "savedInAll_one": "מושג אחד שמור בסך הכול ←",
+    "savedInAll_two": "שני מושגים שמורים בסך הכול ←",
+    "savedInAll_other": "{{count}} מושגים שמורים בסך הכול ←",
+    "conceptsEmpty": "עוד לא נשמרו מושגים — אפשר להוסיף מושג מתוך הלימוד היומי בזמן הלימוד, והוא יופיע כאן עם המשנה שממנה הגיע.",
+    "goToConcept": "עבור אליו ←",
+    "masechetEmpty": "עוד לא נשמר דבר ממסכת {{masechet}}. כל מה שתסמן בזמן הלימוד יגיע לכאן, עם המשנה שממנה הגיע.",
+    "perakimCount_one": "פרק אחד",
+    "perakimCount_two": "שני פרקים",
+    "perakimCount_other": "{{count}} פרקים",
+    "namedOf": "<0>{{named}}</0> מתוך {{total}} קיבלו שם",
+    "sentenceLabel": "המסכת הזו, במילים שלך",
+    "sentencePlaceholder": "המסכת הזו עוסקת ב…",
+    "more": "עוד הערות",
+    "notebook": "הערות",
+    "rowPlaceholder": "תן שם לפרק במילים שלך",
+    "perekHeading": "פרק <1>{{num}}</1>",
+    "savesAsYouType": "נשמר תוך כדי כתיבה",
+    "notebookPlaceholder": "כתוב כמה שתרצה…",
+    "readMishnayot": "לקריאת המשניות ←"
+  },
+  "relativeDate": {
+    "today": "היום",
+    "yesterday": "אתמול",
+    "daysAgo_one": "לפני יום",
+    "daysAgo_two": "לפני יומיים",
+    "daysAgo_other": "לפני {{count}} ימים"
+  },
+  "print": {
+    "title": "הדפסת ההערות",
+    "allOfShas": "כל הש״ס",
+    "oneSeder": "סדר אחד",
+    "oneMasechet": "מסכת אחת",
+    "scopeAll": "כל הש״ס",
+    "heading": "סימנים והערות — {{scope}}",
+    "empty": "עוד אין הערות ב{{scope}}.",
+    "perek": "פרק <1>{{num}}</1>"
+  }
+}

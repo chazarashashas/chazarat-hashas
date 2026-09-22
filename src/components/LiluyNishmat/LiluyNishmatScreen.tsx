@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { Trans, useTranslation } from "react-i18next";
+import { useDirection } from "../../i18n";
 import { useAuth } from "../../utils/useAuth";
 import { useSiyumim, type PerekClaim, type Siyum, type Visibility } from "../../utils/useSiyumim";
 import { ALL_PEREK_SLOTS } from "../../utils/nishmatMosaic";
@@ -73,13 +75,14 @@ function SiyumCard({
   onOpen: () => void;
   onHide?: () => void;
 }) {
+  const { t } = useTranslation(["siyumim", "common"]);
   return (
     <div className="card siyum-card">
       <button className="siyum-card__open" onClick={onOpen}>
         <div className="siyum-card__head">
           <span className="siyum-card__name">{siyum.dedication}</span>
           <span className={"siyum-card__badge" + (siyum.visibility === "public" ? " siyum-card__badge--public" : "")}>
-            {siyum.visibility === "public" ? "Public" : "Private"}
+            {siyum.visibility === "public" ? t("nishmat.public") : t("nishmat.private")}
           </span>
         </div>
         {siyum.occasion && <p className="siyum-card__occasion">{siyum.occasion}</p>}
@@ -89,33 +92,33 @@ function SiyumCard({
         <div className="siyum-card__stats">
           <div className="siyum-card__stat siyum-card__stat--learned">
             <span className="siyum-card__stat-num">{stats.learned}</span>
-            <span className="siyum-card__stat-label">learned</span>
+            <span className="siyum-card__stat-label">{t("nishmat.stat.learned")}</span>
           </div>
           <div className="siyum-card__stat siyum-card__stat--taken">
             <span className="siyum-card__stat-num">{stats.taken}</span>
-            <span className="siyum-card__stat-label">taken</span>
+            <span className="siyum-card__stat-label">{t("nishmat.stat.taken")}</span>
           </div>
           <div className="siyum-card__stat siyum-card__stat--open">
             <span className="siyum-card__stat-num">{stats.open}</span>
-            <span className="siyum-card__stat-label">still open</span>
+            <span className="siyum-card__stat-label">{t("nishmat.stat.open")}</span>
           </div>
         </div>
 
         <ProgressBar {...stats} />
 
-        <span className="siyum-card__cta">{mine ? "Open siyum →" : "Take a perek →"}</span>
+        <span className="siyum-card__cta">{mine ? t("nishmat.openSiyum") : t("nishmat.takePerek")}</span>
       </button>
 
       {onHide && (
         <button
           className="siyum-card__hide"
-          title="Hide this siyum from your list"
+          title={t("nishmat.hideTitle")}
           onClick={(e) => {
             e.stopPropagation();
             onHide();
           }}
         >
-          Hide
+          {t("nishmat.hide")}
         </button>
       )}
     </div>
@@ -129,6 +132,8 @@ interface LiluyNishmatScreenProps {
 
 export function LiluyNishmatScreen({ onOpenLogin, initialSlug }: LiluyNishmatScreenProps) {
   const { session } = useAuth();
+  const { t } = useTranslation(["siyumim", "common"]);
+  const direction = useDirection();
   const siyumim = useSiyumim();
   const [tab, setTab] = useState<Tab>("managing");
   const [openSiyum, setOpenSiyum] = useState<Siyum | null>(null);
@@ -234,22 +239,16 @@ export function LiluyNishmatScreen({ onOpenLogin, initialSlug }: LiluyNishmatScr
     return (
       <div className="stage">
         <div className="panel nishmat-gate">
-          <h1 className="screen-head__title">L'Iluy Nishmat</h1>
-          <p className="screen-head__sub">
-            A siyum haShas is {siyumim.TOTAL_PERAKIM} perakim. Split among enough people, it comes to
-            one perek each.
-          </p>
+          <h1 className="screen-head__title">{t("nishmat.title")}</h1>
+          <p className="screen-head__sub">{t("nishmat.gate.sub", { total: siyumim.TOTAL_PERAKIM })}</p>
 
           {boardSiyum && boardStats && (
             <div className="hero-card nishmat-gate-board">
-              <p className="nishmat-gate-board__head">All of Shas, one square per perek</p>
-              <p className="nishmat-gate-board__body">
-                Someone opens a siyum. Each square is one perek. People take the ones they can learn,
-                and when the board fills the siyum is made.
-              </p>
+              <p className="nishmat-gate-board__head">{t("nishmat.gate.boardHead")}</p>
+              <p className="nishmat-gate-board__body">{t("nishmat.gate.boardBody")}</p>
               <MiniMosaic claims={claimsFor(boardSiyum.id)} />
               <p className="nishmat-gate-board__stat">
-                {boardTaken} of {siyumim.TOTAL_PERAKIM} taken
+                {t("nishmat.gate.boardStat", { taken: boardTaken, total: siyumim.TOTAL_PERAKIM })}
               </p>
             </div>
           )}
@@ -257,8 +256,7 @@ export function LiluyNishmatScreen({ onOpenLogin, initialSlug }: LiluyNishmatScr
           {featured.length > 0 && (
             <>
               <p className="nishmat-gate-lead">
-                {featured.length === 1 ? "One is open right now" : "Two are open right now"}. Anyone
-                can look through them:
+                {featured.length === 1 ? t("nishmat.gate.leadOne") : t("nishmat.gate.leadTwo")}
               </p>
               <div className="nishmat-list">
                 {featured.map((s) => (
@@ -279,53 +277,49 @@ export function LiluyNishmatScreen({ onOpenLogin, initialSlug }: LiluyNishmatScr
             <div className="callout nishmat-gate-fact">
               <span className="nishmat-gate-fact__rule" style={{ background: "var(--gold)" }} />
               <div>
-                <p className="nishmat-gate-fact__head">One perek is the whole ask</p>
+                <p className="nishmat-gate-fact__head">{t("nishmat.gate.factAskHead")}</p>
                 <p className="nishmat-gate-fact__body">
-                  {siyumim.TOTAL_PERAKIM} perakim across six sedarim. At forty people that's thirteen
-                  each; at five hundred it's one.
+                  {t("nishmat.gate.factAskBody", { total: siyumim.TOTAL_PERAKIM })}
                 </p>
               </div>
             </div>
             <div className="callout nishmat-gate-fact">
               <span className="nishmat-gate-fact__rule" style={{ background: "var(--good)" }} />
               <div>
-                <p className="nishmat-gate-fact__head">It appears in your daily limmud</p>
-                <p className="nishmat-gate-fact__body">
-                  A perek you take arrives in Daily Limmud with the dedication on it, so it's learned
-                  in the ordinary run of things rather than remembered separately.
-                </p>
+                <p className="nishmat-gate-fact__head">{t("nishmat.gate.factLimmudHead")}</p>
+                <p className="nishmat-gate-fact__body">{t("nishmat.gate.factLimmudBody")}</p>
               </div>
             </div>
             <div className="callout nishmat-gate-fact">
               <span className="nishmat-gate-fact__rule" style={{ background: "var(--ink-2)" }} />
               <div>
-                <p className="nishmat-gate-fact__head">A perek can be released</p>
-                <p className="nishmat-gate-fact__body">
-                  If life gets in the way, hand it back and it returns to the board for someone else.
-                  Nobody is chased.
-                </p>
+                <p className="nishmat-gate-fact__head">{t("nishmat.gate.factReleaseHead")}</p>
+                <p className="nishmat-gate-fact__body">{t("nishmat.gate.factReleaseBody")}</p>
               </div>
             </div>
           </div>
 
           <GateCTATwoButton
-            heading="Taking a perek needs an account"
-            body="A perek you take is a commitment other people are counting on, so it has to belong to someone. Looking through a siyum needs nothing at all."
+            heading={t("nishmat.gate.accountHeading")}
+            body={t("nishmat.gate.accountBody")}
             onCreateAccount={() => onOpenLogin("signUp")}
             onSignIn={() => onOpenLogin("signIn")}
           />
 
           <p className="gate2-footer">
-            Nothing else here is closed —{" "}
-            <button
-              onClick={() => {
-                setTab("helping");
-                setBrowsing(true);
-              }}
-            >
-              look through the open siyumim
-            </button>
-            , or carry on with your own learning.
+            <Trans
+              t={t}
+              i18nKey="nishmat.gate.footer"
+              components={[
+                <button
+                  key="browse"
+                  onClick={() => {
+                    setTab("helping");
+                    setBrowsing(true);
+                  }}
+                />,
+              ]}
+            />
           </p>
         </div>
       </div>
@@ -337,19 +331,19 @@ export function LiluyNishmatScreen({ onOpenLogin, initialSlug }: LiluyNishmatScr
       <div className="panel nishmat-panel">
         <div className="nishmat-head">
           <div>
-            <h1 className="panel__title nishmat-title">L'Iluy Nishmat</h1>
+            <h1 className="panel__title nishmat-title">{t("nishmat.title")}</h1>
           </div>
           {session && (
             <button className="nishmat-start-btn" onClick={() => setCreateOpen(true)}>
-              + Start a siyum
+              {t("nishmat.startButton")}
             </button>
           )}
         </div>
 
         {!session && onOpenLogin && tab === "managing" && (
           <GateCTATwoButton
-            heading="Starting a siyum needs an account"
-            body="A siyum tracks who's taken which perek and who's already learned it — that only works if it's tied to your account, not just this device."
+            heading={t("nishmat.startAccountHeading")}
+            body={t("nishmat.startAccountBody")}
             onCreateAccount={() => onOpenLogin("signUp")}
             onSignIn={() => onOpenLogin("signIn")}
           />
@@ -360,29 +354,22 @@ export function LiluyNishmatScreen({ onOpenLogin, initialSlug }: LiluyNishmatScr
             className={"pill nishmat-tab-pill" + (tab === "managing" ? " pill--active" : "")}
             onClick={() => setTab("managing")}
           >
-            Siyumim you're managing
+            {t("nishmat.tabManaging")}
           </button>
           <button
             className={"pill nishmat-tab-pill" + (tab === "helping" ? " pill--active" : "")}
             onClick={() => setTab("helping")}
           >
-            Help others finish theirs
+            {t("nishmat.tabHelping")}
           </button>
         </div>
 
-        {tab === "helping" && (
-          <p className="nishmat-helping-note">
-            Take on a perek and it's yours to learn — every perek someone takes brings their siyum
-            closer.
-          </p>
-        )}
+        {tab === "helping" && <p className="nishmat-helping-note">{t("nishmat.helpingNote")}</p>}
 
         <div className="nishmat-list">
           {list.length === 0 && (session || tab === "helping") && (
             <p className="chevrusa-empty">
-              {tab === "managing"
-                ? "Siyumim you start appear here."
-                : "Public siyumim looking for help appear here — check back soon."}
+              {tab === "managing" ? t("nishmat.emptyManaging") : t("nishmat.emptyHelping")}
             </p>
           )}
           {list.map((s) => (
@@ -402,66 +389,68 @@ export function LiluyNishmatScreen({ onOpenLogin, initialSlug }: LiluyNishmatScr
       {createOpen && (
         <div className="modal-scrim" onClick={() => setCreateOpen(false)}>
           <div className="modal modal--md nishmat-modal" onClick={(e) => e.stopPropagation()}>
-            <h2 className="modal__title">Start a siyum</h2>
+            <h2 className="modal__title">{t("nishmat.create.title")}</h2>
 
             <label className="login-field">
-              <span className="login-field__label">L'Iluy Nishmat</span>
+              <span className="login-field__label">{t("nishmat.create.dedicationLabel")}</span>
               <input
                 value={dedication}
                 onChange={(e) => setDedication(e.target.value)}
-                placeholder="e.g. Yosef ben Rivka"
+                placeholder={t("nishmat.create.dedicationPlaceholder")}
               />
             </label>
             <label className="login-field">
-              <span className="login-field__label">Occasion (optional)</span>
+              <span className="login-field__label">{t("nishmat.create.occasionLabel")}</span>
               <input
                 value={occasion}
                 onChange={(e) => setOccasion(e.target.value)}
-                placeholder="e.g. shloshim, yahrzeit"
+                placeholder={t("nishmat.create.occasionPlaceholder")}
               />
             </label>
             <label className="login-field">
-              <span className="login-field__label">Target date (optional)</span>
-              <input value={targetDate} onChange={(e) => setTargetDate(e.target.value)} placeholder="e.g. before the yahrzeit" />
+              <span className="login-field__label">{t("nishmat.create.targetDateLabel")}</span>
+              <input
+                value={targetDate}
+                onChange={(e) => setTargetDate(e.target.value)}
+                placeholder={t("nishmat.create.targetDatePlaceholder")}
+              />
             </label>
 
             <label className="login-field">
-              <span className="login-field__label">Visibility</span>
+              <span className="login-field__label">{t("nishmat.create.visibilityLabel")}</span>
               <div className="pill-row">
                 <button
                   type="button"
                   className={"pill" + (visibility === "private" ? " pill--active" : "")}
                   onClick={() => setVisibility("private")}
                 >
-                  Private
+                  {t("nishmat.private")}
                 </button>
                 <button
                   type="button"
                   className={"pill" + (visibility === "public" ? " pill--active" : "")}
                   onClick={() => setVisibility("public")}
                 >
-                  Public
+                  {t("nishmat.public")}
                 </button>
               </div>
               <p className="nishmat-visibility-note">
-                {visibility === "private"
-                  ? "Only reachable by whoever you share the link with."
-                  : "Listed in-app for any user to find and help with."}
+                {visibility === "private" ? t("nishmat.create.privateNote") : t("nishmat.create.publicNote")}
               </p>
             </label>
 
             {error && (
-              <div className="chevrusa-error" dir="ltr">
+              <div className="chevrusa-error" dir={direction}>
                 <span className="chevrusa-error__dot" aria-hidden="true" />
                 {error}
               </div>
             )}
 
             <button className="restart" disabled={busy || !dedication.trim()} onClick={handleCreate}>
-              {busy ? "Creating…" : "Create siyum"}
+              {busy ? t("nishmat.create.creating") : t("nishmat.create.submit")}
             </button>
             <button className="nishmat-modal-cancel" onClick={() => setCreateOpen(false)}>
-              Cancel
+              {t("common:cancel")}
             </button>
           </div>
         </div>

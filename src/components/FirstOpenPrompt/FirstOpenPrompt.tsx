@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import i18n from "../../i18n";
 import "./FirstOpenPrompt.css";
 
 interface FirstOpenPromptProps {
@@ -10,24 +12,32 @@ interface FirstOpenPromptProps {
   onDismiss: () => void;
 }
 
+/** "a, b and c" — the separator and the last "and" come from the strings,
+    since Hebrew joins its last item with ו־ rather than a word. */
 function joinList(items: string[]): string {
-  if (items.length === 0) return "";
-  if (items.length === 1) return items[0];
-  if (items.length === 2) return `${items[0]} and ${items[1]}`;
-  return `${items.slice(0, -1).join(", ")} and ${items[items.length - 1]}`;
+  if (items.length <= 1) return items[0] ?? "";
+  return i18n.t("shell:firstOpen.listLast", {
+    rest: items.slice(0, -1).join(i18n.t("shell:firstOpen.listSeparator")),
+    last: items[items.length - 1],
+  });
 }
 
 function variantBCopy({ streakCurrent, mishnayotCount, noteCount }: Omit<FirstOpenPromptProps, "variant" | "onGoogle" | "onEmail" | "onDismiss">) {
   const clauses: string[] = [];
-  if (streakCurrent > 0) clauses.push(`your ${streakCurrent}-day streak`);
-  if (mishnayotCount > 0) clauses.push(`${mishnayotCount} mishna${mishnayotCount === 1 ? "" : "yot"}`);
-  if (noteCount > 0) clauses.push(`${noteCount} note${noteCount === 1 ? "" : "s"}`);
+  if (streakCurrent > 0) clauses.push(i18n.t("shell:firstOpen.streakClause", { count: streakCurrent }));
+  if (mishnayotCount > 0) clauses.push(i18n.t("shell:firstOpen.mishnayotClause", { count: mishnayotCount }));
+  if (noteCount > 0) clauses.push(i18n.t("shell:firstOpen.notesClause", { count: noteCount }));
 
-  const heading = streakCurrent > 0 ? `Keep your ${streakCurrent} day${streakCurrent === 1 ? "" : "s"}` : "Keep what you've started";
+  const heading =
+    streakCurrent > 0
+      ? i18n.t("shell:firstOpen.keepDays", { count: streakCurrent })
+      : i18n.t("shell:firstOpen.keepStarted");
 
   return {
     heading,
-    body: `${joinList(clauses.length > 0 ? clauses : ["your progress"])} live on this device. Clear your browser and they're gone. An account keeps them, and works on your phone too.`,
+    body: i18n.t("shell:firstOpen.keepBody", {
+      items: joinList(clauses.length > 0 ? clauses : [i18n.t("shell:firstOpen.yourProgress")]),
+    }),
   };
 }
 
@@ -40,6 +50,7 @@ function variantBCopy({ streakCurrent, mishnayotCount, noteCount }: Omit<FirstOp
  * variant it's told to and reports the one dismiss action back up.
  */
 export function FirstOpenPrompt({ variant, streakCurrent, mishnayotCount, noteCount, onGoogle, onEmail, onDismiss }: FirstOpenPromptProps) {
+  const { t } = useTranslation("shell");
   const b = variant === "B" ? variantBCopy({ streakCurrent, mishnayotCount, noteCount }) : null;
 
   return (
@@ -51,11 +62,8 @@ export function FirstOpenPrompt({ variant, streakCurrent, mishnayotCount, noteCo
 
         {variant === "A" ? (
           <>
-            <p className="first-open-popup__heading">Start with an account, or just start</p>
-            <p className="first-open-popup__body">
-              An account keeps your place across your phone and laptop, and is what lets you learn
-              with a chevrusa or split a siyum. Everything else works without one.
-            </p>
+            <p className="first-open-popup__heading">{t("firstOpen.offerHeading")}</p>
+            <p className="first-open-popup__body">{t("firstOpen.offerBody")}</p>
           </>
         ) : (
           <>
@@ -80,15 +88,15 @@ export function FirstOpenPrompt({ variant, streakCurrent, mishnayotCount, noteCo
               d="M12 4.8c1.8 0 3.3.6 4.6 1.8l3.4-3.4C18 1.2 15.2 0 12 0 7.3 0 3.3 2.7 1.4 6.6l4 3.1c.9-2.8 3.5-4.9 6.6-4.9z"
             />
           </svg>
-          Continue with Google
+          {t("firstOpen.google")}
         </button>
 
         <button className="first-open-popup__email" onClick={onEmail}>
-          Use an email address
+          {t("firstOpen.email")}
         </button>
 
         <button className="first-open-popup__dismiss" onClick={onDismiss}>
-          Not right now
+          {t("firstOpen.dismiss")}
         </button>
       </div>
     </div>

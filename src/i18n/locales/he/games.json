@@ -1,1 +1,82 @@
-{}
+{
+  "restart": "התחלה מחדש",
+  "start": "התחלה",
+  "playAgain": "לשחק שוב",
+  "paused": "בהשהיה",
+  "pause": "השהיה",
+  "resume": "המשך",
+  "allOfShas": "כל הש״ס",
+  "shas": "ש״ס",
+  "mishnaId": {
+    "modeLabel": "מצב",
+    "modeStreak": "🔥 רצף",
+    "modeQuiz": "חידון",
+    "practiceLabel": "תרגול",
+    "practiceMasechet": "מסכת",
+    "practicePerek": "פרק",
+    "poolLabel": "מאגר",
+    "hudStreak": "רצף",
+    "hudCard": "שאלה {{number}} מתוך {{total}}",
+    "hudQuiz": "חידון",
+    "perekBonus": "★ {{bonus}} בונוס פרק",
+    "grade": {
+      "a": "מצוין",
+      "b": "טוב מאוד",
+      "c": "טוב",
+      "d": "כמעט טוב",
+      "f": "עוד חזרה"
+    },
+    "quizComplete": "החידון הושלם",
+    "englishWithheld": "התרגום לאנגלית ייפתח כשתמצא את מקומה.",
+    "timesUp": "הזמן נגמר — התשובה: {{seder}} › {{masechet}} › פרק {{perek}}.",
+    "notQuite": "כמעט — התשובה: {{seder}} › {{masechet}} › פרק {{perek}}.",
+    "viewNote": "להערה",
+    "addNote": "הוספת הערה",
+    "whichSeder": "איזה סדר?",
+    "whichMasechet": "איזו מסכת?",
+    "located": "נמצא — {{seder}} › {{masechet}}.",
+    "locatedWithPerek": "נמצא — {{seder}} › {{masechet}} › פרק {{perek}}.",
+    "bonusEarned": "★ פרק {{perek}} — הרווחת בונוס!",
+    "bonusQuestion": "בונוס: איזה פרק? <tag>נקודה נוספת</tag>",
+    "finishQuiz": "סיום החידון",
+    "nextCard": "השאלה הבאה"
+  },
+  "sederSort": {
+    "allSorted": "כל {{total}} המסכתות מוינו"
+  },
+  "recall": {
+    "placeholder": "הקלד שם מסכת…",
+    "readyScope": "{{scope}} — {{total}} מסכתות",
+    "allFound": "כולן!",
+    "timesUp": "הזמן נגמר",
+    "foundSummary": "מצאת {{found}} מתוך {{total}} ב{{scope}}.",
+    "stillToFind": "עוד לא נמצאו:"
+  },
+  "dash": {
+    "best": "שיא {{best}}",
+    "crossingLabel": "מעבר של {{seconds}} שניות",
+    "crossingSeconds": "{{seconds}} ש׳",
+    "livesLabel": "נותרו {{lives}} מתוך {{total}} חיים",
+    "ledgerLabel": "{{caught}} מתוך {{total}} מסכתות נתפסו",
+    "tallyLabel": "{{seder}} {{done}} מתוך {{total}}",
+    "caught": "{{masechet}} — סדר {{seder}}",
+    "caughtWithBonus": "{{masechet}} — סדר {{seder}} · +{{bonus}}",
+    "landed": "נחתה ב{{landed}} — {{masechet}} בסדר {{seder}}",
+    "endWon": "כל הש״ס",
+    "endLost": "המשחק הסתיים",
+    "endWonSub": "כל {{total}} המסכתות · ניקוד {{score}}",
+    "endLostSub": "ניקוד {{score}} · שיא {{best}}",
+    "pauseTitle": "השהיה (רווח / →)",
+    "resumeTitle": "המשך (רווח / →)",
+    "upTitle": "למעלה (↑)",
+    "upLabel": "למסלול שמעל",
+    "downTitle": "למטה (↓)",
+    "downLabel": "למסלול שמתחת",
+    "lockTitle": "נעילה (←)",
+    "lock": "נעילה"
+  },
+  "matchBoard": {
+    "orderLabel": "לפי הסדר",
+    "allMatched": "כל {{total}} במקומם"
+  }
+}

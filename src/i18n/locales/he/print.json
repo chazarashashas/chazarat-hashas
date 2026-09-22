@@ -1,1 +1,133 @@
-{}
+{
+  "chag": {
+    "roshHashana": "ראש השנה",
+    "yomKippur": "יום כיפור",
+    "sukkot": "סוכות",
+    "shminiAtzeret": "שמיני עצרת",
+    "pesach": "פסח",
+    "shavuot": "שבועות",
+    "shabbat": "שבת"
+  },
+  "stretch": {
+    "two": "שני ימי {{chag}}",
+    "three": "שלושת ימי {{chag}}",
+    "many": "{{words}} ימי {{chag}}"
+  },
+  "dayTitle": {
+    "firstDayRoshHashana": "יום א׳ דראש השנה",
+    "secondDayRoshHashana": "יום ב׳ דראש השנה",
+    "firstDaySukkot": "יום א׳ דסוכות",
+    "firstDayPesach": "יום א׳ דפסח",
+    "sheviiShelPesach": "שביעי של פסח",
+    "erevSheviiShelPesach": "ערב שביעי של פסח",
+    "sheni": "יום טוב שני / אסרו חג",
+    "hoshanaRabba": "הושענא רבה",
+    "erev": "ערב {{chag}}"
+  },
+  "greeting": {
+    "wish": "מאחלים לכל עם ישראל",
+    "reminder": "הקפד להדפיס את המשניות שלך לפני {{chag}}"
+  },
+  "erevCard": {
+    "label": "לפני {{chag}}",
+    "go": "הדפסה מהלימוד היומי"
+  },
+  "meta": {
+    "nothingLeft": "לא נשאר מה ללמוד",
+    "mishnayotCount_one": "משנה אחת",
+    "mishnayotCount_two": "שתי משניות",
+    "mishnayotCount_other": "{{count}} משניות",
+    "perek": "{{masechet}} פרק {{perek}}",
+    "perekOnly": "פרק {{perek}}",
+    "and": "{{list}} ו־{{last}}"
+  },
+  "card": {
+    "label": "הדפסה לפני יום טוב",
+    "dayTitle": "המשניות שלי ל{{title}}",
+    "pillYomTov": "יום טוב",
+    "pillShabbat": "שבת",
+    "layoutLabel": "פריסה",
+    "layout": {
+      "each": "דף לכל יום",
+      "eachSub": "גיליון לכל יום, עם כותרת",
+      "one": "הכול בדף אחד",
+      "oneSub": "כל הימים על גיליון אחד"
+    },
+    "includeNotes": "לצרף את ההערות שלי לפרקים",
+    "alsoPrint": "להדפיס גם את {{label}}",
+    "cta": {
+      "pickDay": "בחר יום להדפסה",
+      "loadFailed": "לא הצלחנו לטעון את המשניות",
+      "loading": "מכינים את המשניות…",
+      "layingOut": "מסדרים את הדפים…",
+      "print_one": "הדפסת דף אחד",
+      "print_two": "הדפסת שני דפים",
+      "print_other": "הדפסת {{count}} דפים"
+    },
+    "nothingSelected": "לא נבחר דבר.",
+    "layoutOneMeta": "כל יום תחת כותרת משלו",
+    "layoutEachMeta": "כל יום בגיליון משלו, עם הברכה",
+    "hebrewOnly": "בעברית בלבד",
+    "withNotes": "עם ההערות שלך",
+    "retry": "בדוק את החיבור, ואז <1>נסה שוב</1>."
+  },
+  "doc": {
+    "nothingThisDay": "לא נשאר מה ללמוד ביום הזה.",
+    "perekMishnah": " · משנה {{n}}",
+    "perekMishnayot": " · משניות {{first}}–{{last}}",
+    "yourNote": "ההערה שלך: ",
+    "yourNoteOn": "ההערה שלך על {{masechet}} פרק {{perek}}: ",
+    "count": "{{i}} מתוך {{total}}",
+    "pageOf": "דף {{page}} מתוך {{total}}",
+    "continued": "{{where}}, המשך"
+  },
+  "return": {
+    "title": "הרצף שלך שמור",
+    "daysHeld_one": "יום אחד ברצף",
+    "daysHeld_two": "יומיים ברצף",
+    "daysHeld_other": "{{count}} ימים ברצף",
+    "backToLearning": "חזרה ללימוד",
+    "dueMishnah": "משנה שהגיע זמנה בינתיים: {{words}}.",
+    "dueMishnayot": "משניות שהגיע זמנן בינתיים: {{words}}.",
+    "duePerek": "פרק שהגיע זמנו בינתיים: {{words}}.",
+    "duePerakim": "פרקים שהגיע זמנם בינתיים: {{words}}.",
+    "markIt": "כן — סמן כנלמד",
+    "markBoth": "כן — סמן הכול כנלמד",
+    "markAllCount": "כן — סמן את כל ה־{{words}} כנלמדו",
+    "letMeChoose": "חלק מהם — אבחר בעצמי",
+    "catchUp": "עוד לא — נשלים עכשיו",
+    "markThem": "סמן כנלמדו",
+    "markAll": "סמן הכול כנלמד",
+    "markThese": "סמן את אלה כנלמדו"
+  },
+  "resources": {
+    "title": "חומרי עזר",
+    "guide": {
+      "title": "איך משתמשים בחזרת הש״ס",
+      "desc": "המדריך המלא לשיטה שמאחורי האפליקציה, צעד אחר צעד.",
+      "read": "קריאה"
+    },
+    "download": "הורדה",
+    "sedarim": {
+      "title": "דף עבודה: סדר הסדרים",
+      "desc": "תרגול כתיבת ששת הסדרים לפי הסדר, עם הסימן זמ״ן נק״ט ובנק מילים. הדף באנגלית."
+    },
+    "masechtot": {
+      "title": "דף עבודה: סדר המסכתות",
+      "desc": "תרגול כתיבת מסכתות הסדר לפי הסדר, בעל פה — בשני טורים, כך שמתאים לסדר אחד או לשני סדרים זה לצד זה. הדף באנגלית."
+    },
+    "perakim": {
+      "title": "דף עבודה: מסכת ופרק",
+      "desc": "מלא סדר ומסכת, ואז מספר כל פרק ותן לו שם במילים שלך. הדף באנגלית."
+    },
+    "notes": {
+      "title": "סימנים והערות (להדפסה)",
+      "desc": "הדפס את ההערות והמושגים שלך — מסכת אחת, סדר אחד, או כל הש״ס."
+    },
+    "support": {
+      "title": "תמיכה ומשוב",
+      "desc": "מצאת תקלה, או שיש לך רעיון לאפליקציה? נשמח לשמוע ממך.",
+      "email": "שלח לנו מייל"
+    }
+  }
+}

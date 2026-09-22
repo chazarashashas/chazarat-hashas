@@ -6,6 +6,7 @@ import { SEDARIM } from "../data/shas";
 import { getMishnayotCount } from "../data/perekInfo";
 import { localDateStr } from "./localDate";
 import { restDay } from "./chagCalendar";
+import i18n from "../i18n";
 
 export type CompletionSource = "app" | "logged";
 
@@ -61,8 +62,8 @@ export function paceEquals(a: Pace, b: Pace): boolean {
 }
 
 export function paceLabel(p: Pace): string {
-  if (p.unit === "mishnayot") return p.amount === 1 ? "1 mishnah/day" : `${p.amount} mishnayot/day`;
-  return p.amount === 1 ? "1 perek/day" : `${p.amount} perakim/day`;
+  if (p.unit === "mishnayot") return i18n.t("dailyLimmud:pace.mishnayotPerDay", { count: p.amount });
+  return i18n.t("dailyLimmud:pace.perakimPerDay", { count: p.amount });
 }
 
 /** A perek's real length varies, so a perakim-based pace is converted to

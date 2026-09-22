@@ -1,1 +1,142 @@
-{}
+{
+  "title": "My Account",
+  "reset": {
+    "title": "Reset your progress",
+    "done": "Reset ✓",
+    "items": {
+      "daily_limmud": {
+        "label": "Daily Limmud & streak",
+        "desc": "Your sequential position in Shas, every completion, and your streak."
+      },
+      "notes": {
+        "label": "Perek Notes & notebook",
+        "desc": "Every perek name, notebook entry, and one-line masechet summary."
+      },
+      "concepts": {
+        "label": "Concepts to Review",
+        "desc": "Everything saved to revisit later."
+      },
+      "game_stats": {
+        "label": "Practice game stats",
+        "desc": "Best scores and play counts for Mishna Quiz, Shas Dash, Mishna Chazara, Seder Sort, and Sidrei Hamishna."
+      },
+      "everything": {
+        "label": "Everything above",
+        "desc": "Starts fresh, as if you'd never opened the app. Your account and any chevrusa or chabura memberships stay."
+      }
+    },
+    "confirmTitle": "Reset {{name}}?",
+    "confirmTitleEverything": "Reset everything?",
+    "confirmBody": "This can't be undone.",
+    "confirmLabel": "Yes, reset"
+  },
+  "google": {
+    "continue": "Continue with Google"
+  },
+  "bottomBar": {
+    "title": "Your bottom bar",
+    "moveEarlier": "Move {{name}} earlier",
+    "moveLater": "Move {{name}} later",
+    "remove": "Remove {{name}} from your bottom bar"
+  },
+  "sync": {
+    "savedJustNow": "Saved just now",
+    "savedSecondsAgo": "Saved {{seconds}}s ago",
+    "savedMinutesAgo": "Saved {{minutes}} min ago",
+    "savedHoursAgo": "Saved {{hours}} hr ago",
+    "retrying": "Not saved yet — retrying…",
+    "error": "Couldn't save — check your connection",
+    "saving": "Saving…"
+  },
+  "report": {
+    "link": "Report a problem",
+    "prompt": "(Describe what happened here — the more detail, the easier this is to track down.)"
+  },
+  "profile": {
+    "viaGoogle": " · via Google",
+    "edit": "Edit profile",
+    "signOut": "Sign out",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "username": "Username",
+    "city": "City",
+    "cityPlaceholder": "e.g. Lakewood",
+    "country": "Country",
+    "countryPlaceholder": "e.g. United States",
+    "saving": "Saving…"
+  },
+  "stats": {
+    "title": "Your Shas",
+    "shasPercent": "of Shas learned",
+    "dayStreak": "day streak",
+    "longestStreak": "longest streak",
+    "mishnayotLearned": "mishnayot learned",
+    "perekNotes": "perek notes",
+    "conceptsAndSentences": "concepts & sentences",
+    "viewBreakdown": "View full breakdown in My Siyumim →"
+  },
+  "groups": {
+    "title": "Chevrusa & Chabura",
+    "empty": "You're not in a chevrusa or chabura yet.",
+    "chabura": "Chabura",
+    "chevrusa": "Chevrusa",
+    "sub_one": "{{masechet}} · {{count}} member",
+    "sub_other": "{{masechet}} · {{count}} members",
+    "goTo": "Go to Chevrusa & Chabura →"
+  },
+  "practice": {
+    "title": "Practice",
+    "quizBest": "Mishna Quiz best",
+    "quizBestGraded": "Mishna Quiz best ({{grade}})",
+    "dashBest": "Shas Dash best",
+    "chazaraBest": "Mishna Chazara best",
+    "sortCompletions": "Seder Sort completions"
+  },
+  "liluy": {
+    "title": "L'Iluy Nishmat",
+    "managing_one": "You're managing {{count}} siyum.",
+    "managing_other": "You're managing {{count}} siyumim.",
+    "goTo": "Go to L'Iluy Nishmat →"
+  },
+  "deleteAccount": {
+    "link": "Delete account",
+    "title": "Permanently delete your account?",
+    "body": "This can't be undone. Type DELETE to confirm.",
+    "confirmLabel": "Confirm delete",
+    "busyLabel": "Deleting…"
+  },
+  "newPassword": {
+    "title": "Set a new password",
+    "tooShort": "Password must be at least {{min}} characters.",
+    "mismatch": "Passwords don't match.",
+    "doneLabel": "Password set",
+    "doneBody": "Your password has been updated. You're signed in as {{email}}.",
+    "intro": "Choose a new password for {{email}}.",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm password",
+    "submit": "Set password"
+  },
+  "signIn": {
+    "notConnected": "Accounts aren't connected yet — under construction. Your notes and progress are already being saved on this device; signing in will carry them over once this is live.",
+    "notConnectedShort": "Accounts aren't connected yet",
+    "onThisDevice": "On this device right now",
+    "dayStreak": "day streak",
+    "mishnayot": "mishnayot",
+    "notes": "notes",
+    "or": "or",
+    "useEmail": "Use an email address instead",
+    "reassurance": "Signing in never changes what you have already learned — your progress on this device merges into your account.",
+    "back": "← Back",
+    "resetSent": "Check your email for a reset link.",
+    "email": "Email",
+    "pleaseWait": "Please wait…",
+    "sendReset": "Send reset link",
+    "logIn": "Log in",
+    "createAccount": "Create account",
+    "firstNamePlaceholder": "Shown when you're signed in — e.g. Yonah",
+    "lastNamePlaceholder": "e.g. Cohen",
+    "password": "Password",
+    "forgot": "Forgot it?",
+    "accountCreated": "Account created — check your email to confirm it, then log in."
+  }
+}

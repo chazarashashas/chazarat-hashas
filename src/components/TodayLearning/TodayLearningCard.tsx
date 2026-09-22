@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useLocale, useName } from "../../i18n";
+import { findMasechet } from "../../data/shas";
 import type { Group } from "../../utils/useChevrusa";
 import type { TodaySnapshot, SubmissionActivity } from "../../utils/useDailySubmission";
 import { useSendDailySubmission, fetchMyWeek, type WeekDay } from "../../utils/useDailySubmission";
@@ -25,8 +28,8 @@ const HUE_BY_KEY: Record<SubmissionActivity["key"], string> = {
   chazara: "var(--hue-chazara)",
 };
 
-function dateLabel(date: string): string {
-  return new Date(date + "T00:00:00").toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+function dateLabel(date: string, locale: string | undefined): string {
+  return new Date(date + "T00:00:00").toLocaleDateString(locale, { weekday: "short", month: "short", day: "numeric" });
 }
 
 function WeekStrip({ week }: { week: WeekDay[] }) {
@@ -72,12 +75,19 @@ interface TodayLearningCardProps {
  * disabled-button hints.
  */
 export function TodayLearningCard({ group, snapshot }: TodayLearningCardProps) {
+  const { t } = useTranslation("home");
+  const locale = useLocale();
+  const name = useName();
   const { session } = useAuth();
   const { state, error, send } = useSendDailySubmission(group.id);
   const [week, setWeek] = useState<WeekDay[] | null>(null);
 
   const teacher = group.members.find((m) => m.role === "teacher");
-  const teacherLabel = teacher?.firstName ? `Rav ${teacher.firstName}` : (teacher?.username ?? "your rebbe");
+  const teacherLabel = teacher?.firstName
+    ? t("todayLearning.rav", { name: teacher.firstName })
+    : (teacher?.username ?? t("todayLearning.yourRebbe"));
+  const groupMasechet = findMasechet(group.masechetEn);
+  const groupLabel = group.name ?? (groupMasechet ? name(groupMasechet) : group.masechetEn);
 
   useEffect(() => {
     if (state === "sent" && session) {
@@ -92,14 +102,14 @@ export function TodayLearningCard({ group, snapshot }: TodayLearningCardProps) {
     return (
       <div className="today-learning-card today-learning-card--sent">
         <div className="today-sent__tick">✓</div>
-        <p className="today-sent__title">Sent to {teacherLabel}</p>
+        <p className="today-sent__title">{t("todayLearning.sentTo", { teacher: teacherLabel })}</p>
         <p className="today-sent__summary">
-          {snapshot.activities.map((a) => a.figure).join(" · ")} — {group.name ?? group.masechetEn}
+          {snapshot.activities.map((a) => a.figure).join(" · ")} — {groupLabel}
         </p>
         <div className="today-sent__update">
-          <span>Learned more since?</span>
+          <span>{t("todayLearning.learnedMore")}</span>
           <button onClick={() => send(snapshot)} disabled={state !== "sent"}>
-            Send an update →
+            {t("todayLearning.sendUpdate")}
           </button>
         </div>
         {week && <WeekStrip week={week} />}
@@ -111,12 +121,12 @@ export function TodayLearningCard({ group, snapshot }: TodayLearningCardProps) {
     <div className="today-learning-card">
       <div className="today-learning-card__head">
         <div>
-          <p className="today-learning-card__title">Today's learning</p>
+          <p className="today-learning-card__title">{t("todayLearning.title")}</p>
           <p className="today-learning-card__sub">
-            {group.name ?? group.masechetEn} · {teacherLabel}
+            {groupLabel} · {teacherLabel}
           </p>
         </div>
-        <span className="today-learning-card__date">{dateLabel(snapshot.date)}</span>
+        <span className="today-learning-card__date">{dateLabel(snapshot.date, locale)}</span>
       </div>
 
       {hasActivities ? (
@@ -135,7 +145,7 @@ export function TodayLearningCard({ group, snapshot }: TodayLearningCardProps) {
           </div>
         ))
       ) : (
-        <p className="today-learning-card__empty">Nothing yet to submit — do your Daily Limmud or a drill first.</p>
+        <p className="today-learning-card__empty">{t("todayLearning.empty")}</p>
       )}
 
       <button
@@ -143,13 +153,11 @@ export function TodayLearningCard({ group, snapshot }: TodayLearningCardProps) {
         onClick={() => send(snapshot)}
         disabled={state === "sending" || !hasActivities}
       >
-        {state === "sending" ? "Sending…" : `Send to ${teacherLabel}`}
+        {state === "sending" ? t("todayLearning.sending") : t("todayLearning.sendTo", { teacher: teacherLabel })}
       </button>
-      <p className="today-learning-card__note">
-        One send a day. Keep learning after — anything you add today goes with it if you send again.
-      </p>
+      <p className="today-learning-card__note">{t("todayLearning.note")}</p>
       {state === "error" && error && (
-        <p className="login-error" dir="ltr">
+        <p className="login-error" dir="auto">
           {error}
         </p>
       )}

@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 import { useAuth } from "../../utils/useAuth";
 import { useLearningProgress } from "../../utils/useLearningProgress";
 import { usePerekNotes } from "../../utils/usePerekNotes";
@@ -12,27 +14,15 @@ import { getSederHue } from "../../utils/sederHue";
 import { supabaseConfigured } from "../../utils/supabase";
 import { ConfirmModal } from "../ConfirmModal/ConfirmModal";
 import { NavIcon } from "../Icon/NavIcon";
-import { ALL_NAV_ITEMS } from "../../utils/navItems";
+import { ALL_NAV_ITEMS, useNavLabels } from "../../utils/navItems";
+import { HEBREW_ENABLED, setUiLanguage, useDirection, useLocale, useName } from "../../i18n";
 import "./LoginScreen.css";
 
-const RESET_ITEMS = [
-  {
-    key: "daily_limmud",
-    label: "Daily Limmud & streak",
-    desc: "Your sequential position in Shas, every completion, and your streak.",
-  },
-  {
-    key: "notes",
-    label: "Perek Notes & notebook",
-    desc: "Every perek name, notebook entry, and one-line masechet summary.",
-  },
-  { key: "concepts", label: "Concepts to Review", desc: "Everything saved to revisit later." },
-  {
-    key: "game_stats",
-    label: "Practice game stats",
-    desc: "Best scores and play counts for Mishna Quiz, Shas Dash, Mishna Chazara, Seder Sort, and Sidrei Hamishna.",
-  },
-] as const;
+/** Labels and descriptions live in account:reset.items.<key>. */
+const RESET_ITEMS = [{ key: "daily_limmud" }, { key: "notes" }, { key: "concepts" }, { key: "game_stats" }] as const;
+type ResetKey = (typeof RESET_ITEMS)[number]["key"] | "everything";
+
+const ALL_MASECHTOT = SEDARIM.flatMap((s) => s.masechtot);
 
 /** Resets specific trackers back to empty — separate from deleting the
     account itself below. Deliberately doesn't touch L'Iluy Nishmat
@@ -41,20 +31,17 @@ const RESET_ITEMS = [
     or not the visitor is signed in — there's plenty to reset on this
     device alone before ever making an account. */
 function ResetProgressSection() {
+  const { t } = useTranslation(["account", "common"]);
   const reset = useAccountReset();
-  const [confirming, setConfirming] = useState<string | null>(null);
-  const [justReset, setJustReset] = useState<string | null>(null);
+  const [confirming, setConfirming] = useState<ResetKey | null>(null);
+  const [justReset, setJustReset] = useState<ResetKey | null>(null);
 
-  const actionFor: Record<string, () => void> = {
+  const actionFor: Record<ResetKey, () => void> = {
     daily_limmud: reset.resetDailyLimmud,
     notes: reset.resetNotes,
     concepts: reset.resetConcepts,
     game_stats: reset.resetGameStats,
     everything: reset.resetEverything,
-  };
-  const labelFor: Record<string, string> = {
-    ...Object.fromEntries(RESET_ITEMS.map((item) => [item.key, item.label])),
-    everything: "everything",
   };
 
   function handleConfirm() {
@@ -65,47 +52,48 @@ function ResetProgressSection() {
     window.setTimeout(() => setJustReset((prev) => (prev === confirming ? null : prev)), 3000);
   }
 
-  function renderAction(key: string, danger?: boolean) {
-    if (justReset === key) return <span className="reset-row__done">Reset ✓</span>;
+  function renderAction(key: ResetKey, danger?: boolean) {
+    if (justReset === key) return <span className="reset-row__done">{t("reset.done")}</span>;
     return (
       <button
         className={"btn btn--danger-outline btn--compact reset-row__btn" + (danger ? " reset-row__btn--danger" : "")}
         onClick={() => setConfirming(key)}
       >
-        Reset
+        {t("common:reset")}
       </button>
     );
   }
 
   return (
     <>
-      <h2 className="section-title">Reset your progress</h2>
+      <h2 className="section-title">{t("reset.title")}</h2>
       <div className="account-card reset-card">
         {RESET_ITEMS.map((item) => (
           <div key={item.key} className="reset-row">
             <div className="reset-row__text">
-              <p className="reset-row__label">{item.label}</p>
-              <p className="reset-row__desc">{item.desc}</p>
+              <p className="reset-row__label">{t(`reset.items.${item.key}.label`)}</p>
+              <p className="reset-row__desc">{t(`reset.items.${item.key}.desc`)}</p>
             </div>
             {renderAction(item.key)}
           </div>
         ))}
         <div className="reset-row reset-row--everything">
           <div className="reset-row__text">
-            <p className="reset-row__label">Everything above</p>
-            <p className="reset-row__desc">
-              Starts fresh, as if you'd never opened the app. Your account and any chevrusa or chabura
-              memberships stay.
-            </p>
+            <p className="reset-row__label">{t("reset.items.everything.label")}</p>
+            <p className="reset-row__desc">{t("reset.items.everything.desc")}</p>
           </div>
           {renderAction("everything", true)}
         </div>
       </div>
       {confirming && (
         <ConfirmModal
-          title={`Reset ${labelFor[confirming]}?`}
-          body="This can't be undone."
-          confirmLabel="Yes, reset"
+          title={
+            confirming === "everything"
+              ? t("reset.confirmTitleEverything")
+              : t("reset.confirmTitle", { name: t(`reset.items.${confirming}.label`) })
+          }
+          body={t("reset.confirmBody")}
+          confirmLabel={t("reset.confirmLabel")}
           destructive
           onConfirm={handleConfirm}
           onCancel={() => setConfirming(null)}
@@ -131,6 +119,7 @@ function GoogleButton({
   disabled?: boolean;
   demoted?: boolean;
 }) {
+  const { t } = useTranslation("account");
   return (
     <button
       className={"btn btn--secondary btn--block google-signin-btn" + (demoted ? " google-signin-btn--demoted" : "")}
@@ -152,7 +141,7 @@ function GoogleButton({
           d="M12 4.8c1.8 0 3.3.6 4.6 1.8l3.4-3.4C18 1.2 15.2 0 12 0 7.3 0 3.3 2.7 1.4 6.6l4 3.1c.9-2.8 3.5-4.9 6.6-4.9z"
         />
       </svg>
-      Continue with Google
+      {t("google.continue")}
     </button>
   );
 }
@@ -189,6 +178,9 @@ function BottomBarPicker({
   isAdmin?: boolean;
   isRebbe?: boolean;
 }) {
+  const { t } = useTranslation("account");
+  const labels = useNavLabels();
+  const direction = useDirection();
   const availableIds = ALL_NAV_ITEMS.filter((i) => i.id !== "admin" || isAdmin)
     .filter((i) => i.id !== "rebbe" || isRebbe)
     .map((i) => i.id);
@@ -219,33 +211,34 @@ function BottomBarPicker({
         {barIds.map((id, i) => {
           const item = ALL_NAV_ITEMS.find((x) => x.id === id);
           if (!item) return null;
+          const name = labels.item(item);
           return (
             <div className="bottom-bar-picker__slot" key={id}>
               <span className="bottom-bar-picker__slot-icon">
                 <NavIcon id={id} size={17} />
               </span>
-              <span className="bottom-bar-picker__slot-label">{item.label}</span>
+              <span className="bottom-bar-picker__slot-label">{name}</span>
               <div className="bottom-bar-picker__slot-actions">
                 <button
                   type="button"
-                  aria-label={`Move ${item.label} earlier`}
+                  aria-label={t("bottomBar.moveEarlier", { name })}
                   disabled={i === 0}
                   onClick={() => moveItem(i, -1)}
                 >
-                  ‹
+                  {direction === "rtl" ? "›" : "‹"}
                 </button>
                 <button
                   type="button"
-                  aria-label={`Move ${item.label} later`}
+                  aria-label={t("bottomBar.moveLater", { name })}
                   disabled={i === barIds.length - 1}
                   onClick={() => moveItem(i, 1)}
                 >
-                  ›
+                  {direction === "rtl" ? "‹" : "›"}
                 </button>
                 <button
                   type="button"
                   className="bottom-bar-picker__remove"
-                  aria-label={`Remove ${item.label} from your bottom bar`}
+                  aria-label={t("bottomBar.remove", { name })}
                   disabled={barIds.length <= 1}
                   onClick={() => removeItem(i)}
                 >
@@ -263,7 +256,7 @@ function BottomBarPicker({
             return (
               <button type="button" key={id} className="pill pill--compact bottom-bar-picker__chip" onClick={() => addFromPool(id)}>
                 <NavIcon id={id} size={14} />
-                {item.label}
+                {labels.item(item)}
               </button>
             );
           })}
@@ -306,14 +299,14 @@ interface LoginScreenProps {
   initialError?: string | null;
 }
 
-function formatSavedAgo(epochMs: number): string {
+function formatSavedAgo(epochMs: number, t: TFunction<"account">): string {
   const seconds = Math.floor((Date.now() - epochMs) / 1000);
-  if (seconds < 10) return "Saved just now";
-  if (seconds < 60) return `Saved ${seconds}s ago`;
+  if (seconds < 10) return t("sync.savedJustNow");
+  if (seconds < 60) return t("sync.savedSecondsAgo", { seconds });
   const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `Saved ${minutes} min ago`;
+  if (minutes < 60) return t("sync.savedMinutesAgo", { minutes });
   const hours = Math.floor(minutes / 60);
-  return `Saved ${hours} hr ago`;
+  return t("sync.savedHoursAgo", { hours });
 }
 
 /** A quiet line under the account card naming the state of the
@@ -321,6 +314,7 @@ function formatSavedAgo(epochMs: number): string {
     when the last save landed, so a failure reads as a break from the
     ordinary rather than something that needs its own banner. */
 function SyncStatusLine() {
+  const { t } = useTranslation("account");
   const { status, lastSavedAt } = useSyncStatus();
   // Re-renders periodically so "Saved 1 min ago" keeps advancing on its
   // own, not just each time a new sync actually happens.
@@ -331,21 +325,50 @@ function SyncStatusLine() {
   }, []);
 
   if (status === "retrying") {
-    return <p className="account-sync-status account-sync-status--warn">Not saved yet — retrying…</p>;
+    return <p className="account-sync-status account-sync-status--warn">{t("sync.retrying")}</p>;
   }
   if (status === "error") {
-    return <p className="account-sync-status account-sync-status--error">Couldn't save — check your connection</p>;
+    return <p className="account-sync-status account-sync-status--error">{t("sync.error")}</p>;
   }
   if (status === "saving" && !lastSavedAt) {
-    return <p className="account-sync-status">Saving…</p>;
+    return <p className="account-sync-status">{t("sync.saving")}</p>;
   }
   if (lastSavedAt) {
-    return <p className="account-sync-status">{formatSavedAgo(lastSavedAt)}</p>;
+    return <p className="account-sync-status">{formatSavedAgo(lastSavedAt, t)}</p>;
   }
   return null;
 }
 
 const SUPPORT_EMAIL = "chazarashashas@gmail.com";
+
+/** English / עברית — each name written in its own language, so either
+    reader finds theirs. Remembered on this device and on the account.
+    Appears once the Hebrew interface is switched on (or while previewing
+    it with ?lang=he). */
+function LanguageSetting() {
+  const { t, i18n } = useTranslation("common");
+  if (!HEBREW_ENABLED && i18n.language !== "he") return null;
+  const current = i18n.language === "he" ? "he" : "en";
+  return (
+    <>
+      <h2 className="section-title">{t("language.label")}</h2>
+      <div className="pill-row" role="group" aria-label={t("language.label")}>
+        {(["en", "he"] as const).map((lang) => (
+          <button
+            key={lang}
+            type="button"
+            lang={lang}
+            className={"pill" + (current === lang ? " pill--active" : "")}
+            aria-pressed={current === lang}
+            onClick={() => setUiLanguage(lang)}
+          >
+            {t(`language.${lang}`)}
+          </button>
+        ))}
+      </div>
+    </>
+  );
+}
 
 /** A "Report a problem" link that pre-fills the debug context a report
     actually needs to be useful — device, where the sync stood, which
@@ -355,18 +378,22 @@ const SUPPORT_EMAIL = "chazarashashas@gmail.com";
     Sentry's feedback API, which needs a configured DSN this app may
     not have yet — see monitoring.ts. */
 function ReportProblemLink() {
+  const { t } = useTranslation("account");
+  const locale = useLocale();
   const auth = useAuth();
   const { status, lastSavedAt } = useSyncStatus();
 
   function handleClick() {
+    // Only the prompt line follows the interface language — the debug
+    // block below is read by support, so it stays English.
     const lines = [
-      "(Describe what happened here — the more detail, the easier this is to track down.)",
+      t("report.prompt"),
       "",
       "---",
       "Debug info (auto-included):",
       `Page: ${window.location.href}`,
       `Signed in as: ${auth.session?.user.email ?? "not signed in"}`,
-      `Sync status: ${status}${lastSavedAt ? `, last saved ${new Date(lastSavedAt).toLocaleTimeString()}` : ""}`,
+      `Sync status: ${status}${lastSavedAt ? `, last saved ${new Date(lastSavedAt).toLocaleTimeString(locale)}` : ""}`,
       `Browser: ${navigator.userAgent}`,
     ];
     const url = `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent("Chazarat Hashas — problem report")}&body=${encodeURIComponent(lines.join("\n"))}`;
@@ -375,7 +402,7 @@ function ReportProblemLink() {
 
   return (
     <button type="button" className="account-report-link" onClick={handleClick}>
-      Report a problem
+      {t("report.link")}
     </button>
   );
 }
@@ -393,6 +420,8 @@ function AccountDashboard({
   isAdmin?: boolean;
   isRebbe?: boolean;
 }) {
+  const { t } = useTranslation(["account", "common"]);
+  const nameOf = useName();
   const auth = useAuth();
   const progress = useLearningProgress();
   const { perekNotes, masechetSentences } = usePerekNotes();
@@ -458,7 +487,7 @@ function AccountDashboard({
             {(handle || viaGoogle) && (
               <p className="account-card__username">
                 {handle ? `@${handle}` : auth.session?.user.email}
-                {viaGoogle ? " · via Google" : ""}
+                {viaGoogle ? t("profile.viaGoogle") : ""}
               </p>
             )}
             {(auth.city || auth.country) && (
@@ -467,40 +496,45 @@ function AccountDashboard({
             <SyncStatusLine />
             <div className="account-card__actions">
               <button className="btn btn--primary btn--compact account-edit-btn" onClick={() => setEditing(true)}>
-                Edit profile
+                {t("profile.edit")}
               </button>
               <button className="account-signout-btn" onClick={() => auth.signOut()}>
-                Sign out
+                {t("profile.signOut")}
               </button>
             </div>
             <ReportProblemLink />
           </>
         ) : (
           <>
-            <p className="account-card__label">Edit profile</p>
+            <p className="account-card__label">{t("profile.edit")}</p>
             <label className="login-field">
-              <span className="login-field__label">First name</span>
+              <span className="login-field__label">{t("profile.firstName")}</span>
               <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
             </label>
             <label className="login-field">
-              <span className="login-field__label">Last name</span>
+              <span className="login-field__label">{t("profile.lastName")}</span>
               <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} />
             </label>
             <label className="login-field">
-              <span className="login-field__label">Username</span>
+              <span className="login-field__label">{t("profile.username")}</span>
               <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
             </label>
             <label className="login-field">
-              <span className="login-field__label">City</span>
-              <input type="text" value={city} onChange={(e) => setCity(e.target.value)} placeholder="e.g. Lakewood" />
+              <span className="login-field__label">{t("profile.city")}</span>
+              <input
+                type="text"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                placeholder={t("profile.cityPlaceholder")}
+              />
             </label>
             <label className="login-field">
-              <span className="login-field__label">Country</span>
+              <span className="login-field__label">{t("profile.country")}</span>
               <input
                 type="text"
                 value={country}
                 onChange={(e) => setCountry(e.target.value)}
-                placeholder="e.g. United States"
+                placeholder={t("profile.countryPlaceholder")}
               />
             </label>
             {saveError && (
@@ -510,7 +544,7 @@ function AccountDashboard({
             )}
             <div className="account-card__actions">
               <button className="btn btn--primary btn--compact account-edit-btn" onClick={handleSaveProfile} disabled={saving}>
-                {saving ? "Saving…" : "Save"}
+                {saving ? t("profile.saving") : t("common:save")}
               </button>
               <button
                 className="account-signout-btn"
@@ -524,39 +558,39 @@ function AccountDashboard({
                   setCountry(auth.country ?? "");
                 }}
               >
-                Cancel
+                {t("common:cancel")}
               </button>
             </div>
           </>
         )}
       </div>
 
-      <h2 className="section-title">Your Shas</h2>
+      <h2 className="section-title">{t("stats.title")}</h2>
       <div className="account-card account-card--stats">
         <div className="account-stats-grid">
           <div className="account-stat">
             <p className="account-stat__num">{progress.shasPercent()}%</p>
-            <p className="account-stat__label">of Shas learned</p>
+            <p className="account-stat__label">{t("stats.shasPercent")}</p>
           </div>
           <div className="account-stat">
             <p className="account-stat__num">{progress.streak.current}</p>
-            <p className="account-stat__label">day streak</p>
+            <p className="account-stat__label">{t("stats.dayStreak")}</p>
           </div>
           <div className="account-stat">
             <p className="account-stat__num">{progress.streak.longest}</p>
-            <p className="account-stat__label">longest streak</p>
+            <p className="account-stat__label">{t("stats.longestStreak")}</p>
           </div>
           <div className="account-stat">
             <p className="account-stat__num">{progress.completions.length}</p>
-            <p className="account-stat__label">mishnayot learned</p>
+            <p className="account-stat__label">{t("stats.mishnayotLearned")}</p>
           </div>
           <div className="account-stat">
             <p className="account-stat__num">{noteCount}</p>
-            <p className="account-stat__label">perek notes</p>
+            <p className="account-stat__label">{t("stats.perekNotes")}</p>
           </div>
           <div className="account-stat">
             <p className="account-stat__num">{sentenceCount + progress.concepts.length}</p>
-            <p className="account-stat__label">concepts &amp; sentences</p>
+            <p className="account-stat__label">{t("stats.conceptsAndSentences")}</p>
           </div>
         </div>
 
@@ -575,36 +609,39 @@ function AccountDashboard({
         </div>
 
         <button className="account-view-link" onClick={() => onNavigate?.("progress")}>
-          View full breakdown in My Siyumim →
+          {t("stats.viewBreakdown")}
         </button>
       </div>
 
-      <h2 className="section-title">Chevrusa &amp; Chabura</h2>
+      <h2 className="section-title">{t("groups.title")}</h2>
       <div className="account-card">
         {groups.length === 0 ? (
-          <p className="state state--empty">You're not in a chevrusa or chabura yet.</p>
+          <p className="state state--empty">{t("groups.empty")}</p>
         ) : (
           <div className="account-group-list">
-            {groups.map((g) => (
-              <div key={g.id} className="account-group-row">
-                <div>
-                  <p className="account-group-row__title">
-                    {g.name ?? g.masechetEn} <span className="account-group-row__type">{g.isChabura ? "Chabura" : "Chevrusa"}</span>
-                  </p>
-                  <p className="account-group-row__sub">
-                    {g.masechetEn} · {g.members.length} member{g.members.length === 1 ? "" : "s"}
-                  </p>
+            {groups.map((g) => {
+              const found = ALL_MASECHTOT.find((m) => m.en === g.masechetEn);
+              const masechet = found ? nameOf(found) : g.masechetEn;
+              return (
+                <div key={g.id} className="account-group-row">
+                  <div>
+                    <p className="account-group-row__title">
+                      {g.name ?? masechet}{" "}
+                      <span className="account-group-row__type">{g.isChabura ? t("groups.chabura") : t("groups.chevrusa")}</span>
+                    </p>
+                    <p className="account-group-row__sub">{t("groups.sub", { masechet, count: g.members.length })}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
         <button className="account-view-link" onClick={() => onNavigate?.("chevrusa")}>
-          Go to Chevrusa &amp; Chabura →
+          {t("groups.goTo")}
         </button>
       </div>
 
-      <h2 className="section-title">Practice</h2>
+      <h2 className="section-title">{t("practice.title")}</h2>
       <div className="account-card">
         <div className="account-stats-grid account-stats-grid--practice">
           <div className="account-stat">
@@ -612,39 +649,41 @@ function AccountDashboard({
               {stats.quiz.timesPlayed > 0 ? `${stats.quiz.bestScore}/${stats.quiz.bestOutOf}` : "—"}
             </p>
             <p className="account-stat__label">
-              Mishna Quiz best{stats.quiz.timesPlayed > 0 ? ` (${letterGrade((stats.quiz.bestScore / stats.quiz.bestOutOf) * 100)})` : ""}
+              {stats.quiz.timesPlayed > 0
+                ? t("practice.quizBestGraded", { grade: letterGrade((stats.quiz.bestScore / stats.quiz.bestOutOf) * 100) })
+                : t("practice.quizBest")}
             </p>
           </div>
           <div className="account-stat">
             <p className="account-stat__num">{stats.dash.timesPlayed > 0 ? stats.dash.bestScore : "—"}</p>
-            <p className="account-stat__label">Shas Dash best</p>
+            <p className="account-stat__label">{t("practice.dashBest")}</p>
           </div>
           <div className="account-stat">
             <p className="account-stat__num">{stats.chazara.timesPlayed > 0 ? stats.chazara.bestCount : "—"}</p>
-            <p className="account-stat__label">Mishna Chazara best</p>
+            <p className="account-stat__label">{t("practice.chazaraBest")}</p>
           </div>
           <div className="account-stat">
             <p className="account-stat__num">{stats.sort.timesCompleted}</p>
-            <p className="account-stat__label">Seder Sort completions</p>
+            <p className="account-stat__label">{t("practice.sortCompletions")}</p>
           </div>
         </div>
       </div>
 
       {mine.length > 0 && (
         <>
-          <h2 className="section-title">L'Iluy Nishmat</h2>
+          <h2 className="section-title">{t("liluy.title")}</h2>
           <div className="account-card">
-            <p className="state state--empty">
-              You're managing {mine.length} siyum{mine.length === 1 ? "" : "im"}.
-            </p>
+            <p className="state state--empty">{t("liluy.managing", { count: mine.length })}</p>
             <button className="account-view-link" onClick={() => onNavigate?.("liluy")}>
-              Go to L'Iluy Nishmat →
+              {t("liluy.goTo")}
             </button>
           </div>
         </>
       )}
 
-      <h2 className="section-title">Your bottom bar</h2>
+      <LanguageSetting />
+
+      <h2 className="section-title">{t("bottomBar.title")}</h2>
       <BottomBarPicker
         barIds={bottomBarIds}
         onChange={onBottomBarIdsChange}
@@ -656,16 +695,16 @@ function AccountDashboard({
 
       <div className="delete-account">
         <button className="delete-account__link" onClick={() => setDeleteOpen(true)}>
-          Delete account
+          {t("deleteAccount.link")}
         </button>
       </div>
       {deleteOpen && (
         <ConfirmModal
-          title="Permanently delete your account?"
-          body="This can't be undone. Type DELETE to confirm."
+          title={t("deleteAccount.title")}
+          body={t("deleteAccount.body")}
           icon="⚠"
-          confirmLabel="Confirm delete"
-          busyLabel="Deleting…"
+          confirmLabel={t("deleteAccount.confirmLabel")}
+          busyLabel={t("deleteAccount.busyLabel")}
           busy={deleting}
           destructive
           typeToConfirm="DELETE"
@@ -686,6 +725,7 @@ function AccountDashboard({
     account is authenticated, but what the visitor actually asked for was
     a new password, not a tour of their account. */
 function SetNewPasswordSection() {
+  const { t } = useTranslation("account");
   const auth = useAuth();
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -696,11 +736,11 @@ function SetNewPasswordSection() {
   async function handleSubmit() {
     setError(null);
     if (password.length < 6) {
-      setError("Password must be at least 6 characters.");
+      setError(t("newPassword.tooShort", { min: 6 }));
       return;
     }
     if (password !== confirm) {
-      setError("Passwords don't match.");
+      setError(t("newPassword.mismatch"));
       return;
     }
     setBusy(true);
@@ -713,19 +753,17 @@ function SetNewPasswordSection() {
   if (done) {
     return (
       <div className="onthis-panel">
-        <p className="onthis-panel__label">Password set</p>
-        <p className="login-reassurance">
-          Your password has been updated. You're signed in as {auth.session?.user.email}.
-        </p>
+        <p className="onthis-panel__label">{t("newPassword.doneLabel")}</p>
+        <p className="login-reassurance">{t("newPassword.doneBody", { email: auth.session?.user.email ?? "" })}</p>
       </div>
     );
   }
 
   return (
     <>
-      <p className="panel__subtitle">Choose a new password for {auth.session?.user.email}.</p>
+      <p className="panel__subtitle">{t("newPassword.intro", { email: auth.session?.user.email ?? "" })}</p>
       <label className="login-field">
-        <span className="login-field__label">New password</span>
+        <span className="login-field__label">{t("newPassword.newPassword")}</span>
         <input
           type="password"
           value={password}
@@ -735,7 +773,7 @@ function SetNewPasswordSection() {
         />
       </label>
       <label className="login-field">
-        <span className="login-field__label">Confirm password</span>
+        <span className="login-field__label">{t("newPassword.confirmPassword")}</span>
         <input
           type="password"
           value={confirm}
@@ -749,7 +787,7 @@ function SetNewPasswordSection() {
         </p>
       )}
       <button className="restart" disabled={busy || !password || !confirm} onClick={handleSubmit}>
-        {busy ? "Please wait…" : "Set password"}
+        {busy ? t("signIn.pleaseWait") : t("newPassword.submit")}
       </button>
     </>
   );
@@ -766,6 +804,8 @@ export function LoginScreen({
   initialEmailOpen,
   initialError,
 }: LoginScreenProps) {
+  const { t } = useTranslation("account");
+  const direction = useDirection();
   const auth = useAuth();
   const progress = useLearningProgress();
   const { perekNotes } = usePerekNotes();
@@ -813,7 +853,7 @@ export function LoginScreen({
     if (result) {
       setError(result);
     } else if (mode === "signUp") {
-      setMessage("Account created — check your email to confirm it, then log in.");
+      setMessage(t("signIn.accountCreated"));
       setMode("signIn");
     } else {
       onLoggedIn?.();
@@ -837,7 +877,7 @@ export function LoginScreen({
     return (
       <div className="stage">
         <div className="panel login-panel">
-          <h1 className="screen-head__title">Set a new password</h1>
+          <h1 className="screen-head__title">{t("newPassword.title")}</h1>
           <SetNewPasswordSection />
         </div>
       </div>
@@ -848,7 +888,7 @@ export function LoginScreen({
     return (
       <div className="stage">
         <div className="panel login-panel">
-          <h1 className="screen-head__title">My Account</h1>
+          <h1 className="screen-head__title">{t("title")}</h1>
           <AccountDashboard
             onNavigate={onNavigate}
             bottomBarIds={bottomBarIds}
@@ -864,31 +904,30 @@ export function LoginScreen({
   return (
     <div className="stage">
       <div className="panel login-panel">
-        <h1 className="screen-head__title">My Account</h1>
+        <h1 className="screen-head__title">{t("title")}</h1>
 
         {!supabaseConfigured && (
           <div className="note-banner login-notice">
-            Accounts aren't connected yet — under construction. Your notes and progress are already
-            being saved on this device; signing in will carry them over once this is live.
+            {t("signIn.notConnected")}
           </div>
         )}
 
         {!emailOpen ? (
           <>
             <div className="onthis-panel">
-              <p className="onthis-panel__label">On this device right now</p>
+              <p className="onthis-panel__label">{t("signIn.onThisDevice")}</p>
               <div className="onthis-panel__figures">
                 <div className="onthis-panel__figure">
                   <p className="onthis-panel__num">{progress.streak.current}</p>
-                  <p className="onthis-panel__unit">day streak</p>
+                  <p className="onthis-panel__unit">{t("signIn.dayStreak")}</p>
                 </div>
                 <div className="onthis-panel__figure">
                   <p className="onthis-panel__num">{progress.completions.length}</p>
-                  <p className="onthis-panel__unit">mishnayot</p>
+                  <p className="onthis-panel__unit">{t("signIn.mishnayot")}</p>
                 </div>
                 <div className="onthis-panel__figure">
                   <p className="onthis-panel__num">{onThisDeviceNoteCount}</p>
-                  <p className="onthis-panel__unit">notes</p>
+                  <p className="onthis-panel__unit">{t("signIn.notes")}</p>
                 </div>
               </div>
             </div>
@@ -902,18 +941,18 @@ export function LoginScreen({
             <GoogleButton onClick={handleGoogleSignIn} disabled={!supabaseConfigured || busy} />
 
             <div className="login-divider">
-              <span>or</span>
+              <span>{t("signIn.or")}</span>
             </div>
 
             <button className="btn btn--secondary btn--block email-toggle-btn" onClick={() => setEmailOpen(true)}>
-              Use an email address instead
+              {t("signIn.useEmail")}
             </button>
 
             <p className="login-reassurance">
-              Signing in never changes what you have already learned — your progress on this
-              device merges into your account.
+              {t("signIn.reassurance")}
             </p>
 
+            <LanguageSetting />
             <ResetProgressSection />
           </>
         ) : forgotOpen ? (
@@ -926,17 +965,17 @@ export function LoginScreen({
                 setError(null);
               }}
             >
-              ← Back
+              {t("signIn.back")}
             </button>
 
             {resetSent ? (
-              <p className="callout callout--good" dir="ltr">
-                Check your email for a reset link.
+              <p className="callout callout--good" dir={direction}>
+                {t("signIn.resetSent")}
               </p>
             ) : (
               <>
                 <label className="login-field">
-                  <span className="login-field__label">Email</span>
+                  <span className="login-field__label">{t("signIn.email")}</span>
                   <input
                     type="email"
                     value={email}
@@ -956,7 +995,7 @@ export function LoginScreen({
                   disabled={!supabaseConfigured || busy || !email}
                   onClick={handleForgotSubmit}
                 >
-                  {busy ? "Please wait…" : "Send reset link"}
+                  {busy ? t("signIn.pleaseWait") : t("signIn.sendReset")}
                 </button>
               </>
             )}
@@ -964,7 +1003,7 @@ export function LoginScreen({
         ) : (
           <>
             <button className="login-back-btn" onClick={() => setEmailOpen(false)}>
-              ← Back
+              {t("signIn.back")}
             </button>
 
             <div className="pill-row">
@@ -972,38 +1011,38 @@ export function LoginScreen({
                 className={"pill" + (mode === "signIn" ? " pill--active" : "")}
                 onClick={() => setMode("signIn")}
               >
-                Log in
+                {t("signIn.logIn")}
               </button>
               <button
                 className={"pill" + (mode === "signUp" ? " pill--active" : "")}
                 onClick={() => setMode("signUp")}
               >
-                Create account
+                {t("signIn.createAccount")}
               </button>
             </div>
 
             {mode === "signUp" && (
               <>
                 <label className="login-field">
-                  <span className="login-field__label">First name</span>
+                  <span className="login-field__label">{t("profile.firstName")}</span>
                   <input
                     type="text"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
-                    placeholder="Shown when you're signed in — e.g. Yonah"
+                    placeholder={t("signIn.firstNamePlaceholder")}
                   />
                 </label>
                 <label className="login-field">
-                  <span className="login-field__label">Last name</span>
+                  <span className="login-field__label">{t("profile.lastName")}</span>
                   <input
                     type="text"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
-                    placeholder="e.g. Cohen"
+                    placeholder={t("signIn.lastNamePlaceholder")}
                   />
                 </label>
                 <label className="login-field">
-                  <span className="login-field__label">Username</span>
+                  <span className="login-field__label">{t("profile.username")}</span>
                   <input
                     type="text"
                     value={username}
@@ -1015,7 +1054,7 @@ export function LoginScreen({
             )}
 
             <label className="login-field">
-              <span className="login-field__label">Email</span>
+              <span className="login-field__label">{t("signIn.email")}</span>
               <input
                 type="email"
                 value={email}
@@ -1026,7 +1065,7 @@ export function LoginScreen({
 
             <label className="login-field">
               <span className={"login-field__label" + (mode === "signIn" ? " login-field__label--row" : "")}>
-                Password
+                {t("signIn.password")}
                 {mode === "signIn" && (
                   <button
                     type="button"
@@ -1036,7 +1075,7 @@ export function LoginScreen({
                       setError(null);
                     }}
                   >
-                    Forgot it?
+                    {t("signIn.forgot")}
                   </button>
                 )}
               </span>
@@ -1054,7 +1093,7 @@ export function LoginScreen({
               </p>
             )}
             {message && (
-              <p className="callout callout--good" dir="ltr">
+              <p className="callout callout--good" dir={direction}>
                 {message}
               </p>
             )}
@@ -1068,14 +1107,14 @@ export function LoginScreen({
                 !password ||
                 (mode === "signUp" && (!username || !firstName || !lastName))
               }
-              title={supabaseConfigured ? undefined : "Accounts aren't connected yet"}
+              title={supabaseConfigured ? undefined : t("signIn.notConnectedShort")}
               onClick={handleSubmit}
             >
-              {busy ? "Please wait…" : mode === "signUp" ? "Create account" : "Log in"}
+              {busy ? t("signIn.pleaseWait") : mode === "signUp" ? t("signIn.createAccount") : t("signIn.logIn")}
             </button>
 
             <div className="login-divider">
-              <span>or</span>
+              <span>{t("signIn.or")}</span>
             </div>
 
             <GoogleButton demoted onClick={handleGoogleSignIn} disabled={!supabaseConfigured || busy} />

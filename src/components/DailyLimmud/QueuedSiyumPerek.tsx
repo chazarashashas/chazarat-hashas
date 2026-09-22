@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import { SEDARIM } from "../../data/shas";
+import { useTranslation } from "react-i18next";
+import { SEDARIM, findMasechet } from "../../data/shas";
+import { useDirection, useName } from "../../i18n";
 import { getMishnayotCount, getPerekName } from "../../data/perekInfo";
 import { fetchMishna } from "../../utils/sefaria";
 import { FRIENDLY_ERRORS } from "../../utils/friendlyError";
@@ -26,6 +28,11 @@ interface Props {
     uses (progress.logLearning) and flips the siyum's own row learned,
     so both sides of "did I learn this" stay the same fact. */
 export function QueuedSiyumPerek({ claim, siyumim }: Props) {
+  const { t } = useTranslation(["dailyLimmud", "common"]);
+  const name = useName();
+  const dir = useDirection();
+  // Points along the reading direction, as the English "▸" does.
+  const crumbSep = dir === "rtl" ? "◂" : "▸";
   const progress = useLearningProgress();
   const [mishnayot, setMishnayot] = useState<MishnaState[]>([]);
   const [marking, setMarking] = useState(false);
@@ -76,6 +83,7 @@ export function QueuedSiyumPerek({ claim, siyumim }: Props) {
 
   const seder = SEDARIM.find((s) => s.masechtot.some((m) => m.en === claim.masechetEn));
   const perekName = getPerekName(claim.masechetEn, claim.perek);
+  const masechet = findMasechet(claim.masechetEn);
 
   // Its own card, laid out like the day's learning above it, so a list of
   // several reads as separate perakim. The button is the quieter
@@ -84,11 +92,12 @@ export function QueuedSiyumPerek({ claim, siyumim }: Props) {
   return (
     <div className="card limmud-card limmud-siyum-card">
       <p className="limmud-breadcrumb">
-        {seder ? `${seder.en} ▸ ` : ""}
-        {claim.masechetEn} ▸ Perek {hebrewNumeral(claim.perek)}
+        {seder ? `${name(seder)} ${crumbSep} ` : ""}
+        {masechet ? name(masechet) : claim.masechetEn} {crumbSep}{" "}
+        {t("breadcrumb.perek", { num: hebrewNumeral(claim.perek) })}
         {perekName ? ` (${perekName})` : ""}
       </p>
-      <p className="limmud-siyum-tag">L'Iluy Nishmat: {claim.dedication}</p>
+      <p className="limmud-siyum-tag">{t("siyumim.dedication", { dedication: claim.dedication })}</p>
       <div className="limmud-perek-block">
         {mishnayot.map((m) => (
           <div key={m.mishnah} className="limmud-mishna">
@@ -96,9 +105,9 @@ export function QueuedSiyumPerek({ claim, siyumim }: Props) {
               משנה {hebrewNumeral(m.mishnah)}
             </p>
             {m.status === "loading" ? (
-              <span className="state state--loading">Loading…</span>
+              <span className="state state--loading">{t("common:loading")}</span>
             ) : m.status === "error" ? (
-              <span className="state state--error" dir="ltr">
+              <span className="state state--error" dir={dir}>
                 {FRIENDLY_ERRORS.load}
               </span>
             ) : (
@@ -114,7 +123,7 @@ export function QueuedSiyumPerek({ claim, siyumim }: Props) {
         disabled={marking}
         onClick={handleMark}
       >
-        {marking ? "Marking…" : "Mark perek learned"}
+        {marking ? t("siyumim.marking") : t("siyumim.markPerek")}
       </button>
     </div>
   );

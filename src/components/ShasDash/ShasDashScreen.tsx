@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { SEDARIM } from "../../data/shas";
+import { useTranslation } from "react-i18next";
+import { SEDARIM, type Masechet } from "../../data/shas";
+import { useDirection, useName } from "../../i18n";
+import { useNavLabels } from "../../utils/navItems";
 import { getSederHue } from "../../utils/sederHue";
 import { shuffle } from "../../utils/shuffle";
 import { useGameStats } from "../../utils/useGameStats";
@@ -21,6 +24,8 @@ const ALL_MASECHTOT: FlatMasechet[] = SEDARIM.flatMap((s) =>
   s.masechtot.map((m) => ({ name: m.en, sederId: s.id })),
 );
 const TOTAL = ALL_MASECHTOT.length;
+/** Cards are keyed by English name; this finds the masechet to show it by. */
+const MASECHET_BY_EN = new Map<string, Masechet>(SEDARIM.flatMap((s) => s.masechtot.map((m) => [m.en, m])));
 const LANES = SEDARIM.length;
 const START_LANE = 2;
 const START_LIVES = 3;
@@ -81,6 +86,14 @@ function PauseOnBack({ onBack }: { onBack: () => void }) {
 }
 
 export function ShasDashScreen() {
+  const { t } = useTranslation("games");
+  const nameOf = useName();
+  const navLabels = useNavLabels();
+  const dir = useDirection();
+  const shown = (en: string): string => {
+    const m = MASECHET_BY_EN.get(en);
+    return m ? nameOf(m) : en;
+  };
   const { stats, recordDashScore } = useGameStats();
   const [phase, setPhase] = useState<Phase>("ready");
   const [score, setScore] = useState(0);
@@ -126,6 +139,12 @@ export function ShasDashScreen() {
   const runnerRef = useRef<HTMLDivElement>(null);
   const roadRefs = useRef<(HTMLDivElement | null)[]>([]);
   const resolveRef = useRef<(id: number, centreY: number, laneH: number) => void>(() => {});
+  // The card runs toward the gates, which sit on the left in Hebrew — the
+  // frame loop reads this to run it the other way.
+  const dirSignRef = useRef(dir === "rtl" ? -1 : 1);
+  useEffect(() => {
+    dirSignRef.current = dir === "rtl" ? -1 : 1;
+  }, [dir]);
 
   const best = Math.max(stats.dash.bestScore, score);
 
@@ -229,10 +248,10 @@ export function ShasDashScreen() {
       const targetY = laneRef.current * laneH + (laneH - cardH) / 2;
       if (yRef.current === null) yRef.current = targetY;
       yRef.current = easeToward(yRef.current, targetY, dt);
-      runner.style.transform = `translate(${x}px, ${yRef.current}px)`;
+      runner.style.transform = `translate(${x * dirSignRef.current}px, ${yRef.current}px)`;
       // The live lane's dashes travel with the card, at its own pace.
       const road = roadRefs.current[laneRef.current];
-      if (road) road.style.backgroundPositionX = `${x}px`;
+      if (road) road.style.backgroundPositionX = `${x * dirSignRef.current}px`;
       if (t >= 1) {
         resolveRef.current(id, yRef.current + cardH / 2, laneH);
         return;
@@ -286,12 +305,16 @@ export function ShasDashScreen() {
       caughtRef.current.add(thisCard.name);
       setCaught(new Set(caughtRef.current));
       setCardAnim("catch");
-      setMsg({ text: `${thisCard.name} is ${answer.en}${bonus > 0 ? ` · +${bonus}` : ""}`, tone: "good" });
+      const names = { masechet: shown(thisCard.name), seder: nameOf(answer) };
+      setMsg({ text: bonus > 0 ? t("dash.caughtWithBonus", { ...names, bonus }) : t("dash.caught", names), tone: "good" });
     } else {
       comboRef.current = 0;
       livesRef.current -= 1;
       setCardAnim("miss");
-      setMsg({ text: `Landed in ${landed.en} — ${thisCard.name} is ${answer.en}`, tone: "bad" });
+      setMsg({
+        text: t("dash.landed", { landed: nameOf(landed), masechet: shown(thisCard.name), seder: nameOf(answer) }),
+        tone: "bad",
+      });
       setWobble(true);
       window.setTimeout(() => setWobble(false), 350);
     }
@@ -362,23 +385,27 @@ export function ShasDashScreen() {
   }
 
   useEffect(() => {
+    // Lock-in is the arrow toward the gates, pause the one away from them —
+    // so the two swap in Hebrew, where the gates are on the left.
+    const toGates = dir === "rtl" ? "ArrowLeft" : "ArrowRight";
+    const awayFromGates = dir === "rtl" ? "ArrowRight" : "ArrowLeft";
     function onKeydown(e: KeyboardEvent) {
       if (!runningRef.current) return;
       // Tapping only: a held key must not become held steering.
       if (e.key === "ArrowUp" || e.key === "ArrowDown") {
         e.preventDefault();
         if (!e.repeat) moveLane(e.key === "ArrowUp" ? -1 : 1);
-      } else if (e.key === "ArrowRight") {
+      } else if (e.key === toGates) {
         e.preventDefault();
         if (!e.repeat) lockIn();
-      } else if (e.key === " " || e.key === "Spacebar" || e.key === "ArrowLeft") {
+      } else if (e.key === " " || e.key === "Spacebar" || e.key === awayFromGates) {
         e.preventDefault();
         if (!e.repeat) togglePause();
       }
     }
     window.addEventListener("keydown", onKeydown);
     return () => window.removeEventListener("keydown", onKeydown);
-  }, [moveLane, lockIn, togglePause]);
+  }, [moveLane, lockIn, togglePause, dir]);
 
   // A phone game that keeps running through a phone call costs a life.
   useEffect(() => {
@@ -398,7 +425,9 @@ export function ShasDashScreen() {
     };
   }, []);
 
-  const shown: Message = paused ? { text: "Paused", tone: "idle" } : msg;
+  const status: Message = paused ? { text: t("paused"), tone: "idle" } : msg;
+  const gameName = navLabels.item({ id: "dash", label: "Shas Dash" });
+  const crossingSeconds = (crossing / 1000).toFixed(1);
   const pips = speedPips(crossing);
   const playing = phase === "playing";
 
@@ -408,8 +437,8 @@ export function ShasDashScreen() {
       <div className="panel dash-panel">
         <div className="dash-game">
           <div className="dash-head">
-            <h1 className="dash-title">Shas Dash</h1>
-            <button className="icon-btn dash-restart" title="Restart" aria-label="Restart" onClick={handleRestart}>
+            <h1 className="dash-title">{gameName}</h1>
+            <button className="icon-btn dash-restart" title={t("restart")} aria-label={t("restart")} onClick={handleRestart}>
               <Icon d={ICON.restart} />
             </button>
           </div>
@@ -417,10 +446,10 @@ export function ShasDashScreen() {
           <div className="dash-hud">
             <div className="dash-score">
               <span className="dash-score__num">{score}</span>
-              <span className="dash-score__best">BEST {best}</span>
+              <span className="dash-score__best">{t("dash.best", { best })}</span>
             </div>
-            <div className="dash-speed" aria-label={`${(crossing / 1000).toFixed(1)} second crossing`}>
-              <span className="dash-speed__secs">{(crossing / 1000).toFixed(1)}s</span>
+            <div className="dash-speed" aria-label={t("dash.crossingLabel", { seconds: crossingSeconds })}>
+              <span className="dash-speed__secs">{t("dash.crossingSeconds", { seconds: crossingSeconds })}</span>
               <span className="dash-pips" aria-hidden="true">
                 {[0, 1, 2, 3, 4].map((i) => (
                   <span key={i} className={"dash-pip" + (i < pips ? " dash-pip--on" : "")} />
@@ -428,14 +457,14 @@ export function ShasDashScreen() {
               </span>
             </div>
             <span className={"dash-combo" + (combo >= 2 ? "" : " dash-combo--hidden")}>×{combo}</span>
-            <div className="dash-lives" aria-label={`${lives} of ${START_LIVES} lives left`}>
+            <div className="dash-lives" aria-label={t("dash.livesLabel", { lives, total: START_LIVES })}>
               {Array.from({ length: START_LIVES }, (_, i) => (
                 <Heart key={i} full={i < lives} />
               ))}
             </div>
           </div>
 
-          <div className="dash-ledger" aria-label={`${caught.size} of ${TOTAL} masechtot caught`}>
+          <div className="dash-ledger" aria-label={t("dash.ledgerLabel", { caught: caught.size, total: TOTAL })}>
             {ALL_MASECHTOT.map((m) => (
               <span
                 key={m.name}
@@ -454,9 +483,9 @@ export function ShasDashScreen() {
                   key={s.id}
                   className={"dash-tally" + (done === total ? " dash-tally--complete" : "")}
                   style={{ ["--hue" as string]: getSederHue(s.id) }}
-                  aria-label={`${s.en} ${done} of ${total}`}
+                  aria-label={t("dash.tallyLabel", { seder: nameOf(s), done, total })}
                 >
-                  <span className="dash-tally__name">{s.en}</span>
+                  <span className="dash-tally__name">{nameOf(s)}</span>
                   <span className="dash-tally__count">
                     {done}/{total}
                   </span>
@@ -467,9 +496,9 @@ export function ShasDashScreen() {
 
           {phase === "ended" ? (
             <div className="game__end dash-end">
-              <p className="game__end-big">{won ? "All of Shas" : "Out of lives"}</p>
+              <p className="game__end-big">{won ? t("dash.endWon") : t("dash.endLost")}</p>
               <p className="game__end-sub">
-                {won ? `All ${TOTAL} masechtot · Score ${score}` : `Score ${score} · Best ${best}`}
+                {won ? t("dash.endWonSub", { total: TOTAL, score }) : t("dash.endLostSub", { score, best })}
               </p>
               {promptMoment && (
                 <SharePrompt
@@ -481,7 +510,7 @@ export function ShasDashScreen() {
               )}
               <div className="dash-end__actions">
                 <button className="btn btn--accent" onClick={handleStart}>
-                  {won ? "Play again" : "Try again"}
+                  {won ? t("playAgain") : t("tryAgain", { ns: "common" })}
                 </button>
                 {runMoment && !promptMoment && <ShareLink onDark onClick={() => setSheetMoment(runMoment)} />}
               </div>
@@ -506,14 +535,14 @@ export function ShasDashScreen() {
                           className={"dash-road" + (playing && lane === i ? " dash-road--live" : "")}
                           aria-hidden="true"
                         />
-                        <div className={"dash-gate" + (complete ? " dash-gate--complete" : "")}>{s.en}</div>
+                        <div className={"dash-gate" + (complete ? " dash-gate--complete" : "")}>{nameOf(s)}</div>
                       </div>
                     );
                   })}
                   {card && (
                     <div ref={runnerRef} className="dash-runner" data-card={card.name}>
                       <span className={"dash-runner__card" + (cardAnim ? ` dash-runner__card--${cardAnim}` : "")}>
-                        {card.name}
+                        {shown(card.name)}
                       </span>
                     </div>
                   )}
@@ -521,22 +550,22 @@ export function ShasDashScreen() {
                 {phase === "ready" && (
                   <div className="game__start">
                     <button className="btn btn--accent" onClick={handleStart}>
-                      Start
+                      {t("start")}
                     </button>
                   </div>
                 )}
               </div>
 
-              <div className={`dash-msg dash-msg--${shown.tone}`} role="status">
-                {shown.text}
+              <div className={`dash-msg dash-msg--${status.tone}`} role="status">
+                {status.text}
               </div>
 
               <div className="dash-controls">
                 <button
                   className="dash-ctl"
                   disabled={!playing}
-                  title={paused ? "Resume (Space / ←)" : "Pause (Space / ←)"}
-                  aria-label={paused ? "Resume" : "Pause"}
+                  title={paused ? t("dash.resumeTitle") : t("dash.pauseTitle")}
+                  aria-label={paused ? t("resume") : t("pause")}
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={togglePause}
                 >
@@ -545,8 +574,8 @@ export function ShasDashScreen() {
                 <button
                   className="dash-ctl"
                   disabled={!playing}
-                  title="Up (↑)"
-                  aria-label="Move up"
+                  title={t("dash.upTitle")}
+                  aria-label={t("dash.upLabel")}
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => moveLane(-1)}
                 >
@@ -555,8 +584,8 @@ export function ShasDashScreen() {
                 <button
                   className="dash-ctl"
                   disabled={!playing}
-                  title="Down (↓)"
-                  aria-label="Move down"
+                  title={t("dash.downTitle")}
+                  aria-label={t("dash.downLabel")}
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => moveLane(1)}
                 >
@@ -565,12 +594,12 @@ export function ShasDashScreen() {
                 <button
                   className="dash-ctl dash-ctl--lock"
                   disabled={!playing}
-                  title="Lock in (→)"
+                  title={t("dash.lockTitle")}
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={lockIn}
                 >
                   <Icon d={ICON.lock} />
-                  Lock in
+                  {t("dash.lock")}
                 </button>
               </div>
             </>

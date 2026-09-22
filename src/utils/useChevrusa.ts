@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { supabase } from "./supabase";
 import { useAuth } from "./useAuth";
 import { localDateStr } from "./localDate";
+import i18n from "../i18n";
 
 export type GroupRole = "member" | "teacher";
 
@@ -80,18 +81,18 @@ function todayStr(): string {
 function friendlyError(message: string): string {
   const lower = message.toLowerCase();
   if (lower.includes("duplicate key") && lower.includes("group_members")) {
-    return "You're already in this group.";
+    return i18n.t("groups:errors.alreadyInGroup");
   }
   if (lower.includes("duplicate key")) {
-    return "That's already been done.";
+    return i18n.t("groups:errors.alreadyDone");
   }
   if (lower.includes("row-level security") || lower.includes("permission denied")) {
-    return "You don't have permission to do that.";
+    return i18n.t("groups:errors.permission");
   }
   if (lower.includes("failed to fetch") || lower.includes("network")) {
-    return "Couldn't reach the server — check your connection and try again.";
+    return i18n.t("groups:errors.network");
   }
-  return "Something went wrong. Please try again.";
+  return i18n.t("groups:errors.generic");
 }
 
 /** Real chevrusa/chabura data, backed by four tables (groups,
@@ -249,13 +250,13 @@ export function useChevrusa() {
     pace: GroupPace = "1",
     isClass = false,
   ): Promise<string | null> {
-    if (!supabase || !session) return "Accounts aren't connected yet.";
+    if (!supabase || !session) return i18n.t("groups:errors.notConnected");
 
     const myEmailEarly = session.user.email?.toLowerCase();
     const typedSomething = inviteEmails.some((e) => e.trim());
     const onlySelf =
       typedSomething && inviteEmails.every((e) => !e.trim() || e.trim().toLowerCase() === myEmailEarly);
-    if (onlySelf) return "You can't invite yourself — enter someone else's email.";
+    if (onlySelf) return i18n.t("groups:errors.inviteSelf");
 
     const { data: group, error: groupError } = await supabase
       .from("groups")
@@ -269,7 +270,7 @@ export function useChevrusa() {
       })
       .select("id")
       .single();
-    if (groupError || !group) return groupError ? friendlyError(groupError.message) : "Couldn't create the group.";
+    if (groupError || !group) return groupError ? friendlyError(groupError.message) : i18n.t("groups:errors.couldntCreate");
 
     const { error: memberError } = await supabase
       .from("group_members")
@@ -299,13 +300,13 @@ export function useChevrusa() {
       only meant for chabura groups; a chevrusa stays a fixed pair by
       design, so this isn't offered there in the UI. */
   async function addMembers(groupId: string, emails: string[]): Promise<string | null> {
-    if (!supabase || !session) return "Accounts aren't connected yet.";
+    if (!supabase || !session) return i18n.t("groups:errors.notConnected");
 
     const myEmail = session.user.email?.toLowerCase();
     const validEmails = Array.from(
       new Set(emails.map((e) => e.trim().toLowerCase()).filter((e) => Boolean(e) && e !== myEmail)),
     );
-    if (validEmails.length === 0) return "Enter at least one email that isn't your own.";
+    if (validEmails.length === 0) return i18n.t("groups:errors.needEmail");
 
     const { data: existing } = await supabase
       .from("group_invites")
@@ -314,7 +315,7 @@ export function useChevrusa() {
       .eq("status", "pending");
     const alreadyInvited = new Set((existing ?? []).map((e) => e.invited_email as string));
     const newEmails = validEmails.filter((e) => !alreadyInvited.has(e));
-    if (newEmails.length === 0) return "That person's already been invited.";
+    if (newEmails.length === 0) return i18n.t("groups:errors.alreadyInvited");
 
     const { error } = await supabase
       .from("group_invites")
@@ -330,7 +331,7 @@ export function useChevrusa() {
       group itself (not just one member's view). Used when a group
       finishes its current masechet and moves on together. */
   async function updateGroupMasechet(groupId: string, newMasechetEn: string): Promise<string | null> {
-    if (!supabase) return "Accounts aren't connected yet.";
+    if (!supabase) return i18n.t("groups:errors.notConnected");
     const { error } = await supabase.from("groups").update({ masechet_en: newMasechetEn }).eq("id", groupId);
     if (error) return friendlyError(error.message);
     await refresh();
@@ -338,7 +339,7 @@ export function useChevrusa() {
   }
 
   async function acceptInvite(invite: PendingInvite): Promise<string | null> {
-    if (!supabase || !session) return "Accounts aren't connected yet.";
+    if (!supabase || !session) return i18n.t("groups:errors.notConnected");
     // role is explicit, not left to whatever the column defaults to —
     // accepting an invite always makes you a member, never a teacher.
     const { error: memberError } = await supabase
@@ -357,7 +358,7 @@ export function useChevrusa() {
   }
 
   async function declineInvite(invite: PendingInvite): Promise<string | null> {
-    if (!supabase) return "Accounts aren't connected yet.";
+    if (!supabase) return i18n.t("groups:errors.notConnected");
     const { error } = await supabase.from("group_invites").update({ status: "declined" }).eq("id", invite.id);
     if (error) return friendlyError(error.message);
     await refresh();
@@ -368,7 +369,7 @@ export function useChevrusa() {
       declined — the sender shouldn't have to keep seeing a dead invite
       in their own list forever. */
   async function cancelInvite(invite: SentInvite): Promise<string | null> {
-    if (!supabase) return "Accounts aren't connected yet.";
+    if (!supabase) return i18n.t("groups:errors.notConnected");
     const { error } = await supabase.from("group_invites").delete().eq("id", invite.id);
     if (error) return friendlyError(error.message);
     await refresh();
@@ -383,7 +384,7 @@ export function useChevrusa() {
       with nobody left in group_members, nobody's RLS policy can see it
       anymore, so it simply stops appearing anywhere). */
   async function leaveGroup(groupId: string): Promise<string | null> {
-    if (!supabase || !session) return "Accounts aren't connected yet.";
+    if (!supabase || !session) return i18n.t("groups:errors.notConnected");
     await supabase.from("group_submissions").delete().eq("group_id", groupId).eq("user_id", session.user.id);
     const { error } = await supabase
       .from("group_members")
@@ -399,7 +400,7 @@ export function useChevrusa() {
       entering a code they were given is the consent, same as accepting
       an emailed invite (see join_group_by_code in the schema). */
   async function joinByCode(code: string): Promise<string | null> {
-    if (!supabase || !session) return "Accounts aren't connected yet.";
+    if (!supabase || !session) return i18n.t("groups:errors.notConnected");
     const { error } = await supabase.rpc("join_group_by_code", { p_code: code.trim() });
     if (error) return error.message.includes("Invalid") ? error.message : friendlyError(error.message);
     await refresh();
@@ -409,7 +410,7 @@ export function useChevrusa() {
   /** Generates this chabura's first join code, or rotates it — old codes
       stop working immediately since lookup is by exact match. */
   async function rotateJoinCode(groupId: string): Promise<{ code: string | null; error: string | null }> {
-    if (!supabase) return { code: null, error: "Accounts aren't connected yet." };
+    if (!supabase) return { code: null, error: i18n.t("groups:errors.notConnected") };
     const { data, error } = await supabase.rpc("rotate_join_code", { p_group_id: groupId });
     if (error) return { code: null, error: friendlyError(error.message) };
     await refresh();

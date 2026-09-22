@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Sidebar } from "./components/Sidebar/Sidebar";
 import { BottomBar } from "./components/BottomBar/BottomBar";
 import { MATCH_VIEWS } from "./data/matchViews";
+import { useSederTabs } from "./data/sederTabs";
 import { MatchBoard } from "./components/MatchBoard/MatchBoard";
 import { TabBar } from "./components/TabBar/TabBar";
 import { MishnaIdScreen } from "./components/MishnaId/MishnaIdScreen";
@@ -43,6 +44,7 @@ import { countCompletedMasechtot } from "./utils/shasJourney";
 import { shuffle } from "./utils/shuffle";
 import type { ViewState } from "./types/viewState";
 import { sectionForPath } from "./utils/pathLinks";
+import i18n from "./i18n";
 import "./App.css";
 
 function initViewState(items: string[]): ViewState {
@@ -57,6 +59,10 @@ function SedarimSection() {
   );
 
   const activeView = MATCH_VIEWS.find((v) => v.id === activeId)!;
+  // Tab names in the interface's language — the Shas board is the "all" tab.
+  const sederTabs = useSederTabs();
+  const tabLabel = (id: string, fallback: string) =>
+    sederTabs.find((tab) => tab.id === (id === "sedarim" ? "all" : id))?.label ?? fallback;
   const activeState = viewStates[activeId];
   const activePlacedCount = activeView.items.length - activeState.pool.length;
 
@@ -101,7 +107,7 @@ function SedarimSection() {
         clearedSederIds={clearedSederIds}
       />
       <TabBar
-        tabs={MATCH_VIEWS.map((v) => ({ id: v.id, label: v.label }))}
+        tabs={MATCH_VIEWS.map((v) => ({ id: v.id, label: tabLabel(v.id, v.label) }))}
         activeId={activeId}
         onSelect={setActiveId}
       />
@@ -140,7 +146,7 @@ function initialOAuthError(): string | null {
   if (!description && !code) return null;
   const message = description
     ? description.replace(/\+/g, " ")
-    : `Google sign-in failed (${code}).`;
+    : i18n.t("shell:errors.googleFailed", { code });
   window.history.replaceState(
     null,
     "",
@@ -219,7 +225,7 @@ function App() {
     sessionStorage.removeItem(OAUTH_PENDING_KEY);
     if (session || oauthError) return; // either it worked, or the other handler already has this covered
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setSilentSignInError("Sign-in didn't complete. Try again or use email.");
+    setSilentSignInError(i18n.t("shell:errors.signInIncomplete"));
     reportSilentSignInFailure();
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setSection("login");

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { localDateStr } from "../../utils/localDate";
 import { NavIcon } from "../Icon/NavIcon";
 import { dismissPrompt } from "./sharePrompts";
@@ -19,6 +20,7 @@ interface Props {
  * moment for 30 days, and sharing stays available on demand regardless.
  */
 export function SharePrompt({ moment, variant, onShare, onDismiss }: Props) {
+  const { t } = useTranslation(["share", "common"]);
   return (
     <div className={`share-prompt share-prompt--${variant}`} role="status">
       <div className="share-prompt__row">
@@ -33,7 +35,7 @@ export function SharePrompt({ moment, variant, onShare, onDismiss }: Props) {
       <div className="share-prompt__actions">
         <button className="share-prompt__share" onClick={onShare}>
           <NavIcon id="share" size={15} weight={2.2} />
-          Share this
+          {t("prompt.shareThis")}
         </button>
         <button
           className="share-prompt__not-now"
@@ -42,7 +44,7 @@ export function SharePrompt({ moment, variant, onShare, onDismiss }: Props) {
             onDismiss();
           }}
         >
-          Not now
+          {t("prompt.notNow")}
         </button>
       </div>
     </div>
@@ -52,10 +54,11 @@ export function SharePrompt({ moment, variant, onShare, onDismiss }: Props) {
 /** The quiet version (SHARE-BRIEF.md): a text link in a run summary —
     costs nothing to ignore, so no dismissal rule and no cap. */
 export function ShareLink({ onClick, onDark }: { onClick: () => void; onDark?: boolean }) {
+  const { t } = useTranslation(["share", "common"]);
   return (
     <button className={"share-link" + (onDark ? " share-link--dark" : "")} onClick={onClick}>
       <NavIcon id="share" size={14} weight={2.2} />
-      Share
+      {t("common:share")}
     </button>
   );
 }

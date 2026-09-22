@@ -1,13 +1,21 @@
+import i18n from "../i18n";
 import { reportHandledError } from "./monitoring";
 
 /** The only three sentences a student ever sees when something fails.
     Raw messages — Postgres errors, Sefaria's API text, TypeErrors — never
-    reach the screen; they go to monitoring instead. */
+    reach the screen; they go to monitoring instead. Getters, so each read
+    is in the interface's current language. */
 export const FRIENDLY_ERRORS = {
-  load: "Couldn't load this — try again.",
-  offline: "You're offline — this will load when you're back.",
-  generic: "Something went wrong — try again.",
-} as const;
+  get load(): string {
+    return i18n.t("shell:errors.load");
+  },
+  get offline(): string {
+    return i18n.t("shell:errors.offline");
+  },
+  get generic(): string {
+    return i18n.t("shell:errors.generic");
+  },
+};
 
 function looksOffline(err: unknown): boolean {
   // navigator.onLine is the reliable half; the message check catches a

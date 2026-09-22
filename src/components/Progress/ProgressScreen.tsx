@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { Trans, useTranslation } from "react-i18next";
+import { useDirection, useLocale, useName } from "../../i18n";
 import { SEDARIM } from "../../data/shas";
 import { getPerekName, getMishnayotCount } from "../../data/perekInfo";
 import {
@@ -24,12 +26,16 @@ import "./ProgressScreen.css";
 const MISHNAYOT_AMOUNTS = [1, 2, 3, 5, 10];
 const PEREK_AMOUNTS = [1, 2, 3, 4];
 
-const FREQUENCY_OPTIONS: { key: string; label: string; days: number }[] = [
-  { key: "month", label: "Every month", days: 30.44 },
-  { key: "half-year", label: "Twice a year", days: 182.625 },
-  { key: "year", label: "Every year", days: 365.25 },
-  { key: "2-years", label: "Every 2 years", days: 730.5 },
-  { key: "5-years", label: "Every 5 years", days: 1826.25 },
+const FREQUENCY_OPTIONS: {
+  key: string;
+  labelKey: "month" | "halfYear" | "year" | "twoYears" | "fiveYears";
+  days: number;
+}[] = [
+  { key: "month", labelKey: "month", days: 30.44 },
+  { key: "half-year", labelKey: "halfYear", days: 182.625 },
+  { key: "year", labelKey: "year", days: 365.25 },
+  { key: "2-years", labelKey: "twoYears", days: 730.5 },
+  { key: "5-years", labelKey: "fiveYears", days: 1826.25 },
 ];
 
 /** The daily pace a target siyum-haShas frequency implies, rounded up —
@@ -64,6 +70,10 @@ interface ProgressScreenProps {
 export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
   const progress = useLearningProgress();
   const auth = useAuth();
+  const { t } = useTranslation(["siyumim", "common"]);
+  const name = useName();
+  const locale = useLocale();
+  const collapsedChevron = useDirection() === "rtl" ? "◂" : "▸";
   const [paceDirection, setPaceDirection] = useState<"amount" | "frequency">("amount");
   const [expanded, setExpanded] = useState<string | null>(null);
   const [logOpen, setLogOpen] = useState(false);
@@ -157,11 +167,10 @@ export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
   // before its own unit stops being meaningful (a 291-day span reads
   // better as "about 10 months" than "291 days" or "0.8 years").
   function spanFromDays(days: number): string {
-    const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
-    if (days < 14) return plural(Math.max(1, Math.round(days)), "day");
-    if (days < 70) return plural(Math.round(days / 7), "week");
-    if (days < 730) return plural(Math.round(days / 30.44), "month");
-    return plural(Math.round(days / 365.25), "year");
+    if (days < 14) return t("span.day", { count: Math.max(1, Math.round(days)) });
+    if (days < 70) return t("span.week", { count: Math.round(days / 7) });
+    if (days < 730) return t("span.month", { count: Math.round(days / 30.44) });
+    return t("span.year", { count: Math.round(days / 365.25) });
   }
 
   function estimatedDate(daysFromNow: number): string {
@@ -170,7 +179,7 @@ export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
     // being off by however long a render takes is invisible here.
     // eslint-disable-next-line react-hooks/purity
     const d = new Date(Date.now() + daysFromNow * 86400000);
-    return d.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+    return d.toLocaleDateString(locale ?? "en-US", { month: "long", year: "numeric" });
   }
 
   const paceLabel = formatPaceLabel(progress.pace);
@@ -179,22 +188,22 @@ export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
     <div className="stage">
       <div className="panel">
         <div className="screen-head">
-          <h1 className="screen-head__title">My Siyumim</h1>
+          <h1 className="screen-head__title">{t("title")}</h1>
         </div>
 
         {sederRemaining > 0 && (
           <div className="hero-card siyum-countdown">
             <div className="siyum-countdown__head">
               <div className="siyum-countdown__text">
-                <p className="siyum-countdown__label">Your next siyum</p>
-                <p className="siyum-countdown__seder">Seder {nextSeder.en}</p>
+                <p className="siyum-countdown__label">{t("countdown.label")}</p>
+                <p className="siyum-countdown__seder">{t("countdown.seder", { name: name(nextSeder) })}</p>
               </div>
               <div className="siyum-countdown__eta">
                 <span className="siyum-countdown__days">{sederDaysLeft}</span>
-                <span className="siyum-countdown__days-unit">days</span>
+                <span className="siyum-countdown__days-unit">{t("countdown.daysUnit")}</span>
               </div>
             </div>
-            <div className="siyum-countdown__date">around {estimatedDate(sederDaysLeft)}</div>
+            <div className="siyum-countdown__date">{t("countdown.around", { date: estimatedDate(sederDaysLeft) })}</div>
             <div className="siyum-countdown__bar">
               <div
                 className="siyum-countdown__bar-fill"
@@ -203,15 +212,22 @@ export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
             </div>
             <div className="siyum-countdown__meta">
               <span>
-                {nextSederDone.toLocaleString()} of {nextSederTotal.toLocaleString()} mishnayot ·{" "}
-                {sederRemaining.toLocaleString()} to go at {paceLabel}
+                {t("countdown.meta", {
+                  done: nextSederDone.toLocaleString(locale),
+                  total: nextSederTotal.toLocaleString(locale),
+                  remaining: sederRemaining.toLocaleString(locale),
+                  pace: paceLabel,
+                })}
               </span>
             </div>
             <div className="siyum-countdown__next-masechet">
               <span className="siyum-countdown__next-dot" aria-hidden="true" />
               <span>
-                {nextMasechet.en} finishes first — {nextMasechetRemaining} mishnayot away, about{" "}
-                {spanFromDays(masechetDaysLeft)}.
+                {t("countdown.nextMasechet", {
+                  name: name(nextMasechet),
+                  remaining: nextMasechetRemaining,
+                  span: spanFromDays(masechetDaysLeft),
+                })}
               </span>
             </div>
 
@@ -221,13 +237,13 @@ export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
                   className={"pill pill--compact" + (paceDirection === "amount" ? " pill--active" : "")}
                   onClick={() => setPaceDirection("amount")}
                 >
-                  By daily amount
+                  {t("countdown.byAmount")}
                 </button>
                 <button
                   className={"pill pill--compact" + (paceDirection === "frequency" ? " pill--active" : "")}
                   onClick={() => setPaceDirection("frequency")}
                 >
-                  By how often you finish
+                  {t("countdown.byFrequency")}
                 </button>
               </div>
 
@@ -238,13 +254,13 @@ export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
                       className={"pill pill--compact" + (progress.pace.unit === "mishnayot" ? " pill--active" : "")}
                       onClick={() => progress.setPace({ unit: "mishnayot", amount: 1 })}
                     >
-                      Mishnayot
+                      {t("countdown.mishnayot")}
                     </button>
                     <button
                       className={"pill pill--compact" + (progress.pace.unit === "perakim" ? " pill--active" : "")}
                       onClick={() => progress.setPace({ unit: "perakim", amount: 1 })}
                     >
-                      Perakim
+                      {t("countdown.perakim")}
                     </button>
                   </div>
                   <div className="pace-pill-row">
@@ -274,7 +290,7 @@ export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
                         }
                         onClick={() => progress.setPace(optionPace)}
                       >
-                        <span className="pace-pill__freq-label">{f.label}</span>
+                        <span className="pace-pill__freq-label">{t(`frequency.${f.labelKey}`)}</span>
                         <span className="pace-pill__freq-figure">{formatPaceLabel(optionPace)}</span>
                       </button>
                     );
@@ -287,7 +303,10 @@ export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
                 {shasMishnayotRemaining > 0 && (
                   <>
                     {" "}
-                    · Siyum haShas {estimatedDate(shasDaysLeft)} · seder every {spanFromDays(sederFrequencyDays)}
+                    {t("countdown.projection", {
+                      date: estimatedDate(shasDaysLeft),
+                      span: spanFromDays(sederFrequencyDays),
+                    })}
                   </>
                 )}
               </p>
@@ -298,55 +317,53 @@ export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
         <div className="siyumim-stats">
           <div className="card siyumim-stat">
             <span className="siyumim-stat__num">{perakimFinished}</span>
-            <span className="siyumim-stat__label">perakim finished</span>
+            <span className="siyumim-stat__label">{t("stats.perakimFinished")}</span>
           </div>
           <div className="card siyumim-stat">
             <span className="siyumim-stat__num">{masechtotCompleted}</span>
-            <span className="siyumim-stat__label">masechtot completed</span>
+            <span className="siyumim-stat__label">{t("stats.masechtotCompleted")}</span>
           </div>
           <div className="card siyumim-stat">
             <span className="siyumim-stat__num">{mishnayotLearned}</span>
-            <span className="siyumim-stat__label">mishnayot learned</span>
+            <span className="siyumim-stat__label">{t("stats.mishnayotLearned")}</span>
           </div>
         </div>
 
         {shasPct === 100 && (
           <div className="note-banner note-banner--good progress-shas-done">
-            <p className="progress-shas-done__text">You've completed all of Shas!</p>
+            <p className="progress-shas-done__text">{t("shasDone.text")}</p>
             <button className="btn btn--accent btn--compact progress-cert-btn" onClick={() => setShasCertificateOpen(true)}>
-              Get your certificate
+              {t("shasDone.certificate")}
             </button>
             <ShareLink onClick={() => setSharing(shasMoment())} />
           </div>
         )}
 
-        <h2 className="section-title">Where each level stands</h2>
+        <h2 className="section-title">{t("levelsTitle")}</h2>
         <ProgressTracks
-          masechet={{ title: nextMasechet.en, percent: masechetPct }}
-          seder={{ title: nextSeder.en, percent: sederPct }}
+          masechet={{ title: name(nextMasechet), percent: masechetPct }}
+          seder={{ title: name(nextSeder), percent: sederPct }}
           shas={{ percent: shasPct }}
           streakCurrent={progress.streak.current}
         />
 
         <div className="progress-actions">
           <button className="btn btn--primary progress-log-btn" onClick={() => setLogOpen(true)}>
-            + Log learning
+            {t("logLearningButton")}
           </button>
           <button className="btn btn--secondary progress-print-btn" onClick={() => setPrintOpen(true)}>
-            Print
+            {t("common:print")}
           </button>
         </div>
 
         {onOpenNishmat && (
           <button className="card progress-nishmat-link" onClick={onOpenNishmat}>
-            <span className="progress-nishmat-link__title">L'Iluy Nishmat</span>
-            <span className="progress-nishmat-link__sub">
-              Dedicate a full siyum on Shas to a neshama, or take a perek in someone else's →
-            </span>
+            <span className="progress-nishmat-link__title">{t("nishmatLink.title")}</span>
+            <span className="progress-nishmat-link__sub">{t("nishmatLink.sub")}</span>
           </button>
         )}
 
-        <h2 className="section-title">Siyumim ahead</h2>
+        <h2 className="section-title">{t("aheadTitle")}</h2>
         <div className="progress-list">
           {SEDARIM.map((seder) => {
             const isOpen = expanded === seder.id;
@@ -361,7 +378,7 @@ export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
                   onClick={() => setExpanded(isOpen ? null : seder.id)}
                 >
                   <span className="progress-row__label">
-                    {isOpen ? "▾" : "▸"} {seder.en}
+                    {isOpen ? "▾" : collapsedChevron} {name(seder)}
                   </span>
                   <span className="progress-row__pct">{progress.sederPercent(seder.id)}%</span>
                 </button>
@@ -380,7 +397,7 @@ export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
                             onClick={() => setExpanded(mOpen ? seder.id : mKey)}
                           >
                             <span className="progress-row__label">
-                              {mOpen ? "▾" : "▸"} {m.en}
+                              {mOpen ? "▾" : collapsedChevron} {name(m)}
                             </span>
                             <span className="progress-row__pct">
                               {progress.masechetPercent(m.en, m.perakim)}%
@@ -392,7 +409,7 @@ export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
                               className="btn btn--accent btn--compact progress-cert-btn progress-cert-btn--row"
                               onClick={() => setCertificateFor({ en: m.en, he: m.he })}
                             >
-                              Get certificate
+                              {t("getCertificate")}
                             </button>
                           )}
                           {progress.masechetPercent(m.en, m.perakim) === 100 && (
@@ -402,12 +419,16 @@ export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
                           {mOpen && (
                             <div className="progress-perakim">
                               {Array.from({ length: m.perakim }, (_, i) => i + 1).map((p) => {
-                                const name = getPerekName(m.en, p);
+                                const perekName = getPerekName(m.en, p);
                                 return (
                                   <div key={p} className="progress-row progress-row--perek">
                                     <span className="progress-row__label">
-                                      Perek <span dir="rtl">{hebrewNumeral(p)}</span>
-                                      {name ? ` — ${name}` : ""}
+                                      <Trans
+                                        t={t}
+                                        i18nKey={perekName ? "perek.rowNamed" : "perek.row"}
+                                        values={{ numeral: hebrewNumeral(p), name: perekName }}
+                                        components={[<span key="numeral" dir="rtl" />]}
+                                      />
                                     </span>
                                     <span className="progress-row__pct">
                                       {progress.perekPercent(m.en, p)}%

@@ -153,3 +153,14 @@ export const MNEMONIC = "זמן נקט";
 export function getSeder(id: string): Seder | undefined {
   return SEDARIM.find((s) => s.id === id);
 }
+
+/** A masechet by its English name (the app's key for it everywhere) —
+    so a screen holding only `masechetEn` can still show the name in the
+    interface's language through useName(). */
+export function findMasechet(en: string): Masechet | undefined {
+  for (const s of SEDARIM) {
+    const m = s.masechtot.find((x) => x.en === en);
+    if (m) return m;
+  }
+  return undefined;
+}

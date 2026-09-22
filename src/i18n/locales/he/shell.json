@@ -23,5 +23,96 @@
     "myMishna": "המשנה שלי",
     "practice": "תרגול",
     "more": "עוד"
-  }
+  },
+  "errors": {
+    "load": "לא הצלחנו לטעון — נסה שוב.",
+    "offline": "אין חיבור לאינטרנט — זה ייטען כשהחיבור יחזור.",
+    "generic": "משהו השתבש — נסה שוב.",
+    "googleStart": "לא הצלחנו להתחיל כניסה עם Google.",
+    "signInIncomplete": "הכניסה לא הושלמה. נסה שוב, או היכנס עם אימייל.",
+    "googleFailed": "הכניסה עם Google נכשלה ({{code}})."
+  },
+  "errorFallback": {
+    "title": "משהו השתבש",
+    "body": "האפליקציה נתקלה בבעיה שלא הצליחה להתאושש ממנה. ההתקדמות שלך שמורה — טעינה מחדש בדרך כלל פותרת את זה.",
+    "reload": "טעינה מחדש"
+  },
+  "announcement": {
+    "closeLabel": "סגירת ההודעה"
+  },
+  "confirm": {
+    "working": "רגע…"
+  },
+  "gate": {
+    "edit": "עריכה",
+    "addComment": "הוספת תגובה",
+    "learnedToday": "למד היום",
+    "notYetToday": "עוד לא היום",
+    "sendToday": "שליחת הלימוד של היום",
+    "oneSendADay": "שליחה אחת ביום",
+    "logInOrSignUp": "כניסה או הרשמה",
+    "createAccount": "פתיחת חשבון",
+    "haveAccount": "כבר יש לי חשבון",
+    "weekDays": "א ב ג ד ה ו ש",
+    "weekLabel": "למד {{learned}} מתוך {{total}} הימים האחרונים"
+  },
+  "firstOpen": {
+    "offerHeading": "התחל עם חשבון, או פשוט התחל",
+    "offerBody": "חשבון שומר את המקום שלך בין הטלפון למחשב, ובזכותו אפשר ללמוד עם חברותא או להתחלק בסיום. כל השאר עובד גם בלעדיו.",
+    "keepDays_one": "שמור על יום הלימוד שלך",
+    "keepDays_two": "שמור על היומיים שלך",
+    "keepDays_other": "שמור על {{count}} הימים שלך",
+    "keepStarted": "שמור על מה שהתחלת",
+    "streakClause_one": "רצף של יום אחד",
+    "streakClause_two": "רצף של יומיים",
+    "streakClause_other": "רצף של {{count}} ימים",
+    "mishnayotClause_one": "משנה אחת",
+    "mishnayotClause_two": "שתי משניות",
+    "mishnayotClause_other": "{{count}} משניות",
+    "notesClause_one": "הערה אחת",
+    "notesClause_two": "שתי הערות",
+    "notesClause_other": "{{count}} הערות",
+    "yourProgress": "ההתקדמות שלך",
+    "listSeparator": ", ",
+    "listLast": "{{rest}} ו־{{last}}",
+    "keepBody": "{{items}} — הכול שמור רק במכשיר הזה. ניקוי הדפדפן ימחק את זה. חשבון שומר על הכול, ועובד גם בטלפון.",
+    "google": "המשך עם Google",
+    "email": "כניסה עם כתובת אימייל",
+    "dismiss": "לא עכשיו"
+  },
+  "progressTracks": {
+    "nextMasechet": "המסכת הבאה",
+    "trackLabel": "{{title}}, {{percent}} אחוז",
+    "shas": "ש״ס",
+    "streak_one": "רצף של יום אחד",
+    "streak_two": "רצף של יומיים",
+    "streak_other": "רצף של {{count}} ימים",
+    "startStreak": "למד היום ותתחיל רצף"
+  },
+  "progressHeader": {
+    "howToUse": "איך משתמשים",
+    "upNext": "הבא בתור",
+    "upNextRef": "{{masechet}} {{perek}}:{{mishnah}}",
+    "kolHashas": "כל הש״ס!",
+    "goToLimmud": "ללימוד היומי"
+  },
+  "flipCounter": {
+    "zoomIn": "התמקדות",
+    "zoomOut": "מבט רחב",
+    "count": "{{done}} מתוך {{total}} {{unit}}",
+    "scope": {
+      "Masechet": "מסכת",
+      "Seder": "סדר",
+      "Shas": "ש״ס"
+    }
+  },
+  "journey": {
+    "unit": "משניות",
+    "masechtot_one": "מסכת אחת",
+    "masechtot_two": "שתי מסכתות",
+    "masechtot_other": "{{count}} מסכתות",
+    "kolHaShas": "כל הש״ס",
+    "allSedarim": "כל ששת הסדרים"
+  },
+  "brandMark": "הסמל של חזרת הש״ס"
 }

@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { Trans, useTranslation } from "react-i18next";
+import { findMasechet } from "../../data/shas";
+import { useName } from "../../i18n";
 import { hebrewNumeral } from "../../utils/hebrewNumeral";
 import { useEscapeKey } from "../../utils/useEscapeKey";
 import "./PerekNoteModal.css";
@@ -35,6 +38,9 @@ export function PerekNoteModal({
   onClose,
   onOpenNotes,
 }: PerekNoteModalProps) {
+  const { t } = useTranslation(["dailyLimmud", "common"]);
+  const name = useName();
+  const masechet = findMasechet(masechetEn);
   const [draft, setDraft] = useState(initialValue);
   useEscapeKey(onClose);
 
@@ -52,25 +58,30 @@ export function PerekNoteModal({
   return (
     <div className="modal-scrim" onClick={onClose}>
       <div className="modal modal--sm note-modal" onClick={(e) => e.stopPropagation()}>
-        <button className="icon-btn modal__close" onClick={onClose} title="Close" aria-label="Close">
+        <button className="icon-btn modal__close" onClick={onClose} title={t("common:close")} aria-label={t("common:close")}>
           ✕
         </button>
         <p className="note-modal__label">
-          {masechetEn} — Perek <span dir="rtl">{hebrewNumeral(perek)}</span>
+          <Trans
+            t={t}
+            i18nKey="modal.label"
+            values={{ masechet: masechet ? name(masechet) : masechetEn, num: hebrewNumeral(perek) }}
+            components={{ 1: <span dir="rtl" /> }}
+          />
         </p>
         <textarea
           className="note-modal__textarea"
           autoFocus
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
-          placeholder={`My name or memory cue for this perek, e.g. "the laws of Zimmun"`}
+          placeholder={t("modal.perekNotePlaceholder")}
         />
         <button className="restart" onClick={handleSave}>
-          Save note
+          {t("modal.saveNote")}
         </button>
         {onOpenNotes && (
           <button className="note-modal__open-notes" onClick={handleOpenNotes}>
-            → Open in Mishna Notes
+            {t("modal.openInNotes")}
           </button>
         )}
       </div>

@@ -1,1 +1,44 @@
-{}
+{
+  "subtitle": "Let's learn Shas, together",
+  "desc": {
+    "limmud": "Today's mishnayot, in order.",
+    "map": "Explore every seder, masechet, perek, and mishnah, with your progress along the way.",
+    "perek": "Make Shas yours — your own names, notes, and memory cues for every perek.",
+    "progress": "Track your streak and how much of Shas you've learned so far.",
+    "chevrusa": "Pair up one-on-one with a study partner.",
+    "chabura": "Start or join a group learning together, with or without a rebbe.",
+    "sedarim": "Drag the six sedarim — or one seder's masechtot — into their correct order.",
+    "mishna": "Read a real mishnah and locate it: seder and masechet, with perek as bonus.",
+    "sort": "Sort all 63 masechtot into the seder each one belongs to.",
+    "recall": "Type every masechet you can remember, by seder or by all of Shas.",
+    "dash": "Steer each masechet into its seder before it reaches the end of the road.",
+    "resources": "Printable worksheets for practicing Shas structure away from the screen."
+  },
+  "status": {
+    "finishedShas": "Finished Shas!",
+    "streak_one": "{{count}}-day streak",
+    "streak_other": "{{count}}-day streak",
+    "shasLearned": "{{percent}}% of Shas learned",
+    "notesSaved_one": "{{count}} note saved",
+    "notesSaved_other": "{{count}} notes saved",
+    "chevrusot_one": "{{count}} active chevrusa",
+    "chevrusot_other": "{{count}} active chevrusot",
+    "chaburot_one": "{{count}} active chabura",
+    "chaburot_other": "{{count}} active chaburot",
+    "completed": "{{value}} completed",
+    "quizBest": "{{score}}/{{outOf}} best ({{grade}})",
+    "best": "{{value}} best"
+  },
+  "todayLearning": {
+    "title": "Today's learning",
+    "rav": "Rav {{name}}",
+    "yourRebbe": "your rebbe",
+    "sentTo": "Sent to {{teacher}}",
+    "learnedMore": "Learned more since?",
+    "sendUpdate": "Send an update →",
+    "empty": "Nothing yet to submit — do your Daily Limmud or a drill first.",
+    "sending": "Sending…",
+    "sendTo": "Send to {{teacher}}",
+    "note": "One send a day. Keep learning after — anything you add today goes with it if you send again."
+  }
+}

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import type { ChagStretch } from "../../utils/chagCalendar";
 import { NavIcon } from "../Icon/NavIcon";
 import { ChagGreeting } from "./ChagGreeting";
@@ -11,8 +12,9 @@ import "./ChagPrint.css";
  * than printing itself — Daily Limmud is where the learning lives.
  */
 export function ErevChagCard({ stretch, onGoToLimmud }: { stretch: ChagStretch; onGoToLimmud: () => void }) {
+  const { t } = useTranslation("print");
   return (
-    <section className="erev-card" aria-label={`Before ${chagName(stretch)}`}>
+    <section className="erev-card" aria-label={t("erevCard.label", { chag: chagName(stretch) })}>
       <ChagGreeting stretch={stretch} />
       <button
         className="btn btn--primary btn--block erev-card__go"
@@ -22,7 +24,7 @@ export function ErevChagCard({ stretch, onGoToLimmud }: { stretch: ChagStretch; 
         }}
       >
         <NavIcon id="print" size={16} weight={2} />
-        Print from Daily Limmud
+        {t("erevCard.go")}
       </button>
     </section>
   );

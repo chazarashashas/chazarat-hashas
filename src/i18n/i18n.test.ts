@@ -18,13 +18,31 @@ const enKeys = flatten(en as unknown as Record<string, unknown>);
 const heKeys = flatten(he);
 const placeholders = (s: string) => [...s.matchAll(/\{\{\s*(\w+)[^}]*\}\}/g)].map((m) => m[1]).sort();
 
+/** Hebrew has plural forms English lacks (שני / שתי — "_two"), so a Hebrew
+    "x_two" counts as belonging to English "x_one"/"x_other". */
+const HEBREW_ONLY_PLURAL = /_(two|many|zero)$/;
+const englishFor = (k: string): string | undefined => {
+  if (enKeys.has(k)) return enKeys.get(k);
+  if (HEBREW_ONLY_PLURAL.test(k)) return enKeys.get(k.replace(HEBREW_ONLY_PLURAL, "_other"));
+  return undefined;
+};
+
 describe("the Hebrew strings", () => {
   it("has no key English doesn't — a typo would never be shown", () => {
-    expect([...heKeys.keys()].filter((k) => !enKeys.has(k))).toEqual([]);
+    expect([...heKeys.keys()].filter((k) => englishFor(k) === undefined)).toEqual([]);
   });
 
   it("keeps every {{blank}} its English has", () => {
-    const mismatched = [...heKeys].filter(([k, v]) => enKeys.has(k) && placeholders(v).join() !== placeholders(enKeys.get(k)!).join());
+    // Except the count in a plural form: Hebrew says "יום אחד", "יומיים"
+    // without the number — the form itself carries it.
+    const isPlural = (k: string) => /_(one|two|many|zero|other)$/.test(k);
+    const mismatched = [...heKeys].filter(([k, v]) => {
+      const english = englishFor(k);
+      if (english === undefined) return false;
+      const want = placeholders(english).filter((p) => !(isPlural(k) && p === "count"));
+      const have = placeholders(v).filter((p) => !(isPlural(k) && p === "count"));
+      return want.join() !== have.join();
+    });
     expect(mismatched.map(([k]) => k)).toEqual([]);
   });
 

@@ -1,1 +1,130 @@
-{}
+{
+  "chag": {
+    "roshHashana": "Rosh Hashana",
+    "yomKippur": "Yom Kippur",
+    "sukkot": "Sukkot",
+    "shminiAtzeret": "Shemini Atzeret",
+    "pesach": "Pesach",
+    "shavuot": "Shavuot",
+    "shabbat": "Shabbat"
+  },
+  "stretch": {
+    "two": "Two days of {{chag}}",
+    "three": "Three days of {{chag}}",
+    "many": "{{words}} days of {{chag}}"
+  },
+  "dayTitle": {
+    "firstDayRoshHashana": "the first day of Rosh Hashana",
+    "secondDayRoshHashana": "the second day of Rosh Hashana",
+    "firstDaySukkot": "the first day of Sukkot",
+    "firstDayPesach": "the first day of Pesach",
+    "sheviiShelPesach": "Shevi'i shel Pesach",
+    "erevSheviiShelPesach": "Erev Shevi'i shel Pesach",
+    "sheni": "Yom Tov Sheni / Isru Chag",
+    "hoshanaRabba": "Hoshana Rabba",
+    "erev": "Erev {{chag}}"
+  },
+  "greeting": {
+    "wish": "Wishing all of Am Yisrael a",
+    "reminder": "Make sure to print your Mishnayos before {{chag}}"
+  },
+  "erevCard": {
+    "label": "Before {{chag}}",
+    "go": "Print from Daily Limmud"
+  },
+  "meta": {
+    "nothingLeft": "Nothing left to learn",
+    "mishnayotCount_one": "{{count}} mishnah",
+    "mishnayotCount_other": "{{count}} mishnayot",
+    "perek": "{{masechet}} perek {{perek}}",
+    "perekOnly": "perek {{perek}}",
+    "and": "{{list}} and {{last}}"
+  },
+  "card": {
+    "label": "Print before yom tov",
+    "dayTitle": "My Mishnayot for {{title}}",
+    "pillYomTov": "YOM TOV",
+    "pillShabbat": "SHABBAT",
+    "layoutLabel": "Layout",
+    "layout": {
+      "each": "A page each",
+      "eachSub": "one sheet per day, titled",
+      "one": "All on one",
+      "oneSub": "every day on a single sheet"
+    },
+    "includeNotes": "Include my perek notes",
+    "alsoPrint": "Also print {{label}}",
+    "cta": {
+      "pickDay": "Pick a day to print",
+      "loadFailed": "Couldn't load the mishnayot",
+      "loading": "Getting the mishnayot ready…",
+      "layingOut": "Laying out the pages…",
+      "print_one": "Print {{count}} page",
+      "print_other": "Print {{count}} pages"
+    },
+    "nothingSelected": "Nothing selected.",
+    "layoutOneMeta": "days under their own headings",
+    "layoutEachMeta": "each day on its own sheet, with the greeting",
+    "hebrewOnly": "Hebrew only",
+    "withNotes": "with your notes",
+    "retry": "Check your connection, then <1>try again</1>."
+  },
+  "doc": {
+    "nothingThisDay": "Nothing left to learn this day.",
+    "perekMishnah": " · mishnah {{n}}",
+    "perekMishnayot": " · mishnayot {{first}}–{{last}}",
+    "yourNote": "Your note: ",
+    "yourNoteOn": "Your note on {{masechet}} perek {{perek}}: ",
+    "count": "{{i}} of {{total}}",
+    "pageOf": "page {{page}} of {{total}}",
+    "continued": "{{where}}, continued"
+  },
+  "return": {
+    "title": "Your streak is safe",
+    "daysHeld_one": "{{count}} day held",
+    "daysHeld_other": "{{count}} days held",
+    "backToLearning": "Back to learning",
+    "dueMishnah": "{{words}} mishnah came due while you were away.",
+    "dueMishnayot": "{{words}} mishnayot came due while you were away.",
+    "duePerek": "{{words}} perek came due while you were away.",
+    "duePerakim": "{{words}} perakim came due while you were away.",
+    "markIt": "Yes — mark it learned",
+    "markBoth": "Yes — mark both learned",
+    "markAllCount": "Yes — mark all {{words}} learned",
+    "letMeChoose": "Some of them — let me choose",
+    "catchUp": "Not yet — let's catch up now",
+    "markThem": "Mark them learned",
+    "markAll": "Mark all learned",
+    "markThese": "Mark these learned"
+  },
+  "resources": {
+    "title": "Resources",
+    "guide": {
+      "title": "How to use Chazarat Hashas",
+      "desc": "The full guide to the method behind the app, step by step.",
+      "read": "Read"
+    },
+    "download": "Download",
+    "sedarim": {
+      "title": "Sedarim order worksheet",
+      "desc": "Practice writing the six Sedarim in order, with the Zman Nakat mnemonic and a word bank."
+    },
+    "masechtot": {
+      "title": "Masechtot order worksheet",
+      "desc": "Practice writing a seder's masechtot in order, from memory — two columns, so it works for one seder or two side by side."
+    },
+    "perakim": {
+      "title": "Masechet and perek worksheet",
+      "desc": "Fill in a seder and masechet, then number and name every perek in your own words."
+    },
+    "notes": {
+      "title": "Mishna notes (printable)",
+      "desc": "Print your own notes and concepts — pick one masechet, one seder, or all of Shas."
+    },
+    "support": {
+      "title": "Support and feedback",
+      "desc": "Found a bug, or have an idea for the app? We'd love to hear from you.",
+      "email": "Email us"
+    }
+  }
+}

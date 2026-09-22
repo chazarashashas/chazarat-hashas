@@ -1,12 +1,15 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { SEDARIM, type Seder, type Masechet } from "../../data/shas";
-import { SEDER_TABS } from "../../data/sederTabs";
+import { useSederTabs } from "../../data/sederTabs";
 import { fetchRandomMishna } from "../../utils/sefaria";
 import { friendlyError } from "../../utils/friendlyError";
 import { usePerekNotes } from "../../utils/usePerekNotes";
 import { useGameStats } from "../../utils/useGameStats";
 import { getSederHue } from "../../utils/sederHue";
-import { useDirection } from "../../i18n";
+import { useTranslation, Trans } from "react-i18next";
+import { useDirection, useName } from "../../i18n";
+import { useNavLabels } from "../../utils/navItems";
+import { hebrewNumeral } from "../../utils/hebrewNumeral";
 import { PerekNoteModal } from "../PerekNoteModal/PerekNoteModal";
 import { TranslationReveal } from "../TranslationReveal/TranslationReveal";
 import { TabBar } from "../TabBar/TabBar";
@@ -32,12 +35,13 @@ const MIN_TEXT_FONT_SIZE = 10;
 const CARD_SECONDS = 60;
 const TIME_BONUS_SECONDS = 10;
 
-function letterGrade(percent: number): string {
-  if (percent >= 90) return "A";
-  if (percent >= 80) return "B";
-  if (percent >= 70) return "C";
-  if (percent >= 60) return "D";
-  return "F";
+/** The key of the grade's word in games:mishnaId.grade ("A" in English). */
+function letterGrade(percent: number): "a" | "b" | "c" | "d" | "f" {
+  if (percent >= 90) return "a";
+  if (percent >= 80) return "b";
+  if (percent >= 70) return "c";
+  if (percent >= 60) return "d";
+  return "f";
 }
 
 interface FlatMasechet {
@@ -139,6 +143,12 @@ interface MishnaIdScreenProps {
 }
 
 export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
+  const { t, i18n } = useTranslation("games");
+  const sederTabs = useSederTabs();
+  const name = useName();
+  const navLabels = useNavLabels();
+  /** Perek numbers the way each language counts them: 3 / ג. */
+  const perekNum = (n: number): string => (i18n.language === "he" ? hebrewNumeral(n) : String(n));
   const [mode, setMode] = useState<Mode>("streak");
   const [sederTab, setSederTab] = useState<string>(ALL_MASECHTOT[0].seder.id);
   // Empty string = no narrowing yet, scope is the whole tab (all of Shas, or
@@ -374,26 +384,26 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
           {inPlay && (
             <button
               className="icon-btn"
-              title={paused ? "Resume" : "Pause"}
+              title={paused ? t("resume") : t("pause")}
               onClick={() => setPaused((p) => !p)}
             >
               {paused ? "▶" : "⏸"}
             </button>
           )}
-          <button className="icon-btn" title="Restart" onClick={() => prepareSession()}>
+          <button className="icon-btn" title={t("restart")} onClick={() => prepareSession()}>
             ↺
           </button>
         </div>
-        <h1 className="panel__title">Mishna Quiz</h1>
+        <h1 className="panel__title">{navLabels.item({ id: "mishna", label: "Mishna Quiz" })}</h1>
 
         <div className="mishna-controls-row">
           <div className="mishna-control">
-            <p className="mishna-control__label">Mode</p>
+            <p className="mishna-control__label">{t("mishnaId.modeLabel")}</p>
             <Switch
               size="sm"
               options={[
-                { value: "streak", label: "🔥 Streak" },
-                { value: "quiz", label: "Quiz" },
+                { value: "streak", label: t("mishnaId.modeStreak") },
+                { value: "quiz", label: t("mishnaId.modeQuiz") },
               ]}
               value={mode}
               onChange={handleModeChange}
@@ -401,12 +411,12 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
           </div>
           {scopeType !== "masechta" && (
             <div className="mishna-control">
-              <p className="mishna-control__label">Practice</p>
+              <p className="mishna-control__label">{t("mishnaId.practiceLabel")}</p>
               <Switch
                 size="sm"
                 options={[
-                  { value: "masechet", label: "Masechet" },
-                  { value: "perek", label: "Perek" },
+                  { value: "masechet", label: t("mishnaId.practiceMasechet") },
+                  { value: "perek", label: t("mishnaId.practicePerek") },
                 ]}
                 value={depth}
                 onChange={handleDepthChange}
@@ -415,16 +425,16 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
           )}
           {sederTab === "all" ? (
             <div className="mishna-control">
-              <p className="mishna-control__label">Pool</p>
+              <p className="mishna-control__label">{t("mishnaId.poolLabel")}</p>
               <select
                 className="field__input mishna-narrow-select"
                 value={narrowTo}
                 onChange={(e) => handleNarrowChange(e.target.value)}
               >
-                <option value="">All of Shas</option>
+                <option value="">{t("allOfShas")}</option>
                 {SEDARIM.map((s) => (
                   <option key={s.id} value={s.id}>
-                    {s.en}
+                    {name(s)}
                   </option>
                 ))}
               </select>
@@ -432,16 +442,16 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
           ) : (
             activeSeder && (
               <div className="mishna-control">
-                <p className="mishna-control__label">Pool</p>
+                <p className="mishna-control__label">{t("mishnaId.poolLabel")}</p>
                 <select
                   className="field__input mishna-narrow-select"
                   value={narrowTo}
                   onChange={(e) => handleNarrowChange(e.target.value)}
                 >
-                  <option value="">{activeSeder.en}</option>
+                  <option value="">{name(activeSeder)}</option>
                   {activeSeder.masechtot.map((m) => (
                     <option key={m.en} value={m.en}>
-                      {m.en}
+                      {name(m)}
                     </option>
                   ))}
                 </select>
@@ -452,7 +462,13 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
 
         {!quizFinished && (
           <GameHud
-            doing={mode === "streak" ? "Streak" : started ? `Card ${questionNumber} of ${QUIZ_LENGTH}` : "Quiz"}
+            doing={
+              mode === "streak"
+                ? t("mishnaId.hudStreak")
+                : started
+                  ? t("mishnaId.hudCard", { number: questionNumber, total: QUIZ_LENGTH })
+                  : t("mishnaId.hudQuiz")
+            }
             progress={inPlay ? 1 - secondsLeft / CARD_SECONDS : 0}
             worth={mode === "streak" ? `🔥 ${streak}` : `${quizScore}${quizBonus ? ` +${quizBonus}` : ""}`}
             urgent={inPlay && secondsLeft <= 10}
@@ -465,12 +481,12 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
             <p className="mishna-summary__score">
               {quizScore} / {QUIZ_LENGTH}
             </p>
-            {quizBonus > 0 && <p className="mishna-summary__bonus">★ {quizBonus} perek bonus</p>}
-            <p className="mishna-summary__grade">{letterGrade((quizScore / QUIZ_LENGTH) * 100)}</p>
-            <p className="mishna-summary__label">Quiz complete</p>
+            {quizBonus > 0 && <p className="mishna-summary__bonus">{t("mishnaId.perekBonus", { bonus: quizBonus })}</p>}
+            <p className="mishna-summary__grade">{t(`mishnaId.grade.${letterGrade((quizScore / QUIZ_LENGTH) * 100)}`)}</p>
+            <p className="mishna-summary__label">{t("mishnaId.quizComplete")}</p>
             {share.prompt("cream")}
             <button className="restart" onClick={() => prepareSession()}>
-              Play again
+              {t("playAgain")}
             </button>
             {share.link()}
           </div>
@@ -483,7 +499,7 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
                 dir="rtl"
               >
                 {content.status === "loading" ? (
-                  <span className="mishna-card__loading">Loading…</span>
+                  <span className="mishna-card__loading">{t("loading", { ns: "common" })}</span>
                 ) : content.status === "error" ? (
                   <span className="mishna-card__error" dir="ltr">
                     {content.message}
@@ -497,38 +513,38 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
               {!started && (
                 <div className="mishna-card-overlay">
                   <button className="restart" onClick={() => setStarted(true)}>
-                    Start
+                    {t("start")}
                   </button>
                 </div>
               )}
               {started && paused && (
                 <div className="mishna-card-overlay">
-                  <span className="mishna-card__paused">Paused</span>
+                  <span className="mishna-card__paused">{t("paused")}</span>
                 </div>
               )}
             </div>
 
             {started && !paused && !coreSolved && !card.timedOut && !card.failed && (
-              <p className="mishna-english-withheld">English becomes available once you have located it.</p>
+              <p className="mishna-english-withheld">{t("mishnaId.englishWithheld")}</p>
             )}
 
             {!started || paused ? null : card.timedOut && !coreSolved ? (
               <div className="note-banner">
-                Time's up — it was {card.seder.en} › {card.masechet.en} › Perek {card.perek}.
+                {t("mishnaId.timesUp", { seder: name(card.seder), masechet: name(card.masechet), perek: perekNum(card.perek) })}
                 <button className="mishna-note-link" onClick={() => setNoteOpen(true)}>
-                  {getPerekNote(card.masechet.en, card.perek) ? "View note" : "Add note"}
+                  {getPerekNote(card.masechet.en, card.perek) ? t("mishnaId.viewNote") : t("mishnaId.addNote")}
                 </button>
               </div>
             ) : card.failed && !coreSolved ? (
               <div className="note-banner">
-                Not quite — it was {card.seder.en} › {card.masechet.en} › Perek {card.perek}.
+                {t("mishnaId.notQuite", { seder: name(card.seder), masechet: name(card.masechet), perek: perekNum(card.perek) })}
                 <button className="mishna-note-link" onClick={() => setNoteOpen(true)}>
-                  {getPerekNote(card.masechet.en, card.perek) ? "View note" : "Add note"}
+                  {getPerekNote(card.masechet.en, card.perek) ? t("mishnaId.viewNote") : t("mishnaId.addNote")}
                 </button>
               </div>
             ) : !sederDone ? (
               <div className="mishna-step">
-                <div className="mishna-step-label">Which seder?</div>
+                <div className="mishna-step-label">{t("mishnaId.whichSeder")}</div>
                 <div className="pill-row pill-row--nowrap mishna-seder-choice">
                   {SEDARIM.map((s) => (
                     <button
@@ -537,14 +553,14 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
                       style={{ ["--opt-hue" as string]: getSederHue(s.id) }}
                       onClick={() => guessSeder(s.id)}
                     >
-                      {s.en}
+                      {name(s)}
                     </button>
                   ))}
                 </div>
               </div>
             ) : !masechetDone ? (
               <div className="mishna-step">
-                <div className="mishna-step-label">Which masechet?</div>
+                <div className="mishna-step-label">{t("mishnaId.whichMasechet")}</div>
                 <div className="pill-row">
                   {card.seder.masechtot.map((m) => (
                     <button
@@ -552,7 +568,7 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
                       className={"pill" + (wrongFlash === "masechet:" + m.en ? " pill--reject" : "")}
                       onClick={() => guessMasechet(m.en)}
                     >
-                      {m.en}
+                      {name(m)}
                     </button>
                   ))}
                 </div>
@@ -560,11 +576,16 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
             ) : (
               <>
                 <div className="note-banner note-banner--good">
-                  Located — {card.seder.en} › {card.masechet.en}
-                  {perekRevealed ? ` › Perek ${card.perek}.` : "."}
+                  {perekRevealed
+                    ? t("mishnaId.locatedWithPerek", {
+                        seder: name(card.seder),
+                        masechet: name(card.masechet),
+                        perek: perekNum(card.perek),
+                      })
+                    : t("mishnaId.located", { seder: name(card.seder), masechet: name(card.masechet) })}
                   {perekRevealed && (
                     <button className="mishna-note-link" onClick={() => setNoteOpen(true)}>
-                      {getPerekNote(card.masechet.en, card.perek) ? "View note" : "Add note"}
+                      {getPerekNote(card.masechet.en, card.perek) ? t("mishnaId.viewNote") : t("mishnaId.addNote")}
                     </button>
                   )}
                   {content.status === "loaded" && (
@@ -581,12 +602,12 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
                 {bonusAvailable &&
                   (card.guessedPerek ? (
                     <div className="note-banner note-banner--bonus">
-                      ★ Perek {card.guessedPerek} — bonus earned!
+                      {t("mishnaId.bonusEarned", { perek: perekNum(card.guessedPerek) })}
                     </div>
                   ) : (
                     <div className="mishna-step">
                       <div className="mishna-step-label">
-                        Bonus: which perek? <span className="bonus-tag">extra credit</span>
+                        <Trans t={t} i18nKey="mishnaId.bonusQuestion" components={{ tag: <span className="bonus-tag" /> }} />
                       </div>
                       <div className="pill-row">
                         {Array.from({ length: card.masechet.perakim }, (_, i) => i + 1).map((n) => (
@@ -595,7 +616,7 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
                             className={"pill" + (wrongFlash === "perek:" + n ? " pill--reject" : "")}
                             onClick={() => guessPerek(n)}
                           >
-                            {n}
+                            {perekNum(n)}
                           </button>
                         ))}
                       </div>
@@ -606,7 +627,7 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
 
             {started && !paused && (coreSolved || card.timedOut || card.failed) && (
               <button className="restart" onClick={handleAdvance}>
-                {mode === "quiz" && quizCardIndex + 1 >= QUIZ_LENGTH ? "Finish quiz" : "Next card"}
+                {mode === "quiz" && quizCardIndex + 1 >= QUIZ_LENGTH ? t("mishnaId.finishQuiz") : t("mishnaId.nextCard")}
               </button>
             )}
           </>
@@ -631,7 +652,7 @@ export function MishnaIdScreen({ onOpenNotes }: MishnaIdScreenProps) {
           </div>
         )}
       </div>
-      <TabBar tabs={SEDER_TABS} activeId={sederTab} onSelect={handleSederTabChange} />
+      <TabBar tabs={sederTabs} activeId={sederTab} onSelect={handleSederTabChange} />
       {noteOpen && (
         <PerekNoteModal
           masechetEn={card.masechet.en}

@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
-import { SEDARIM } from "../../data/shas";
+import { useTranslation } from "react-i18next";
+import { SEDARIM, type Masechet } from "../../data/shas";
+import { useName } from "../../i18n";
+import { useNavLabels } from "../../utils/navItems";
 import { shuffle } from "../../utils/shuffle";
 import { getSederHue } from "../../utils/sederHue";
 import { useGameStats } from "../../utils/useGameStats";
@@ -21,6 +24,8 @@ function flatList(): FlatMasechet[] {
 
 const ALL_MASECHTOT = flatList();
 const TOTAL = ALL_MASECHTOT.length;
+/** Chips are keyed by English name; this finds the masechet to show it by. */
+const MASECHET_BY_EN = new Map<string, Masechet>(SEDARIM.flatMap((s) => s.masechtot.map((m) => [m.en, m])));
 
 interface DragState {
   name: string;
@@ -47,6 +52,14 @@ function initState() {
 const TAP_MOVE_THRESHOLD = 6;
 
 export function SederSortScreen() {
+  const { t } = useTranslation("games");
+  const nameOf = useName();
+  const navLabels = useNavLabels();
+  const gameName = navLabels.item({ id: "sort", label: "Seder Sort" });
+  const shown = (en: string): string => {
+    const m = MASECHET_BY_EN.get(en);
+    return m ? nameOf(m) : en;
+  };
   const { recordSortCompletion, recordSortProgress } = useGameStats();
   const [{ placed, pool }, setState] = useState(initState);
   const [sharing, setSharing] = useState(false);
@@ -161,12 +174,12 @@ export function SederSortScreen() {
   return (
     <div className="stage">
       <div className="panel">
-        <button className="restart-icon" title="Restart" onClick={handleReset}>
+        <button className="restart-icon" title={t("restart")} onClick={handleReset}>
           ↺
         </button>
-        <h1 className="panel__title">Seder Sort</h1>
+        <h1 className="panel__title">{gameName}</h1>
 
-        <GameHud doing="Seder Sort" progress={placedCount / TOTAL} worth={`${placedCount} / ${TOTAL}`} />
+        <GameHud doing={gameName} progress={placedCount / TOTAL} worth={`${placedCount} / ${TOTAL}`} />
 
         <div className="sort-bins">
           {SEDARIM.map((seder) => (
@@ -183,7 +196,7 @@ export function SederSortScreen() {
               onClick={() => handleBinTap(seder.id)}
             >
               <div className="sort-bin__head">
-                <span className="sort-bin__title">{seder.en}</span>
+                <span className="sort-bin__title">{nameOf(seder)}</span>
                 <span className="sort-bin__tally">
                   {placed[seder.id].length}/{seder.masechtot.length}
                 </span>
@@ -191,7 +204,7 @@ export function SederSortScreen() {
               <div className="sort-bin__items">
                 {placed[seder.id].map((name) => (
                   <span key={name} className="sort-bin__tag">
-                    {name}
+                    {shown(name)}
                   </span>
                 ))}
               </div>
@@ -216,7 +229,7 @@ export function SederSortScreen() {
                 onPointerUp={(e) => handlePointerUp(e, name, bySederId[name])}
                 onPointerCancel={(e) => handlePointerUp(e, name, bySederId[name])}
               >
-                {name}
+                {shown(name)}
               </div>
             );
           })}
@@ -232,7 +245,7 @@ export function SederSortScreen() {
             width: drag.width,
           }}
         >
-          {drag.name}
+          {shown(drag.name)}
         </div>
       )}
 
@@ -240,15 +253,15 @@ export function SederSortScreen() {
         <div className="modal-scrim">
           <div className="modal modal--sm game__end">
             <div className="popup__mark">✓</div>
-            <div className="popup__text">All {TOTAL} masechtot sorted</div>
+            <div className="popup__text">{t("sederSort.allSorted", { total: TOTAL })}</div>
             <button className="popup__restart" onClick={handleReset}>
-              Play again
+              {t("playAgain")}
             </button>
             <ShareLink onClick={() => setSharing(true)} />
           </div>
         </div>
       )}
-      {sharing && <ShareSheet moment={all63Moment("Seder Sort")} onClose={() => setSharing(false)} />}
+      {sharing && <ShareSheet moment={all63Moment("sederSort")} onClose={() => setSharing(false)} />}
     </div>
   );
 }

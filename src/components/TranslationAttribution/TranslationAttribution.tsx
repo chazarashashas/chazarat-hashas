@@ -26,7 +26,7 @@ export function TranslationAttributionLine({ attribution, variant }: Translation
 
   if (variant === "short") {
     return (
-      <p className="translation-credit translation-credit--short">
+      <p className="translation-credit translation-credit--short" lang="en" dir="ltr">
         {attribution.versionTitle} · {sefariaLink}
       </p>
     );
@@ -34,7 +34,7 @@ export function TranslationAttributionLine({ attribution, variant }: Translation
 
   const deedUrl = licenseDeedUrl(attribution.license);
   return (
-    <p className="translation-credit">
+    <p className="translation-credit" lang="en" dir="ltr">
       {attribution.versionTitle}, via {sefariaLink} ·{" "}
       {deedUrl ? (
         <a href={deedUrl} target="_blank" rel="noopener noreferrer">

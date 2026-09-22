@@ -1,8 +1,10 @@
 import { Fragment, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { useTranslation } from "react-i18next";
+import i18n from "../../i18n";
 import { BrandMark } from "../BrandMark";
 import { getPerekName } from "../../data/perekInfo";
-import { greetingFor, longDayLabel, shortDayLabel, type ChagId } from "../../utils/chagCalendar";
-import { perekGroups, textKey, type PrintDay } from "./chagPrintModel";
+import { greetingFor, type ChagId } from "../../utils/chagCalendar";
+import { dayTitle, longDay, masechetName, perekGroups, perekName, shortDay, textKey, type PrintDay } from "./chagPrintModel";
 import { ChagMotif } from "./ChagMotif";
 
 export type PrintLayout = "each" | "one";
@@ -56,8 +58,8 @@ function buildUnits(
     if (layout === "one") {
       lead.push(
         <div key="dayhead" className="chag-page__dayhead">
-          <p className="chag-page__daytitle">My Mishnayot for {day.title}</p>
-          <p className="chag-page__date">{longDayLabel(day.date)}</p>
+          <p className="chag-page__daytitle">{i18n.t("print:card.dayTitle", { title: dayTitle(day.title) })}</p>
+          <p className="chag-page__date">{longDay(day.date)}</p>
         </div>,
       );
     }
@@ -67,11 +69,11 @@ function buildUnits(
         key: `${day.date}-empty`,
         dayIndex,
         dayStart: true,
-        context: day.title,
+        context: dayTitle(day.title),
         node: [
           ...lead,
           <p key="e" className="chag-page__empty">
-            Nothing left to learn this day.
+            {i18n.t("print:doc.nothingThisDay")}
           </p>,
         ],
       });
@@ -104,12 +106,12 @@ function buildUnits(
           const range = g.full
             ? ""
             : g.first === g.last
-              ? ` · mishnah ${g.first}`
-              : ` · mishnayot ${g.first}–${g.last}`;
+              ? i18n.t("print:doc.perekMishnah", { n: g.first })
+              : i18n.t("print:doc.perekMishnayot", { first: g.first, last: g.last });
           pieces.push(
             <div key="ph" className="chag-page__perek">
               <span className="chag-page__perek-title">
-                {m.masechetEn} perek {m.perek}
+                {perekName(m.masechetEn, m.perek)}
                 {range}
               </span>
               {name && (
@@ -123,7 +125,9 @@ function buildUnits(
         if (note) {
           pieces.push(
             <p key="note" className="chag-page__note">
-              {track.perekUnit ? "Your note: " : `Your note on ${m.masechetEn} perek ${m.perek}: `}
+              {track.perekUnit
+                ? i18n.t("print:doc.yourNote")
+                : i18n.t("print:doc.yourNoteOn", { masechet: masechetName(m.masechetEn), perek: m.perek })}
               {note}
             </p>,
           );
@@ -134,10 +138,10 @@ function buildUnits(
               <span className="chag-page__ref">
                 {track.perekUnit
                   ? `${m.perek}:${m.mishnah}`
-                  : `${m.masechetEn} ${m.perek}:${m.mishnah}`}
+                  : `${masechetName(m.masechetEn)} ${m.perek}:${m.mishnah}`}
               </span>
               <span className="chag-page__count">
-                {i + 1} of {track.items.length}
+                {i18n.t("print:doc.count", { i: i + 1, total: track.items.length })}
               </span>
             </div>
             <p className="chag-page__text" lang="he" dir="rtl">
@@ -150,7 +154,7 @@ function buildUnits(
           dayIndex,
           node: pieces,
           dayStart: firstOfDay,
-          context: `${day.title}${track.label ? ` · ${track.label}` : ""}${track.perekUnit ? ` · ${m.masechetEn} perek ${m.perek}` : ""}`,
+          context: `${dayTitle(day.title)}${track.label ? ` · ${track.label}` : ""}${track.perekUnit ? ` · ${perekName(m.masechetEn, m.perek)}` : ""}`,
         });
         firstOfDay = false;
       });
@@ -178,7 +182,7 @@ function ContHeader({ title, pageOf }: { title: string; pageOf: [number, number]
     <header className="chag-page__cont">
       <span>{title.charAt(0).toUpperCase() + title.slice(1)}</span>
       <span>
-        page {pageOf[0]} of {pageOf[1]}
+        {i18n.t("print:doc.pageOf", { page: pageOf[0], total: pageOf[1] })}
       </span>
     </header>
   );
@@ -212,6 +216,7 @@ export function ChagPrintDocument({
   measureOnly,
   onPageCount,
 }: Props) {
+  const { t } = useTranslation("print");
   const measureRef = useRef<HTMLDivElement>(null);
   const [pages, setPages] = useState<Page[] | null>(null);
   const units = buildUnits(days, layout, texts, noteFor);
@@ -224,14 +229,14 @@ export function ChagPrintDocument({
 
   const fullTitle = (dayIndex: number | null) =>
     dayIndex === null
-      ? `My Mishnayot for ${stretchTitle}`
-      : `My Mishnayot for ${days[dayIndex].title}`;
+      ? t("card.dayTitle", { title: stretchTitle })
+      : t("card.dayTitle", { title: dayTitle(days[dayIndex].title) });
   const fullDate = (dayIndex: number | null) =>
     dayIndex === null
       ? days.length > 1
-        ? `${shortDayLabel(days[0].date)} – ${longDayLabel(days[days.length - 1].date)}`
-        : longDayLabel(days[0].date)
-      : longDayLabel(days[dayIndex].date);
+        ? `${shortDay(days[0].date)} – ${longDay(days[days.length - 1].date)}`
+        : longDay(days[0].date)
+      : longDay(days[dayIndex].date);
 
   useLayoutEffect(() => {
     let cancelled = false;
@@ -347,7 +352,7 @@ export function ChagPrintDocument({
               <ContHeader
                 title={
                   p.units[0] && !(layout === "one" && p.units[0].dayStart)
-                    ? `${p.units[0].context}, continued`
+                    ? t("doc.continued", { where: p.units[0].context })
                     : stretchTitle
                 }
                 pageOf={p.pageOf}

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { toBlob } from "html-to-image";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../utils/useAuth";
 import { shareCardNatively } from "../../utils/nativeShare";
 import { useEscapeKey } from "../../utils/useEscapeKey";
@@ -42,6 +43,7 @@ interface Props {
  * then WhatsApp, Save the image, More… and Copy link.
  */
 export function ShareSheet({ moment, onClose }: Props) {
+  const { t } = useTranslation(["share", "common"]);
   useEscapeKey(onClose);
   const { firstName } = useAuth();
   const cardRef = useRef<HTMLDivElement>(null);
@@ -68,7 +70,7 @@ export function ShareSheet({ moment, onClose }: Props) {
       await run(await cardPng(cardRef.current));
     } catch (err) {
       // A cancelled share sheet is not a failure.
-      if (!(err instanceof DOMException && err.name === "AbortError")) setNote("Couldn't make the image — try Save the image.");
+      if (!(err instanceof DOMException && err.name === "AbortError")) setNote(t("sheet.imageFailed"));
     } finally {
       setBusy(false);
     }
@@ -95,14 +97,14 @@ export function ShareSheet({ moment, onClose }: Props) {
       else if (navigator.share) await navigator.share({ text, url: moment.link });
       else {
         saveFile(file);
-        setNote("Image saved — the text is already copied.");
+        setNote(t("sheet.imageSaved"));
       }
     });
   }
 
   function copyLink() {
     navigator.clipboard?.writeText(moment.link).then(
-      () => setNote("Link copied."),
+      () => setNote(t("sheet.linkCopied")),
       () => setNote(moment.link),
     );
   }
@@ -110,18 +112,18 @@ export function ShareSheet({ moment, onClose }: Props) {
   return (
     <div className="modal-scrim modal-scrim--top" onClick={onClose}>
       <div className="modal modal--md share-sheet" role="dialog" aria-label={moment.sheetHead} onClick={(e) => e.stopPropagation()}>
-        <button className="icon-btn modal__close" onClick={onClose} title="Close" aria-label="Close">
+        <button className="icon-btn modal__close" onClick={onClose} title={t("common:close")} aria-label={t("common:close")}>
           ✕
         </button>
         <h2 className="modal__title">{moment.sheetHead}</h2>
-        <p className="share-sheet__sub">This is what goes out. Your name is not on it unless you add it.</p>
+        <p className="share-sheet__sub">{t("sheet.sub")}</p>
 
         <div className="share-sheet__card">
           <ShareCard ref={cardRef} moment={moment} name={withName ? firstName : null} withFigure={withFigure} />
         </div>
 
         <div className="share-sheet__status">
-          <p className="share-sheet__status-label">{copied ? "✓ STATUS TEXT · COPIED" : "STATUS TEXT"}</p>
+          <p className="share-sheet__status-label">{copied ? t("sheet.statusLabelCopied") : t("sheet.statusLabel")}</p>
           <p className="share-sheet__status-he" lang="he" dir="rtl">
             {moment.status[0]}
           </p>
@@ -135,7 +137,7 @@ export function ShareSheet({ moment, onClose }: Props) {
               <span className="share-toggle__box" aria-hidden="true">
                 {withName ? "✓" : ""}
               </span>
-              Include my name
+              {t("sheet.includeName")}
             </button>
           )}
           {hasFigure && (
@@ -143,7 +145,7 @@ export function ShareSheet({ moment, onClose }: Props) {
               <span className="share-toggle__box" aria-hidden="true">
                 {withFigure ? "✓" : ""}
               </span>
-              Include the figure
+              {t("sheet.includeFigure")}
             </button>
           )}
         </div>
@@ -152,21 +154,21 @@ export function ShareSheet({ moment, onClose }: Props) {
           <button className="share-target share-target--primary" disabled={busy} onClick={whatsapp}>
             <span className="share-target__dot" aria-hidden="true" />
             <span className="share-target__label">WhatsApp</span>
-            <span className="share-target__meta">image + text</span>
+            <span className="share-target__meta">{t("sheet.imageAndText")}</span>
           </button>
           <button className="share-target" disabled={busy} onClick={() => withCard(saveFile)}>
             <span className="share-target__dot" aria-hidden="true" />
-            <span className="share-target__label">Save the image</span>
+            <span className="share-target__label">{t("sheet.saveImage")}</span>
             <span className="share-target__meta">1080 × 1080</span>
           </button>
           <button className="share-target" disabled={busy} onClick={more}>
             <span className="share-target__dot" aria-hidden="true" />
-            <span className="share-target__label">More…</span>
-            <span className="share-target__meta">native sheet</span>
+            <span className="share-target__label">{t("sheet.more")}</span>
+            <span className="share-target__meta">{t("sheet.nativeSheet")}</span>
           </button>
           <button className="share-target" onClick={copyLink}>
             <span className="share-target__dot" aria-hidden="true" />
-            <span className="share-target__label">Copy link</span>
+            <span className="share-target__label">{t("sheet.copyLink")}</span>
             <span className="share-target__meta">chazarashashas.org</span>
           </button>
         </div>

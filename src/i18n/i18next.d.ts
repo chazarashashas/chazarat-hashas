@@ -8,5 +8,6 @@ declare module "i18next" {
     defaultNS: "common";
     resources: typeof en;
     returnNull: false;
+    fallbackNS: "common";
   }
 }

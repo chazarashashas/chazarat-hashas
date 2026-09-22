@@ -1,1 +1,131 @@
-{}
+{
+  "invite": {
+    "joinDaily": "בואו להצטרף אליי ללימוד היומי",
+    "joinDailyLine": "בואו להצטרף אליי ללימוד היומי — {{site}}",
+    "learnWithMe": "בואו ללמוד איתי",
+    "learnWithMeLine": "בואו ללמוד איתי — {{site}}",
+    "ifICanLine": "אם אני הצלחתי, גם אתם יכולים — {{site}}",
+    "learnShasWithUs": "בואו ללמוד ש״ס איתנו",
+    "learnItWithMe": "בואו ללמוד אותה יחד איתי",
+    "learnItWithMeLine": "בואו ללמוד אותה יחד איתי — {{site}}",
+    "learnWithUsLine": "בואו ללמוד איתנו — {{site}}",
+    "comeLearnWithUsLine": "בואו ללמוד איתנו — {{site}}"
+  },
+  "sheetHead": {
+    "invite": "שיתוף והזמנה",
+    "siyum": "שיתוף הסיום"
+  },
+  "games": {
+    "dash": "מרוץ הש״ס",
+    "quiz": "חידון משנה",
+    "chazara": "זיכרון מסכתות",
+    "sederSort": "מיון לסדרים",
+    "sidrei": "סדרי המשנה"
+  },
+  "streak": {
+    "status": "{{words}} ימים של משנה יומית.",
+    "bannerHead": "{{words}} ימים של לימוד יומי",
+    "bannerBodyDefault": "יום אחר יום של לימוד.",
+    "sheetHead": "שיתוף {{words}} ימים",
+    "cardHead": "ימים של לימוד יומי",
+    "span": {
+      "week": "שבוע שלם",
+      "month": "חודש שלם",
+      "halfYear": "חצי שנה",
+      "year": "שנה שלמה"
+    },
+    "spanBody": {
+      "week": "שבוע שלם של לימוד.",
+      "month": "חודש שלם של לימוד.",
+      "halfYear": "חצי שנה של לימוד.",
+      "year": "שנה שלמה של לימוד."
+    }
+  },
+  "best": {
+    "line": {
+      "dash": "אם אני שיבצתי {{value}} מסכתות, גם אתם יכולים.",
+      "quiz": "אם אני שיבצתי {{value}} מתוך {{outOf}} משניות, גם אתם יכולים.",
+      "chazara": "אם אני זכרתי {{value}} מסכתות, גם אתם יכולים."
+    },
+    "head": {
+      "dash": "מסכתות במקומן",
+      "quiz": "מתוך {{outOf}} משניות במקומן",
+      "chazara": "מסכתות מהזיכרון"
+    },
+    "bannerHead": "שיא אישי חדש — {{score}}",
+    "bannerHeadOutOf": "שיא אישי חדש — {{score}} מתוך {{outOf}}",
+    "bannerBody": {
+      "dash": "{{game}}: {{value}} מסכתות במקומן, כולן נכונות. שלח את זה הלאה והבא עוד מישהו ללמוד.",
+      "quiz": "{{game}}: {{value}} משניות במקומן. שלח את זה הלאה והבא עוד מישהו ללמוד.",
+      "chazara": "{{game}}: {{value}} מסכתות מהזיכרון. שלח את זה הלאה והבא עוד מישהו ללמוד."
+    }
+  },
+  "all63": {
+    "status": "כל 63 המסכתות, כל אחת בסדר שלה.",
+    "bannerHead": "כל 63 המסכתות",
+    "bannerBody": "כל מסכת בש״ס, כל אחת בסדר שלה.",
+    "cardHead": "כולן במקומן"
+  },
+  "order": {
+    "status": "{{what}}, לפי הסדר.",
+    "bannerHead": "{{what}}, לפי הסדר",
+    "bannerBody": "סדרי המשנה.",
+    "cardHead": "לפי הסדר",
+    "whatSedarim": "כל {{words}} הסדרים",
+    "whatSeder": "כל {{words}} המסכתות של סדר {{seder}}"
+  },
+  "masechet": {
+    "status": "{{words}} מתוך 63 — הבאה בתור: {{next}}.",
+    "statusLast": "{{words}} מתוך 63.",
+    "bannerHead": "סיום מסכת {{masechet}}",
+    "bannerBody": "כל {{mishnayot}} המשניות. {{words}} מתוך 63.",
+    "stepLabel": "סיום מסכת",
+    "cardHead": "{{mishnayot}} משניות · {{perakim}} פרקים",
+    "stepAhead": "הבאה בתור: {{next}} — בואו ללמוד אותה יחד איתי"
+  },
+  "seder": {
+    "sub": "סדר {{seder}}",
+    "count": "{{words}} מסכתות, {{mishnayot}} משניות.",
+    "bannerHead": "סיום סדר {{seder}}",
+    "bannerBody": "{{summary}} שישית מהש״ס, במלואה.",
+    "cardSub": "{{masechtot}} מסכתות · {{mishnayot}} משניות"
+  },
+  "shas": {
+    "status": "כל ששת הסדרים, 63 מסכתות, כל משנה ומשנה.",
+    "bannerHead": "סיום הש״ס",
+    "bannerBody": "כל ששת סדרי המשנה, במלואם.",
+    "cardSub": "6 סדרים · 63 מסכתות"
+  },
+  "board": {
+    "status": "כל 524 פרקי המשנה נלקחו ללימוד.",
+    "bannerHead": "כל הפרקים נלקחו",
+    "bannerBody": "לכל אחד מ־524 הפרקים יש מי שלומד אותו.",
+    "cardSub": "524 פרקים · כולם נלקחו"
+  },
+  "chabura": {
+    "status": "החבורה שלנו למדה יחד את מסכת {{masechet}}.",
+    "bannerHead": "{{group}}: סיום מסכת {{masechet}}",
+    "bannerBody": "כל השיעור, יחד.",
+    "stepLabel": "סיום משותף",
+    "stepAhead": "למדנו יחד — בואו ללמוד איתנו"
+  },
+  "prompt": {
+    "shareThis": "שיתוף",
+    "notNow": "לא עכשיו"
+  },
+  "sheet": {
+    "sub": "זה מה שיוצא. השם שלך לא מופיע, אלא אם תוסיף אותו.",
+    "statusLabel": "טקסט לסטטוס",
+    "statusLabelCopied": "✓ טקסט לסטטוס · הועתק",
+    "includeName": "להוסיף את השם שלי",
+    "includeFigure": "להוסיף את המספר",
+    "imageAndText": "תמונה + טקסט",
+    "saveImage": "שמירת התמונה",
+    "more": "עוד…",
+    "nativeSheet": "שיתוף מהמכשיר",
+    "copyLink": "העתקת קישור",
+    "imageFailed": "לא הצלחנו ליצור את התמונה — נסה ״שמירת התמונה״.",
+    "imageSaved": "התמונה נשמרה — הטקסט כבר הועתק.",
+    "linkCopied": "הקישור הועתק."
+  }
+}

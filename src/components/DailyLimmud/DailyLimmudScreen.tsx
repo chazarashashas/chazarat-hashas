@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import { SEDARIM } from "../../data/shas";
+import { useTranslation } from "react-i18next";
+import { SEDARIM, findMasechet } from "../../data/shas";
+import { useDirection, useName } from "../../i18n";
 import { getPerekName, getMishnayotCount } from "../../data/perekInfo";
 import { fetchMishna } from "../../utils/sefaria";
 import { friendlyError } from "../../utils/friendlyError";
@@ -49,10 +51,11 @@ function englishKey(item: { masechetEn: string; perek: number; mishnah: number }
     `showEnglish` preference (Explore Shas's reveal is per view and never
     touches it). Styled as a setting, not a link, since that's what it is. */
 function EnglishSwitch({ on, onToggle }: { on: boolean; onToggle: () => void }) {
+  const { t } = useTranslation("dailyLimmud");
   return (
     <button className={"english-switch" + (on ? " english-switch--on" : "")} onClick={onToggle} aria-pressed={on}>
       <span className="english-switch__knob" />
-      <span className="english-switch__label">{on ? "English on" : "English"}</span>
+      <span className="english-switch__label">{on ? t("englishSwitch.on") : t("englishSwitch.off")}</span>
     </button>
   );
 }
@@ -73,10 +76,10 @@ interface MishnaContent extends MishnaItem {
 // control lives on My Siyumim (ProgressScreen) — both write the exact
 // same progress.pace, so a choice made either place shows up as the
 // active pill here and vice versa.
-const PACE_OPTIONS: { value: Pace; label: string }[] = [
-  { value: { unit: "mishnayot", amount: 1 }, label: "1 Mishna a day" },
-  { value: { unit: "mishnayot", amount: 2 }, label: "2 Mishnayot a day" },
-  { value: { unit: "perakim", amount: 1 }, label: "1 Perek a day" },
+const PACE_OPTIONS: { value: Pace; labelKey: "optionOneMishna" | "optionTwoMishnayot" | "optionOnePerek" }[] = [
+  { value: { unit: "mishnayot", amount: 1 }, labelKey: "optionOneMishna" },
+  { value: { unit: "mishnayot", amount: 2 }, labelKey: "optionTwoMishnayot" },
+  { value: { unit: "perakim", amount: 1 }, labelKey: "optionOnePerek" },
 ];
 
 const ALL_MASECHTOT = SEDARIM.flatMap((s) => s.masechtot.map((m) => ({ ...m, sederId: s.id })));
@@ -104,6 +107,16 @@ interface DailyLimmudScreenProps {
 }
 
 export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScreenProps) {
+  const { t, i18n } = useTranslation(["dailyLimmud", "common"]);
+  const name = useName();
+  const dir = useDirection();
+  const isHe = i18n.language === "he";
+  const masechetName = (en: string) => {
+    const m = findMasechet(en);
+    return m ? name(m) : en;
+  };
+  // Points along the reading direction, as the English "▸" does.
+  const crumbSep = dir === "rtl" ? "◂" : "▸";
   const { session } = useAuth();
   const progress = useLearningProgress();
   const { pace, setPace, streak } = progress;
@@ -265,7 +278,7 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
         progress,
         marking: items,
         today: localDateStr(),
-        chaburaName: !isSelf && activeChabura ? (activeChabura.name?.trim() || "Our chabura") : null,
+        chaburaName: !isSelf && activeChabura ? (activeChabura.name?.trim() || t("fallbackChaburaName")) : null,
       }),
     );
 
@@ -319,10 +332,14 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
   // pill rows shown above the mishnah every day, for a choice most people
   // set once. One line states the current setting; tapping it opens the
   // pickers below instead.
-  const groupPaceShort: Record<GroupPace, string> = { "1": "1 mishnah/day", "2": "2/day", perek: "1 perek/day" };
+  const groupPaceShort: Record<GroupPace, string> = {
+    "1": t("pace.mishnayotPerDay", { count: 1 }),
+    "2": t("pace.groupTwoPerDay"),
+    perek: t("pace.perakimPerDay", { count: 1 }),
+  };
   const settingsSummary = [
-    isSelf ? "Your own learning" : (activeLabel ?? activeContext),
-    firstItem?.masechetEn,
+    isSelf ? t("settings.yourOwnLearning") : (activeLabel ?? activeContext),
+    firstItem ? masechetName(firstItem.masechetEn) : undefined,
     isSelf ? paceLabel(pace) : groupPaceShort[groupPace],
   ]
     .filter(Boolean)
@@ -348,11 +365,11 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
     <div className="stage limmud-stage">
       <div className="panel limmud-panel">
         <div className="screen-head limmud-head">
-          <h1 className="screen-head__title">Today's limmud</h1>
+          <h1 className="screen-head__title">{t("title")}</h1>
           <div className="screen-head__aside limmud-streak">
             <span className="limmud-streak__dot" aria-hidden="true" />
-            <span className="limmud-streak__num">{streak.current} days</span>
-            <span className="limmud-streak__label">best {streak.longest}</span>
+            <span className="limmud-streak__num">{t("streak.days", { count: streak.current })}</span>
+            <span className="limmud-streak__label">{t("streak.best", { count: streak.longest })}</span>
           </div>
         </div>
 
@@ -374,7 +391,7 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
 
             {isSelf && !settingsOpen && progress.position === 0 && progress.completions.length === 0 && (
               <button className="btn btn--quiet btn--compact limmud-start-hint" onClick={() => setSettingsOpen(true)}>
-                Starting at Berachot — start from a different masechet
+                {t("settings.startHint", { masechet: name(SEDARIM[0].masechtot[0]) })}
               </button>
             )}
 
@@ -382,13 +399,13 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
               <div className="limmud-settings">
                 {groupContexts.length > 0 && (
                   <div className="limmud-control">
-                    <p className="mishna-control__label">Learning for</p>
+                    <p className="mishna-control__label">{t("settings.learningFor")}</p>
                     <div className="pill-row">
                       <button
                         className={"pill" + (activeContext === "self" ? " pill--active" : "")}
                         onClick={() => setContext("self")}
                       >
-                        My own learning
+                        {t("settings.myOwnLearning")}
                       </button>
                       {groupContexts.map((g) => (
                         <button
@@ -413,7 +430,7 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
                             (m.lastLearnedDate === today ? " limmud-chabura-member__dot--done" : "")
                           }
                         />
-                        {m.userId === session?.user.id ? "You" : (m.firstName ?? m.username ?? "Someone")}
+                        {m.userId === session?.user.id ? t("settings.you") : (m.firstName ?? m.username ?? t("settings.someone"))}
                       </span>
                     ))}
                   </div>
@@ -421,7 +438,7 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
 
                 {isSelf && (
                   <div className="limmud-control">
-                    <p className="mishna-control__label">Pace</p>
+                    <p className="mishna-control__label">{t("settings.pace")}</p>
                     <div className="pill-row">
                       {PACE_OPTIONS.map((opt) => (
                         <button
@@ -429,7 +446,7 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
                           className={"pill" + (paceEquals(pace, opt.value) ? " pill--active" : "")}
                           onClick={() => handlePaceChange(opt.value)}
                         >
-                          {opt.label}
+                          {t(`pace.${opt.labelKey}`)}
                         </button>
                       ))}
                     </div>
@@ -437,7 +454,7 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
                 )}
                 {isSelf && (
                   <div className="limmud-control">
-                    <p className="mishna-control__label">Start from</p>
+                    <p className="mishna-control__label">{t("settings.startFrom")}</p>
                     <LimmudStartPicker
                       position={progress.position}
                       onStart={(index) => {
@@ -450,8 +467,8 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
                 {!isSelf && (
                   <p className="limmud-settings__fixed-note">
                     {activeChabura
-                      ? "The shiur sets its own pace — the same for everyone in it."
-                      : "A chevrusa's pace was agreed when it started."}
+                      ? t("settings.chaburaPaceNote")
+                      : t("settings.chevrusaPaceNote")}
                   </p>
                 )}
               </div>
@@ -461,19 +478,23 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
 
         {isSelf && !finished && progress.justFinishedMasechet ? (
           <div className="note-banner note-banner--good limmud-finished">
-            <p className="limmud-finished__text">You finished {progress.justFinishedMasechet}!</p>
+            <p className="limmud-finished__text">{t("finished.masechet", { masechet: masechetName(progress.justFinishedMasechet) })}</p>
             <button className="restart limmud-finished__continue" onClick={progress.continueToNextMasechet}>
-              Continue to {MISHNA_SEQUENCE[progress.position]?.masechetEn}
+              {t("finished.continueTo", {
+                masechet: MISHNA_SEQUENCE[progress.position]
+                  ? masechetName(MISHNA_SEQUENCE[progress.position].masechetEn)
+                  : "",
+              })}
             </button>
             <label className="limmud-finished__pick">
-              <span>or pick a different masechet:</span>
+              <span>{t("finished.orPickDifferent")}</span>
               <select
                 value=""
                 onChange={(e) => {
                   if (e.target.value) progress.startFrom(startIndexOf(e.target.value));
                 }}
               >
-                <option value="">Choose…</option>
+                <option value="">{t("finished.choose")}</option>
                 <MasechetOptions />
               </select>
             </label>
@@ -483,16 +504,16 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
           <div className="note-banner note-banner--good limmud-finished">
             {isSelf ? (
               <>
-                <p className="limmud-finished__text">You've reached the end of Shas in Daily Limmud!</p>
+                <p className="limmud-finished__text">{t("finished.endOfShas")}</p>
                 <label className="limmud-finished__pick">
-                  <span>Choose a masechet to learn next:</span>
+                  <span>{t("finished.chooseNext")}</span>
                   <select
                     value=""
                     onChange={(e) => {
                       if (e.target.value) progress.startFrom(startIndexOf(e.target.value));
                     }}
                   >
-                    <option value="">Choose…</option>
+                    <option value="">{t("finished.choose")}</option>
                     <MasechetOptions />
                   </select>
                 </label>
@@ -500,7 +521,10 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
             ) : (
               <>
                 <p className="limmud-finished__text">
-                  You've finished {activeContext}! Nothing left to learn for {activeLabel ?? "this chevrusa/chabura"}.
+                  {t("finished.group", {
+                    masechet: masechetName(activeContext),
+                    group: activeLabel ?? t("finished.thisGroup"),
+                  })}
                 </p>
                 {nextMasechetName && (
                   <button
@@ -508,11 +532,11 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
                     disabled={switchBusy}
                     onClick={() => handleContinueTo(nextMasechetName)}
                   >
-                    {switchBusy ? "…" : `Continue to ${nextMasechetName}`}
+                    {switchBusy ? "…" : t("finished.continueTo", { masechet: masechetName(nextMasechetName) })}
                   </button>
                 )}
                 <label className="limmud-finished__pick">
-                  <span>or pick a different masechet:</span>
+                  <span>{t("finished.orPickDifferent")}</span>
                   <select
                     value={switchMasechet}
                     onChange={(e) => {
@@ -521,12 +545,12 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
                     }}
                     disabled={switchBusy}
                   >
-                    <option value="">Choose…</option>
+                    <option value="">{t("finished.choose")}</option>
                     {SEDARIM.map((seder) => (
-                      <optgroup key={seder.id} label={seder.en}>
+                      <optgroup key={seder.id} label={name(seder)}>
                         {seder.masechtot.map((m) => (
                           <option key={m.en} value={m.en}>
-                            {m.en}
+                            {name(m)}
                           </option>
                         ))}
                       </optgroup>
@@ -543,10 +567,17 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
               <div className="card limmud-card">
                 {seder && firstItem && (
                   <p className="limmud-breadcrumb">
-                    {!isSelf && activeLabel && <span dir="ltr">{activeLabel} ▸ </span>}
-                    {seder.en} ▸ {firstItem.masechetEn} ▸ Perek {hebrewNumeral(firstItem.perek)}
+                    {!isSelf && activeLabel && (
+                      <>
+                        <span dir="ltr">{activeLabel}</span> {crumbSep}{" "}
+                      </>
+                    )}
+                    {name(seder)} {crumbSep} {masechetName(firstItem.masechetEn)} {crumbSep}{" "}
+                    {t("breadcrumb.perek", { num: hebrewNumeral(firstItem.perek) })}
                     {perekName ? ` (${perekName})` : ""}
-                    {items.length === 1 ? ` ▸ Mishna ${firstItem.mishnah}` : ""}
+                    {items.length === 1
+                      ? ` ${crumbSep} ${t("breadcrumb.mishna", { num: isHe ? hebrewNumeral(firstItem.mishnah) : firstItem.mishnah })}`
+                      : ""}
                   </p>
                 )}
 
@@ -560,9 +591,9 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
                             משנה {hebrewNumeral(item.mishnah)}
                           </p>
                           {item.status === "loading" ? (
-                            <span className="state state--loading">Loading…</span>
+                            <span className="state state--loading">{t("common:loading")}</span>
                           ) : item.status === "error" ? (
-                            <span className="state state--error" dir="ltr">
+                            <span className="state state--error" dir={dir}>
                               {friendlyError(item.error, "limmud-mishna")}
                             </span>
                           ) : (
@@ -583,14 +614,14 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
                               )}
                               {en.status === "error" && (
                                 <p className="limmud-english-error">
-                                  English is not loading right now.
+                                  {t("english.notLoading")}
                                   <button className="limmud-english-retry" onClick={() => retryEnglish(item)}>
-                                    Try again
+                                    {t("common:tryAgain")}
                                   </button>
                                 </p>
                               )}
                               {en.status === "ok" && (
-                                <p className="limmud-mishna__english" dir="ltr">
+                                <p className="limmud-mishna__english" lang="en" dir="ltr">
                                   {en.text}
                                 </p>
                               )}
@@ -615,7 +646,7 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
                 onClick={handleMarkLearned}
                 disabled={justMarked}
               >
-                {justMarked ? "Marked as learned" : "Mark as learned"}
+                {justMarked ? t("mark.done") : t("mark.action")}
               </button>
 
               {justMarked && confirmPerek && (
@@ -624,11 +655,14 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
                     {hebrewNumeral(confirmPerek.perek)}
                   </span>
                   <span className="limmud-confirm__text">
-                    <span className="limmud-confirm__head">Streak day {streak.current}</span>
+                    <span className="limmud-confirm__head">{t("streak.confirmHead", { count: streak.current })}</span>
                     <span className="limmud-confirm__sub">
                       {confirmPerek.remaining === 0
-                        ? `Perek ${hebrewNumeral(confirmPerek.perek)} of ${firstItem?.masechetEn ?? ""} complete.`
-                        : `${confirmPerek.remaining} mishnah${confirmPerek.remaining === 1 ? "" : "s"} left in this perek.`}
+                        ? t("mark.perekComplete", {
+                            num: hebrewNumeral(confirmPerek.perek),
+                            masechet: firstItem ? masechetName(firstItem.masechetEn) : "",
+                          })
+                        : t("mark.leftInPerek", { count: confirmPerek.remaining })}
                     </span>
                   </span>
                 </div>
@@ -638,21 +672,18 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
 
               {justMarked && !session && onOpenLogin && streak.current >= 3 && (
                 <NudgeStrip
-                  text={`${streak.current} days is worth keeping.`}
-                  actionLabel="Save my streak →"
+                  text={t("nudge.text", { days: streak.current })}
+                  actionLabel={t("nudge.action")}
                   onAction={onOpenLogin}
                   accentColor={getSederHueText(seder?.id)}
                 />
               )}
 
               {isSelf && siyumim.myQueuedPerakim.length > 0 && (
-                <section className="limmud-siyumim" aria-label="Perakim for siyumim">
-                  <h2 className="section-title">For siyumim</h2>
+                <section className="limmud-siyumim" aria-label={t("siyumim.ariaLabel")}>
+                  <h2 className="section-title">{t("siyumim.title")}</h2>
                   <p className="limmud-siyumim__sub">
-                    {siyumim.myQueuedPerakim.length === 1
-                      ? "A perek you took on for a siyum"
-                      : `${siyumim.myQueuedPerakim.length} perakim you took on for siyumim`}
-                    , on top of today's learning.
+                    {t("siyumim.sub", { count: siyumim.myQueuedPerakim.length })}
                   </p>
                   {siyumim.myQueuedPerakim.map((claim) => (
                     <QueuedSiyumPerek key={claim.id} claim={claim} siyumim={siyumim} />
@@ -668,25 +699,25 @@ export function DailyLimmudScreen({ onOpenNotes, onOpenLogin }: DailyLimmudScree
                 <button className="limmud-notes__open" onClick={() => setNoteOpen(true)}>
                   <span className="limmud-notes__open-dot" aria-hidden="true" />
                   <span className="limmud-notes__open-text">
-                    <span className="limmud-notes__open-title">Name this perek</span>
+                    <span className="limmud-notes__open-title">{t("notes.namePerek")}</span>
                     <span className="limmud-notes__open-sub">
-                      {firstItem && getPerekNote(firstItem.masechetEn, firstItem.perek) ? "View note" : "Add note"}
+                      {firstItem && getPerekNote(firstItem.masechetEn, firstItem.perek) ? t("notes.viewNote") : t("notes.addNote")}
                     </span>
                   </span>
                 </button>
                 <button className="limmud-notes__open limmud-notes__open--concept" onClick={() => setConceptOpen(true)}>
                   <span className="limmud-notes__open-dot limmud-notes__open-dot--concept" aria-hidden="true" />
                   <span className="limmud-notes__open-text">
-                    <span className="limmud-notes__open-title">Flag a concept</span>
+                    <span className="limmud-notes__open-title">{t("notes.flagConcept")}</span>
                     <span className="limmud-notes__open-sub">
-                      {progress.concepts.length} saved to review
+                      {t("notes.savedToReview", { count: progress.concepts.length })}
                     </span>
                   </span>
                 </button>
               </div>
               {onOpenNotes && (
                 <button className="limmud-concept__open-all" onClick={onOpenNotes}>
-                  → View or print all your notes in Mishna Notes
+                  {t("notes.openAll")}
                 </button>
               )}
             </div>

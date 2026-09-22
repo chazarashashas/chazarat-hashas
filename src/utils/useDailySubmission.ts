@@ -5,6 +5,7 @@ import { useLearningProgress } from "./useLearningProgress";
 import { useGameStats } from "./useGameStats";
 import { hebrewNumeral } from "./hebrewNumeral";
 import { localDateStr } from "./localDate";
+import i18n from "../i18n";
 
 function todayStr(): string {
   return localDateStr();
@@ -143,7 +144,7 @@ export function useSendDailySubmission(groupId: string) {
   async function send(snapshot: TodaySnapshot) {
     if (!supabase || !session) {
       setState("error");
-      setError("Accounts aren't connected yet.");
+      setError(i18n.t("groups:errors.notConnected"));
       return;
     }
     setState("sending");
@@ -160,7 +161,7 @@ export function useSendDailySubmission(groupId: string) {
     );
     if (err) {
       setState("error");
-      setError("Couldn't send right now — check your connection and try again.");
+      setError(i18n.t("groups:errors.submissionSend"));
       return;
     }
     setState("sent");

@@ -1,1 +1,228 @@
-{}
+{
+  "title": "הסיומים שלי",
+  "frequency": {
+    "month": "כל חודש",
+    "halfYear": "פעמיים בשנה",
+    "year": "כל שנה",
+    "twoYears": "כל שנתיים",
+    "fiveYears": "כל חמש שנים"
+  },
+  "span": {
+    "day_one": "יום אחד",
+    "day_two": "יומיים",
+    "day_other": "{{count}} ימים",
+    "week_one": "שבוע אחד",
+    "week_two": "שבועיים",
+    "week_other": "{{count}} שבועות",
+    "month_one": "חודש אחד",
+    "month_two": "חודשיים",
+    "month_other": "{{count}} חודשים",
+    "year_one": "שנה אחת",
+    "year_two": "שנתיים",
+    "year_other": "{{count}} שנים"
+  },
+  "countdown": {
+    "label": "הסיום הבא שלך",
+    "seder": "סדר {{name}}",
+    "daysUnit": "ימים",
+    "around": "בערך ב{{date}}",
+    "meta": "{{done}} מתוך {{total}} משניות · עוד {{remaining}} בקצב של {{pace}}",
+    "nextMasechet": "מסכת {{name}} תסתיים ראשונה — עוד {{remaining}} משניות, בערך {{span}}.",
+    "byAmount": "לפי כמות יומית",
+    "byFrequency": "לפי קצב הסיומים",
+    "mishnayot": "משניות",
+    "perakim": "פרקים",
+    "projection": "· סיום הש״ס {{date}} · סדר כל {{span}}"
+  },
+  "stats": {
+    "perakimFinished": "פרקים שנסתיימו",
+    "masechtotCompleted": "מסכתות שנסתיימו",
+    "mishnayotLearned": "משניות שנלמדו"
+  },
+  "shasDone": {
+    "text": "סיימת את כל הש״ס!",
+    "certificate": "לתעודת הסיום שלך"
+  },
+  "levelsTitle": "היכן אתה עומד בכל שלב",
+  "logLearningButton": "+ רישום לימוד",
+  "nishmatLink": {
+    "title": "לעילוי נשמת",
+    "sub": "הקדש סיום ש״ס שלם לעילוי נשמה, או קח על עצמך פרק בסיום של אחר ←"
+  },
+  "aheadTitle": "הסיומים שלפניך",
+  "getCertificate": "תעודת סיום",
+  "perek": {
+    "label": "פרק {{numeral}}",
+    "labelNamed": "פרק {{numeral}} — {{name}}",
+    "row": "פרק <0>{{numeral}}</0>",
+    "rowNamed": "פרק <0>{{numeral}}</0> — {{name}}",
+    "ofMasechet": "{{masechet}} — פרק {{numeral}}"
+  },
+  "log": {
+    "title": "רישום לימוד",
+    "sub": "רשום פרק שלמדת מחוץ לאפליקציה — בשיעור, בחברותא, במשניות שלך.",
+    "seder": "סדר",
+    "masechet": "מסכת",
+    "perek": "פרק",
+    "date": "תאריך",
+    "saved": "✓ נרשם"
+  },
+  "certificate": {
+    "title": "תעודת סיום",
+    "nameLabel": "השם שעל התעודה",
+    "namePlaceholder": "השם שלך",
+    "logoAlt": "חזרת הש״ס",
+    "completedBy": "על ידי"
+  },
+  "nishmat": {
+    "title": "לעילוי נשמת",
+    "public": "ציבורי",
+    "private": "פרטי",
+    "stat": {
+      "learned": "נלמדו",
+      "taken": "נלקחו",
+      "open": "עדיין פנויים"
+    },
+    "openSiyum": "לסיום ←",
+    "takePerek": "קח פרק ←",
+    "hideTitle": "הסתר את הסיום הזה מהרשימה שלך",
+    "hide": "הסתרה",
+    "gate": {
+      "sub": "סיום הש״ס הוא {{total}} פרקים. כשמתחלקים בין מספיק אנשים, יוצא פרק אחד לכל אחד.",
+      "boardHead": "כל הש״ס, משבצת לכל פרק",
+      "boardBody": "מישהו פותח סיום. כל משבצת היא פרק אחד. כל אחד לוקח את הפרקים שהוא יכול ללמוד, וכשהלוח מתמלא — עושים את הסיום.",
+      "boardStat": "{{taken}} מתוך {{total}} נלקחו",
+      "leadOne": "סיום אחד פתוח עכשיו. כל אחד יכול לעיין בו:",
+      "leadTwo": "שני סיומים פתוחים עכשיו. כל אחד יכול לעיין בהם:",
+      "factAskHead": "כל הבקשה היא פרק אחד",
+      "factAskBody": "{{total}} פרקים בשישה סדרים. בארבעים איש — שלושה עשר לכל אחד; בחמש מאות — אחד.",
+      "factLimmudHead": "הפרק מופיע בלימוד היומי שלך",
+      "factLimmudBody": "פרק שלקחת מגיע ללימוד היומי עם ההקדשה עליו, כך שהוא נלמד בסדר הרגיל של הדברים ולא צריך לזכור אותו בנפרד.",
+      "factReleaseHead": "אפשר להחזיר פרק",
+      "factReleaseBody": "אם משהו מפריע, מחזירים אותו והוא חוזר ללוח בשביל מישהו אחר. אף אחד לא רודף אחריך.",
+      "accountHeading": "כדי לקחת פרק צריך חשבון",
+      "accountBody": "פרק שאתה לוקח הוא התחייבות שאחרים סומכים עליה, ולכן הוא צריך להיות שייך למישהו. לעיין בסיום לא דורש כלום.",
+      "footer": "שום דבר אחר כאן אינו סגור — <0>עיין בסיומים הפתוחים</0>, או המשך בלימוד שלך."
+    },
+    "startButton": "+ פתיחת סיום",
+    "startAccountHeading": "כדי לפתוח סיום צריך חשבון",
+    "startAccountBody": "סיום עוקב אחרי מי לקח איזה פרק ומי כבר למד אותו — זה עובד רק כשהוא קשור לחשבון שלך, ולא רק למכשיר הזה.",
+    "tabManaging": "סיומים שאתה מנהל",
+    "tabHelping": "עזור לאחרים לסיים",
+    "helpingNote": "קח על עצמך פרק והוא שלך ללמוד — כל פרק שמישהו לוקח מקרב את הסיום.",
+    "emptyManaging": "סיומים שתפתח יופיעו כאן.",
+    "emptyHelping": "סיומים ציבוריים שמחפשים עזרה יופיעו כאן — כדאי לחזור בקרוב.",
+    "create": {
+      "title": "פתיחת סיום",
+      "dedicationLabel": "לעילוי נשמת",
+      "dedicationPlaceholder": "לדוגמה: יוסף בן רבקה",
+      "occasionLabel": "לרגל (לא חובה)",
+      "occasionPlaceholder": "לדוגמה: שלושים, יארצייט",
+      "targetDateLabel": "תאריך יעד (לא חובה)",
+      "targetDatePlaceholder": "לדוגמה: לפני היארצייט",
+      "visibilityLabel": "מי יכול לראות",
+      "privateNote": "נגיש רק למי שתשתף איתו את הקישור.",
+      "publicNote": "מופיע באפליקציה, וכל משתמש יכול למצוא אותו ולעזור.",
+      "creating": "פותח…",
+      "submit": "פתח את הסיום"
+    }
+  },
+  "detail": {
+    "time": {
+      "justNow": "זה עתה",
+      "minutes_one": "לפני דקה",
+      "minutes_two": "לפני שתי דקות",
+      "minutes_other": "לפני {{count}} דקות",
+      "hours_one": "לפני שעה",
+      "hours_two": "לפני שעתיים",
+      "hours_other": "לפני {{count}} שעות",
+      "days_one": "לפני יום",
+      "days_two": "לפני יומיים",
+      "days_other": "לפני {{count}} ימים"
+    },
+    "someone": "מישהו",
+    "activityTook": "{{masechet}} — פרק {{numeral}} נלקח על ידי {{who}}",
+    "activityFinished": "{{masechet}} — פרק {{numeral}} נלמד על ידי {{who}}",
+    "recentActivity": "פעילות אחרונה",
+    "back": "→ כל הסיומים",
+    "plaqueLabel": "לעילוי נשמת",
+    "scope": "כל הש״ס — 524 פרקים",
+    "stat": {
+      "learned": "נלמדו",
+      "taken": "נלקחו ונלמדים",
+      "open": "עדיין פנויים"
+    },
+    "tileTitle": "{{masechet}} · פרק {{perek}} — {{status}}",
+    "tileStatus": {
+      "learned": "נלמד",
+      "yours": "שלך",
+      "taken": "נלקח",
+      "takenBy": "נלקח על ידי {{name}}",
+      "open": "פנוי"
+    },
+    "legend": {
+      "learned": "נלמד",
+      "yours": "שלך",
+      "taken": "נלקח",
+      "open": "פנוי"
+    },
+    "next": {
+      "label": "קח את הפרק הבא בתור",
+      "value": "{{masechet}}, פרק {{numeral}}",
+      "desc": "{{n}} משניות. הפרק יגיע ללימוד היומי שלך עם ההקדשה עליו.",
+      "take": "קח את הפרק הזה"
+    },
+    "promise": "אפשר להחזיר אותו בכל עת, והוא חוזר ללוח.",
+    "shareLink": "קישור לשיתוף",
+    "copied": "הועתק!",
+    "copy": "העתקה",
+    "pickYourself": "או בחר פרק בעצמך",
+    "filter": {
+      "all": "כל הפרקים",
+      "open": "רק פנויים",
+      "yours": "שלך"
+    },
+    "openCount": "{{n}} פנויים",
+    "tile": {
+      "open": "פנוי — הקש כדי לקחת",
+      "taken": "נלקח",
+      "yours": "שלך — הקש",
+      "queued": "בלימוד שלך",
+      "learned": "נלמד ✓"
+    },
+    "nothingToClaim": "אין מה לקחת.",
+    "claim": {
+      "invalid": "הכנס את שמך וכתובת אימייל תקינה.",
+      "title": "לקיחת {{masechet}} — פרק {{numeral}}",
+      "nameLabel": "שם",
+      "namePlaceholder": "השם שלך",
+      "emailLabel": "אימייל",
+      "emailPlaceholder": "you@example.com",
+      "anonymous": "שמור את שמי בפרטיות — לאחרים יוצג רק \"נלקח\"",
+      "taking": "לוקח…"
+    },
+    "manage": {
+      "justClaimed": "הפרק הזה שלך. מה תרצה לעשות?",
+      "prompt": "מה תרצה לעשות?",
+      "marking": "מסמן…",
+      "markLearned": "סמן כנלמד עכשיו",
+      "adding": "מוסיף…",
+      "addToLimmud": "הוסף ללימוד היומי שלי",
+      "release": "החזר את הפרק הזה",
+      "later": "אחליט אחר כך"
+    }
+  },
+  "errors": {
+    "duplicate": "מישהו לקח את הפרק הזה הרגע — בחר פרק אחר.",
+    "permission": "אין לך הרשאה לעשות את זה.",
+    "network": "אין חיבור לשרת — בדוק את החיבור ונסה שוב.",
+    "generic": "משהו השתבש. נסה שוב.",
+    "logInToStart": "כדי לפתוח סיום צריך להיכנס לחשבון.",
+    "couldntCreate": "לא הצלחנו לפתוח אותו.",
+    "notConnected": "החשבונות עדיין לא מחוברים.",
+    "couldntClaim": "לא הצלחנו לרשום את הפרק עבורך.",
+    "notYoursToUpdate": "הפרק הזה לא רשום עליך, ולכן אי אפשר לעדכן אותו.",
+    "notYoursToRelease": "הפרק הזה לא רשום עליך, ולכן אי אפשר להחזיר אותו."
+  },
+  "fallbackDedication": "סיום"
+}

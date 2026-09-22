@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import { useDirection } from "../../i18n";
 import "./ProgressTracks.css";
 
 interface ScopeInput {
@@ -45,14 +47,16 @@ export function ProgressTracks({
   bare,
   masechetOnly,
 }: ProgressTracksProps) {
+  const { t } = useTranslation("shell");
+  const dir = useDirection();
   return (
     <div className={"progress-tracks" + (bare ? "" : " hero-card")}>
       <div className="progress-tracks__row">
         <span className="progress-tracks__label">
           {masechet.title}
           {onStepMasechet && canStepMasechet && (
-            <button className="progress-tracks__step" aria-label="Next masechet" onClick={onStepMasechet}>
-              ›
+            <button className="progress-tracks__step" aria-label={t("progressTracks.nextMasechet")} onClick={onStepMasechet}>
+              {dir === "rtl" ? "‹" : "›"}
             </button>
           )}
         </span>
@@ -62,7 +66,7 @@ export function ProgressTracks({
           aria-valuenow={masechet.percent}
           aria-valuemin={0}
           aria-valuemax={100}
-          aria-label={`${masechet.title}, ${masechet.percent} percent`}
+          aria-label={t("progressTracks.trackLabel", { title: masechet.title, percent: masechet.percent })}
         >
           <div
             className="progress-tracks__fill progress-tracks__fill--masechet"
@@ -80,7 +84,7 @@ export function ProgressTracks({
             aria-valuenow={seder.percent}
             aria-valuemin={0}
             aria-valuemax={100}
-            aria-label={`${seder.title}, ${seder.percent} percent`}
+            aria-label={t("progressTracks.trackLabel", { title: seder.title, percent: seder.percent })}
           >
             <div
               className="progress-tracks__fill progress-tracks__fill--seder"
@@ -92,14 +96,14 @@ export function ProgressTracks({
 
       {!masechetOnly && (
         <div className="progress-tracks__row">
-          <span className="progress-tracks__label">Shas</span>
+          <span className="progress-tracks__label">{t("progressTracks.shas")}</span>
           <div
             className="progress-tracks__track"
             role="progressbar"
             aria-valuenow={shas.percent}
             aria-valuemin={0}
             aria-valuemax={100}
-            aria-label={`Shas, ${shas.percent} percent`}
+            aria-label={t("progressTracks.trackLabel", { title: t("progressTracks.shas"), percent: shas.percent })}
           >
             <div
               className="progress-tracks__fill progress-tracks__fill--shas"
@@ -113,7 +117,9 @@ export function ProgressTracks({
         <div className="progress-tracks__streak">
           {streakCurrent > 0 && <span className="progress-tracks__streak-dot" aria-hidden="true" />}
           <span className="progress-tracks__streak-text">
-            {streakCurrent > 0 ? `${streakCurrent}-day streak` : "Learn today to start a streak"}
+            {streakCurrent > 0
+              ? t("progressTracks.streak", { count: streakCurrent })
+              : t("progressTracks.startStreak")}
           </span>
         </div>
       )}

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { supabase } from "./supabase";
 import { useAuth } from "./useAuth";
 import { localDateStr } from "./localDate";
+import i18n from "../i18n";
 
 export interface ReceivedNudge {
   id: string;
@@ -16,11 +17,11 @@ function todayStr(): string {
 
 function friendlyNudgeError(message: string): string {
   const lower = message.toLowerCase();
-  if (lower.includes("duplicate key")) return "Already nudged today.";
+  if (lower.includes("duplicate key")) return i18n.t("groups:errors.alreadyNudged");
   if (lower.includes("row-level security") || lower.includes("permission denied")) {
-    return "You can't nudge them.";
+    return i18n.t("groups:errors.cantNudge");
   }
-  return "Couldn't send that — please try again.";
+  return i18n.t("groups:errors.nudgeSend");
 }
 
 /** Who's already been nudged today in this one group — enough for the
@@ -48,7 +49,7 @@ export function useGroupNudges(groupId: string) {
   }, [refresh]);
 
   async function sendNudge(toUserId: string, note: string): Promise<string | null> {
-    if (!supabase || !session) return "Accounts aren't connected yet.";
+    if (!supabase || !session) return i18n.t("groups:errors.notConnected");
     const { error } = await supabase.from("group_nudges").insert({
       group_id: groupId,
       from_user_id: session.user.id,
@@ -91,7 +92,7 @@ export function useMyNudgesToday() {
         return {
           id: n.id as string,
           groupId: n.group_id as string,
-          fromName: p?.first_name ?? p?.username ?? "Someone",
+          fromName: p?.first_name ?? p?.username ?? i18n.t("groups:someone"),
           note: (n.note as string | null) ?? null,
         };
       }),

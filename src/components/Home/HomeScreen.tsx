@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import type { en } from "../../i18n/locales/en";
+import { useNavLabels } from "../../utils/navItems";
 import { useLearningProgress } from "../../utils/useLearningProgress";
 import { usePerekNotes } from "../../utils/usePerekNotes";
 import { useAuth } from "../../utils/useAuth";
@@ -17,9 +20,9 @@ import { useToday } from "../../utils/useToday";
 import "./HomeScreen.css";
 
 interface Feature {
-  id: string;
+  id: keyof typeof en.home.desc;
+  /** English name — the fallback for useNavLabels, which names it on screen. */
   title: string;
-  desc: string;
   status?: string;
 }
 
@@ -30,32 +33,26 @@ const MY_MISHNA: Feature[] = [
   {
     id: "limmud",
     title: "Daily Limmud",
-    desc: "Today's mishnayot, in order.",
   },
   {
     id: "map",
     title: "Explore Shas",
-    desc: "Explore every seder, masechet, perek, and mishnah, with your progress along the way.",
   },
   {
     id: "perek",
     title: "Mishna Notes",
-    desc: "Make Shas yours — your own names, notes, and memory cues for every perek.",
   },
   {
     id: "progress",
     title: "My Siyumim",
-    desc: "Track your streak and how much of Shas you've learned so far.",
   },
   {
     id: "chevrusa",
     title: "Chevrusa",
-    desc: "Pair up one-on-one with a study partner.",
   },
   {
     id: "chabura",
     title: "Chabura",
-    desc: "Start or join a group learning together, with or without a rebbe.",
   },
 ];
 
@@ -63,32 +60,26 @@ const LEARNING_TOOLS: Feature[] = [
   {
     id: "sedarim",
     title: "Sidrei Hamishna",
-    desc: "Drag the six sedarim — or one seder's masechtot — into their correct order.",
   },
   {
     id: "mishna",
     title: "Mishna Quiz",
-    desc: "Read a real mishnah and locate it: seder and masechet, with perek as bonus.",
   },
   {
     id: "sort",
     title: "Seder Sort",
-    desc: "Sort all 63 masechtot into the seder each one belongs to.",
   },
   {
     id: "recall",
     title: "Mishna Chazara",
-    desc: "Type every masechet you can remember, by seder or by all of Shas.",
   },
   {
     id: "dash",
     title: "Shas Dash",
-    desc: "Steer each masechet into its seder before it reaches the end of the road.",
   },
   {
     id: "resources",
     title: "Resources",
-    desc: "Printable worksheets for practicing Shas structure away from the screen.",
   },
 ];
 
@@ -107,6 +98,8 @@ function FeatureGrid({
   features: Feature[];
   onNavigate: (id: string) => void;
 }) {
+  const { t } = useTranslation("home");
+  const labels = useNavLabels();
   return (
     <div className="home-grid">
       {features.map((f) => (
@@ -118,8 +111,8 @@ function FeatureGrid({
           <span className="home-card__icon">
             <NavIcon id={f.id} />
           </span>
-          <span className="home-card__title">{f.title}</span>
-          <span className="home-card__desc">{f.desc}</span>
+          <span className="home-card__title">{labels.item({ id: f.id, label: f.title })}</span>
+          <span className="home-card__desc">{t(`desc.${f.id}`)}</span>
           {f.status && <span className="home-card__status">{f.status}</span>}
         </button>
       ))}
@@ -132,6 +125,8 @@ interface HomeScreenProps {
 }
 
 export function HomeScreen({ onNavigate }: HomeScreenProps) {
+  const { t } = useTranslation("home");
+  const labels = useNavLabels();
   const [showGuidePopup, setShowGuidePopup] = useState(false);
   const progress = useLearningProgress();
   // Kept current at local midnight, so the erev card is gone the moment
@@ -162,46 +157,52 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
     if (f.id === "limmud" && (progress.finishedShas || progress.streak.current > 0)) {
       return {
         ...f,
-        status: progress.finishedShas ? "Finished Shas!" : `${progress.streak.current}-day streak`,
+        status: progress.finishedShas
+          ? t("status.finishedShas")
+          : t("status.streak", { count: progress.streak.current }),
       };
     }
     if (f.id === "progress" && progress.shasPercent() > 0) {
-      return { ...f, status: `${progress.shasPercent()}% of Shas learned` };
+      return { ...f, status: t("status.shasLearned", { percent: progress.shasPercent() }) };
     }
     if (f.id === "perek" && noteCount > 0) {
-      return { ...f, status: `${noteCount} note${noteCount === 1 ? "" : "s"} saved` };
+      return { ...f, status: t("status.notesSaved", { count: noteCount }) };
     }
     if (f.id === "chevrusa" && isLoggedIn) {
       const count = groups.filter((g) => !g.isChabura).length;
       if (count > 0)
-        return { ...f, status: count === 1 ? "1 active chevrusa" : `${count} active chevrusot` };
+        return { ...f, status: t("status.chevrusot", { count }) };
     }
     if (f.id === "chabura" && isLoggedIn) {
       const count = groups.filter((g) => g.isChabura).length;
       if (count > 0)
-        return { ...f, status: count === 1 ? "1 active chabura" : `${count} active chaburot` };
+        return { ...f, status: t("status.chaburot", { count }) };
     }
     return f;
   });
 
   const learningToolsWithStatus = LEARNING_TOOLS.map((f) => {
     if (f.id === "sedarim" && stats.sidrei.timesCompleted > 0) {
-      return { ...f, status: `${stats.sidrei.timesCompleted} completed` };
+      return { ...f, status: t("status.completed", { value: stats.sidrei.timesCompleted }) };
     }
     if (f.id === "mishna" && stats.quiz.timesPlayed > 0) {
       return {
         ...f,
-        status: `${stats.quiz.bestScore}/${stats.quiz.bestOutOf} best (${letterGrade((stats.quiz.bestScore / stats.quiz.bestOutOf) * 100)})`,
+        status: t("status.quizBest", {
+          score: stats.quiz.bestScore,
+          outOf: stats.quiz.bestOutOf,
+          grade: letterGrade((stats.quiz.bestScore / stats.quiz.bestOutOf) * 100),
+        }),
       };
     }
     if (f.id === "sort" && stats.sort.timesCompleted > 0) {
-      return { ...f, status: `${stats.sort.timesCompleted} completed` };
+      return { ...f, status: t("status.completed", { value: stats.sort.timesCompleted }) };
     }
     if (f.id === "recall" && stats.chazara.timesPlayed > 0) {
-      return { ...f, status: `${stats.chazara.bestCount} best` };
+      return { ...f, status: t("status.best", { value: stats.chazara.bestCount }) };
     }
     if (f.id === "dash" && stats.dash.timesPlayed > 0) {
-      return { ...f, status: `${stats.dash.bestScore} best` };
+      return { ...f, status: t("status.best", { value: stats.dash.bestScore }) };
     }
     return f;
   });
@@ -213,7 +214,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
         <h1 className="home-title" dir="rtl">
           חזרת הש״ס
         </h1>
-        <p className="panel__subtitle">Let's learn Shas, together</p>
+        <p className="panel__subtitle">{t("subtitle")}</p>
 
         <ProgressHeaderBar
           progress={progress}
@@ -229,10 +230,10 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
           <TodayLearningCard key={g.id} group={g} snapshot={todaySnapshot} />
         ))}
 
-        <h2 className="section-title">My Mishna</h2>
+        <h2 className="section-title">{labels.group("myMishna")}</h2>
         <FeatureGrid features={myMishnaWithStatus} onNavigate={onNavigate} />
 
-        <h2 className="section-title">Practice</h2>
+        <h2 className="section-title">{labels.group("practice")}</h2>
         <FeatureGrid features={learningToolsWithStatus} onNavigate={onNavigate} />
       </div>
 

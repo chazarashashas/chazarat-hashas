@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { SEDARIM, type Masechet } from "../../data/shas";
-import { SEDER_TABS } from "../../data/sederTabs";
+import { useName } from "../../i18n";
+import { useNavLabels } from "../../utils/navItems";
+import { useSederTabs } from "../../data/sederTabs";
 import { TabBar } from "../TabBar/TabBar";
 import { useGameStats } from "../../utils/useGameStats";
 import { getSederHue } from "../../utils/sederHue";
@@ -26,6 +29,7 @@ const MIN_DURATION_SEC = 60;
  * masechet's name is accepted, not just the one spelling in the data.
  */
 function normalize(s: string): string {
+  if (HEBREW_LETTER.test(s)) return normalizeHebrew(s);
   let x = s
     .trim()
     .toLowerCase()
@@ -40,8 +44,42 @@ function normalize(s: string): string {
   return x;
 }
 
-/** A few common alternate full names that aren't just a spelling variant. */
-const ALIASES: [alias: string, target: string][] = [["Pirkei Avot", "Avot"]];
+const HEBREW_LETTER = /[א-ת]/;
+const FINAL_FORMS: Record<string, string> = { "ך": "כ", "ם": "מ", "ן": "נ", "ף": "פ", "ץ": "צ" };
+
+/**
+ * The same folding for a name typed in Hebrew: nikud and cantillation,
+ * geresh/gershayim and quote marks, spaces and maqaf all drop out; final
+ * letters count as their plain form; and a doubled vav or yod (the
+ * spelling without nikud — ידיים, מקוואות) counts as one, so both
+ * spellings of those names are accepted.
+ */
+function normalizeHebrew(s: string): string {
+  return s
+    .replace(/[֑-ׇ]/g, "")
+    .replace(/[׳״'"’‘“”\s\-־]/g, "")
+    .replace(/[ךםןףץ]/g, (c) => FINAL_FORMS[c])
+    .replace(/וו/g, "ו")
+    .replace(/יי/g, "י");
+}
+
+/** A few common alternate full names that aren't just a spelling variant
+    — including Hebrew spellings with or without a vav or yod (מידות, אוהלות). */
+const ALIASES: [alias: string, target: string][] = [
+  ["Pirkei Avot", "Avot"],
+  ["פרקי אבות", "Avot"],
+  ["מידות", "Middot"],
+  ["אוהלות", "Oholot"],
+  ["קנים", "Kinnim"],
+  ["עדויות", "Eduyot"],
+  ["בכורים", "Bikkurim"],
+  ["ערובין", "Eruvin"],
+  ["קדושין", "Kiddushin"],
+  ["גטין", "Gittin"],
+  ["חלין", "Chullin"],
+  ["עוקצים", "Uktzin"],
+  ["מכשירים", "Machshirin"],
+];
 const ALIAS_LOOKUP = new Map(ALIASES.map(([alias, target]) => [normalize(alias), target]));
 
 // Self-check: if any two masechtot (or an alias) ever normalize to the same
@@ -50,12 +88,14 @@ const ALIAS_LOOKUP = new Map(ALIASES.map(([alias, target]) => [normalize(alias),
 (function checkNoCollisions() {
   const seen = new Map<string, string>();
   for (const m of ALL_MASECHTOT) {
-    const key = normalize(m.en);
-    const existing = seen.get(key);
-    if (existing && existing !== m.en) {
-      throw new Error(`Recall: "${m.en}" and "${existing}" both normalize to "${key}".`);
+    for (const spelling of [m.en, m.he]) {
+      const key = normalize(spelling);
+      const existing = seen.get(key);
+      if (existing && existing !== m.en) {
+        throw new Error(`Recall: "${spelling}" and "${existing}" both normalize to "${key}".`);
+      }
+      seen.set(key, m.en);
     }
-    seen.set(key, m.en);
   }
   for (const [alias, target] of ALIASES) {
     const key = normalize(alias);
@@ -75,6 +115,10 @@ function formatTime(totalSeconds: number): string {
 type Phase = "ready" | "playing" | "ended";
 
 export function RecallScreen() {
+  const { t } = useTranslation("games");
+  const sederTabs = useSederTabs();
+  const name = useName();
+  const navLabels = useNavLabels();
   const { stats, recordChazaraResult } = useGameStats();
   const share = useRunShare();
   const [sederTab, setSederTab] = useState("all");
@@ -85,7 +129,10 @@ export function RecallScreen() {
 
   const targetList: Masechet[] =
     sederTab === "all" ? ALL_MASECHTOT : SEDARIM.find((s) => s.id === sederTab)!.masechtot;
+  // Recorded in the game stats (read by the rebbe dashboard) — kept in English.
   const scopeLabel = sederTab === "all" ? "All of Shas" : SEDARIM.find((s) => s.id === sederTab)!.en;
+  // The same scope, as the screen names it.
+  const scopeName = sederTab === "all" ? t("allOfShas") : name(SEDARIM.find((s) => s.id === sederTab)!);
   const durationSec = Math.max(MIN_DURATION_SEC, targetList.length * SECONDS_PER_ITEM);
 
   useEffect(() => {
@@ -142,7 +189,9 @@ export function RecallScreen() {
     if (!normalized) return;
     const aliasTarget = ALIAS_LOOKUP.get(normalized);
     const match = targetList.find(
-      (m) => !found.has(m.en) && (m.en === aliasTarget || normalize(m.en) === normalized),
+      (m) =>
+        !found.has(m.en) &&
+        (m.en === aliasTarget || normalize(m.en) === normalized || normalize(m.he) === normalized),
     );
     if (!match) return;
     const next = new Set(found);
@@ -159,15 +208,15 @@ export function RecallScreen() {
   return (
     <div className="stage">
       <div className="panel">
-        <button className="restart-icon" title="Restart" onClick={handleRestartIcon}>
+        <button className="restart-icon" title={t("restart")} onClick={handleRestartIcon}>
           ↺
         </button>
-        <h1 className="panel__title">Mishna Chazara</h1>
+        <h1 className="panel__title">{navLabels.item({ id: "recall", label: "Mishna Chazara" })}</h1>
 
         {phase !== "ended" && (
           <>
             <GameHud
-              doing={scopeLabel}
+              doing={scopeName}
               progress={phase === "playing" ? 1 - timeLeft / durationSec : 0}
               worth={phase === "playing" ? formatTime(timeLeft) : `${found.size} / ${targetList.length}`}
               urgent={phase === "playing" && timeLeft <= 10}
@@ -181,7 +230,7 @@ export function RecallScreen() {
                   disabled={phase !== "playing"}
                   value={guess}
                   onChange={(e) => handleGuessChange(e.target.value)}
-                  placeholder="Type a masechet…"
+                  placeholder={t("recall.placeholder")}
                   autoComplete="off"
                   autoCorrect="off"
                   autoCapitalize="off"
@@ -195,7 +244,7 @@ export function RecallScreen() {
                           className="recall-group__label"
                           style={{ ["--group-hue" as string]: getSederHue(seder.id) }}
                         >
-                          {seder.en}
+                          {name(seder)}
                         </div>
                         <div className="recall-grid">
                           {seder.masechtot.map((m) => (
@@ -205,7 +254,7 @@ export function RecallScreen() {
                                 "recall-chip" + (found.has(m.en) ? " recall-chip--found" : " recall-chip--pending")
                               }
                             >
-                              {found.has(m.en) ? m.en : ""}
+                              {found.has(m.en) ? name(m) : ""}
                             </div>
                           ))}
                         </div>
@@ -221,7 +270,7 @@ export function RecallScreen() {
                           "recall-chip" + (found.has(m.en) ? " recall-chip--found" : " recall-chip--pending")
                         }
                       >
-                        {found.has(m.en) ? m.en : ""}
+                        {found.has(m.en) ? name(m) : ""}
                       </div>
                     ))}
                   </div>
@@ -231,10 +280,10 @@ export function RecallScreen() {
               {phase === "ready" && (
                 <div className="recall-board-overlay">
                   <div className="recall-board-overlay__scope">
-                    {scopeLabel} — {targetList.length} masechtot
+                    {t("recall.readyScope", { scope: scopeName, total: targetList.length })}
                   </div>
                   <button className="restart" onClick={handleStart}>
-                    Start
+                    {t("start")}
                   </button>
                 </div>
               )}
@@ -245,18 +294,18 @@ export function RecallScreen() {
         {phase === "ended" && (
           <div className="game__end recall-center">
             <div className="recall-center__big">
-              {found.size === targetList.length ? "All of them!" : "Time's up"}
+              {found.size === targetList.length ? t("recall.allFound") : t("recall.timesUp")}
             </div>
             <div className="recall-center__sub">
-              You found {found.size} of {targetList.length} in {scopeLabel}.
+              {t("recall.foundSummary", { found: found.size, total: targetList.length, scope: scopeName })}
             </div>
             {missed.length > 0 && (
               <div className="recall-missed">
-                <p className="recall-missed__label">Still to find:</p>
+                <p className="recall-missed__label">{t("recall.stillToFind")}</p>
                 <div className="recall-missed__list">
                   {missed.map((m) => (
                     <span key={m.en} className="recall-missed__item">
-                      {m.en}
+                      {name(m)}
                     </span>
                   ))}
                 </div>
@@ -264,13 +313,13 @@ export function RecallScreen() {
             )}
             {share.prompt("cream")}
             <button className="restart" onClick={handleStart}>
-              Try again
+              {t("tryAgain", { ns: "common" })}
             </button>
             {share.link()}
           </div>
         )}
       </div>
-      <TabBar tabs={SEDER_TABS} activeId={sederTab} onSelect={handleSederTabChange} />
+      <TabBar tabs={sederTabs} activeId={sederTab} onSelect={handleSederTabChange} />
       {share.sheet}
     </div>
   );

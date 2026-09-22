@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useName } from "../../i18n";
+import { findMasechet } from "../../data/shas";
 import { useLearningProgress } from "../../utils/useLearningProgress";
 import { buildJourneyScopes, findNextMasechet } from "../../utils/shasJourney";
 import { NavIcon } from "../Icon/NavIcon";
@@ -22,6 +25,8 @@ interface ProgressHeaderBarProps {
  * stay well under 640px regardless of the browser window's width.
  */
 export function ProgressHeaderBar({ progress, onGoToLimmud, onOpenGuide }: ProgressHeaderBarProps) {
+  const { t } = useTranslation("shell");
+  const name = useName();
   const { seder: actualSeder, masechet: actualMasechet } = findNextMasechet(progress);
   const [stepIndex, setStepIndex] = useState(0);
   const maxIndex = actualSeder.masechtot.length - 1;
@@ -31,6 +36,7 @@ export function ProgressHeaderBar({ progress, onGoToLimmud, onOpenGuide }: Progr
 
   const [masechetScope, sederScope, shasScope] = buildJourneyScopes(progress, previewMasechet.en);
   const upNext = progress.todaysItems[0];
+  const upNextMasechet = upNext ? findMasechet(upNext.masechetEn) : undefined;
 
   return (
     <div className="progress-header-bar">
@@ -39,8 +45,8 @@ export function ProgressHeaderBar({ progress, onGoToLimmud, onOpenGuide }: Progr
           <ProgressTracks
             bare
             masechetOnly
-            masechet={{ title: masechetScope.title, percent: masechetScope.percent }}
-            seder={{ title: sederScope.title, percent: sederScope.percent }}
+            masechet={{ title: name(previewMasechet), percent: masechetScope.percent }}
+            seder={{ title: name(actualSeder), percent: sederScope.percent }}
             shas={{ percent: shasScope.percent }}
             onStepMasechet={() => setStepIndex((i) => i + 1)}
             canStepMasechet={previewIndex < maxIndex}
@@ -53,23 +59,27 @@ export function ProgressHeaderBar({ progress, onGoToLimmud, onOpenGuide }: Progr
         <div className="phb-guide">
           <button className="pill pill--compact phb-guide-btn" onClick={onOpenGuide}>
             <NavIcon id="guide" size={17} weight={2} />
-            <span>How to use this app</span>
+            <span>{t("progressHeader.howToUse")}</span>
           </button>
         </div>
 
         <div className="phb-rule" aria-hidden="true" />
 
         <div className="phb-next">
-          <span className="phb-next-label">Up next</span>
+          <span className="phb-next-label">{t("progressHeader.upNext")}</span>
           {progress.finishedShas ? (
-            <span className="phb-next-ref">Kol HaShas!</span>
+            <span className="phb-next-ref">{t("progressHeader.kolHashas")}</span>
           ) : (
             <>
               <span className="phb-next-ref">
-                {upNext.masechetEn} {upNext.perek}:{upNext.mishnah}
+                {t("progressHeader.upNextRef", {
+                  masechet: upNextMasechet ? name(upNextMasechet) : upNext.masechetEn,
+                  perek: upNext.perek,
+                  mishnah: upNext.mishnah,
+                })}
               </span>
               <button className="btn btn--accent btn--block" onClick={onGoToLimmud}>
-                <span>Go to Daily Limmud</span>
+                <span>{t("progressHeader.goToLimmud")}</span>
                 <NavIcon id="arrow" size={15} weight={2.2} />
               </button>
             </>
