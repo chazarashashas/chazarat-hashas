@@ -1,0 +1,27 @@
+{
+  "nav": {
+    "home": "Home",
+    "limmud": "Daily Limmud",
+    "map": "Explore Shas",
+    "perek": "Mishna Notes",
+    "progress": "My Siyumim",
+    "chevrusa": "Chevrusa",
+    "chabura": "Chabura",
+    "sedarim": "Sidrei Hamishna",
+    "mishna": "Mishna Quiz",
+    "sort": "Seder Sort",
+    "recall": "Mishna Chazara",
+    "dash": "Shas Dash",
+    "liluy": "L'Iluy Nishmat",
+    "resources": "Resources",
+    "guide": "Guide",
+    "login": "My Account",
+    "admin": "Admin",
+    "rebbe": "Dashboard"
+  },
+  "navGroup": {
+    "myMishna": "My Mishna",
+    "practice": "Practice",
+    "more": "More"
+  }
+}

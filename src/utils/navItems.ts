@@ -1,6 +1,24 @@
+import { useTranslation } from "react-i18next";
+import type { en } from "../i18n/locales/en";
+
 export interface NavItemDef {
   id: string;
+  /** English — the source of the shell:nav strings, and the fallback. */
   label: string;
+}
+
+type NavId = keyof typeof en.shell.nav;
+export type NavGroupKey = keyof typeof en.shell.navGroup;
+
+/** Nav labels in the interface's language — by id, so every place that
+    shows a destination (sidebar, bottom bar, More sheet, My Account's
+    bottom-bar picker) names it the same way. */
+export function useNavLabels() {
+  const { t } = useTranslation("shell");
+  return {
+    item: (item: NavItemDef): string => t(`nav.${item.id as NavId}`, { defaultValue: item.label }),
+    group: (key: NavGroupKey): string => t(`navGroup.${key}`),
+  };
 }
 
 /** Each item's own section hue for its active fill — shared by the
@@ -30,8 +48,9 @@ export const HUE: Record<string, string> = {
 /** Mirrors Home's own "My Mishna" / "Practice" split — a student who's
     already parsed Home's two sections shouldn't have to learn a second,
     different grouping in the sidebar or the phone "More" sheet. */
-export const NAV_GROUPS: { label: string; items: NavItemDef[] }[] = [
+export const NAV_GROUPS: { key: NavGroupKey; label: string; items: NavItemDef[] }[] = [
   {
+    key: "myMishna",
     label: "My Mishna",
     items: [
       { id: "home", label: "Home" },
@@ -44,6 +63,7 @@ export const NAV_GROUPS: { label: string; items: NavItemDef[] }[] = [
     ],
   },
   {
+    key: "practice",
     label: "Practice",
     items: [
       { id: "sedarim", label: "Sidrei Hamishna" },
@@ -57,6 +77,7 @@ export const NAV_GROUPS: { label: string; items: NavItemDef[] }[] = [
      reference material, the account, and the one feature that belongs to
      other people's siyumim rather than your own practice. */
   {
+    key: "more",
     label: "More",
     items: [
       { id: "liluy", label: "L'Iluy Nishmat" },

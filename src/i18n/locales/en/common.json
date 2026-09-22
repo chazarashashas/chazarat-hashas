@@ -3,5 +3,16 @@
     "label": "Language",
     "en": "English",
     "he": "עברית"
-  }
+  },
+  "cancel": "Cancel",
+  "save": "Save",
+  "close": "Close",
+  "back": "Back",
+  "next": "Next",
+  "done": "Done",
+  "print": "Print",
+  "share": "Share",
+  "reset": "Reset",
+  "tryAgain": "Try again",
+  "loading": "Loading…"
 }

@@ -6,6 +6,7 @@ import {
   NAV_GROUPS,
   ADMIN_ITEM,
   REBBE_ITEM,
+  useNavLabels,
   type NavItemDef,
 } from "../../utils/navItems";
 import { useEscapeKey } from "../../utils/useEscapeKey";
@@ -26,8 +27,9 @@ interface MoreSheetProps {
 
 function MoreSheet({ activeId, barIds, isAdmin, isRebbe, onSelect, onClose }: MoreSheetProps) {
   useEscapeKey(onClose);
+  const labels = useNavLabels();
   const barSet = new Set(barIds);
-  const groups = NAV_GROUPS.map((g) => ({ label: g.label, items: g.items.filter((i) => !barSet.has(i.id)) })).filter(
+  const groups = NAV_GROUPS.map((g) => ({ key: g.key, items: g.items.filter((i) => !barSet.has(i.id)) })).filter(
     (g) => g.items.length > 0,
   );
   // Guide and My Account live in the "More" group now, so only the two
@@ -39,11 +41,11 @@ function MoreSheet({ activeId, barIds, isAdmin, isRebbe, onSelect, onClose }: Mo
 
   return (
     <div className="modal-scrim modal-scrim--sheet" onClick={onClose}>
-      <div className="more-sheet" role="dialog" aria-label="More" onClick={(e) => e.stopPropagation()}>
+      <div className="more-sheet" role="dialog" aria-label={labels.group("more")} onClick={(e) => e.stopPropagation()}>
         <span className="more-sheet__handle" aria-hidden="true" />
         {groups.map((group) => (
-          <div className="more-sheet__group" key={group.label}>
-            <p className="more-sheet__group-label">{group.label}</p>
+          <div className="more-sheet__group" key={group.key}>
+            <p className="more-sheet__group-label">{labels.group(group.key)}</p>
             <div className="more-sheet__grid">
               {group.items.map((item) => (
                 <button
@@ -57,7 +59,7 @@ function MoreSheet({ activeId, barIds, isAdmin, isRebbe, onSelect, onClose }: Mo
                   >
                     <NavIcon id={item.id} size={19} />
                   </span>
-                  <span className="more-sheet__label">{item.label}</span>
+                  <span className="more-sheet__label">{labels.item(item)}</span>
                 </button>
               ))}
             </div>
@@ -78,7 +80,7 @@ function MoreSheet({ activeId, barIds, isAdmin, isRebbe, onSelect, onClose }: Mo
                   >
                     <NavIcon id={item.id} size={19} />
                   </span>
-                  <span className="more-sheet__label">{item.label}</span>
+                  <span className="more-sheet__label">{labels.item(item)}</span>
                 </button>
               ))}
             </div>
@@ -103,6 +105,7 @@ interface BottomBarProps {
     that most of it existed. See ANDROID-BRIEF.md §7. */
 export function BottomBar({ activeId, onSelect, barIds, isAdmin, isRebbe }: BottomBarProps) {
   const [moreOpen, setMoreOpen] = useState(false);
+  const labels = useNavLabels();
   const barItems = barIds.map(itemFor).filter((i): i is NavItemDef => !!i);
   // Whatever is open but not on the bar was reached through More, so More
   // is the tab you are on — without this the bar shows nothing active.
@@ -128,7 +131,7 @@ export function BottomBar({ activeId, onSelect, barIds, isAdmin, isRebbe }: Bott
             >
               <NavIcon id={item.id} size={20} />
             </span>
-            <span className="bottom-bar__label">{item.label}</span>
+            <span className="bottom-bar__label">{labels.item(item)}</span>
           </button>
         ))}
         <button
@@ -143,7 +146,7 @@ export function BottomBar({ activeId, onSelect, barIds, isAdmin, isRebbe }: Bott
           >
             <NavIcon id="more" size={20} />
           </span>
-          <span className="bottom-bar__label">More</span>
+          <span className="bottom-bar__label">{labels.group("more")}</span>
         </button>
       </nav>
 

@@ -101,6 +101,13 @@ export function useDirection(): "rtl" | "ltr" {
   return directionOf(instance.language);
 }
 
+/** A seder or masechet's name in the interface's language — the data
+    already carries both (`{ he: "ברכות", en: "Berachot" }`). */
+export function useName(): (item: { he: string; en: string }) => string {
+  const { i18n: instance } = useTranslation();
+  return (item) => (instance.language === "he" ? item.he : item.en);
+}
+
 /** Dates and numbers for the interface's language. English keeps the
     device's own format (undefined), as it always has; Hebrew is he-IL. */
 export function useLocale(): string | undefined {
