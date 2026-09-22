@@ -2,7 +2,8 @@
   "language": {
     "label": "Language",
     "en": "English",
-    "he": "עברית"
+    "he": "עברית",
+    "switchToOther": "Switch the app to Hebrew"
   },
   "cancel": "Cancel",
   "save": "Save",

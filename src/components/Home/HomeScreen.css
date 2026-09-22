@@ -134,3 +134,33 @@
   border-radius: var(--radius-pill);
   padding: 3px 9px;
 }
+
+/* The other language's name in the panel's top corner (inline-end, so
+   top-right in English, top-left in Hebrew). Small and muted, but the
+   button itself is a full 44px target. */
+.home-language-link {
+  position: absolute;
+  top: 8px;
+  inset-inline-end: 10px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 10px;
+  border: none;
+  background: none;
+  font-family: var(--font-body);
+  font-size: var(--fs-12);
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  border-radius: var(--radius-pill);
+}
+
+.home-language-link:hover {
+  color: var(--ink);
+  background: var(--tint);
+}
+
+.home-language-link:lang(he) {
+  font-family: var(--font-hebrew);
+  font-size: var(--fs-13);
+}

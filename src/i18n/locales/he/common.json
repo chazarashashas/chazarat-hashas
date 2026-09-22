@@ -2,7 +2,8 @@
   "language": {
     "label": "שפה",
     "en": "English",
-    "he": "עברית"
+    "he": "עברית",
+    "switchToOther": "להעביר את האפליקציה לאנגלית"
   },
   "cancel": "ביטול",
   "save": "שמירה",

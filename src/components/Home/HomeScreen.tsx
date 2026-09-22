@@ -9,6 +9,7 @@ import { useChevrusa } from "../../utils/useChevrusa";
 import { useGameStats } from "../../utils/useGameStats";
 import { NavIcon } from "../Icon/NavIcon";
 import { BrandMark } from "../BrandMark";
+import { LanguageCornerLink } from "./LanguageCornerLink";
 import { ProgressHeaderBar } from "../ProgressHeaderBar/ProgressHeaderBar";
 import { useTodaySnapshot } from "../../utils/useDailySubmission";
 import { TodayLearningCard } from "../TodayLearning/TodayLearningCard";
@@ -210,6 +211,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
   return (
     <div className="stage">
       <div className="panel">
+        <LanguageCornerLink />
         <BrandMark variant="outline" className="home-brand-mark" />
         <h1 className="home-title" dir="rtl">
           חזרת הש״ס
