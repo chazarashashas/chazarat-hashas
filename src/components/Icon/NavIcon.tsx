@@ -37,11 +37,14 @@ const PATHS: Record<string, string> = {
   guide: "M12 2a10 10 0 100 20 10 10 0 000-20zM9.5 9a2.5 2.5 0 015-.5c0 1.7-2.3 1.9-2.3 3.5M12 16.5h.01",
 };
 
+/** Icons that point along the reading direction, so they mirror in Hebrew. */
+const DIRECTIONAL = new Set(["arrow"]);
+
 export function NavIcon({ id, size = 20, weight = 1.6 }: { id: string; size?: number; weight?: number }) {
   const d = PATHS[id];
   if (!d) return null;
   return (
-    <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden="true">
+    <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden="true" className={DIRECTIONAL.has(id) ? "icon--directional" : undefined}>
       <path
         d={d}
         fill="none"

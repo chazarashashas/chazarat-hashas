@@ -10,12 +10,12 @@
 }
 
 .nishmat-title {
-  text-align: left;
+  text-align: start;
   margin: 0 0 4px;
 }
 
 .nishmat-subtitle {
-  text-align: left;
+  text-align: start;
   margin: 0;
 }
 
@@ -56,7 +56,7 @@
 
 .nishmat-gate .gate2-title,
 .nishmat-gate .gate2-subtitle {
-  text-align: left;
+  text-align: start;
 }
 
 .nishmat-gate-board {
@@ -147,7 +147,7 @@
 .siyum-card__open {
   display: block;
   width: 100%;
-  text-align: left;
+  text-align: start;
   background: none;
   border: none;
   padding: 0;
@@ -159,7 +159,7 @@
 .siyum-card__hide {
   position: absolute;
   bottom: 14px;
-  right: 16px;
+  inset-inline-end: 16px;
   min-height: 28px;
   padding: 4px 10px;
   background: var(--surface-hi);
@@ -191,7 +191,7 @@
 }
 
 .siyum-card__badge {
-  margin-left: auto;
+  margin-inline-start: auto;
   font-family: var(--font-heading);
   font-size: var(--fs-12);
   font-weight: 700;
@@ -307,7 +307,7 @@
   max-width: calc(100% - 32px);
   max-height: calc(100vh - 64px);
   overflow-y: auto;
-  text-align: left;
+  text-align: start;
 }
 
 .nishmat-visibility-note {
@@ -342,7 +342,7 @@
   margin-bottom: 10px;
   font-size: var(--fs-12);
   color: var(--ink);
-  text-align: left;
+  text-align: start;
   cursor: pointer;
 }
 
@@ -565,7 +565,7 @@
   border-radius: var(--radius-card);
   padding: 15px 16px;
   margin-bottom: 14px;
-  text-align: left;
+  text-align: start;
 }
 
 .nishmat-next-card__label {
@@ -733,11 +733,11 @@
   width: 100%;
   background: var(--surface);
   border: none;
-  border-left: 3px solid var(--row-hue, var(--line));
+  border-inline-start: 3px solid var(--row-hue, var(--line));
   border-radius: var(--radius-control);
   padding: 11px 14px;
   cursor: pointer;
-  text-align: left;
+  text-align: start;
 }
 
 .nishmat-seder-row__he {
@@ -776,7 +776,7 @@
   font-weight: 600;
   color: var(--ink);
   cursor: pointer;
-  text-align: left;
+  text-align: start;
 }
 
 .nishmat-masechet-row__meta {
@@ -796,10 +796,10 @@
   min-height: 58px;
   border-radius: var(--radius-control);
   border: none;
-  border-left: 3px dashed var(--faint);
+  border-inline-start: 3px dashed var(--faint);
   background: var(--surface-hi);
   padding: 8px 10px;
-  text-align: left;
+  text-align: start;
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -825,27 +825,27 @@
 }
 
 .nishmat-perek-tile--other {
-  border-left: 3px solid var(--line);
+  border-inline-start: 3px solid var(--line);
   background: var(--paper);
   cursor: default;
 }
 
 .nishmat-perek-tile--anon {
-  border-left: 3px solid var(--line);
+  border-inline-start: 3px solid var(--line);
   background: var(--paper);
   cursor: default;
 }
 
 .nishmat-perek-tile--yours {
-  border-left: 3px solid var(--ink);
+  border-inline-start: 3px solid var(--ink);
 }
 
 .nishmat-perek-tile--queued {
-  border-left: 3px solid var(--ink);
+  border-inline-start: 3px solid var(--ink);
 }
 
 .nishmat-perek-tile--learned {
-  border-left: 3px solid var(--hue-siyumim);
+  border-inline-start: 3px solid var(--hue-siyumim);
   background: var(--surface);
   cursor: default;
 }

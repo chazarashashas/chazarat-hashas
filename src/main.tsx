@@ -2,6 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import * as Sentry from "@sentry/react";
 import "./styles/global.css";
+import "./i18n";
 import App from "./App.tsx";
 import { AuthProvider } from "./utils/useAuth";
 import { initMonitoring } from "./utils/monitoring";

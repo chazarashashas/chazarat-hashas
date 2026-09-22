@@ -91,3 +91,8 @@ textarea:focus-visible,
     background: var(--surface-hi) !important;
   }
 }
+
+/* Arrows that point along the reading direction turn round in Hebrew. */
+[dir="rtl"] .icon--directional {
+  transform: scaleX(-1);
+}

@@ -1,5 +1,5 @@
 .login-notice {
-  text-align: left;
+  text-align: start;
   margin-top: 4px;
   margin-bottom: 16px;
 }
@@ -8,7 +8,7 @@
   display: block;
   width: 100%;
   box-sizing: border-box;
-  text-align: left;
+  text-align: start;
   background: none;
   border: none;
   color: var(--hue-chevrusa);
@@ -64,7 +64,7 @@
 
 .chevrusa-form {
   background: var(--surface);
-  border-left: 3px solid var(--hue-chevrusa);
+  border-inline-start: 3px solid var(--hue-chevrusa);
   border-radius: var(--radius-card);
   padding: 16px 16px 14px;
   margin-bottom: 4px;
@@ -80,7 +80,7 @@
   padding: 10px 12px;
   font-size: var(--fs-12);
   font-weight: 600;
-  text-align: left;
+  text-align: start;
   margin-bottom: 12px;
   animation: panel-wobble 0.4s ease;
 }
@@ -102,7 +102,7 @@
 
 .login-field {
   display: block;
-  text-align: left;
+  text-align: start;
   margin: 0 0 14px;
 }
 

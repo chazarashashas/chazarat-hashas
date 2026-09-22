@@ -11,7 +11,7 @@
   border-radius: 20px;
   box-sizing: border-box;
   color: var(--ink);
-  text-align: left;
+  text-align: start;
 }
 
 .share-card__squares {
@@ -195,7 +195,7 @@
 
 .share-card--step .share-card__letter {
   top: -54px;
-  right: -26px;
+  inset-inline-end: -26px;
   color: color-mix(in srgb, var(--gold) 13%, transparent);
 }
 
@@ -365,7 +365,7 @@
 }
 
 .share-card--plain .share-card__letter {
-  right: -30px;
+  inset-inline-end: -30px;
   bottom: -70px;
   color: color-mix(in srgb, var(--on-navy) 7%, transparent);
 }
@@ -522,7 +522,7 @@
   background: var(--surface-hi);
   box-shadow: inset 0 0 0 1.5px var(--line);
   color: var(--ink);
-  text-align: left;
+  text-align: start;
   cursor: pointer;
 }
 

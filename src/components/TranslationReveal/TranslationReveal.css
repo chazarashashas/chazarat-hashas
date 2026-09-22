@@ -36,7 +36,7 @@
   margin-top: 8px;
   background: var(--surface);
   border-radius: var(--radius-control);
-  border-left: 3px solid var(--gold);
+  border-inline-start: 3px solid var(--gold);
   padding: 15px 16px;
   text-align: left;
 }

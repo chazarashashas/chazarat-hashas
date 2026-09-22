@@ -6,6 +6,7 @@ import { friendlyError } from "../../utils/friendlyError";
 import { usePerekNotes } from "../../utils/usePerekNotes";
 import { useGameStats } from "../../utils/useGameStats";
 import { getSederHue } from "../../utils/sederHue";
+import { useDirection } from "../../i18n";
 import { PerekNoteModal } from "../PerekNoteModal/PerekNoteModal";
 import { TranslationReveal } from "../TranslationReveal/TranslationReveal";
 import { TabBar } from "../TabBar/TabBar";
@@ -112,11 +113,13 @@ function Switch<T extends string>({
   size?: "sm";
 }) {
   const index = options.findIndex((o) => o.value === value);
+  // The thumb starts at the first option's side, so it slides the other way in Hebrew.
+  const step = useDirection() === "rtl" ? -100 : 100;
   return (
     <div className={"switch" + (size ? " switch--" + size : "")}>
       <div
         className="switch__thumb"
-        style={{ width: `${100 / options.length}%`, transform: `translateX(${index * 100}%)` }}
+        style={{ width: `${100 / options.length}%`, transform: `translateX(${index * step}%)` }}
       />
       {options.map((o) => (
         <button

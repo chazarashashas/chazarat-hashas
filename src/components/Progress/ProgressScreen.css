@@ -6,7 +6,7 @@
   border-radius: var(--radius-hero);
   padding: 18px;
   color: var(--on-navy);
-  text-align: left;
+  text-align: start;
 }
 
 .siyum-countdown__head {
@@ -58,7 +58,7 @@
 
 .siyum-countdown__date {
   margin-top: 2px;
-  text-align: right;
+  text-align: end;
   font-size: var(--fs-12);
   color: var(--on-navy-muted);
 }
@@ -182,7 +182,7 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  text-align: left;
+  text-align: start;
 }
 
 .pace-pill__freq-label {
@@ -252,10 +252,10 @@
   display: block;
   width: 100%;
   box-sizing: border-box;
-  text-align: left;
+  text-align: start;
   background: var(--surface);
   border: none;
-  border-left: 3px solid var(--hue-chevrusa);
+  border-inline-start: 3px solid var(--hue-chevrusa);
   border-radius: var(--radius-control);
   padding: 12px 14px;
   margin-bottom: 18px;
@@ -364,7 +364,7 @@
   padding: 6px 2px;
   cursor: pointer;
   font-family: var(--font-body);
-  text-align: left;
+  text-align: start;
 }
 
 .progress-row--seder .progress-row__label {
@@ -375,7 +375,7 @@
 }
 
 .progress-row--masechet {
-  padding-left: 14px;
+  padding-inline-start: 14px;
 }
 
 .progress-row--masechet .progress-row__label {
@@ -385,7 +385,7 @@
 }
 
 .progress-row--perek {
-  padding-left: 28px;
+  padding-inline-start: 28px;
   cursor: default;
 }
 
@@ -399,7 +399,7 @@
   font-size: var(--fs-12);
   font-weight: 700;
   color: var(--ink-soft);
-  margin-left: 8px;
+  margin-inline-start: 8px;
 }
 
 .progress-bar {
@@ -411,7 +411,7 @@
 
 .progress-masechtot .progress-bar,
 .progress-perakim .progress-bar {
-  margin-left: 14px;
+  margin-inline-start: 14px;
   width: calc(100% - 14px);
 }
 

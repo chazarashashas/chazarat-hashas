@@ -61,7 +61,8 @@ export function AdminScreen() {
   const openSiyum = drawer?.kind === "siyum" ? siyumim.data.find((s) => s.id === drawer.id) : undefined;
 
   return (
-    <div className="stage">
+    // Admin stays English and left-to-right in either interface language.
+    <div className="stage" lang="en" dir="ltr">
       <div className="panel">
         <div className="screen-head">
           <h1 className="screen-head__title">Admin</h1>

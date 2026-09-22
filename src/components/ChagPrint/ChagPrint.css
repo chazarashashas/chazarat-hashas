@@ -28,7 +28,7 @@
   background: var(--surface-hi);
   box-shadow: inset 0 0 0 1.5px var(--line);
   color: var(--ink);
-  text-align: left;
+  text-align: start;
   cursor: pointer;
 }
 
@@ -116,7 +116,7 @@
   border-radius: var(--radius-small);
   background: none;
   color: var(--ink);
-  text-align: left;
+  text-align: start;
   cursor: pointer;
 }
 
@@ -155,7 +155,7 @@
   font-size: var(--fs-13);
   font-weight: 600;
   color: var(--ink);
-  text-align: left;
+  text-align: start;
   cursor: pointer;
 }
 
@@ -192,7 +192,7 @@
 .chag-measure {
   position: absolute;
   top: 0;
-  left: -10000px;
+  inset-inline-start: -10000px;
   width: 7.2in;
   visibility: hidden;
   pointer-events: none;
@@ -601,7 +601,7 @@
   background: var(--surface-hi);
   box-shadow: inset 0 0 0 1.5px var(--line);
   color: var(--ink);
-  text-align: left;
+  text-align: start;
   cursor: pointer;
 }
 

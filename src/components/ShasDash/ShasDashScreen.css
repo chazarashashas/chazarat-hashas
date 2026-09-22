@@ -153,7 +153,7 @@
 .dash-lives {
   display: flex;
   gap: 3px;
-  margin-left: auto;
+  margin-inline-start: auto;
   padding-bottom: 2px;
 }
 
@@ -276,17 +276,17 @@
   justify-content: flex-end;
   min-width: 0;
   padding: 0 10px;
-  border-left: 2px solid var(--hue-light);
+  border-inline-start: 2px solid var(--hue-light);
   font-size: var(--fs-12);
   font-weight: 600;
   line-height: 1.2;
-  text-align: right;
+  text-align: end;
   overflow-wrap: anywhere;
   color: var(--on-navy-muted);
 }
 
 .dash-gate--complete {
-  border-left-color: var(--hue);
+  border-inline-start-color: var(--hue);
   background: var(--hue);
   color: var(--on-navy);
 }
@@ -297,7 +297,7 @@
 .dash-runner {
   position: absolute;
   top: 0;
-  left: 0;
+  inset-inline-start: 0;
   pointer-events: none;
   will-change: transform;
 }

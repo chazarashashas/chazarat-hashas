@@ -179,7 +179,7 @@
 }
 
 .gate2-week__note {
-  margin-left: auto;
+  margin-inline-start: auto;
   font-family: var(--font-heading);
   font-weight: 700;
   font-size: var(--fs-12);
@@ -215,7 +215,7 @@
   padding: 10px 12px;
   border-radius: var(--radius-control);
   background: var(--on-navy-fill);
-  border-left: 3px solid var(--gold-bright);
+  border-inline-start: 3px solid var(--gold-bright);
 }
 
 .gate2-note-card__head {
@@ -254,8 +254,8 @@
 
 .gate2-note-card__reply {
   margin-top: 7px;
-  padding-left: 9px;
-  border-left: 2px solid var(--on-navy-rule);
+  padding-inline-start: 9px;
+  border-inline-start: 2px solid var(--on-navy-rule);
   font-size: var(--fs-12);
   line-height: 1.5;
   color: var(--on-navy-muted);

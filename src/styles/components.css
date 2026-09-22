@@ -45,7 +45,7 @@
   font-size: var(--fs-28);
   line-height: 1.15;
   color: var(--ink);
-  text-align: left;
+  text-align: start;
 }
 
 .screen-head__sub {
@@ -56,7 +56,7 @@
 
 /* Right-hand slot: one pill or one button, never a row of them. */
 .screen-head__aside {
-  margin-left: auto;
+  margin-inline-start: auto;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -325,35 +325,35 @@
 .callout {
   background: var(--surface);
   border: none;
-  border-left: 3px solid var(--gold);
+  border-inline-start: 3px solid var(--gold);
   border-radius: var(--radius-control);
   padding: 12px 14px;
   font-size: var(--fs-13);
   line-height: 1.55;
   color: var(--ink);
-  text-align: left;
+  text-align: start;
 }
 
 .callout--good {
-  border-left-color: var(--good);
+  border-inline-start-color: var(--good);
   background: var(--good-bg);
   color: var(--good);
 }
 
 .callout--bad {
-  border-left-color: var(--bad);
+  border-inline-start-color: var(--bad);
   background: var(--bad-bg);
   color: var(--bad);
 }
 
 .callout--seder {
-  border-left-color: var(--callout-hue, var(--gold));
+  border-inline-start-color: var(--callout-hue, var(--gold));
 }
 
 /* On navy the fill would fight the card, so only the rule survives. */
 .hero-card .callout {
   background: var(--on-navy-fill);
-  border-left-color: var(--gold-bright);
+  border-inline-start-color: var(--gold-bright);
   color: var(--on-navy);
 }
 
@@ -455,7 +455,7 @@ textarea.field__input {
   border-radius: var(--radius-hero);
   background: var(--surface);
   box-shadow: var(--shadow-card);
-  text-align: left;
+  text-align: start;
   animation: panel-pop 0.25s ease;
 }
 
@@ -482,7 +482,7 @@ textarea.field__input {
 .modal__close {
   position: absolute;
   top: 12px;
-  right: 12px;
+  inset-inline-end: 12px;
 }
 
 /* Primary first, secondary under it — the same order in every modal. */
@@ -518,7 +518,7 @@ textarea.field__input {
   flex-direction: column;
   align-items: flex-start;
   gap: 10px;
-  text-align: left;
+  text-align: start;
 }
 
 /* ============================================================
@@ -710,7 +710,7 @@ textarea.field__input {
 .restart-icon {
   position: absolute;
   top: 14px;
-  right: 14px;
+  inset-inline-end: 14px;
   width: 26px;
   height: 26px;
   border-radius: 50%;
@@ -733,18 +733,18 @@ textarea.field__input {
 .note-banner {
   background: var(--surface);
   border: none;
-  border-left: 3px solid var(--gold);
+  border-inline-start: 3px solid var(--gold);
   border-radius: var(--radius-control);
   padding: 10px 13px;
   font-size: var(--fs-12);
   color: var(--brass-text);
-  text-align: left;
+  text-align: start;
   margin-bottom: 14px;
   font-weight: 600;
 }
 
 .note-banner--good {
-  border-left-color: var(--good);
+  border-inline-start-color: var(--good);
   color: var(--good);
 }
 
@@ -785,13 +785,13 @@ textarea.field__input {
   overflow-y: auto;
   padding: 26px 24px 22px;
   position: relative;
-  text-align: left;
+  text-align: start;
 }
 
 .intro-popup__close {
   position: absolute;
   top: 10px;
-  right: 10px;
+  inset-inline-end: 10px;
   width: 24px;
   height: 24px;
   border-radius: 50%;
@@ -815,7 +815,7 @@ textarea.field__input {
   line-height: 1.55;
   color: var(--muted);
   margin: 0 0 12px;
-  text-align: left;
+  text-align: start;
 }
 
 .intro-popup__lead {

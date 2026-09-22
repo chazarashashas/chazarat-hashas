@@ -12,13 +12,13 @@
   max-width: calc(100% - 32px);
   padding: 22px 20px 20px;
   position: relative;
-  text-align: left;
+  text-align: start;
 }
 
 .note-modal__close {
   position: absolute;
   top: 10px;
-  right: 10px;
+  inset-inline-end: 10px;
   width: 24px;
   height: 24px;
   border-radius: 50%;

@@ -1,5 +1,5 @@
 .notes-panel {
-  text-align: left;
+  text-align: start;
 }
 
 /* ---------- Header ---------- */
@@ -27,7 +27,7 @@
   /* Clears the shared panel's restart icon (position:absolute, top-right
      corner of the panel) — without this the two controls' click targets
      overlap at this screen's exact corner. */
-  margin-right: 26px;
+  margin-inline-end: 26px;
   background: none;
   border: none;
   padding: 0;
@@ -148,7 +148,7 @@
 .masechet-chip__badge {
   position: absolute;
   top: -6px;
-  right: -4px;
+  inset-inline-end: -4px;
   min-width: 16px;
   height: 16px;
   padding: 0 4px;
@@ -174,7 +174,7 @@
   margin-top: 12px;
   padding: 12px 15px;
   border-radius: var(--radius-card);
-  border-left: 3px solid var(--gold);
+  border-inline-start: 3px solid var(--gold);
   background: var(--surface-hi);
 }
 
@@ -226,7 +226,7 @@
   border: none;
   border-radius: var(--radius-small);
   background: var(--surface);
-  text-align: left;
+  text-align: start;
   cursor: pointer;
 }
 
@@ -301,7 +301,7 @@
 .notes-page__progress {
   flex-shrink: 0;
   min-width: 130px;
-  text-align: right;
+  text-align: end;
 }
 
 .notes-page__progress-text {
@@ -475,7 +475,7 @@
   margin: 2px 12px 12px 60px;
   padding: 12px 14px;
   border-radius: var(--radius-control);
-  border-left: 3px solid var(--active-seder-hue);
+  border-inline-start: 3px solid var(--active-seder-hue);
   background: var(--surface-hi);
   animation: panel-pop 0.18s ease;
 }
@@ -616,10 +616,10 @@
 .concept-card {
   background: var(--surface-hi);
   border: none;
-  border-left: 3px solid var(--card-hue, var(--gold));
+  border-inline-start: 3px solid var(--card-hue, var(--gold));
   border-radius: var(--radius-card);
   padding: 12px 14px;
-  text-align: left;
+  text-align: start;
 }
 
 .concept-card__head {
@@ -709,7 +709,7 @@
 
   .notes-page__progress {
     width: 100%;
-    text-align: left;
+    text-align: start;
   }
 
   .notes-row__traditional {
@@ -718,7 +718,7 @@
   }
 
   .notes-expand {
-    margin-left: 12px;
+    margin-inline-start: 12px;
   }
 }
 

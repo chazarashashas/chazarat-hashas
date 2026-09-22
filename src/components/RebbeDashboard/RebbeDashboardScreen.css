@@ -15,7 +15,7 @@
 .rebbe-title {
   margin: 0 0 4px;
   font-size: var(--fs-28);
-  text-align: left;
+  text-align: start;
 }
 
 .rebbe-sub {
@@ -120,11 +120,11 @@
   min-height: 48px;
   background: var(--surface-hi);
   border: none;
-  border-left: 3px solid var(--line);
+  border-inline-start: 3px solid var(--line);
   border-radius: var(--radius-control);
   padding: 10px 14px;
   cursor: pointer;
-  text-align: left;
+  text-align: start;
   font-family: var(--font-body);
 }
 
@@ -214,7 +214,7 @@
   }
   .rebbe-row__figures {
     width: 100%;
-    padding-left: 46px;
+    padding-inline-start: 46px;
   }
 }
 
@@ -237,7 +237,7 @@
 .rebbe-joincode {
   margin-top: 14px;
   background: var(--surface);
-  border-left: 3px solid var(--gold);
+  border-inline-start: 3px solid var(--gold);
   border-radius: var(--radius-control);
   padding: 14px 16px;
   text-align: center;
@@ -400,7 +400,7 @@
 }
 
 .rebbe-grid__student-col {
-  text-align: left;
+  text-align: start;
   min-width: 150px;
   display: flex;
   align-items: center;

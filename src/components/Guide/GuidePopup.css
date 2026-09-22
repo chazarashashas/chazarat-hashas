@@ -1,11 +1,11 @@
 .modal.guide-popup {
   width: 640px;
   padding: 30px 24px 24px;
-  text-align: left;
+  text-align: start;
 }
 
 .guide-popup .guide-header {
-  padding-right: 34px;
+  padding-inline-end: 34px;
 }
 
 .guide-popup .translation-notice {

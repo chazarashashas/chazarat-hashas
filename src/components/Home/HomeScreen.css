@@ -38,7 +38,7 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 4px;
-  text-align: left;
+  text-align: start;
   background: var(--surface);
   border: none;
   border-top: 3px solid var(--card-hue, var(--line));

@@ -104,12 +104,12 @@
 .group-note {
   background: var(--on-navy);
   border-radius: var(--radius-control);
-  border-left: 3px solid var(--ink-2);
+  border-inline-start: 3px solid var(--ink-2);
   padding: 11px 13px;
 }
 
 .group-note--mine {
-  border-left-color: var(--gold);
+  border-inline-start-color: var(--gold);
 }
 
 .group-note__head {
@@ -213,8 +213,8 @@
 
 .group-note__comments {
   margin-top: 8px;
-  padding-left: 10px;
-  border-left: 2px solid var(--line);
+  padding-inline-start: 10px;
+  border-inline-start: 2px solid var(--line);
   display: flex;
   flex-direction: column;
   gap: 6px;

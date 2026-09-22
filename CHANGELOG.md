@@ -2,6 +2,26 @@
 
 One entry per PR, newest first.
 
+## Hebrew interface, part 1: the groundwork
+
+- i18next + react-i18next, with the strings in one JSON file per area of
+  the app (src/i18n/locales/en, …/he). English is the source; keys are
+  type-checked against it, so a typo in t("…") fails the build.
+- The Hebrew interface stays off (HEBREW_ENABLED in src/i18n/index.ts)
+  until every screen has its Hebrew. `?lang=he` previews it anyway, for
+  checking drafts. A test refuses to pass with it on and any string
+  missing.
+- Once on: Hebrew for a Hebrew phone or browser, and a switch in My
+  Account that overrides it. The page's `lang` and `dir` are set before
+  the first render, so Hebrew never flashes left-to-right.
+- Stylesheets use start/end instead of left/right (144 rules in 28 files),
+  so the layout mirrors in Hebrew. English is unchanged — checked by
+  measuring every element on eight screens before and after. Hebrew text
+  stays right-aligned and the English mishna translation left-aligned in
+  either language.
+- The Mishna ID switch, the English toggle's knob and the arrow icon turn
+  round in Hebrew. Admin stays English and left-to-right.
+
 ## Android app: the share card reaches WhatsApp with its image
 
 - Sharing from inside the Android app sent the status text alone — the

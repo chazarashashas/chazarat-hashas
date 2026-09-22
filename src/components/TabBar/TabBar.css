@@ -13,8 +13,8 @@
 .tab-bar:not(.tab-bar--wrap) .pill {
   flex: 1;
   min-width: 0;
-  padding-left: 4px;
-  padding-right: 4px;
+  padding-inline-start: 4px;
+  padding-inline-end: 4px;
   display: block;
   white-space: nowrap;
   overflow: hidden;

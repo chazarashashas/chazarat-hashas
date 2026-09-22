@@ -3,13 +3,13 @@
 }
 
 .login-notice {
-  text-align: left;
+  text-align: start;
   margin-top: 4px;
 }
 
 .login-field {
   display: block;
-  text-align: left;
+  text-align: start;
   margin: 18px 0 14px;
 }
 
@@ -68,7 +68,7 @@
 
 .onthis-panel {
   background: var(--surface);
-  border-left: 3px solid var(--gold);
+  border-inline-start: 3px solid var(--gold);
   border-radius: var(--radius-card);
   padding: 16px 18px;
   margin-top: 4px;
@@ -80,7 +80,7 @@
   font-size: var(--fs-12);
   font-weight: 700;
   color: var(--muted);
-  text-align: left;
+  text-align: start;
 }
 
 .onthis-panel__figures {
@@ -207,14 +207,14 @@
 }
 
 .login-error {
-  text-align: left;
+  text-align: start;
   color: var(--bad);
   font-size: var(--fs-12);
   margin: 0 0 10px;
 }
 
 .login-message {
-  text-align: left;
+  text-align: start;
   color: var(--brand);
   font-size: var(--fs-12);
   margin: 0 0 10px;
@@ -228,7 +228,7 @@
 .reset-card {
   display: flex;
   flex-direction: column;
-  text-align: left;
+  text-align: start;
 }
 
 .reset-row {
@@ -323,7 +323,7 @@
 }
 
 .account-dash {
-  text-align: left;
+  text-align: start;
   margin-top: 18px;
 }
 
@@ -333,7 +333,7 @@
   font-size: var(--fs-14);
   font-weight: 700;
   color: var(--ink);
-  text-align: left;
+  text-align: start;
 }
 
 .account-card {
@@ -570,7 +570,7 @@
   font-size: var(--fs-12);
   font-weight: 600;
   color: var(--muted);
-  text-align: right;
+  text-align: end;
 }
 
 /* ---------- Your bottom bar (ANDROID-BRIEF.md §7) ---------- */
@@ -683,7 +683,7 @@
   font-weight: 700;
   color: var(--ink-2);
   cursor: pointer;
-  text-align: left;
+  text-align: start;
 }
 
 .account-view-link:hover {
