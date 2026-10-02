@@ -8,7 +8,11 @@ import { localDateStr } from "./localDate";
 import { restDay } from "./chagCalendar";
 import i18n from "../i18n";
 
-export type CompletionSource = "app" | "logged";
+/** "backfill" is learning finished before this app: it counts toward every
+    percentage, masechet and siyum, but never toward a streak or a day's
+    figures — it did not happen today, and a rebbe must not receive it as
+    though it had. */
+export type CompletionSource = "app" | "logged" | "backfill";
 
 /**
  * One mishnah marked learned. This is the single atomic unit both Daily
@@ -274,6 +278,29 @@ export function useLearningProgress() {
     if (fresh.length > 0) setCompletions((prev) => [...prev, ...fresh]);
   }
 
+  /** Learning finished before this app — whole masechtot, or one learned
+      part-way ("through perek 4"). Marked backfill, so it fills in every
+      percentage without inventing a streak or a day's figures. Returns how
+      many mishnayot it added. */
+  function logPastLearning(entries: { masechetEn: string; throughPerek?: number }[]): number {
+    const date = todayStr();
+    const fresh: CompletionRecord[] = [];
+    for (const entry of entries) {
+      const masechet = SEDARIM.flatMap((sd) => sd.masechtot).find((m) => m.en === entry.masechetEn);
+      if (!masechet) continue;
+      const lastPerek = Math.min(entry.throughPerek ?? masechet.perakim, masechet.perakim);
+      for (let perek = 1; perek <= lastPerek; perek++) {
+        const count = getMishnayotCount(entry.masechetEn, perek);
+        for (let mishnah = 1; mishnah <= count; mishnah++) {
+          const item = { masechetEn: entry.masechetEn, perek, mishnah };
+          if (!isCompleted(item)) fresh.push({ ...item, date, source: "backfill" as const });
+        }
+      }
+    }
+    if (fresh.length > 0) setCompletions((prev) => [...prev, ...fresh]);
+    return fresh.length;
+  }
+
   /** The first not-yet-learned mishnah in this masechet, scanning from
       perek 1 — see the MasechetPosition doc comment for why this is
       computed rather than separately tracked. Returns one perek past
@@ -325,7 +352,7 @@ export function useLearningProgress() {
       ? beforeItem.masechetEn
       : null;
 
-  const rawActiveDates = new Set(completions.map((c) => c.date));
+  const rawActiveDates = new Set(completions.filter((c) => c.source !== "backfill").map((c) => c.date));
   const activeDates = new Set([...rawActiveDates, ...frozenDates]);
   const { current, longest } = computeStreak(activeDates, todayStr(), isRestDate);
 
@@ -428,6 +455,7 @@ export function useLearningProgress() {
     justFinishedMasechet,
     queueCatchUp,
     logLearning,
+    logPastLearning,
     addConcept,
     getMasechetPosition,
     markMasechetMishnaLearned,

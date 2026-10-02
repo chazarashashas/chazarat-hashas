@@ -48,7 +48,8 @@ export function useTodaySnapshot(): TodaySnapshot {
 
   const activities: SubmissionActivity[] = [];
 
-  const todaysCompletions = progress.completions.filter((c) => c.date === date);
+  // Learning backfilled from before the app is not today's work.
+  const todaysCompletions = progress.completions.filter((c) => c.date === date && c.source !== "backfill");
   if (todaysCompletions.length > 0) {
     const byMasechet = new Map<string, { perek: number; mishnah: number }[]>();
     for (const c of todaysCompletions) {

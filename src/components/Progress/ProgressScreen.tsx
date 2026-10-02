@@ -15,6 +15,7 @@ import { hebrewNumeral } from "../../utils/hebrewNumeral";
 import { ProgressTracks } from "../ProgressTracks/ProgressTracks";
 import { SEDER_HUE } from "../../utils/sederHue";
 import { LogLearningModal } from "./LogLearningModal";
+import { PastLearningModal } from "./PastLearningModal";
 import { PrintNotesView } from "../PrintNotes/PrintNotesView";
 import { CertificateView } from "../Certificate/CertificateView";
 import { ShareSheet } from "../Share/ShareSheet";
@@ -78,6 +79,7 @@ export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
   const [expanded, setExpanded] = useState<string | null>(null);
   const [logOpen, setLogOpen] = useState(false);
   const [printOpen, setPrintOpen] = useState(false);
+  const [pastOpen, setPastOpen] = useState(false);
   const [certificateFor, setCertificateFor] = useState<{ en: string; he: string } | null>(null);
   // Every siyum is shareable on demand, beside its certificate — declining
   // a prompt never takes the option away.
@@ -351,6 +353,9 @@ export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
           <button className="btn btn--primary progress-log-btn" onClick={() => setLogOpen(true)}>
             {t("logLearningButton")}
           </button>
+          <button className="btn btn--secondary" onClick={() => setPastOpen(true)}>
+            {t("pastLearning.button")}
+          </button>
           <button className="btn btn--secondary progress-print-btn" onClick={() => setPrintOpen(true)}>
             {t("common:print")}
           </button>
@@ -365,6 +370,15 @@ export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
 
         <h2 className="section-title">{t("aheadTitle")}</h2>
         <div className="progress-list">
+          {/* The whole of Shas above its sedarim — the same figure the
+              sedarim add up to, so it never has to be worked out by eye. */}
+          <div className="progress-seder progress-seder--shas">
+            <div className="progress-row progress-row--shas">
+              <span className="progress-row__label">{t("allOfShas")}</span>
+              <span className="progress-row__pct">{shasPct}%</span>
+            </div>
+            <ProgressBar pct={shasPct} />
+          </div>
           {SEDARIM.map((seder) => {
             const isOpen = expanded === seder.id;
             return (
@@ -453,6 +467,16 @@ export function ProgressScreen({ onOpenNishmat }: ProgressScreenProps) {
         <LogLearningModal
           onSave={(masechetEn, perek, date) => progress.logLearning(masechetEn, perek, date)}
           onClose={() => setLogOpen(false)}
+        />
+      )}
+      {pastOpen && (
+        <PastLearningModal
+          isMasechetDone={(masechetEn) => {
+            const m = SEDARIM.flatMap((s) => s.masechtot).find((x) => x.en === masechetEn);
+            return m ? progress.masechetPercent(m.en, m.perakim) === 100 : false;
+          }}
+          onSave={(entries) => progress.logPastLearning(entries)}
+          onClose={() => setPastOpen(false)}
         />
       )}
       {printOpen && <PrintNotesView onClose={() => setPrintOpen(false)} />}

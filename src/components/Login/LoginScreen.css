@@ -769,3 +769,14 @@
   margin-top: 8px;
   font-size: var(--fs-13);
 }
+
+/* The total bar: gold, and a little heavier than the seder bars under it. */
+.account-seder-bar--shas {
+  --tile-hue: var(--gold);
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.account-seder-bar--shas .account-seder-bar__track {
+  height: 10px;
+}

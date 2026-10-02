@@ -1,0 +1,95 @@
+.past-learning__list {
+  margin: 14px 0 4px;
+  max-height: 46vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.past-learning__seder + .past-learning__seder {
+  border-top: 1px solid var(--line);
+}
+
+.past-learning__seder-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 2px;
+}
+
+.past-learning__check {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--font-heading);
+  font-size: var(--fs-13);
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.past-learning__check input {
+  width: 17px;
+  height: 17px;
+  accent-color: var(--brand);
+  cursor: pointer;
+}
+
+.past-learning__check input:disabled {
+  cursor: default;
+}
+
+.past-learning__expand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 0 8px;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-size: var(--fs-13);
+  cursor: pointer;
+}
+
+.past-learning__count {
+  font-family: var(--font-body);
+  font-size: var(--fs-12);
+  color: var(--brass-text);
+}
+
+.past-learning__masechtot {
+  padding: 2px 0 10px 0;
+  margin-inline-start: 22px;
+}
+
+.past-learning__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 5px 0;
+}
+
+.past-learning__row .past-learning__check {
+  font-family: var(--font-body);
+  font-weight: 500;
+}
+
+.past-learning__through {
+  height: 30px;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--line);
+  background: var(--surface-hi);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--fs-12);
+  padding: 0 8px;
+  max-width: 150px;
+}
+
+.past-learning__done {
+  font-size: var(--fs-12);
+  color: var(--good);
+  font-weight: 600;
+}

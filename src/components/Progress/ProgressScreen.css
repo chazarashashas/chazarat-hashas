@@ -434,3 +434,15 @@
 .progress-perakim {
   margin: 2px 0 4px;
 }
+
+/* All of Shas, above the sedarim: the same row, carrying the app's gold
+   rather than a seder hue, so it reads as the total and not a seventh seder. */
+.progress-seder--shas {
+  --row-hue: var(--gold);
+  margin-bottom: 14px;
+}
+
+.progress-row--shas {
+  font-family: var(--font-heading);
+  font-weight: 700;
+}

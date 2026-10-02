@@ -618,6 +618,16 @@ function AccountDashboard({
         </div>
 
         <div className="account-seder-bars">
+          {/* All of Shas, above the sedarim it is made of. */}
+          <div className="account-seder-bar account-seder-bar--shas">
+            <span className="account-seder-bar__he" dir="rtl">
+              הש״ס
+            </span>
+            <div className="account-seder-bar__track">
+              <div className="account-seder-bar__fill" style={{ width: `${progress.shasPercent()}%` }} />
+            </div>
+            <span className="account-seder-bar__pct">{progress.shasPercent()}%</span>
+          </div>
           {SEDARIM.map((seder) => (
             <div key={seder.id} className="account-seder-bar" style={{ ["--tile-hue" as string]: getSederHue(seder.id) }}>
               <span className="account-seder-bar__he" dir="rtl">

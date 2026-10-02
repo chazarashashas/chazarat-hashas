@@ -217,5 +217,17 @@
     "notYoursToUpdate": "This claim isn't yours to update.",
     "notYoursToRelease": "This claim isn't yours to release."
   },
-  "fallbackDedication": "a siyum"
+  "fallbackDedication": "a siyum",
+  "allOfShas": "All of Shas",
+  "pastLearning": {
+    "button": "Already learned",
+    "title": "What have you already learned?",
+    "body": "Tick a whole seder, whole masechtot, or how far you got in the one you're in. It fills in your progress and your siyumim. It doesn't count as today's learning, so your streak starts when you start learning here.",
+    "whole": "The whole masechet",
+    "throughPerek": "Through perek {{perek}}",
+    "alreadyMarked": "Already learned",
+    "chosen": "{{count}} chosen",
+    "save_one": "Mark {{count}} mishnah learned",
+    "save_other": "Mark {{count}} mishnayot learned"
+  }
 }
