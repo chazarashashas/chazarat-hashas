@@ -357,7 +357,7 @@ function App() {
           <div
             className={
               "main__content" +
-              (WIDE_SECTIONS.has(section) ? " main__content--wide" : "")
+              (section === "home" ? " main__content--home" : WIDE_SECTIONS.has(section) ? " main__content--wide" : "")
             }
           >
             {announcement && <AnnouncementBanner message={announcement.message} onDismiss={dismissAnnouncement} />}

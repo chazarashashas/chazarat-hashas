@@ -210,33 +210,41 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
 
   return (
     <div className="stage">
-      <div className="panel">
+      {/* One markup, three layouts (HOME-DESKTOP-BRIEF.md): a single column
+          on a phone, and on a desktop a sticky rail carrying the day's
+          learning beside the destinations. */}
+      <div className="panel home-panel">
         <LanguageCornerLink />
-        <BrandMark variant="outline" className="home-brand-mark" />
-        <h1 className="home-title" dir="rtl">
-          חזרת הש״ס
-        </h1>
-        <p className="panel__subtitle">{t("subtitle")}</p>
 
-        <ProgressHeaderBar
-          progress={progress}
-          onGoToLimmud={() => onNavigate("limmud")}
-          onOpenGuide={() => setShowGuidePopup(true)}
-        />
+        <div className="home-rail">
+          <BrandMark variant="outline" className="home-brand-mark" />
+          <h1 className="home-title" dir="rtl">
+            חזרת הש״ס
+          </h1>
+          <p className="panel__subtitle">{t("subtitle")}</p>
 
-        {erevStretch && <ErevChagCard stretch={erevStretch} onGoToLimmud={() => onNavigate("limmud")} />}
+          <ProgressHeaderBar
+            progress={progress}
+            onGoToLimmud={() => onNavigate("limmud")}
+            onOpenGuide={() => setShowGuidePopup(true)}
+          />
 
-        <ReceivedNudges />
+          {erevStretch && <ErevChagCard stretch={erevStretch} onGoToLimmud={() => onNavigate("limmud")} />}
 
-        {myShiurim.map((g) => (
-          <TodayLearningCard key={g.id} group={g} snapshot={todaySnapshot} />
-        ))}
+          <ReceivedNudges />
 
-        <h2 className="section-title">{labels.group("myMishna")}</h2>
-        <FeatureGrid features={myMishnaWithStatus} onNavigate={onNavigate} />
+          {myShiurim.map((g) => (
+            <TodayLearningCard key={g.id} group={g} snapshot={todaySnapshot} />
+          ))}
+        </div>
 
-        <h2 className="section-title">{labels.group("practice")}</h2>
-        <FeatureGrid features={learningToolsWithStatus} onNavigate={onNavigate} />
+        <div className="home-sections">
+          <h2 className="section-title">{labels.group("myMishna")}</h2>
+          <FeatureGrid features={myMishnaWithStatus} onNavigate={onNavigate} />
+
+          <h2 className="section-title">{labels.group("practice")}</h2>
+          <FeatureGrid features={learningToolsWithStatus} onNavigate={onNavigate} />
+        </div>
       </div>
 
       {showGuidePopup && (

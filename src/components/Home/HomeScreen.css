@@ -22,9 +22,10 @@
   margin-top: 10px;
 }
 
-.home-grid:first-of-type {
-  margin-top: 12px;
-}
+/* (A `.home-grid:first-of-type` rule lived here. It matched by element
+   type, so with the grids directly under .panel no grid was ever the
+   first <div> and it never applied. Inside .home-sections it suddenly
+   would have, moving every tile 2px down on a phone — so it's gone.) */
 
 /* Phone: ≤599px, per ANDROID-BRIEF.md §6. */
 @media (max-width: 599px) {
@@ -163,4 +164,84 @@
 .home-language-link:lang(he) {
   font-family: var(--font-hebrew);
   font-size: var(--fs-13);
+}
+
+/* ============================================================
+   Desktop Home — HOME-DESKTOP-BRIEF.md
+   Below 1024px nothing here applies, so phone and tablet keep the
+   single-column layout they have always had.
+   ============================================================ */
+@media (min-width: 1024px) {
+  .home-panel {
+    display: grid;
+    /* The rail takes less room on a small laptop, so the tiles beside it
+       never squeeze; it widens again at 1320px. */
+    grid-template-columns: 320px minmax(0, 1fr);
+    gap: 30px;
+    align-items: start;
+    padding: 26px 30px 24px;
+  }
+
+  /* The day's learning stays in view while the destinations scroll. */
+  .home-rail {
+    position: sticky;
+    top: 10px;
+  }
+
+  /* Identity small and constant: the mark beside the name, not above it. */
+  .home-rail .home-brand-mark {
+    width: 44px;
+    margin: 0 10px 0 0;
+    vertical-align: middle;
+    display: inline-block;
+  }
+
+  .home-rail .home-title {
+    display: inline-block;
+    font-size: var(--fs-28);
+    margin: 0;
+    vertical-align: middle;
+  }
+
+  .home-rail .panel__subtitle {
+    text-align: start;
+    margin: 6px 0 16px;
+  }
+
+  /* Both sections sit in the right column; the first needs no top gap
+     because the rail's identity already anchors the eye. */
+  .home-sections > .section-title:first-child {
+    margin-top: 2px;
+  }
+
+  /* A pointer is precise: tighter tiles, so all twelve destinations fit
+     on one screen. The description stays for a first visit, quieter. */
+  .home-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .home-card {
+    padding: 14px 14px 12px;
+  }
+
+  .home-card__desc {
+    font-size: var(--fs-12);
+    color: var(--muted);
+  }
+
+  .home-card__status {
+    font-weight: 700;
+  }
+}
+
+/* Wider still: a fourth tile per row rather than wider tiles. */
+@media (min-width: 1320px) {
+  .home-panel {
+    grid-template-columns: 360px minmax(0, 1fr);
+  }
+
+  .home-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }

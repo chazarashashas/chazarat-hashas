@@ -24,6 +24,13 @@
   max-width: 760px;
 }
 
+/* Home is the one screen built as a desktop page rather than a phone
+   column — see HOME-DESKTOP-BRIEF.md. Narrower screens never reach this
+   width, so phone and tablet are untouched. */
+.main__content--home {
+  max-width: 1120px;
+}
+
 /* Phone: ≤599px, per ANDROID-BRIEF.md §6. */
 @media (max-width: 599px) {
   .main {
