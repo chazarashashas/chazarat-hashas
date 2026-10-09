@@ -1,0 +1,143 @@
+.masechtot-sheet-controls__sub {
+  margin: 0 0 14px;
+  font-size: var(--fs-13);
+  color: var(--muted);
+}
+
+.masechtot-sheet {
+  max-width: 760px;
+  margin: 0 auto;
+  background: var(--surface-hi);
+  border-radius: var(--radius-card);
+  padding: 26px 28px 20px;
+  color: var(--ink);
+}
+
+.masechtot-sheet__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1.5px solid var(--line);
+}
+
+.masechtot-sheet__mark {
+  width: 36px;
+  flex-shrink: 0;
+}
+
+.masechtot-sheet__title {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: var(--fs-20);
+  font-weight: 700;
+}
+
+.masechtot-sheet__hint {
+  margin: 2px 0 0;
+  font-size: var(--fs-12);
+  color: var(--muted);
+}
+
+.masechtot-sheet__name-line {
+  margin-inline-start: auto;
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  font-size: var(--fs-12);
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.masechtot-sheet__rule {
+  display: block;
+  width: 140px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Three columns of two sedarim: all 63 lines on one page. */
+.masechtot-sheet__sedarim {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px 22px;
+  margin-top: 14px;
+}
+
+.masechtot-sheet__seder-name {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0 0 6px;
+  padding-bottom: 3px;
+  border-bottom: 1.5px solid var(--ink);
+  font-family: var(--font-heading);
+  font-size: var(--fs-14);
+  font-weight: 700;
+}
+
+.masechtot-sheet__seder-count {
+  font-family: var(--font-body);
+  font-size: var(--fs-12);
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.masechtot-sheet__lines {
+  margin: 0;
+  padding-inline-start: 20px;
+  list-style: decimal;
+}
+
+/* The line to write on: tall enough for a pen, light enough to write over. */
+.masechtot-sheet__line {
+  height: 21px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 5px;
+}
+
+.masechtot-sheet__line::marker {
+  font-size: var(--fs-12);
+  color: var(--muted);
+}
+
+.masechtot-sheet__foot {
+  margin-top: 14px;
+  text-align: center;
+  font-size: var(--fs-12);
+  color: var(--muted);
+}
+
+/* On paper: ink on white, one page, no app chrome. */
+@media print {
+  .masechtot-sheet-overlay {
+    position: static;
+    padding: 0;
+    background: #fff;
+  }
+
+  .masechtot-sheet-controls {
+    display: none;
+  }
+
+  .masechtot-sheet {
+    max-width: none;
+    background: #fff;
+    border-radius: 0;
+    padding: 0;
+  }
+
+  .masechtot-sheet__line {
+    border-bottom-color: #999;
+  }
+}
+
+@media (max-width: 599px) {
+  .masechtot-sheet__sedarim {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .masechtot-sheet__name-line {
+    display: none;
+  }
+}

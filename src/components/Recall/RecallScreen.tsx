@@ -10,6 +10,7 @@ import { getSederHue } from "../../utils/sederHue";
 import { GameHud } from "../GameHud/GameHud";
 import { useRunShare } from "../Share/useRunShare";
 import { bestMoment } from "../Share/shareMoments";
+import { PrintMasechtotSheet } from "../PrintNotes/PrintMasechtotSheet";
 import "./RecallScreen.css";
 
 function flatList(): Masechet[] {
@@ -126,6 +127,14 @@ export function RecallScreen() {
   const [guess, setGuess] = useState("");
   const [found, setFound] = useState<Set<string>>(new Set());
   const [timeLeft, setTimeLeft] = useState(0);
+  /** A morning self-test: no clock, finish when you choose. */
+  const [timed, setTimed] = useState(true);
+  /** The names on the board from the start, and they stay there once
+      written — recognition rather than recall, by choice. */
+  const [showBank, setShowBank] = useState(false);
+  /** The bank was on at some point this run, so the run doesn't set a best. */
+  const [bankUsed, setBankUsed] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   const targetList: Masechet[] =
     sederTab === "all" ? ALL_MASECHTOT : SEDARIM.find((s) => s.id === sederTab)!.masechtot;
@@ -136,7 +145,7 @@ export function RecallScreen() {
   const durationSec = Math.max(MIN_DURATION_SEC, targetList.length * SECONDS_PER_ITEM);
 
   useEffect(() => {
-    if (phase !== "playing") return;
+    if (phase !== "playing" || !timed) return;
     const id = window.setInterval(() => {
       setTimeLeft((t) => {
         if (t <= 1) {
@@ -148,14 +157,15 @@ export function RecallScreen() {
       });
     }, 1000);
     return () => window.clearInterval(id);
-  }, [phase]);
+  }, [phase, timed]);
 
   useEffect(() => {
     if (phase === "ended") {
       // A higher recall count than their best may prompt; any run can be shared.
       const moment = bestMoment("chazara", found.size);
-      share.finish(moment, [found.size > 0 && found.size > stats.chazara.bestCount ? moment : null]);
-      recordChazaraResult(found.size, scopeLabel);
+      const counts = timed && !bankUsed;
+      share.finish(moment, [counts && found.size > 0 && found.size > stats.chazara.bestCount ? moment : null]);
+      if (counts) recordChazaraResult(found.size, scopeLabel);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase]);
@@ -172,7 +182,8 @@ export function RecallScreen() {
     share.reset();
     setFound(new Set());
     setGuess("");
-    setTimeLeft(durationSec);
+    setTimeLeft(timed ? durationSec : 0);
+    setBankUsed(showBank);
     setPhase("playing");
   }
 
@@ -217,9 +228,9 @@ export function RecallScreen() {
           <>
             <GameHud
               doing={scopeName}
-              progress={phase === "playing" ? 1 - timeLeft / durationSec : 0}
-              worth={phase === "playing" ? formatTime(timeLeft) : `${found.size} / ${targetList.length}`}
-              urgent={phase === "playing" && timeLeft <= 10}
+              progress={phase === "playing" && timed ? 1 - timeLeft / durationSec : found.size / targetList.length}
+              worth={phase === "playing" && timed ? formatTime(timeLeft) : `${found.size} / ${targetList.length}`}
+              urgent={phase === "playing" && timed && timeLeft <= 10}
             />
 
             <div className="recall-board-wrap">
@@ -251,10 +262,11 @@ export function RecallScreen() {
                             <div
                               key={m.en}
                               className={
-                                "recall-chip" + (found.has(m.en) ? " recall-chip--found" : " recall-chip--pending")
+                                "recall-chip" +
+                                (found.has(m.en) ? " recall-chip--found" : showBank ? " recall-chip--bank" : " recall-chip--pending")
                               }
                             >
-                              {found.has(m.en) ? name(m) : ""}
+                              {found.has(m.en) || showBank ? name(m) : ""}
                             </div>
                           ))}
                         </div>
@@ -267,10 +279,11 @@ export function RecallScreen() {
                       <div
                         key={m.en}
                         className={
-                          "recall-chip" + (found.has(m.en) ? " recall-chip--found" : " recall-chip--pending")
+                          "recall-chip" +
+                                (found.has(m.en) ? " recall-chip--found" : showBank ? " recall-chip--bank" : " recall-chip--pending")
                         }
                       >
-                        {found.has(m.en) ? name(m) : ""}
+                        {found.has(m.en) || showBank ? name(m) : ""}
                       </div>
                     ))}
                   </div>
@@ -282,10 +295,39 @@ export function RecallScreen() {
                   <div className="recall-board-overlay__scope">
                     {t("recall.readyScope", { scope: scopeName, total: targetList.length })}
                   </div>
+                  <div className="recall-options">
+                    <button
+                      className={"pill pill--compact" + (timed ? " pill--active" : "")}
+                      aria-pressed={timed}
+                      onClick={() => setTimed(true)}
+                    >
+                      {t("recall.timed")}
+                    </button>
+                    <button
+                      className={"pill pill--compact" + (!timed ? " pill--active" : "")}
+                      aria-pressed={!timed}
+                      onClick={() => setTimed(false)}
+                    >
+                      {t("recall.untimed")}
+                    </button>
+                  </div>
+                  <label className="recall-bank-toggle">
+                    <input type="checkbox" checked={showBank} onChange={(e) => setShowBank(e.target.checked)} />
+                    <span>{t("recall.showBank")}</span>
+                  </label>
                   <button className="restart" onClick={handleStart}>
                     {t("start")}
                   </button>
+                  <button className="recall-sheet-link" onClick={() => setSheetOpen(true)}>
+                    {t("recall.printSheet")}
+                  </button>
                 </div>
+              )}
+
+              {phase === "playing" && !timed && (
+                <button className="btn btn--secondary btn--compact recall-finish" onClick={() => setPhase("ended")}>
+                  {t("recall.finish")}
+                </button>
               )}
             </div>
           </>
@@ -294,11 +336,12 @@ export function RecallScreen() {
         {phase === "ended" && (
           <div className="game__end recall-center">
             <div className="recall-center__big">
-              {found.size === targetList.length ? t("recall.allFound") : t("recall.timesUp")}
+              {found.size === targetList.length ? t("recall.allFound") : timed ? t("recall.timesUp") : t("recall.finished")}
             </div>
             <div className="recall-center__sub">
               {t("recall.foundSummary", { found: found.size, total: targetList.length, scope: scopeName })}
             </div>
+            {(!timed || bankUsed) && <p className="recall-practice-note">{t("recall.practiceRun")}</p>}
             {missed.length > 0 && (
               <div className="recall-missed">
                 <p className="recall-missed__label">{t("recall.stillToFind")}</p>
@@ -320,6 +363,7 @@ export function RecallScreen() {
         )}
       </div>
       <TabBar tabs={sederTabs} activeId={sederTab} onSelect={handleSederTabChange} />
+      {sheetOpen && <PrintMasechtotSheet onClose={() => setSheetOpen(false)} />}
       {share.sheet}
     </div>
   );

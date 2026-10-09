@@ -125,6 +125,17 @@
       "title": "Support and feedback",
       "desc": "Found a bug, or have an idea for the app? We'd love to hear from you.",
       "email": "Email us"
+    },
+    "masechtotSheet": {
+      "title": "Masechtot by heart (printable)",
+      "desc": "One page with a line for every masechet, seder by seder — Mishna Chazara with a pen."
     }
+  },
+  "masechtotSheet": {
+    "title": "Masechtot by heart — printable sheet",
+    "sub": "One page, every seder, a line for each masechet. Print it and fill it in by hand.",
+    "sheetTitle": "Masechtot by heart",
+    "hint": "Write the masechtot of each seder in order.",
+    "nameLabel": "Name"
   }
 }

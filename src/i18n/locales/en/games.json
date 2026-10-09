@@ -51,7 +51,14 @@
     "allFound": "All of them!",
     "timesUp": "Time's up",
     "foundSummary": "You found {{found}} of {{total}} in {{scope}}.",
-    "stillToFind": "Still to find:"
+    "stillToFind": "Still to find:",
+    "timed": "Against the clock",
+    "untimed": "No clock",
+    "showBank": "Show the names as a bank",
+    "finish": "Finish",
+    "practiceRun": "A practice round — your best comes from a timed round without the bank.",
+    "finished": "Finished",
+    "printSheet": "Print a blank sheet"
   },
   "dash": {
     "best": "BEST {{best}}",

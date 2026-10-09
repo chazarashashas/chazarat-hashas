@@ -51,7 +51,14 @@
     "allFound": "כולן!",
     "timesUp": "הזמן נגמר",
     "foundSummary": "מצאת {{found}} מתוך {{total}} ב{{scope}}.",
-    "stillToFind": "עוד לא נמצאו:"
+    "stillToFind": "עוד לא נמצאו:",
+    "timed": "עם שעון",
+    "untimed": "בלי שעון",
+    "showBank": "להציג את השמות כמאגר",
+    "finish": "סיום",
+    "practiceRun": "סבב תרגול — השיא נקבע בסבב עם שעון ובלי המאגר.",
+    "finished": "סיימת",
+    "printSheet": "להדפיס דף ריק"
   },
   "dash": {
     "best": "שיא {{best}}",

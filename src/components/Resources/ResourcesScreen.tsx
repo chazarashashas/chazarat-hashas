@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { PrintNotesView } from "../PrintNotes/PrintNotesView";
+import { PrintMasechtotSheet } from "../PrintNotes/PrintMasechtotSheet";
 import { NavIcon } from "../Icon/NavIcon";
 import { ChagPrintCard } from "../ChagPrint/ChagPrintCard";
 import { nextStretch } from "../../utils/chagCalendar";
@@ -35,6 +36,7 @@ interface ResourcesScreenProps {
 export function ResourcesScreen({ onOpenGuide }: ResourcesScreenProps) {
   const { t } = useTranslation(["print", "common"]);
   const [printOpen, setPrintOpen] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
   // Mishnayot for the next Shabbat or yom tov, any ordinary day of the week
   // (never on Shabbat or yom tov itself) — Home and Daily Limmud only offer
   // it on erev.
@@ -85,6 +87,17 @@ export function ResourcesScreen({ onOpenGuide }: ResourcesScreenProps) {
 
           <div className="card card--rule resource-card">
             <div className="resource-card__body">
+              <p className="resource-card__title">{t("resources.masechtotSheet.title")}</p>
+              <p className="resource-card__desc">{t("resources.masechtotSheet.desc")}</p>
+            </div>
+            <button className="btn btn--secondary btn--compact resource-card__download" onClick={() => setSheetOpen(true)}>
+              <NavIcon id="print" size={15} weight={2} />
+              {t("common:print")}
+            </button>
+          </div>
+
+          <div className="card card--rule resource-card">
+            <div className="resource-card__body">
               <p className="resource-card__title">{t("resources.notes.title")}</p>
               <p className="resource-card__desc">
                 {t("resources.notes.desc")}
@@ -112,6 +125,7 @@ export function ResourcesScreen({ onOpenGuide }: ResourcesScreenProps) {
       </div>
 
       {printOpen && <PrintNotesView onClose={() => setPrintOpen(false)} />}
+      {sheetOpen && <PrintMasechtotSheet onClose={() => setSheetOpen(false)} />}
     </div>
   );
 }
