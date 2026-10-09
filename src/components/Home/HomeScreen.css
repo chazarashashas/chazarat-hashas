@@ -222,26 +222,35 @@
   }
 
   .home-card {
-    padding: 14px 14px 12px;
+    padding: 13px 14px 11px;
   }
 
+  /* Two lines says what a screen is for; past the first visit the rest is
+     noise, and the saved height is what keeps the page off the scrollbar. */
   .home-card__desc {
     font-size: var(--fs-12);
     color: var(--muted);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   .home-card__status {
     font-weight: 700;
   }
+
+  /* Seasonal, and sized accordingly: it keeps its place in the rail
+     without crowding the day's learning above it. */
+  .home-rail .erev-card {
+    padding: 14px 16px;
+  }
 }
 
-/* Wider still: a fourth tile per row rather than wider tiles. */
+/* Wider still: a roomier rail, but still three tiles across — six tiles
+   fill two even rows, where four across left two stranded underneath. */
 @media (min-width: 1320px) {
   .home-panel {
     grid-template-columns: 360px minmax(0, 1fr);
-  }
-
-  .home-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
